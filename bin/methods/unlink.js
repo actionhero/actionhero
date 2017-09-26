@@ -2,6 +2,7 @@
 
 const path = require('path')
 const ActionHero = require('./../../index.js')
+const api = ActionHero.api
 
 module.exports = class ActionsList extends ActionHero.CLI {
   constructor () {
@@ -14,7 +15,7 @@ module.exports = class ActionsList extends ActionHero.CLI {
     }
   }
 
-  run (api, {params}) {
+  run ({params}) {
     const linkRelativeBase = api.projectRoot + path.sep
     let pluginRoot
 

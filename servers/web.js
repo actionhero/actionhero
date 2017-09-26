@@ -13,6 +13,7 @@ const Mime = require('mime')
 const uuid = require('uuid')
 const etag = require('etag')
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 module.exports = class WebServer extends ActionHero.Server {
   constructor () {
@@ -34,17 +35,15 @@ module.exports = class WebServer extends ActionHero.Server {
     }
   }
 
-  async initialize (api) {
+  async initialize () {
     if (['api', 'file'].indexOf(this.config.rootEndpointType) < 0) {
       throw new Error('rootEndpointType can only be \'api\' or \'file\'')
     }
 
-    this.api = api
     this.fingerprinter = new BrowserFingerprint(this.config.fingerprintOptions)
   }
 
   async start () {
-    const api = this.api
     let bootAttempts = 0
     if (this.config.secure === false) {
       this.server = http.createServer((req, res) => { this.handleRequest(req, res) })
@@ -76,7 +75,7 @@ module.exports = class WebServer extends ActionHero.Server {
     this.on('connection', async (connection) => {
       let requestMode = await this.determineRequestParams(connection)
       if (requestMode === 'api') {
-        this.processAction(api, connection)
+        this.processAction(connection)
       } else if (requestMode === 'file') {
         this.processFile(connection)
       } else if (requestMode === 'options') {
@@ -250,7 +249,6 @@ module.exports = class WebServer extends ActionHero.Server {
   }
 
   handleRequest (req, res) {
-    const api = this.api
     let {fingerprint, headersHash} = this.fingerprinter.fingerprint(req)
     let responseHeaders = []
     let cookies = api.utils.parseCookies(req)
@@ -313,7 +311,7 @@ module.exports = class WebServer extends ActionHero.Server {
       }
     }
 
-    this.buildConnection(api, {
+    this.buildConnection({
       rawConnection: {
         req: req,
         res: res,
@@ -332,8 +330,6 @@ module.exports = class WebServer extends ActionHero.Server {
   }
 
   async completeResponse (data) {
-    const api = this.api
-
     if (data.toRender !== true) {
       if (data.connection.rawConnection.res.finished) {
         data.connection.destroy()
@@ -435,7 +431,6 @@ module.exports = class WebServer extends ActionHero.Server {
 
   async determineRequestParams (connection) {
     // determine file or api request
-    const api = this.api
     let requestMode = this.config.rootEndpointType
     let pathname = connection.rawConnection.parsedURL.pathname
     let pathParts = pathname.split('/')
@@ -542,7 +537,6 @@ module.exports = class WebServer extends ActionHero.Server {
 
   fillParamsFromWebRequest (connection, varsHash) {
     // helper for JSON posts
-    const api = this.api
     let collapsedVarsHash = api.utils.collapseObjectToArray(varsHash)
     if (collapsedVarsHash !== false) {
       varsHash = {payload: collapsedVarsHash} // post was an array, lets call it "payload"
@@ -572,7 +566,6 @@ module.exports = class WebServer extends ActionHero.Server {
   }
 
   buildRequesterInformation (connection) {
-    const api = this.api
     let requesterInformation = {
       id: connection.id,
       fingerprint: connection.fingerprint,

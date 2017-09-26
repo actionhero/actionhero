@@ -24,3 +24,5 @@ const path = require('path');
 ].forEach(({klass, file}) => {
   exports[klass] = require(path.join(__dirname, 'classes', file))
 })
+
+exports.api = {}

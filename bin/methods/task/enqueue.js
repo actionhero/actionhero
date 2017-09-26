@@ -1,6 +1,7 @@
 'use strict'
 
 const ActionHero = require('./../../../index.js')
+const api = ActionHero.api
 
 module.exports = class ActionsList extends ActionHero.CLI {
   constructor () {
@@ -15,7 +16,7 @@ module.exports = class ActionsList extends ActionHero.CLI {
     }
   }
 
-  async run (api, {params}) {
+  async run ({params}) {
     if (!api.tasks.tasks[params.name]) { throw new Error('Task "' + params.name + '" not found') }
 
     let args = {}

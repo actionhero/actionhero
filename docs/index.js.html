@@ -64,6 +64,8 @@
 ].forEach(({klass, file}) => {
   exports[klass] = require(path.join(__dirname, 'classes', file))
 })
+
+exports.api = {}
 </code></pre>
         </article>
     </section>

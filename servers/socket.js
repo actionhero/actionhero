@@ -3,6 +3,7 @@
 const net = require('net')
 const tls = require('tls')
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 module.exports = class SocketServer extends ActionHero.Server {
   constructor () {
@@ -33,8 +34,8 @@ module.exports = class SocketServer extends ActionHero.Server {
     }
   }
 
-  async initialize (api) {
-    this.api = api
+  async initialize () {
+    //
   }
 
   async start () {
@@ -69,7 +70,6 @@ module.exports = class SocketServer extends ActionHero.Server {
   }
 
   async sendMessage (connection, message, messageCount) {
-    const api = this.api
     if (message.error) {
       message.error = await api.config.errors.serializers.servers.socket(message.error)
     }
@@ -107,10 +107,9 @@ module.exports = class SocketServer extends ActionHero.Server {
   }
 
   handleConnection (rawConnection) {
-    const api = this.api
     if (this.config.setKeepAlive === true) { rawConnection.setKeepAlive(true) }
     rawConnection.socketDataString = ''
-    this.buildConnection(api, {
+    this.buildConnection({
       rawConnection: rawConnection,
       remoteAddress: rawConnection.remoteAddress,
       remotePort: rawConnection.remotePort
@@ -157,7 +156,6 @@ module.exports = class SocketServer extends ActionHero.Server {
   }
 
   async parseLine (connection, line) {
-    const api = this.api
     if (this.config.maxDataLength > 0) {
       let blen = Buffer.byteLength(line, 'utf8')
       if (blen > this.config.maxDataLength) {
@@ -176,7 +174,6 @@ module.exports = class SocketServer extends ActionHero.Server {
   }
 
   async parseRequest (connection, line) {
-    const api = this.api
     let words = line.split(' ')
     let verb = words.shift()
 
@@ -207,7 +204,7 @@ module.exports = class SocketServer extends ActionHero.Server {
         }
         connection.error = null
         connection.response = {}
-        return this.processAction(api, connection)
+        return this.processAction(connection)
       } else {
         return this.sendMessage(connection, {status: error.toString().replace(/^Error:\s/, ''), context: 'response'})
       }

@@ -2,6 +2,7 @@
 
 const winston = require('winston')
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 module.exports = class Logger extends ActionHero.Initializer {
   constructor () {
@@ -10,7 +11,7 @@ module.exports = class Logger extends ActionHero.Initializer {
     this.loadPriority = 100
   }
 
-  initialize (api) {
+  initialize () {
     let transports = []
     let i
 

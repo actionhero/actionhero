@@ -4,6 +4,7 @@ const fs = require('fs')
 const path = require('path')
 const Mime = require('mime')
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 function asyncStats (file) {
   return new Promise((resolve, reject) => {
@@ -30,7 +31,7 @@ module.exports = class StaticFile extends ActionHero.Initializer {
     this.loadPriority = 510
   }
 
-  initialize (api) {
+  initialize () {
     api.staticFile = {
       searchLoactions: []
     }

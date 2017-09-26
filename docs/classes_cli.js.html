@@ -65,7 +65,8 @@ module.exports = class MyCLICommand extends ActionHero.CLI {
     }
   }
 
-  async run (api, {params}) {
+  async run ({params}) {
+    const api = ActionHero.api
     return api.cache.dumpWrite(params.file)
   }
 }
@@ -82,7 +83,6 @@ module.exports = class MyCLICommand extends ActionHero.CLI {
    * @function run
    * @async
    * @memberof ActionHero.CLI
-   * @param  {Object}  api The api object.
    * @param  {Object}  data The data about this instance of the CLI run, specifically params.
    * @description The main "do something" method for this CLI command.  It can be `async`.  If error is thrown in this method, it will be logged to STDERR, and the process will terminate with a non-0 exit code.
    */
@@ -96,7 +96,7 @@ module.exports = class MyCLICommand extends ActionHero.CLI {
     }
   }
 
-  validate (api) {
+  validate () {
     if (!this.name) { throw new Error('name is required for this cli command') }
     if (!this.description) { throw new Error(`description is required for the cli commend \`${this.name}\``) }
     if (!this.run || typeof this.run !== 'function') { throw new Error(`cli command \`${this.name}\` has no run method`) }

@@ -1,6 +1,7 @@
 'use strict'
 
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 module.exports = class Params extends ActionHero.Initializer {
   constructor () {
@@ -9,7 +10,7 @@ module.exports = class Params extends ActionHero.Initializer {
     this.loadPriority = 420
   }
 
-  initialize (api) {
+  initialize () {
     api.params = {
       postVariables: []
     }

@@ -10,7 +10,7 @@ module.exports = class MyCLICommand extends ActionHero.Action {
     this.inputs = {}
   }
 
-  async run (api, data) {
+  async run (data) {
     return true
   }
 }

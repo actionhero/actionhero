@@ -2,9 +2,14 @@
 
 const path = require('path')
 const packageJson = require(path.join(__dirname, '..', 'package.json'))
+let api
 
 module.exports = class Process {
   constructor () {
+    // Only in files required by `index.js` do we need to delay the loading of the API object
+    // This is due to cyclical require issues
+    api = require('./../index.js').api
+
     this.initializers = {}
     this.startCount = 0
 
@@ -17,28 +22,25 @@ module.exports = class Process {
       projectRoot = process.env.PROJECT_ROOT
     }
 
-    this.api = {
-      running: false,
-      initialized: false,
-      shuttingDown: false,
-      projectRoot: projectRoot,
-      bootTime: null
-    }
+    api.running = false
+    api.initialized = false
+    api.shuttingDown = false
+    api.projectRoot = projectRoot
+    api.bootTime = null
 
-    this.api.commands = {
+    api.commands = {
       initialize: async (params) => { return this.initialize(params) },
       start: async (params) => { return this.start(params) },
       stop: async (callback) => { return this.stop() },
       restart: async (callback) => { return this.restart() }
     }
 
-    this.api.actionheroVersion = packageJson.version
+    api.actionheroVersion = packageJson.version
   }
 
   async initialize (params) {
     if (!params) { params = {} }
 
-    let api = this.api
     api._startingParams = params
 
     let loadInitializerRankings = {}
@@ -64,7 +66,7 @@ module.exports = class Process {
         await initializer.initialize(api)
         this.initializers[initializer.name] = initializer
       } catch (error) {
-        this.fatalError(api, error, initializer)
+        this.fatalError(error, initializer)
       }
     })
 
@@ -108,7 +110,7 @@ module.exports = class Process {
         if (typeof initializer.initialize === 'function') {
           if (typeof api.log === 'function') { api.log(`Loading initializer: ${initializer.name}`, 'debug', file) }
           try {
-            await initializer.initialize(api)
+            await initializer.initialize()
             try { api.log(`Loaded initializer: ${initializer.name}`, 'debug', file) } catch (e) { }
           } catch (error) {
             let message = `Exception occured in initializer \`${initializer.name}\` during load`
@@ -126,7 +128,7 @@ module.exports = class Process {
         if (typeof initializer.start === 'function') {
           if (typeof api.log === 'function') { api.log(`Starting initializer: ${initializer.name}`, 'debug', file) }
           try {
-            await initializer.start(api)
+            await initializer.start()
             api.log(`Started initializer: ${initializer.name}`, 'debug', file)
           } catch (error) {
             api.log(`Exception occured in initializer: ${initializer.name} during start`, 'warning', error.toString())
@@ -139,7 +141,7 @@ module.exports = class Process {
         if (typeof initializer.stop === 'function') {
           if (typeof api.log === 'function') { api.log(`Stopping initializer: ${initializer.name}`, 'debug', file) }
           try {
-            await initializer.stop(api)
+            await initializer.stop()
             api.log(`Stopped initializer: ${initializer.name}`, 'debug', file)
           } catch (error) {
             api.log(`Exception occured in initializer: ${initializer.name} during stop`, 'warning', error.toString())
@@ -165,7 +167,7 @@ module.exports = class Process {
     try {
       await api.utils.asyncWaterfall(this.loadInitializers)
     } catch (error) {
-      return this.fatalError(api, error, 'initialize')
+      return this.fatalError(error, 'initialize')
     }
 
     api.initialized = true
@@ -180,7 +182,6 @@ module.exports = class Process {
   }
 
   async start (params) {
-    let api = this.api
     if (!params) { params = {} }
 
     if (api.initialized !== true) {
@@ -202,14 +203,13 @@ module.exports = class Process {
     try {
       await api.utils.asyncWaterfall(this.startInitializers)
     } catch (error) {
-      return this.fatalError(api, error, 'start')
+      return this.fatalError(error, 'start')
     }
 
     return api
   }
 
   async stop () {
-    let api = this.api
     if (api.running === true) {
       api.shuttingDown = true
       api.running = false
@@ -230,7 +230,7 @@ module.exports = class Process {
       try {
         await api.utils.asyncWaterfall(this.stopInitializers)
       } catch (error) {
-        return this.fatalError(api, error, 'stop')
+        return this.fatalError(error, 'stop')
       }
       return api
     } else if (api.shuttingDown === true) {
@@ -247,7 +247,6 @@ module.exports = class Process {
   }
 
   async restart () {
-    let api = this.api
     if (api.running === true) {
       await this.stop()
       await this.start(api._startingParams)
@@ -259,7 +258,7 @@ module.exports = class Process {
 
   // HELPERS
 
-  async fatalError (api, errors, type) {
+  async fatalError (errors, type) {
     if (errors && !(errors instanceof Array)) { errors = [errors] }
     if (errors) {
       if (api.log) {

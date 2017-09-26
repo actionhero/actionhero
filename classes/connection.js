@@ -1,4 +1,5 @@
 const uuid = require('uuid')
+let api
 
 module.exports = class Connection {
   /**
@@ -23,11 +24,13 @@ module.exports = class Connection {
    *
    * @see ActionHero.Server
    *
-   * @param  {Object} api  The API object.
    * @param  {Object} data The specifics of this connection
    */
-  constructor (api, data) {
-    this.api = api
+  constructor (data) {
+    // Only in files required by `index.js` do we need to delay the loading of the API object
+    // This is due to cyclical require issues
+    api = require('./../index.js').api
+
     this.setup(data)
 
     api.connections.connections[this.id] = this
@@ -40,8 +43,6 @@ module.exports = class Connection {
   }
 
   setup (data) {
-    const api = this.api
-
     if (data.id) {
       this.id = data.id
     } else {
@@ -105,7 +106,6 @@ module.exports = class Connection {
    * @see api.i18n
    */
   localize (message) {
-    const api = this.api
     // this.locale will be sourced automatically
     return api.i18n.localize(message, this)
   }
@@ -121,7 +121,6 @@ module.exports = class Connection {
    * @memberof ActionHero.Connection
    */
   destroy () {
-    const api = this.api
     this.destroyed = true
 
     api.connections.globalMiddleware.forEach((middlewareName) => {
@@ -172,7 +171,6 @@ module.exports = class Connection {
     let key
     let value
     let room
-    const api = this.api
     const server = api.servers.servers[this.type]
     const allowedVerbs = server.attributes.verbs
 

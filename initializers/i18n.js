@@ -3,6 +3,7 @@
 const i18n = require('i18n')
 const path = require('path')
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 module.exports = class I18N extends ActionHero.Initializer {
   constructor () {
@@ -11,7 +12,7 @@ module.exports = class I18N extends ActionHero.Initializer {
     this.loadPriority = 10
   }
 
-  initialize (api) {
+  initialize () {
     const options = api.config.i18n
     options.directory = path.normalize(api.config.general.paths.locale[0])
     i18n.configure(options)

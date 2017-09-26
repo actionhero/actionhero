@@ -2,6 +2,7 @@
 
 const os = require('os')
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 module.exports = class Exceptions extends ActionHero.Initializer {
   constructor () {
@@ -14,7 +15,7 @@ module.exports = class Exceptions extends ActionHero.Initializer {
     return ['action', 'remoteIP', 'type', 'params', 'room']
   }
 
-  initialize (api) {
+  initialize () {
     api.exceptionHandlers = {}
     api.exceptionHandlers.reporters = []
 

@@ -4,6 +4,7 @@ const cluster = require('cluster')
 const readline = require('readline')
 const os = require('os')
 const ActionHero = require('./../../index.js')
+const api = ActionHero.api
 
 module.exports = class ActionsList extends ActionHero.CLI {
   constructor () {
@@ -42,7 +43,7 @@ module.exports = class ActionsList extends ActionHero.CLI {
   async startServer () {
     this.state = 'starting'
     this.sendState()
-    await this.api.commands.start()
+    await api.commands.start()
     this.state = 'started'
     this.sendState()
     this.checkForInernalStop()
@@ -51,7 +52,7 @@ module.exports = class ActionsList extends ActionHero.CLI {
   async stopServer () {
     this.state = 'stopping'
     this.sendState()
-    await this.api.commands.stop()
+    await api.commands.stop()
     this.state = 'stopped'
     this.sendState()
   }
@@ -59,7 +60,7 @@ module.exports = class ActionsList extends ActionHero.CLI {
   async restartServer () {
     this.state = 'restarting'
     this.sendState()
-    await this.api.commands.restart()
+    await api.commands.restart()
     this.state = 'started'
     this.sendState()
   }
@@ -79,13 +80,11 @@ module.exports = class ActionsList extends ActionHero.CLI {
   checkForInernalStop () {
     // check for an internal stop which doesn't close the processs
     clearTimeout(this.checkForInernalStopTimer)
-    if (this.api.running !== true && this.state === 'started') { process.exit(0) }
+    if (api.running !== true && this.state === 'started') { process.exit(0) }
     this.checkForInernalStopTimer = setTimeout(() => { this.checkForInernalStop() }, this.shutdownTimeout)
   }
 
-  async run (api) {
-    this.api = api
-
+  async run () {
     if (cluster.isWorker) {
       process.on('message', async (msg) => {
         if (msg === 'start') {

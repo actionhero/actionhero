@@ -1,3 +1,5 @@
+let api
+
 module.exports = class Action {
   /**
    * Create a new ActionHero Action. The required properties of an action. These can be defined statically (this.name) or as methods which return a value.
@@ -28,12 +30,16 @@ module.exports = class RandomNumber extends ActionHero.Action {
    this.outputExample = {randomNumber: 0.1234}
  }
 
- async run (api, data) {
+ async run (data) {
    data.response.randomNumber = Math.random()
  }
 }
    */
   constructor () {
+    // Only in files required by `index.js` do we need to delay the loading of the API object
+    // This is due to cyclical require issues
+    api = require('./../index.js').api
+
     let coreProperties = this.coreProperties()
     for (let key in coreProperties) {
       if (!this[key]) { this[key] = coreProperties[key] }
@@ -45,7 +51,6 @@ module.exports = class RandomNumber extends ActionHero.Action {
    * @function run
    * @async
    * @memberof ActionHero.Action
-   * @param  {Object}  api The api object.
    * @param  {Object}  data The data about this connection, response, and params.
    * @description The main "do something" method for this action.  It can be `async`.  Usually the goal of this run method is to set properties on `data.response`.  If error is thrown in this method, it will be logged, caught, and appended to `data.response.error`
    */
@@ -65,7 +70,7 @@ module.exports = class RandomNumber extends ActionHero.Action {
     }
   }
 
-  validate (api) {
+  validate () {
     if (!this.name) { throw new Error('name is required for this action') }
     if (!this.description) { throw new Error(`description is required for the action \`${this.name}\``) }
     if (!this.run || typeof this.run !== 'function') { throw new Error(`action \`${this.name}\` has no run method`) }
