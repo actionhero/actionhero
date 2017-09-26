@@ -11,7 +11,6 @@ module.exports = class Process {
     api = require('./../index.js').api
 
     this.initializers = {}
-    this.startCount = 0
 
     let projectRoot = process.cwd()
     if (process.env.project_root) {
@@ -27,6 +26,8 @@ module.exports = class Process {
     api.shuttingDown = false
     api.projectRoot = projectRoot
     api.bootTime = null
+
+    this.startCount = 0
 
     api.commands = {
       initialize: async (params) => { return this.initialize(params) },
@@ -195,6 +196,7 @@ module.exports = class Process {
       api.bootTime = new Date().getTime()
       if (this.startCount === 0) {
         api.log('*** ActionHero Started ***', 'alert')
+        this.startCount++
       } else {
         api.log('*** ActionHero Restarted ***', 'alert')
       }
