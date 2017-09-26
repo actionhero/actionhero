@@ -1,10 +1,15 @@
+let api
+
 module.exports = class ActionProcessor {
-  constructor (api, connection) {
+  constructor (connection) {
+    // Only in files required by `index.js` do we need to delay the loading of the API object
+    // This is due to cyclical require issues
+    api = require('./../index.js').api
+
     if (!connection) {
       throw new Error('data.connection is required')
     }
 
-    this.api = api
     this.connection = connection
     this.action = null
     this.toProcess = true
@@ -37,7 +42,6 @@ module.exports = class ActionProcessor {
   }
 
   async completeAction (status) {
-    const api = this.api
     let error = null
     this.actionStatus = String(status)
 
@@ -79,7 +83,6 @@ module.exports = class ActionProcessor {
   }
 
   logAction (error) {
-    const api = this.api
     let logLevel = 'info'
     if (this.actionTemplate && this.actionTemplate.logLevel) {
       logLevel = this.actionTemplate.logLevel
@@ -110,7 +113,6 @@ module.exports = class ActionProcessor {
   }
 
   async preProcessAction () {
-    const api = this.api
     let processorNames = api.actions.globalMiddleware.slice(0)
 
     if (this.actionTemplate.middleware) {
@@ -126,7 +128,6 @@ module.exports = class ActionProcessor {
   }
 
   async postProcessAction () {
-    const api = this.api
     let processorNames = api.actions.globalMiddleware.slice(0)
 
     if (this.actionTemplate.middleware) {
@@ -142,7 +143,6 @@ module.exports = class ActionProcessor {
   }
 
   reduceParams (schemaKey) {
-    const api = this.api
     let inputs = this.actionTemplate.inputs || {}
     let params = this.params
     if (schemaKey) {
@@ -161,7 +161,6 @@ module.exports = class ActionProcessor {
   }
 
   prepareStringMethod (method) {
-    const api = this.api
     const cmdParts = method.split('.')
     const cmd = cmdParts.shift()
     if (cmd !== 'api') { throw new Error('cannot operate on a method outside of the api object') }
@@ -169,8 +168,6 @@ module.exports = class ActionProcessor {
   }
 
   async validateParam (props, params, key, schemaKey) {
-    const api = this.api
-
     // default
     if (params[key] === undefined && props['default'] !== undefined) {
       if (typeof props['default'] === 'function') {
@@ -248,7 +245,6 @@ module.exports = class ActionProcessor {
   }
 
   async processAction () {
-    const api = this.api
     this.actionStartTime = new Date().getTime()
     this.working = true
     this.incrementTotalActions()
@@ -282,8 +278,6 @@ module.exports = class ActionProcessor {
   }
 
   async runAction () {
-    const api = this.api
-
     try {
       await this.preProcessAction()
       await this.reduceParams()
@@ -302,7 +296,7 @@ module.exports = class ActionProcessor {
 
     if (this.toProcess === true) {
       try {
-        await this.actionTemplate.run(api, this)
+        await this.actionTemplate.run(this)
         await this.postProcessAction()
         return this.completeAction()
       } catch (error) {

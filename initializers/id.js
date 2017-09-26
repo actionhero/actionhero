@@ -3,6 +3,7 @@
 const cluster = require('cluster')
 const argv = require('optimist').argv
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 module.exports = class ID extends ActionHero.Initializer {
   constructor () {
@@ -12,7 +13,7 @@ module.exports = class ID extends ActionHero.Initializer {
     this.startPriority = 2
   }
 
-  initialize (api) {
+  initialize () {
     if (argv.title) {
       api.id = argv.title
     } else if (process.env.ACTIONHERO_TITLE) {
@@ -36,7 +37,7 @@ module.exports = class ID extends ActionHero.Initializer {
     }
   }
 
-  start (api) {
+  start () {
     api.log(`server ID: ${api.id}`, 'notice')
   }
 }

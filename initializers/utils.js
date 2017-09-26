@@ -5,6 +5,7 @@ const path = require('path')
 const dotProp = require('dot-prop')
 const os = require('os')
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 module.exports = class Utils extends ActionHero.Initializer {
   constructor () {
@@ -13,7 +14,7 @@ module.exports = class Utils extends ActionHero.Initializer {
     this.loadPriority = 1
   }
 
-  async initialize (api) {
+  async initialize () {
     if (!api.utils) { api.utils = {} }
 
     api.utils.dotProp = dotProp

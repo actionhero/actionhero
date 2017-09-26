@@ -10,10 +10,10 @@ module.exports = class MyCLICommand extends ActionHero.Initializer {
     this.stopPriority = %%stopPriority%%
   }
 
-  async initialize (api) {
-    api['%%name%%'] = {}
+  async initialize () {
+    ActionHero.api['%%name%%'] = {}
   }
 
-  async start (api) {}
-  async stop (api) {}
+  async start () {}
+  async stop () {}
 }

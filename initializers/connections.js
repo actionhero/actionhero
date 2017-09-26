@@ -1,6 +1,7 @@
 'use strict'
 
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 /**
  * This callback is displayed as part of the Requester class.
@@ -50,7 +51,7 @@ module.exports = class Connections extends ActionHero.Initializer {
     this.loadPriority = 400
   }
 
-  initialize (api) {
+  initialize () {
     api.connections = {
       connections: {},
       middleware: {},

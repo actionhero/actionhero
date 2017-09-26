@@ -16,7 +16,7 @@ module.exports = class MyServer extends ActionHero.Server {
     // this.config will be set to equal api.config.servers[this.type]
   }
 
-  initialize (api) {
+  initialize () {
     this.on('connection', (conection) => {
 
     })
@@ -26,13 +26,13 @@ module.exports = class MyServer extends ActionHero.Server {
     })
   }
 
-  start (api) {
-    // this.buildConnection (api, data)
-    // this.processAction (api, connection)
+  start () {
+    // this.buildConnection (data)
+    // this.processAction (connection)
     // this.processFile (connection)
   }
 
-  stop (api) {
+  stop () {
 
   }
 

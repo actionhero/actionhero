@@ -263,7 +263,8 @@ module.exports = class MyCLICommand extends ActionHero.CLI {
     }
   }
 
-  async run (api, {params}) {
+  async run ({params}) {
+    const api = ActionHero.api
     return api.cache.dumpWrite(params.file)
   }
 }</code></pre>
@@ -308,7 +309,7 @@ module.exports = class MyCLICommand extends ActionHero.CLI {
 
     
 
-    <h4 class="name" id=".run"><span class="type-signature">(async, static) </span>run<span class="signature">(api, data)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".run"><span class="type-signature">(async, static) </span>run<span class="signature">(data)</span><span class="type-signature"></span></h4>
 
     
 
@@ -320,7 +321,7 @@ module.exports = class MyCLICommand extends ActionHero.CLI {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_cli.js.html">classes/cli.js</a>, <a href="classes_cli.js.html#line41">line 41</a>
+        <a href="classes_cli.js.html">classes/cli.js</a>, <a href="classes_cli.js.html#line42">line 42</a>
     </li></ul></dd>
     
 
@@ -394,29 +395,6 @@ module.exports = class MyCLICommand extends ActionHero.CLI {
     </thead>
 
     <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>api</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The api object.</p></td>
-        </tr>
-
     
 
         <tr>

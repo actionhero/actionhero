@@ -3,6 +3,7 @@
 const fs = require('fs')
 const path = require('path')
 const ActionHero = require('./../../../index.js')
+const api = ActionHero.api
 
 module.exports = class GenerateAction extends ActionHero.CLI {
   constructor () {
@@ -16,7 +17,7 @@ module.exports = class GenerateAction extends ActionHero.CLI {
     }
   }
 
-  run (api, {params}) {
+  run ({params}) {
     let template = fs.readFileSync(path.join(__dirname, '/../../templates/action.js'))
     template = String(template);
 

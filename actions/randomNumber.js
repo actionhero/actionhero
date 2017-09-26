@@ -9,7 +9,7 @@ module.exports = class RandomNumber extends ActionHero.Action {
     this.outputExample = { randomNumber: 0.123 }
   }
 
-  async run (api, {connection, response}) {
+  async run ({connection, response}) {
     response.randomNumber = Math.random()
     response.stringRandomNumber = connection.localize(['Your random number is {{number}}', {number: Math.random()}])
   }

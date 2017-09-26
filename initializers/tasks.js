@@ -2,6 +2,7 @@
 
 const NodeResque = require('node-resque')
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 module.exports = class Tasks extends ActionHero.Initializer {
   constructor () {
@@ -11,7 +12,7 @@ module.exports = class Tasks extends ActionHero.Initializer {
     this.startPriority = 900
   }
 
-  initialize (api) {
+  initialize () {
     api.tasks = {
       tasks: {},
       jobs: {},
@@ -257,7 +258,7 @@ module.exports = class Tasks extends ActionHero.Initializer {
     api.tasks.loadTasks(false)
   }
 
-  async start (api) {
+  async start () {
     if (api.config.redis.enabled === false) { return }
 
     if (api.config.tasks.scheduler === true) {

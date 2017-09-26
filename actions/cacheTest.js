@@ -50,7 +50,8 @@ module.exports = class CacheTest extends ActionHero.Action {
     }
   }
 
-  async run ({cache}, {params, response}) {
+  async run ({params, response}) {
+    const {cache} = ActionHero.api
     const key = 'cacheTest_' + params.key
     const value = params.value
 

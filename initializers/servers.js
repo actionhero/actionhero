@@ -2,6 +2,7 @@
 
 const path = require('path')
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 module.exports = class Servers extends ActionHero.Initializer {
   constructor () {
@@ -12,7 +13,7 @@ module.exports = class Servers extends ActionHero.Initializer {
     this.stopPriority = 100
   }
 
-  async initialize (api) {
+  async initialize () {
     api.servers = {
       servers: {}
     }
@@ -35,7 +36,7 @@ module.exports = class Servers extends ActionHero.Initializer {
         let server = new ServerClass()
         server.config = api.config.servers[server.type] // shorthand access
         if (server.config && server.config.enabled === true) {
-          await server.initialize(api)
+          await server.initialize()
           api.servers.servers[server.type] = server
           api.log(`Initialized server: ${server.type}`, 'debug')
         }
@@ -48,7 +49,7 @@ module.exports = class Servers extends ActionHero.Initializer {
     }
   }
 
-  async start (api) {
+  async start () {
     const serverNames = Object.keys(api.servers.servers)
     for (let i in serverNames) {
       let serverName = serverNames[i]
@@ -63,13 +64,13 @@ module.exports = class Servers extends ActionHero.Initializer {
           message += `:${api.config.servers[serverName].port}`
         }
         api.log(message, 'notice')
-        await server.start(api)
+        await server.start()
         api.log(`Server started: ${serverName}`, 'debug')
       }
     }
   }
 
-  async stop (api) {
+  async stop () {
     const serverNames = Object.keys(api.servers.servers)
     for (let i in serverNames) {
       let serverName = serverNames[i]

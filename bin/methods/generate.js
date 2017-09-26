@@ -3,6 +3,7 @@
 const fs = require('fs')
 const path = require('path')
 const ActionHero = require('./../../index.js')
+const api = ActionHero.api
 
 module.exports = class ActionsList extends ActionHero.CLI {
   constructor () {
@@ -11,7 +12,7 @@ module.exports = class ActionsList extends ActionHero.CLI {
     this.description = 'will prepare an empty directory with a template ActionHero project'
   }
 
-  run (api) {
+  run () {
     let documents = {}
 
     documents.projectMap = fs.readFileSync(path.join(__dirname, '/../templates/projectMap.txt'))

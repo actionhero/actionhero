@@ -2,6 +2,7 @@
 
 const REPL = require('repl')
 const ActionHero = require('./../../index.js')
+const api = ActionHero.api
 
 module.exports = class ActionsList extends ActionHero.CLI {
   constructor () {
@@ -14,7 +15,7 @@ module.exports = class ActionsList extends ActionHero.CLI {
     return 500
   }
 
-  async run (api) {
+  async run () {
     for (let i in api.config.servers) { api.config.servers[i].enabled = false }
     api.config.general.developmentMode = false
     api.config.tasks.scheduler = false

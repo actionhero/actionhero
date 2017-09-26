@@ -1,5 +1,6 @@
 const EventEmitter = require('events').EventEmitter
 const ActionHero = require('./../index.js')
+let api
 
 module.exports = class Server extends EventEmitter {
   /**
@@ -35,7 +36,7 @@ module.exports = class MyServer extends ActionHero.Server {
     // this.config will be set to equal api.config.servers[this.type]
   }
 
-  initialize (api) {
+  initialize () {
     this.on('connection', (conection) => {
 
     })
@@ -45,13 +46,13 @@ module.exports = class MyServer extends ActionHero.Server {
     })
   }
 
-  start (api) {
-    // this.buildConnection (api, data)
-    // this.processAction (api, connection)
+  start () {
+    // this.buildConnection (data)
+    // this.processAction (connection)
     // this.processFile (connection)
   }
 
-  stop (api) {
+  stop () {
 
   }
 
@@ -71,6 +72,11 @@ module.exports = class MyServer extends ActionHero.Server {
   */
   constructor (config) {
     super()
+
+    // Only in files required by `index.js` do we need to delay the loading of the API object
+    // This is due to cyclical require issues
+    api = require('./../index.js').api
+
     this.options = {}
     this.attributes = {}
     this.config = config
@@ -104,7 +110,6 @@ module.exports = class MyServer extends ActionHero.Server {
    * @function initialize
    * @async
    * @memberof ActionHero.Server
-   * @param  {Object}  api The api object.
    * @description Method run as part of the `initialize` lifecycle of your server.  Ususally configures the server.
    */
 
@@ -112,7 +117,6 @@ module.exports = class MyServer extends ActionHero.Server {
    * @function start
    * @async
    * @memberof ActionHero.Server
-   * @param  {Object}  api The api object.
    * @description Method run as part of the `start` lifecycle of your server.  Ususally boots the server (listens on port, etc).
    */
 
@@ -120,7 +124,6 @@ module.exports = class MyServer extends ActionHero.Server {
    * @function stop
    * @async
    * @memberof ActionHero.Server
-   * @param  {Object}  api The api object.
    * @description Method run as part of the `stop` lifecycle of your server.  Ususally configures the server (disconnects from port, etc).
    */
 
@@ -158,7 +161,7 @@ module.exports = class MyServer extends ActionHero.Server {
     }
   }
 
-  validate (api) {
+  validate () {
     if (!this.type) { throw new Error('type is required for this server') }
 
     [
@@ -183,7 +186,7 @@ module.exports = class MyServer extends ActionHero.Server {
    * @example
 // from the web server
 
-this.buildConnection(api, {
+this.buildConnection({
   rawConnection: {
     req: req,
     res: res,
@@ -200,7 +203,7 @@ this.buildConnection(api, {
   remotePort: remotePort
 })
    */
-  buildConnection (api, data) {
+  buildConnection (data) {
     const details = {
       type: this.type,
       id: data.id,
@@ -212,7 +215,7 @@ this.buildConnection(api, {
     if (this.attributes.canChat === true) { details.canChat = true }
     if (data.fingerprint) { details.fingerprint = data.fingerprint }
 
-    let connection = new ActionHero.Connection(api, details)
+    let connection = new ActionHero.Connection(details)
 
     connection.sendMessage = (message) => {
       this.sendMessage(connection, message)
@@ -251,12 +254,11 @@ this.buildConnection(api, {
    * @memberof ActionHero.Server
    * @async
    * @emits ActionHero.Server#actionComplete
-   * @param  {Object}  api        The API object.
    * @param  {Object}  connection The Connection.
    * @return {Promise}
    */
-  async processAction (api, connection) {
-    const actionProcessor = new ActionHero.ActionProcessor(api, connection)
+  async processAction (connection) {
+    const actionProcessor = new ActionHero.ActionProcessor(connection)
     let data = await actionProcessor.processAction()
     this.emit('actionComplete', data)
   }
@@ -271,7 +273,7 @@ this.buildConnection(api, {
    * @return {Promise}
    */
   async processFile (connection) {
-    let results = await this.api.staticFile.get(connection)
+    let results = await api.staticFile.get(connection)
     this.sendFile(
       results.connection,
       results.error,
@@ -292,8 +294,8 @@ this.buildConnection(api, {
   connections () {
     let connections = []
 
-    for (let i in this.api.connections.connections) {
-      let connection = this.api.connections.connections[i]
+    for (let i in api.connections.connections) {
+      let connection = api.connections.connections[i]
       if (connection.type === this.type) { connections.push(connection) }
     }
 
@@ -310,6 +312,6 @@ this.buildConnection(api, {
    * @param  {Object} data     Any metadata to add to the log message.
    */
   log (message, severity, data) {
-    this.api.log(`[server: ${this.type}] ${message}`, severity, data)
+    api.log(`[server: ${this.type}] ${message}`, severity, data)
   }
 }

@@ -21,7 +21,7 @@ module.exports = class RandomNumber extends ActionHero.Action {
     }
   }
 
-  async checkRam (api, data) {
+  async checkRam (data) {
     const consumedMemoryMB = Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100
     data.response.consumedMemoryMB = consumedMemoryMB
     if (consumedMemoryMB > maxMemoryAlloted) {
@@ -30,7 +30,8 @@ module.exports = class RandomNumber extends ActionHero.Action {
     }
   }
 
-  async checkEventLoop (api, data) {
+  async checkEventLoop (data) {
+    const api = ActionHero.api
     let eventLoopDelay = await api.utils.eventLoopDelay(10000)
     data.response.eventLoopDelay = eventLoopDelay
     if (eventLoopDelay > maxEventLoopDelay) {
@@ -39,7 +40,8 @@ module.exports = class RandomNumber extends ActionHero.Action {
     }
   }
 
-  async checkResqueQueues (api, data) {
+  async checkResqueQueues (data) {
+    const api = ActionHero.api
     let details = await api.tasks.details()
     let length = 0
     Object.keys(details.queues).forEach((q) => {
@@ -54,7 +56,9 @@ module.exports = class RandomNumber extends ActionHero.Action {
     }
   }
 
-  async run (api, data) {
+  async run (data) {
+    const api = ActionHero.api
+
     data.response.nodeStatus = data.connection.localize('Node Healthy')
     data.response.problems = []
 
@@ -65,8 +69,8 @@ module.exports = class RandomNumber extends ActionHero.Action {
     data.response.description = packageJSON.description
     data.response.version = packageJSON.version
 
-    await this.checkRam(api, data)
-    await this.checkEventLoop(api, data)
-    await this.checkResqueQueues(api, data)
+    await this.checkRam(data)
+    await this.checkEventLoop(data)
+    await this.checkResqueQueues(data)
   }
 }

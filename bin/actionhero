@@ -6,6 +6,7 @@ const path = require('path')
 const optimist = require('optimist')
 const spawn = require('child_process').spawn
 const ActionHero = require(path.join(__dirname, '..', 'index.js'))
+const api = ActionHero.api
 const actionheroRoot = path.normalize(path.join(__dirname, '..'))
 let projectRoot
 
@@ -19,7 +20,7 @@ if (process.env.projectRoot) {
   projectRoot = path.normalize(process.cwd())
 }
 
-const formatParams = (api, runner) => {
+const formatParams = (runner) => {
   let params = {}
   if (!runner.inputs) { runner.inputs = {} }
 
@@ -49,22 +50,20 @@ const formatParams = (api, runner) => {
 }
 
 const handleGenerate = async () => {
-  let api = {
-    projectRoot: projectRoot,
-    actionheroRoot: actionheroRoot
-  }
+  api.projectRoot = projectRoot
+  api.actionheroRoot = actionheroRoot
 
   // reload utils, as they won't have been loaded yet
   try {
     const UtilsClass = require(path.normalize(path.join(__dirname, '/../initializers/utils.js')))
     const utils = new UtilsClass()
-    await utils.initialize(api)
+    await utils.initialize()
 
     // when generating the project from scratch, we cannot rely on the normal initilizers
     const RunnerClass = require(path.join(__dirname, 'methods', commands.join(path.sep) + '.js'))
     const runner = new RunnerClass()
-    const params = formatParams(api, runner)
-    await runner.run(api, {params: params})
+    const params = formatParams(runner)
+    await runner.run({params: params})
     setTimeout(process.exit, 500, 0)
   } catch (error) {
     console.error(error.toString())
@@ -75,7 +74,7 @@ const handleGenerate = async () => {
 const handleMethod = async () => {
   try {
     const actionHeroProcess = new ActionHero.Process()
-    let api = await actionHeroProcess.initialize()
+    await actionHeroProcess.initialize()
     if (!api.projectRoot) { api.projectRoot = projectRoot }
     if (!api.actionheroRoot) { api.actionheroRoot = actionheroRoot }
     api._context = actionHeroProcess
@@ -112,8 +111,8 @@ const handleMethod = async () => {
         process.nextTick(process.exit)
       } else {
         const runner = new RunnerClass()
-        let params = formatParams(api, runner)
-        let toStop = await runner.run(api, {params: params})
+        let params = formatParams(runner)
+        let toStop = await runner.run({params: params})
         if (toStop) {
           setTimeout(process.exit, 500, 0)
         }

@@ -23,14 +23,14 @@ module.exports = class MyCLICommand extends ActionHero.Initializer {
     this.stopPriority = 1000
   }
 
-  async initialize (api) {
-    api.connectToDatabase = {}
+  async initialize () {
+    ActionHero.api.connectToDatabase = {}
   }
 
-  async start (api) {
+  async start () {
     // connect
   }
-  async stop (api) {
+  async stop () {
     // disconnect
   }
 }
@@ -46,7 +46,6 @@ module.exports = class MyCLICommand extends ActionHero.Initializer {
    * @function initialize
    * @async
    * @memberof ActionHero.Initializer
-   * @param  {Object}  api The api object.
    * @description Method run as part of the `initialize` lifecycle of your server.  Ususally sets api['YourNamespace']
    */
 
@@ -54,7 +53,6 @@ module.exports = class MyCLICommand extends ActionHero.Initializer {
    * @function start
    * @async
    * @memberof ActionHero.Initializer
-   * @param  {Object}  api The api object.
    * @description Method run as part of the `start` lifecycle of your server.  Ususally connects to remote servers or processes.
    */
 
@@ -62,11 +60,10 @@ module.exports = class MyCLICommand extends ActionHero.Initializer {
    * @function stop
    * @async
    * @memberof ActionHero.Initializer
-   * @param  {Object}  api The api object.
    * @description Method run as part of the `initialize` lifecycle of your server.  Ususally disconnects from remote servers or processes.
    */
 
-  validate (api) {
+  validate () {
     if (!this.name) { throw new Error('name is required for this initializer') }
 
     [

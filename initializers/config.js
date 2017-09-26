@@ -4,6 +4,7 @@ const fs = require('fs')
 const path = require('path')
 const argv = require('optimist').argv
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 module.exports = class Config extends ActionHero.Initializer {
   constructor () {
@@ -14,7 +15,7 @@ module.exports = class Config extends ActionHero.Initializer {
     this.stopPriority = 1
   }
 
-  async initialize (api) {
+  async initialize () {
     if (api._startingParams && api._startingParams.api) {
       api.utils.hashMerge(api, api._startingParams.api)
     }
@@ -178,11 +179,11 @@ module.exports = class Config extends ActionHero.Initializer {
     }
   }
 
-  start (api) {
+  start () {
     api.log(`environment: ${api.env}`, 'notice')
   }
 
-  stop (api) {
+  stop () {
     api.unWatchAllFiles()
   }
 }

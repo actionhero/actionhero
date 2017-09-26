@@ -2,6 +2,7 @@
 
 const fs = require('fs')
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 /**
  * Redis cache connectivity and support methods.
@@ -22,7 +23,7 @@ class Cache extends ActionHero.Initializer {
     this.startPriority = 300
   }
 
-  initialize (api) {
+  initialize () {
     const redis = api.redis.clients.client
 
     api.cache = {
