@@ -38,7 +38,7 @@ describe('Core: specHelper', () => {
           name: 'stringResponseTestAction',
           description: 'stringResponseTestAction',
           version: 1,
-          run: (api, data) => {
+          run: (data) => {
             data.response = 'something response'
           }
         }
@@ -50,7 +50,7 @@ describe('Core: specHelper', () => {
           name: 'stringErrorTestAction',
           description: 'stringErrorTestAction',
           version: 1,
-          run: (api, data) => {
+          run: (data) => {
             data.response = 'something response'
             throw new Error('some error')
           }
@@ -63,7 +63,7 @@ describe('Core: specHelper', () => {
           name: 'arrayResponseTestAction',
           description: 'arrayResponseTestAction',
           version: 1,
-          run: (api, data) => {
+          run: (data) => {
             data.response = [1, 2, 3]
           }
         }
@@ -75,7 +75,7 @@ describe('Core: specHelper', () => {
           name: 'arrayErrorTestAction',
           description: 'arrayErrorTestAction',
           version: 1,
-          run: (api, data) => {
+          run: (data) => {
             data.response = [1, 2, 3]
             throw new Error('some error')
           }

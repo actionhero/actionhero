@@ -178,7 +178,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
 
     // create helpers to run a task
     api.specHelper.runTask = async (taskName, params, next) => {
-      return api.tasks.tasks[taskName].run(api, params)
+      return api.tasks.tasks[taskName].run(params)
     }
 
     api.specHelper.runFullTask = async (taskName, params) => {

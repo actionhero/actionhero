@@ -84,7 +84,7 @@ describe('Server: Web', () => {
           description: 'I am a test',
           version: 1,
           outputExample: {},
-          run: (api, data) => {
+          run: (data) => {
             data.toRender = false
             data.connection.rawConnection.res.writeHead(200, { 'Content-Type': 'text/plain' })
             data.connection.rawConnection.res.end(`${Math.random()}`)
@@ -135,7 +135,7 @@ describe('Server: Web', () => {
           name: 'stringErrorTestAction',
           description: 'stringErrorTestAction',
           version: 1,
-          run: (api, data) => {
+          run: (data) => {
             data.response.error = 'broken'
           }
         }
@@ -147,7 +147,7 @@ describe('Server: Web', () => {
           name: 'errorErrorTestAction',
           description: 'errorErrorTestAction',
           version: 1,
-          run: (api, data) => {
+          run: (data) => {
             throw new Error('broken')
           }
         }
@@ -159,7 +159,7 @@ describe('Server: Web', () => {
           name: 'complexErrorTestAction',
           description: 'complexErrorTestAction',
           version: 1,
-          run: (api, data) => {
+          run: (data) => {
             data.response.error = {error: 'broken', reason: 'stuff'}
           }
         }
@@ -354,7 +354,7 @@ describe('Server: Web', () => {
           name: 'paramTestAction',
           description: 'I return connection.rawConnection.params',
           version: 1,
-          run: (api, data) => {
+          run: (data) => {
             data.response = data.connection.rawConnection.params
             if (data.connection.rawConnection.params.rawBody) {
               data.response.rawBody = data.connection.rawConnection.params.rawBody.toString()
@@ -435,7 +435,7 @@ describe('Server: Web', () => {
           description: 'I am a test',
           version: 1,
           outputExample: {},
-          run: (api, data) => {
+          run: (data) => {
             data.connection.rawConnection.responseHeaders.push(['thing', 'A'])
             data.connection.rawConnection.responseHeaders.push(['thing', 'B'])
             data.connection.rawConnection.responseHeaders.push(['thing', 'C'])
@@ -537,7 +537,7 @@ describe('Server: Web', () => {
           inputs: {
             key: {required: true}
           },
-          run: (api, data) => {
+          run: (data) => {
             if (data.params.key !== 'value') {
               data.connection.rawConnection.responseHttpCode = 402
               throw new Error('key != value')
@@ -791,7 +791,7 @@ describe('Server: Web', () => {
             path: {required: false}
           },
           outputExample: {},
-          run: (api, data) => {
+          run: (data) => {
             data.response.matchedRoute = data.connection.matchedRoute
           }
         }
@@ -807,7 +807,7 @@ describe('Server: Web', () => {
             user_id: {required: true}
           },
           outputExample: {},
-          run: (api, data) => {
+          run: (data) => {
             data.response.user_id = data.params.user_id
           }
         },
@@ -820,7 +820,7 @@ describe('Server: Web', () => {
             userID: {required: true}
           },
           outputExample: {},
-          run: (api, data) => {
+          run: (data) => {
             data.response.userID = data.params.userID
           }
         }
@@ -1103,7 +1103,7 @@ describe('Server: Web', () => {
           description: 'proxy test',
           inputs: {},
           outputExample: {},
-          run: (api, data) => {
+          run: (data) => {
             data.connection.setHeader('X-Foo', 'bar')
           }
         }

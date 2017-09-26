@@ -28,7 +28,7 @@ describe('Server: sendBuffer', () => {
         name: 'sendBufferTest',
         description: 'sendBufferTest',
         version: 1,
-        run: async (api, data) => {
+        run: async (data) => {
           const buffer = 'Example of data buffer'
           let bufferStream = new stream.PassThrough()
           data.connection.rawConnection.responseHeaders.push(['Content-Disposition', 'attachment; filename=test.csv'])
@@ -45,7 +45,7 @@ describe('Server: sendBuffer', () => {
         name: 'sendUnknownLengthBufferTest',
         description: 'sendUnknownLengthBufferTest',
         version: 1,
-        run: (api, data) => {
+        run: (data) => {
           let bufferStream = new stream.PassThrough()
           api.servers.servers.web.sendFile(data.connection, null, bufferStream, 'text/plain', null, new Date())
           const buffer = 'Example of unknown length data buffer'
