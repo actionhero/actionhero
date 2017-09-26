@@ -1,0 +1,12 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.7.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  'npm:debug:20170905':
+    - primus > setheader > debug:
+        reason: None given
+        expires: '2017-10-26T21:28:22.590Z'
+    - primus > access-control > setheader > debug:
+        reason: None given
+        expires: '2017-10-26T21:28:22.590Z'
+patch: {}

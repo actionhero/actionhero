@@ -46,7 +46,8 @@
     "uglify-js": "^3.1.2",
     "uuid": "^3.1.0",
     "winston": "^2.0.0",
-    "ws": "^3.1.0"
+    "ws": "^3.1.0",
+    "snyk": "^1.41.1"
   },
   "devDependencies": {
     "chai": "^4.1.2",
@@ -86,6 +87,9 @@
     "pretest": "standard",
     "posttest": "npm run docs",
     "start": "node ./bin/actionhero",
-    "docs": "jsdoc -c jsdoc-conf.json"
-  }
+    "docs": "jsdoc -c jsdoc-conf.json",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
+  },
+  "snyk": true
 }
