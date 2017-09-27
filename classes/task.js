@@ -23,8 +23,8 @@ module.exports = class SayHello extends ActionHero.Task {
    this.frequency = (60 * 1000)
  }
 
- async run (api, data) {
-   console.log('Hello!')
+ async run (data) {
+   ActionHero.api.log('Hello!')
  }
 }
    */
@@ -40,7 +40,6 @@ module.exports = class SayHello extends ActionHero.Task {
    * @function run
    * @async
    * @memberof ActionHero.Task
-   * @param  {Object}  api The api object.
    * @param  {Object}  data The data about this instance of the task, specifically params.
    * @description The main "do something" method for this task.  It can be `async`.  Anything returned from this metod will be logged.  If error is thrown in this method, it will be logged & caught.  Using middleware, you can decide to re-run the task on failure.
    */
@@ -55,7 +54,7 @@ module.exports = class SayHello extends ActionHero.Task {
     }
   }
 
-  validate (api) {
+  validate () {
     if (!this.name) { throw new Error('name is required for this task') }
     if (!this.description) { throw new Error(`description is required for the task \`${this.name}\``) }
     if (!this.queue) { throw new Error(`queue is required for the task \`${this.name}\``) }

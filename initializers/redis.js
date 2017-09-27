@@ -2,6 +2,7 @@
 
 const uuid = require('uuid')
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 module.exports = class Redis extends ActionHero.Initializer {
   constructor () {
@@ -12,7 +13,7 @@ module.exports = class Redis extends ActionHero.Initializer {
     this.stopPriority = 99999
   }
 
-  async initialize (api) {
+  async initialize () {
     if (api.config.redis.enabled === false) { return }
 
     api.redis = {}
@@ -126,7 +127,7 @@ module.exports = class Redis extends ActionHero.Initializer {
     }
   }
 
-  async start (api) {
+  async start () {
     if (api.config.redis.enabled === false) {
       api.log('redis is disabled', 'notice')
     } else {
@@ -134,7 +135,7 @@ module.exports = class Redis extends ActionHero.Initializer {
     }
   }
 
-  async stop (api) {
+  async stop () {
     if (api.config.redis.enabled === false) { return }
 
     api.redis.doCluster('api.log', [`actionhero member ${api.id} has left the cluster`])

@@ -2,6 +2,7 @@
 
 const path = require('path')
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 module.exports = class Routes extends ActionHero.Initializer {
   constructor () {
@@ -10,7 +11,7 @@ module.exports = class Routes extends ActionHero.Initializer {
     this.loadPriority = 500
   }
 
-  initialize (api) {
+  initialize () {
     api.routes = {
       routes: {},
       verbs: ['head', 'get', 'post', 'put', 'patch', 'delete']

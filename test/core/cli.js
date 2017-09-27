@@ -197,9 +197,9 @@ describe('Core: CLI', () => {
       expect(data).to.match(/this.loadPriority = 1000/)
       expect(data).to.match(/this.startPriority = 1000/)
       expect(data).to.match(/this.stopPriority = 123/)
-      expect(data).to.match(/async initialize \(api\) {/)
-      expect(data).to.match(/async start \(api\) {/)
-      expect(data).to.match(/async stop \(api\) {/)
+      expect(data).to.match(/async initialize \(\) {/)
+      expect(data).to.match(/async start \(\) {/)
+      expect(data).to.match(/async stop \(\) {/)
     })
 
     it('can call npm test in the new project and not fail', async () => {

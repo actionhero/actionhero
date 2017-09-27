@@ -27,6 +27,7 @@ const path = require('path')
 const os = require('os')
 const ActionHeroCluster = require(path.join(__dirname, 'lib', 'actionheroCluster.js'))
 const ActionHero = require('./../../../index.js')
+const api = ActionHero.api
 
 module.exports = class ActionsList extends ActionHero.CLI {
   constructor () {
@@ -56,7 +57,7 @@ module.exports = class ActionsList extends ActionHero.CLI {
     }
   }
 
-  async run (api, {params}) {
+  async run ({params}) {
     let options = {
       execPath: path.normalize(path.join(__dirname, '/../../actionhero')),
       args: 'start',

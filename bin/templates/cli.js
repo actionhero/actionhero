@@ -1,7 +1,7 @@
 'use strict'
 const ActionHero = require('actionhero')
 
-module.exports = class MyCLICommand extends ActionHero.Action {
+module.exports = class MyCLICommand extends ActionHero.CLI {
   constructor () {
     super()
     this.name = '%%name%%'
@@ -10,7 +10,7 @@ module.exports = class MyCLICommand extends ActionHero.Action {
     this.inputs = {}
   }
 
-  async run (api, data) {
+  async run (data) {
     return true
   }
 }

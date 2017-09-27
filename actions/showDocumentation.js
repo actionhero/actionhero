@@ -89,7 +89,8 @@ module.exports = class ShowDocumentation extends ActionHero.Action {
     }
   }
 
-  run ({documentation}, {response}) {
+  run ({response}) {
+    const {documentation} = ActionHero.api
     response.documentation = documentation.documentation
   }
 }

@@ -3,6 +3,7 @@
 const uuid = require('uuid')
 const NodeResque = require('node-resque')
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 module.exports = class SpecHelper extends ActionHero.Initializer {
   constructor () {
@@ -13,7 +14,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
     this.enabled = false
   }
 
-  initialize (api) {
+  initialize () {
     if (api.env === 'test' || process.env.SPECHELPER === 'true' || process.env.SPECHELPER === true) {
       this.enabled = true
     }
@@ -34,7 +35,6 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
       }
 
       start (api) {
-        this.api = api
         api.log('loading the testServer', 'warning')
         this.on('connection', (connection) => { this.handleConnection(connection) })
         this.on('actionComplete', (data) => { this.actionComplete(data) })
@@ -85,8 +85,6 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
       }
 
       async actionComplete (data) {
-        const api = this.api
-
         if (typeof data.response === 'string' || Array.isArray(data.response)) {
           if (data.response.error) {
             data.response = await api.config.errors.serializers.servers.specHelper(data.response.error)
@@ -130,7 +128,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
     api.specHelper.Connection = class {
       constructor () {
         let id = uuid.v4()
-        api.servers.servers.testServer.buildConnection(api, {
+        api.servers.servers.testServer.buildConnection({
           id: id,
           rawConnection: {},
           remoteAddress: 'testServer',
@@ -157,7 +155,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
 
       connection.messageCount++
       let response = await new Promise((resolve) => {
-        api.servers.servers.testServer.processAction(api, connection)
+        api.servers.servers.testServer.processAction(connection)
         connection.actionCallbacks[(connection.messageCount)] = resolve
       })
 
@@ -180,7 +178,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
 
     // create helpers to run a task
     api.specHelper.runTask = async (taskName, params, next) => {
-      return api.tasks.tasks[taskName].run(api, params)
+      return api.tasks.tasks[taskName].run(params)
     }
 
     api.specHelper.runFullTask = async (taskName, params) => {
@@ -196,7 +194,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
     }
   }
 
-  async start (api) {
+  async start () {
     if (!this.enabled) { return }
 
     let server = new api.specHelper.Server()

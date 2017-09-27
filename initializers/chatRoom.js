@@ -1,6 +1,7 @@
 'use strict'
 
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 /**
  * This callback is displayed as part of the Requester class.
@@ -77,7 +78,7 @@ class ChatRoom extends ActionHero.Initializer {
     this.startPriority = 200
   }
 
-  initialize (api) {
+  initialize () {
     api.chatRoom = {
       middleware: {},
       globalMiddleware: [],
@@ -424,7 +425,7 @@ class ChatRoom extends ActionHero.Initializer {
     }
   }
 
-  async start (api) {
+  async start () {
     api.redis.subscriptionHandlers.chat = (message) => {
       if (api.chatRoom) { api.chatRoom.incomingMessage(message) }
     }

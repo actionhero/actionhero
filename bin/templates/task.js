@@ -11,7 +11,7 @@ module.exports = class MyTask extends ActionHero.Task {
     this.middleware = []
   }
 
-  async run (api, data) {
+  async run (data) {
     // your logic here
   }
 }

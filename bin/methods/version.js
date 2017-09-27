@@ -11,7 +11,7 @@ module.exports = class ActionsList extends ActionHero.CLI {
     this.description = 'return the ActionHero version within this project'
   }
 
-  run (api, data) {
+  run (data) {
     console.log(packageJSON.version)
     return true
   }

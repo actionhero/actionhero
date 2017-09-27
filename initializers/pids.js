@@ -3,6 +3,7 @@
 const fs = require('fs')
 const cluster = require('cluster')
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 module.exports = class Pids extends ActionHero.Initializer {
   constructor () {
@@ -12,7 +13,7 @@ module.exports = class Pids extends ActionHero.Initializer {
     this.startPriority = 1
   }
 
-  initialize (api) {
+  initialize () {
     api.pids = {}
     api.pids.pid = process.pid
     api.pids.path = api.config.general.paths.pid[0] // it would be silly to have more than one pid
@@ -46,7 +47,7 @@ module.exports = class Pids extends ActionHero.Initializer {
     }
   }
 
-  start (api) {
+  start () {
     api.pids.writePidFile()
     api.log(`pid: ${process.pid}`, 'notice')
   }

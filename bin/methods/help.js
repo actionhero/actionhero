@@ -1,6 +1,7 @@
 'use strict'
 
 const ActionHero = require('./../../index.js')
+const api = ActionHero.api
 
 module.exports = class ActionsList extends ActionHero.CLI {
   constructor () {
@@ -9,7 +10,7 @@ module.exports = class ActionsList extends ActionHero.CLI {
     this.description = 'get actonhero CLI help; will display this document'
   }
 
-  run (api) {
+  run () {
     let files = []
     let methods = {}
 

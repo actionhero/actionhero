@@ -11,10 +11,11 @@ module.exports = class RunAction extends ActionHero.Task {
     this.middleware = []
   }
 
-  async run (api, params) {
+  async run (params) {
+    const api = ActionHero.api
     if (!params) { params = {} }
 
-    const connection = new ActionHero.Connection(api, {
+    const connection = new ActionHero.Connection({
       type: 'task',
       remotePort: '0',
       remoteIP: '0',
@@ -23,7 +24,7 @@ module.exports = class RunAction extends ActionHero.Task {
 
     connection.params = params
 
-    const actionProcessor = new ActionHero.ActionProcessor(api, connection)
+    const actionProcessor = new ActionHero.ActionProcessor(connection)
     let {response} = await actionProcessor.processAction()
 
     if (response.error) {

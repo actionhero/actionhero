@@ -9,7 +9,7 @@ module.exports = class MyAction extends ActionHero.Action {
     this.outputExample = {}
   }
 
-  async run (api, data) {
+  async run (data) {
     // your logic here
   }
 }

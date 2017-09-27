@@ -1,5 +1,6 @@
 'use strict'
 const ActionHero = require('./../../../index.js')
+const api = ActionHero.api
 
 module.exports = class ActionsList extends ActionHero.CLI {
   constructor () {
@@ -8,7 +9,7 @@ module.exports = class ActionsList extends ActionHero.CLI {
     this.description = 'I will list the actions defined on this server'
   }
 
-  run (api) {
+  run () {
     for (let actionName in api.actions.actions) {
       console.log(`\r\n--- ${actionName} ---`)
       let collection = api.actions.actions[actionName]

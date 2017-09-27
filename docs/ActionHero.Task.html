@@ -283,8 +283,8 @@ module.exports = class SayHello extends ActionHero.Task {
    this.frequency = (60 * 1000)
  }
 
- async run (api, data) {
-   console.log('Hello!')
+ async run (data) {
+   ActionHero.api.log('Hello!')
  }
 }</code></pre>
 
@@ -328,7 +328,7 @@ module.exports = class SayHello extends ActionHero.Task {
 
     
 
-    <h4 class="name" id=".run"><span class="type-signature">(async, static) </span>run<span class="signature">(api, data)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".run"><span class="type-signature">(async, static) </span>run<span class="signature">(data)</span><span class="type-signature"></span></h4>
 
     
 
@@ -414,29 +414,6 @@ module.exports = class SayHello extends ActionHero.Task {
     </thead>
 
     <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>api</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The api object.</p></td>
-        </tr>
-
     
 
         <tr>

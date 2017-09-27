@@ -1,6 +1,7 @@
 'use strict'
 
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 module.exports = class Actions extends ActionHero.Initializer {
   constructor () {
@@ -9,7 +10,7 @@ module.exports = class Actions extends ActionHero.Initializer {
     this.loadPriority = 410
   }
 
-  async initialize (api) {
+  async initialize () {
     api.actions = {
       actions: {},
       versions: {},

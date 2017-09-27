@@ -7,6 +7,7 @@ const path = require('path')
 const util = require('util')
 const BrowserFingerprint = require('browser_fingerprint')
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 module.exports = class WebSocketServer extends ActionHero.Server {
   constructor () {
@@ -31,13 +32,11 @@ module.exports = class WebSocketServer extends ActionHero.Server {
     }
   }
 
-  initialize (api) {
-    this.api = api
-    this.fingerprinter = new BrowserFingerprint(this.api.config.servers.web.fingerprintOptions)
+  initialize () {
+    this.fingerprinter = new BrowserFingerprint(api.config.servers.web.fingerprintOptions)
   }
 
   start () {
-    const api = this.api
     const webserver = api.servers.servers.web
     this.server = new Primus(webserver.server, this.config.server)
 
@@ -69,7 +68,6 @@ module.exports = class WebSocketServer extends ActionHero.Server {
   }
 
   sendMessage (connection, message, messageCount) {
-    const api = this.api
     if (message.error) {
       message.error = api.config.errors.serializers.servers.websocket(message.error)
     }
@@ -125,7 +123,6 @@ module.exports = class WebSocketServer extends ActionHero.Server {
   }
 
   renderClientJS (minimize) {
-    const api = this.api
     if (!minimize) { minimize = false }
     let libSource = api.servers.servers.websocket.server.library()
     let ahClientSource = this.compileActionheroClientJS()
@@ -146,7 +143,6 @@ module.exports = class WebSocketServer extends ActionHero.Server {
   }
 
   writeClientJS () {
-    const api = this.api
     if (!api.config.general.paths['public'] || api.config.general.paths['public'].length === 0) {
       return
     }
@@ -177,10 +173,9 @@ module.exports = class WebSocketServer extends ActionHero.Server {
   }
 
   handleConnection (rawConnection) {
-    const api = this.api
     const parsedCookies = this.fingerprinter.parseCookies(rawConnection)
-    const fingerprint = parsedCookies[this.api.config.servers.web.fingerprintOptions.cookieKey]
-    this.buildConnection(api, {
+    const fingerprint = parsedCookies[api.config.servers.web.fingerprintOptions.cookieKey]
+    this.buildConnection({
       rawConnection: rawConnection,
       remoteAddress: rawConnection.address.ip,
       remotePort: rawConnection.address.port,
@@ -200,7 +195,6 @@ module.exports = class WebSocketServer extends ActionHero.Server {
 
   async handleData (connection, data) {
     const verb = data.event
-    const api = this.api
     delete data.event
     connection.messageCount++
     connection.params = {}
@@ -211,7 +205,7 @@ module.exports = class WebSocketServer extends ActionHero.Server {
       }
       connection.error = null
       connection.response = {}
-      return this.processAction(api, connection)
+      return this.processAction(connection)
     }
 
     if (verb === 'file') {

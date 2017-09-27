@@ -2,6 +2,7 @@
 
 const NodeResque = require('node-resque')
 const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
 module.exports = class Resque extends ActionHero.Initializer {
   constructor () {
@@ -12,7 +13,7 @@ module.exports = class Resque extends ActionHero.Initializer {
     this.stopPriority = 100
   }
 
-  initialize (api) {
+  initialize () {
     if (api.config.redis === false) { return }
 
     const resqueOverrides = api.config.tasks.resque_overrides
@@ -130,7 +131,7 @@ module.exports = class Resque extends ActionHero.Initializer {
     }
   }
 
-  async start (api) {
+  async start () {
     if (api.config.redis.enabled === false) { return }
 
     if (api.config.tasks.minTaskProcessors === 0 && api.config.tasks.maxTaskProcessors > 0) {
@@ -142,7 +143,7 @@ module.exports = class Resque extends ActionHero.Initializer {
     await api.resque.startMultiWorker()
   }
 
-  async stop (api) {
+  async stop () {
     if (api.config.redis.enabled === false) { return }
 
     await api.resque.stopScheduler()

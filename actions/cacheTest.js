@@ -1,7 +1,7 @@
 'use strict'
-const ActionHero = require('./../index.js')
+const {Action, api} = require('./../index.js')
 
-module.exports = class CacheTest extends ActionHero.Action {
+module.exports = class CacheTest extends Action {
   constructor () {
     super()
     this.name = 'cacheTest'
@@ -50,15 +50,15 @@ module.exports = class CacheTest extends ActionHero.Action {
     }
   }
 
-  async run ({cache}, {params, response}) {
+  async run ({params, response}) {
     const key = 'cacheTest_' + params.key
     const value = params.value
 
-    response.cacheTestResults = {}
-
-    response.cacheTestResults.saveResp = await cache.save(key, value, 5000)
-    response.cacheTestResults.sizeResp = await cache.size()
-    response.cacheTestResults.loadResp = await cache.load(key)
-    response.cacheTestResults.deleteResp = await cache.destroy(key)
+    response.cacheTestResults = {
+      saveResp: await api.cache.save(key, value, 5000),
+      sizeResp: await api.cache.size(),
+      loadResp: await api.cache.load(key),
+      deleteResp: await api.cache.destroy(key)
+    }
   }
 }
