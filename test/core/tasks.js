@@ -174,7 +174,7 @@ describe('Core: Tasks', () => {
   })
 
   it('all periodic tasks can be enqueued at boot', async () => {
-    await api.tasks.enqueueAllRecurrentJobs()
+    await api.tasks.enqueueAllRecurrentTasks()
     let length = await api.resque.queue.length(queue)
     expect(length).to.equal(1)
   })
@@ -254,7 +254,7 @@ describe('Core: Tasks', () => {
     await api.tasks.enqueue('periodicTask')
     await api.tasks.enqueueIn(1000, 'periodicTask')
 
-    let count = await api.tasks.stopRecurrentJob('periodicTask')
+    let count = await api.tasks.stopRecurrentTask('periodicTask')
     expect(count).to.equal(2)
   })
 
@@ -421,7 +421,7 @@ describe('Core: Tasks', () => {
     })
 
     it('recurrent tasks work', async () => {
-      await api.tasks.enqueueRecurrentJob('periodicTask')
+      await api.tasks.enqueueRecurrentTask('periodicTask')
 
       api.config.tasks.queues = ['*']
       api.config.tasks.scheduler = true

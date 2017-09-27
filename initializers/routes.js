@@ -4,6 +4,14 @@ const path = require('path')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
+/**
+ * Countains routing options for web clients.  Can associate routes with actions or files.
+ *
+ * @namespace api.routes
+ * @property {Object} routes - This servers routes, defined.
+ * @property {Object} verbs - The HTTP verbs we can use, ['head', 'get', 'post', 'put', 'patch', 'delete'].
+ * @extends ActionHero.Initializer
+ */
 module.exports = class Routes extends ActionHero.Initializer {
   constructor () {
     super()
@@ -104,8 +112,17 @@ module.exports = class Routes extends ActionHero.Initializer {
       return response
     }
 
-    // don't remove this
-    // this is really handy for plugins
+    /**
+     * Programatically define a route, rather than using `api.config.routes`.  This is useful for plugins which may define routes as well.
+     * You can use both `api.routes.registerRoute` and `api.config.routes` in the same project.
+     *
+     * @param  {string} method                 HTTP verb (get, put, etc)
+     * @param  {string} path                   The route in question.  Can use variables.
+     * @param  {string} action                 The action to call with this route.
+     * @param  {Number} apiVersion             The version of the action to call, if more than one.
+     * @param  {Boolean} matchTrailingPathParts Allows the final segment of your route to absorb all trailing path parts in a matched variable. (ie: /api/user would match /api/user/123)
+     * @param  {string} dir                    Which folder to serve static files from (must by included in api.config.general.paths)
+     */
     api.routes.registerRoute = (method, path, action, apiVersion, matchTrailingPathParts, dir) => {
       if (!matchTrailingPathParts) { matchTrailingPathParts = false }
       api.routes.routes[method].push({

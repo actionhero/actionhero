@@ -402,7 +402,7 @@ class ChatRoom extends ActionHero.Initializer {
     api.chatRoom.runMiddleware = async (connection, room, direction, messagePayload) => {
       let newMessagePayload
       let toReturn = true
-      if (messagePayload) { newMessagePayload = api.utils.objClone(messagePayload) }
+      if (messagePayload) { newMessagePayload = Object.assign({}, messagePayload) }
 
       api.chatRoom.globalMiddleware.forEach(async (name) => {
         const m = api.chatRoom.middleware[name]

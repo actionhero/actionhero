@@ -4,6 +4,12 @@ const os = require('os')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
+/**
+ * Handlers for when things go wrong.
+ *
+ * @namespace api.exceptions
+ * @extends ActionHero.Initializer
+ */
 module.exports = class Exceptions extends ActionHero.Initializer {
   constructor () {
     super()

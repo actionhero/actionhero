@@ -38,11 +38,23 @@ module.exports = class Logger extends ActionHero.Initializer {
 
     /**
      * Log a message, with optional metadata.  The message can be logged to a number of locations (stdio, files, etc) as configured via config/logger.js
+     * The default log levels are: `0=debug` `1=info` `2=notice` `3=warning` `4=error` `5=crit` `6=alert` `7=emerg`
      *
      * @memberof api
      * @param  {string} message  The message to log.
      * @param  {string} severity (optional) What log-level should this message be logged at. Default: 'info'.
      * @param  {Object} data     (optional) Any object you wish to append to this message.
+     * @see https://github.com/winstonjs/winston
+     *
+     * @example
+// the most basic use.  Will assume 'info' as the severity
+api.log('hello');
+
+// custom severity
+api.log('OH NO!', 'warning');
+
+// custom severity with a metadata object
+api.log('OH NO, something went wrong', 'warning', { error: new Error('things are busted') });
      */
     api.log = (message, severity, data) => {
       if (severity === undefined || severity === null || api.logger.levels[severity] === undefined) { severity = 'info' }

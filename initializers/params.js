@@ -3,6 +3,12 @@
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
+/**
+ * Collects and formats allowed params for this server.
+ *
+ * @namespace api.params
+ * @extends ActionHero.Initializer
+ */
 module.exports = class Params extends ActionHero.Initializer {
   constructor () {
     super()
@@ -23,12 +29,12 @@ module.exports = class Params extends ActionHero.Initializer {
       'action'
     ]
 
-    api.params.buildPostVariables = function () {
+    api.params.buildPostVariables = () => {
       let postVariables = []
       let i
       let j
 
-      api.params.globalSafeParams.forEach(function (p) {
+      api.params.globalSafeParams.forEach((p) => {
         postVariables.push(p)
       })
 
