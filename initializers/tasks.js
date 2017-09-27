@@ -4,6 +4,71 @@ const NodeResque = require('node-resque')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
+/**
+ * This callback is displayed as part of the Requester class.
+ * @callback ActionHero~TaskCallback
+ * @param {Object} this.worker - The task worker, if this is a pre or post process step.
+ * @param {Object} this.args - If this is a queue step, the arguemnts to the task
+ * @param {Object} this.queue - The queue to be used / is being used.
+ * @see ActionHero~TaskMiddleware
+ */
+
+/**
+ * Middleware definition for Actions
+ *
+ * @typedef {Object} ActionHero~TaskMiddleware
+ * @property {string} name - Unique name for the middleware.
+ * @property {Boolean} global - Is this middleware applied to all tasks?
+ * @property {Number} priority - Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`.
+ * @property {ActionHero~TaskCallback} preProcessor - Called berore the action runs.  Has access to all params, before sanitizartion.  Can modify the data object for use in actions.
+ * @property {ActionHero~TaskCallback} postProcessor - Called after the action runs.
+ * @property {ActionHero~TaskCallback} preEnqueue - Called before a task using this middleware is enqueud.
+ * @property {ActionHero~TaskCallback} postEnqueue - Called after a task using this middleware is enqueud.
+ * @see api.actions.addMiddleware
+ * @example
+api.taskTimer = {
+  middleware: {
+    name: 'timer',
+    global: true,
+    priority: 90,
+    preProcessor: function(next){
+      var worker = this.worker;
+      worker.start = process.hrtime();
+      next();
+    },
+    postProcessor: function(next){
+      var worker = this.worker;
+      var elapsed = process.hrtime(worker.start);
+      var seconds = elapsed[0];
+      var millis = elapsed[1] / 1000000;
+      api.log(worker.job.class + ' done in ' + seconds + ' s and ' + millis + ' ms.', 'info');
+      next();
+    },
+    preEnqueue: function(next){
+      var params = this.args[0];
+      //Validate params
+      next(null, true); //callback is in form cb(error, toRun)
+    },
+    postEnqueue: function(next){
+      api.log("Task successfully enqueued!");
+      next();
+    }
+  }
+};
+
+api.tasks.addMiddleware(api.taskTimer.middleware);
+ */
+
+/**
+ * Tools for enquing and inspecting the task sytem (delayed jobs).
+ *
+ * @namespace api.tasks
+ * @property {Object} tasks - The tasks defined on this server.
+ * @property {Object} jobs - The tasks defined on this server, converted into Node Resque jobs.
+ * @property {Object} middleware - Available Task Middleware.
+ * @property {Array} globalMiddleware - Array of global middleware modules.
+ * @extends ActionHero.Initializer
+ */
 module.exports = class Tasks extends ActionHero.Initializer {
   constructor () {
     super()
@@ -20,6 +85,9 @@ module.exports = class Tasks extends ActionHero.Initializer {
       globalMiddleware: []
     }
 
+    /**
+     * @private
+     */
     api.tasks.loadFile = (fullFilePath, reload) => {
       if (!reload) { reload = false }
 
@@ -40,6 +108,9 @@ module.exports = class Tasks extends ActionHero.Initializer {
       }
     }
 
+    /**
+     * @private
+     */
     api.tasks.jobWrapper = (taskName) => {
       const task = api.tasks.tasks[taskName]
 
@@ -74,107 +145,316 @@ module.exports = class Tasks extends ActionHero.Initializer {
         perform: async function () {
           let combinedArgs = [].concat(Array.prototype.slice.call(arguments))
           let response = await api.tasks.tasks[taskName].run.apply(this, combinedArgs)
-          await api.tasks.enqueueRecurrentJob(taskName)
+          await api.tasks.enqueueRecurrentTask(taskName)
           return response
         }
       }
     }
 
+    /**
+     * Enqueue a task to be performed in the background.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @param  {String}  taskName The name of the task.
+     * @param  {Object}  params   Params to pass to the task.
+     * @param  {string}  queue    (Optional) Which queue/priority to run this instance of the task on.
+     * @return {Promise<Boolean>} Did the task enqueue?
+     */
     api.tasks.enqueue = async (taskName, params, queue) => {
       if (!params) { params = {} }
       if (!queue) { queue = api.tasks.tasks[taskName].queue }
       return api.resque.queue.enqueue(queue, taskName, params)
     }
 
+    /**
+     * Enqueue a task to be performed in the background, at a certain time in the future.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @param  {Number}  timestamp At what time the task is able to be run.  Does not gaurentee that the task will be run at this time. (in ms)
+     * @param  {String}  taskName  The name of the task.
+     * @param  {Object}  params    Params to pass to the task.
+     * @param  {string}  queue     (Optional) Which queue/priority to run this instance of the task on.
+     * @return {Promise}
+     */
     api.tasks.enqueueAt = async (timestamp, taskName, params, queue) => {
       if (!params) { params = {} }
       if (!queue) { queue = api.tasks.tasks[taskName].queue }
       return api.resque.queue.enqueueAt(timestamp, queue, taskName, params)
     }
 
+    /**
+     * Enqueue a task to be performed in the background, at a certain number of ms from now.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @param  {Number}  time     How long from now should we wait until it is OK to run this task? (in ms)
+     * @param  {String}  taskName The name of the task.
+     * @param  {Object}  params   Params to pass to the task.
+     * @param  {string}  queue    (Optional) Which queue/priority to run this instance of the task on.
+     * @return {Promise}
+     */
     api.tasks.enqueueIn = async (time, taskName, params, queue) => {
       if (!params) { params = {} }
       if (!queue) { queue = api.tasks.tasks[taskName].queue }
       return api.resque.queue.enqueueIn(time, queue, taskName, params)
     }
 
+    /**
+     * Delete a previously enqueued task, which hasn't been run yet, from a queue.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @param  {string}  q          Which queue/priority is the task stored on?
+     * @param  {string}  taskName   The name of the job, likley to be the same name as a tak.
+     * @param  {Object|Array} args  The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing.
+     *                              It is best to read job properties first via `api.tasks.queued` or similar method.
+     * @param  {Number}  count      Of the jobs that match q, taskName, and args, up to what position should we delete? (Default 0; this command is 0-indexed)
+     * @return {Promise}
+     */
     api.tasks.del = async (q, taskName, args, count) => {
       return api.resque.queue.del(q, taskName, args, count)
     }
 
+    /**
+     * Delete all previously enqueued tasks, which hasn't been run yet, from all possible delayed timestamps.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @param  {string}  q          Which queue/priority is to run on?
+     * @param  {string}  taskName   The name of the job, likley to be the same name as a tak.
+     * @param  {Object|Array} args  The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing.
+     *                              It is best to read job properties first via `api.tasks.delayedAt` or similar method.
+     * @return {Promise}
+     */
     api.tasks.delDelayed = async (q, taskName, args) => {
       return api.resque.queue.delDelayed(q, taskName, args)
     }
 
+    /**
+     * Return the timestamps a task is scheduled for.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @param  {string}  q          Which queue/priority is to run on?
+     * @param  {string}  taskName   The name of the job, likley to be the same name as a tak.
+     * @param  {Object|Array} args  The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing.
+     *                              It is best to read job properties first via `api.tasks.delayedAt` or similar method.
+     * @return {Promise<Arra>}    Returns an array of timestamps.
+     */
     api.tasks.scheduledAt = async (q, taskName, args) => {
       return api.resque.queue.scheduledAt(q, taskName, args)
     }
 
+    /**
+     * Return all resque stats for this namespace (how jobs failed, jobs succeded, etc)
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @return {Promise<Object>} (varies on your redis instance)
+     */
     api.tasks.stats = async () => {
       return api.resque.queue.stats()
     }
 
+    /**
+     * Retrieve the details of jobs enqueued on a certain queue between start and stop (0-indexed)
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @param  {string}  q      The name of the queue.
+     * @param  {Number}  start  The index of the first job to return.
+     * @param  {Number}  stop   The index of the last job to return.
+     * @return {Promise<Array>} An array of the jobs enqueued.
+     */
     api.tasks.queued = async (q, start, stop) => {
       return api.resque.queue.queued(q, start, stop)
     }
 
+    /**
+     * Delete a queue in redis, and all jobs stored on it.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @param  {string}  q The name of the queue.
+     * @return {Promise}
+     */
     api.tasks.delQueue = async (q) => {
       return api.resque.queue.delQueue(q)
     }
 
+    /**
+     * Return any locks, as created by resque plugins or task middleware, in this redis namespace.
+     * Will contain locks with keys like `resque:lock:{job}` and `resque:workerslock:{workerId}`
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @return {Promise|Object} Locks, orginzed by type.
+     */
     api.tasks.locks = async () => {
       return api.resque.queue.locks()
     }
 
+    /**
+     * Delete a lock on a job or worker.  Locks can be found via `api.tasks.locks`
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @param  {string}  lock The name of the lock.
+     * @return {Promise}
+     * @see api.tasks.locks
+     */
     api.tasks.delLock = async (lock) => {
       return api.resque.queue.delLock(lock)
     }
 
+    /**
+     * List all timestamps for which tasks are enqueued in the future, via `api.tasks.enqueueIn` or `api.tasks.enqueueAt`
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @return {Promise<Array>} An array of timetamps. Note: These timestamps will be in unix timestamps, not javascript MS timestamps.
+     * @see api.tasks.enqueueIn
+     * @see api.tasks.enqueueAt
+     */
     api.tasks.timestamps = async () => {
       return api.resque.queue.timestamps()
     }
 
+    /**
+     * Return all jobs which have been enqueued to run at a certain timestamp.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @param  {Number}  timestamp The timestamp to return jobs from.  Note: timestamp will be a unix timestamp, not javascript MS timestamp.
+     * @return {Promise<Array>}    An array of jobs.
+     */
     api.tasks.delayedAt = async (timestamp) => {
       return api.resque.queue.delayedAt(timestamp)
     }
 
-    api.tasks.allDelayed = async (callback) => {
+    /**
+     * Retrun all delayed jobs, orginized by the timetsamp at where they are to run at.
+     * Note: This is a very slow command.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @return {Promise<Object>}
+     */
+    api.tasks.allDelayed = async () => {
       return api.resque.queue.allDelayed()
     }
 
-    api.tasks.workers = async (callback) => {
+    /**
+     * Retrun all workers registered by all members of this cluster.
+     * Note: MultiWorker processors each register as a unique worker.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @return {Promise<Object>}
+     */
+    api.tasks.workers = async () => {
       return api.resque.queue.workers()
     }
 
+    /**
+     * What is a given worker working on?  If the worker is idle, 'started' will be returned.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @param  {string}  workerName The worker base name, usually a function of the PID.
+     * @param  {string}  queues     The queues the worker is assigned to work.
+     * @return {Promise<Object>}
+     */
     api.tasks.workingOn = async (workerName, queues) => {
       return api.resque.queue.workingOn(workerName, queues)
     }
 
+    /**
+     * Return all workers and what job they might be working on.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @return {Promise<Object>} An Object, with worker names as keys, containing the job they are working on.
+     *                           If the worker is idle, 'started' will be returned.
+     */
     api.tasks.allWorkingOn = async () => {
       return api.resque.queue.allWorkingOn()
     }
 
+    /**
+     * How many jobs are in the failed queue.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @return {Promise<Number>} The number of failed jobs at this moment.
+     */
     api.tasks.failedCount = async () => {
       return api.resque.queue.failedCount()
     }
 
+    /**
+     * Retrieve the details of failed jobs between start and stop (0-indexed).
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @param  {Number}  start  The index of the first job to return.
+     * @param  {Number}  stop   The index of the last job to return.
+     * @return {Promise<Array>} An array of the failed jobs.
+     */
     api.tasks.failed = async (start, stop) => {
       return api.resque.queue.failed(start, stop)
     }
 
+    /**
+     * Remove a specific job from the failed queue.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @param  {Object}  failedJob The failed job, as defined by `api.tasks.failed`
+     * @return {Promise}
+     * @see api.tasks.failed
+     */
     api.tasks.removeFailed = async (failedJob) => {
       return api.resque.queue.removeFailed(failedJob)
     }
 
+    /**
+     * Remove a specific job from the failed queue, and retry it by placing it back into its original queue.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @param  {Object}  failedJob The failed job, as defined by `api.tasks.failed`
+     * @return {Promise}
+     * @see api.tasks.failed
+     */
     api.tasks.retryAndRemoveFailed = async (failedJob) => {
       return api.resque.queue.retryAndRemoveFailed(failedJob)
     }
 
+    /**
+     * If a worker process crashes, it will leave its state in redis as "working".
+     * You can remove workers from redis you know to be over, by specificing an age which would make them too old to exist.
+     * This method will remove the data created by a 'stuck' worker and move the payload to the error queue.
+     * However, it will not actually remove any processes which may be running.  A job *may* be running that you have removed.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @param  {Number}  age The age of workers you know to be over, in seconds.
+     * @return {Promise<ObjecT>} Details about workers which were removed.
+     */
     api.tasks.cleanOldWorkers = async (age) => {
       return api.resque.queue.cleanOldWorkers(age)
     }
 
-    api.tasks.enqueueRecurrentJob = async (taskName) => {
+    /**
+     * Ensures that a task which has a frequency is either running, or already enqueued.
+     * This is run automatically at boot for all tasks which have a frequency, via `api.tasks.enqueueAllRecurrentTasks`.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @param  {string}  taskName The name of the task.
+     * @return {Promise}
+     * @see api.tasks.enqueueAllRecurrentTasks
+     */
+    api.tasks.enqueueRecurrentTask = async (taskName) => {
       const task = api.tasks.tasks[taskName]
 
       if (task.frequency > 0) {
@@ -185,7 +465,15 @@ module.exports = class Tasks extends ActionHero.Initializer {
       }
     }
 
-    api.tasks.enqueueAllRecurrentJobs = async () => {
+    /**
+     * This is run automatically at boot for all tasks which have a frequency, calling `api.tasks.enqueueRecurrentTask`
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @return {Promise}
+     * @see api.tasks.enqueueRecurrentTask
+     */
+    api.tasks.enqueueAllRecurrentTasks = async () => {
       let jobs = []
       let loadedTasks = []
 
@@ -206,7 +494,15 @@ module.exports = class Tasks extends ActionHero.Initializer {
       return loadedTasks
     }
 
-    api.tasks.stopRecurrentJob = async (taskName) => {
+    /**
+     * Stop a task with a frequency by removing it from all possible queues.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @param  {string}  taskName The name of the task.
+     * @return {Promise<Number>}  How many tasks were removed.
+     */
+    api.tasks.stopRecurrentTask = async (taskName) => {
       // find the jobs in either the normal queue or delayed queues
       const task = api.tasks.tasks[taskName]
       if (task.frequency > 0) {
@@ -219,6 +515,13 @@ module.exports = class Tasks extends ActionHero.Initializer {
       }
     }
 
+    /**
+     * Reurn wholistic details about the whole task system, including failures, queues, and workers.
+     * Will throw an error if redis cannot be reached.
+     *
+     * @async
+     * @return {Promise} [description]
+     */
     api.tasks.details = async () => {
       let details = {'queues': {}, 'workers': {}}
 
@@ -262,7 +565,7 @@ module.exports = class Tasks extends ActionHero.Initializer {
     if (api.config.redis.enabled === false) { return }
 
     if (api.config.tasks.scheduler === true) {
-      await api.tasks.enqueueAllRecurrentJobs()
+      await api.tasks.enqueueAllRecurrentTasks()
     }
   }
 }

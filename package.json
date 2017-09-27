@@ -86,6 +86,6 @@
     "pretest": "standard",
     "posttest": "npm run docs",
     "start": "node ./bin/actionhero",
-    "docs": "jsdoc -c jsdoc-conf.json"
+    "docs": "./bin/build_docs"
   }
 }

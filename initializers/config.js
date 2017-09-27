@@ -6,6 +6,12 @@ const argv = require('optimist').argv
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
+/**
+ * Countains ActionHero configuration.
+ *
+ * @namespace api.config
+ * @extends ActionHero.Initializer
+ */
 module.exports = class Config extends ActionHero.Initializer {
   constructor () {
     super()

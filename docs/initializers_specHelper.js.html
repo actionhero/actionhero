@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>initializers/specHelper.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ActionHero.html">ActionHero</a></li><li><a href="ActionHero.Action.html">Action</a><ul class='methods'><li data-type='method'><a href="ActionHero.Action.html#.run">run</a></li></ul></li><li><a href="ActionHero.CLI.html">CLI</a><ul class='methods'><li data-type='method'><a href="ActionHero.CLI.html#.run">run</a></li></ul></li><li><a href="ActionHero.Connection.html">Connection</a><ul class='methods'><li data-type='method'><a href="ActionHero.Connection.html#.destroy">destroy</a></li><li data-type='method'><a href="ActionHero.Connection.html#.localize">localize</a></li></ul></li><li><a href="ActionHero.Initializer.html">Initializer</a><ul class='methods'><li data-type='method'><a href="ActionHero.Initializer.html#.initialize">initialize</a></li><li data-type='method'><a href="ActionHero.Initializer.html#.start">start</a></li><li data-type='method'><a href="ActionHero.Initializer.html#.stop">stop</a></li></ul></li><li><a href="ActionHero.Server.html">Server</a><ul class='methods'><li data-type='method'><a href="ActionHero.Server.html#.buildConnection">buildConnection</a></li><li data-type='method'><a href="ActionHero.Server.html#.connections">connections</a></li><li data-type='method'><a href="ActionHero.Server.html#.initialize">initialize</a></li><li data-type='method'><a href="ActionHero.Server.html#.log">log</a></li><li data-type='method'><a href="ActionHero.Server.html#.processAction">processAction</a></li><li data-type='method'><a href="ActionHero.Server.html#.processFile">processFile</a></li><li data-type='method'><a href="ActionHero.Server.html#.sendFile">sendFile</a></li><li data-type='method'><a href="ActionHero.Server.html#.sendMessage">sendMessage</a></li><li data-type='method'><a href="ActionHero.Server.html#.start">start</a></li><li data-type='method'><a href="ActionHero.Server.html#.stop">stop</a></li></ul></li><li><a href="ActionHero.Task.html">Task</a><ul class='methods'><li data-type='method'><a href="ActionHero.Task.html#.run">run</a></li></ul></li><li><a href="api.specHelper.Connection.html">Connection</a></li></ul><h3>Events</h3><ul><li><a href="ActionHero.Server.html#event:actionComplete">actionComplete</a></li><li><a href="ActionHero.Server.html#event:connection">connection</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a><ul class='methods'><li data-type='method'><a href="api.html#.log">log</a></li><li data-type='method'><a href="api.html#.unWatchAllFiles">unWatchAllFiles</a></li><li data-type='method'><a href="api.html#.watchFileAndAct">watchFileAndAct</a></li></ul></li><li><a href="api.actions.html">actions</a><ul class='methods'><li data-type='method'><a href="api.actions.html#.addMiddleware">addMiddleware</a></li></ul></li><li><a href="api.cache.html">cache</a><ul class='methods'><li data-type='method'><a href="api.cache.html#.clear">clear</a></li><li data-type='method'><a href="api.cache.html#.destroy">destroy</a></li><li data-type='method'><a href="api.cache.html#.dumpRead">dumpRead</a></li><li data-type='method'><a href="api.cache.html#.dumpWrite">dumpWrite</a></li><li data-type='method'><a href="api.cache.html#.keys">keys</a></li><li data-type='method'><a href="api.cache.html#.listLength">listLength</a></li><li data-type='method'><a href="api.cache.html#.load">load</a></li><li data-type='method'><a href="api.cache.html#.lock">lock</a></li><li data-type='method'><a href="api.cache.html#.locks">locks</a></li><li data-type='method'><a href="api.cache.html#.pop">pop</a></li><li data-type='method'><a href="api.cache.html#.push">push</a></li><li data-type='method'><a href="api.cache.html#.save">save</a></li><li data-type='method'><a href="api.cache.html#.size">size</a></li><li data-type='method'><a href="api.cache.html#.unlock">unlock</a></li></ul></li><li><a href="api.chatRoom.html">chatRoom</a><ul class='methods'><li data-type='method'><a href="api.chatRoom.html#.add">add</a></li><li data-type='method'><a href="api.chatRoom.html#.addMember">addMember</a></li><li data-type='method'><a href="api.chatRoom.html#.addMiddleware">addMiddleware</a></li><li data-type='method'><a href="api.chatRoom.html#.broadcast">broadcast</a></li><li data-type='method'><a href="api.chatRoom.html#.destroy">destroy</a></li><li data-type='method'><a href="api.chatRoom.html#.exists">exists</a></li><li data-type='method'><a href="api.chatRoom.html#.generateMemberDetails">generateMemberDetails</a></li><li data-type='method'><a href="api.chatRoom.html#.list">list</a></li><li data-type='method'><a href="api.chatRoom.html#.removeMember">removeMember</a></li><li data-type='method'><a href="api.chatRoom.html#.roomStatus">roomStatus</a></li><li data-type='method'><a href="api.chatRoom.html#.sanitizeMemberDetails">sanitizeMemberDetails</a></li></ul></li><li><a href="api.config.html">config</a></li><li><a href="api.connections.html">connections</a><ul class='methods'><li data-type='method'><a href="api.connections.html#.addMiddleware">addMiddleware</a></li></ul></li><li><a href="api.documentation.html">documentation</a></li><li><a href="api.exceptions.html">exceptions</a></li><li><a href="api.i18n.html">i18n</a><ul class='methods'><li data-type='method'><a href="api.i18n.html#.localize">localize</a></li></ul></li><li><a href="api.id.html">id</a></li><li><a href="api.params.html">params</a></li><li><a href="api.pids.html">pids</a></li><li><a href="api.redis.html">redis</a><ul class='methods'><li data-type='method'><a href="api.redis.html#.doCluster">doCluster</a></li></ul></li><li><a href="api.resque.html">resque</a></li><li><a href="api.routes.html">routes</a><ul class='methods'><li data-type='method'><a href="api.routes.html#.registerRoute">registerRoute</a></li></ul></li><li><a href="api.servers.html">servers</a></li><li><a href="api.specHelper.html">specHelper</a><ul class='methods'><li data-type='method'><a href="api.specHelper.html#.getStaticFile">getStaticFile</a></li><li data-type='method'><a href="api.specHelper.html#.runAction">runAction</a></li><li data-type='method'><a href="api.specHelper.html#.runFullTask">runFullTask</a></li><li data-type='method'><a href="api.specHelper.html#.runTask">runTask</a></li></ul></li><li><a href="api.staticFile.html">staticFile</a><ul class='methods'><li data-type='method'><a href="api.staticFile.html#.get">get</a></li></ul></li><li><a href="api.tasks.html">tasks</a><ul class='methods'><li data-type='method'><a href="api.tasks.html#.allDelayed">allDelayed</a></li><li data-type='method'><a href="api.tasks.html#.allWorkingOn">allWorkingOn</a></li><li data-type='method'><a href="api.tasks.html#.cleanOldWorkers">cleanOldWorkers</a></li><li data-type='method'><a href="api.tasks.html#.del">del</a></li><li data-type='method'><a href="api.tasks.html#.delayedAt">delayedAt</a></li><li data-type='method'><a href="api.tasks.html#.delDelayed">delDelayed</a></li><li data-type='method'><a href="api.tasks.html#.delLock">delLock</a></li><li data-type='method'><a href="api.tasks.html#.delQueue">delQueue</a></li><li data-type='method'><a href="api.tasks.html#.details">details</a></li><li data-type='method'><a href="api.tasks.html#.enqueue">enqueue</a></li><li data-type='method'><a href="api.tasks.html#.enqueueAllRecurrentTasks">enqueueAllRecurrentTasks</a></li><li data-type='method'><a href="api.tasks.html#.enqueueAt">enqueueAt</a></li><li data-type='method'><a href="api.tasks.html#.enqueueIn">enqueueIn</a></li><li data-type='method'><a href="api.tasks.html#.enqueueRecurrentTask">enqueueRecurrentTask</a></li><li data-type='method'><a href="api.tasks.html#.failed">failed</a></li><li data-type='method'><a href="api.tasks.html#.failedCount">failedCount</a></li><li data-type='method'><a href="api.tasks.html#.locks">locks</a></li><li data-type='method'><a href="api.tasks.html#.queued">queued</a></li><li data-type='method'><a href="api.tasks.html#.removeFailed">removeFailed</a></li><li data-type='method'><a href="api.tasks.html#.retryAndRemoveFailed">retryAndRemoveFailed</a></li><li data-type='method'><a href="api.tasks.html#.scheduledAt">scheduledAt</a></li><li data-type='method'><a href="api.tasks.html#.stats">stats</a></li><li data-type='method'><a href="api.tasks.html#.stopRecurrentTask">stopRecurrentTask</a></li><li data-type='method'><a href="api.tasks.html#.timestamps">timestamps</a></li><li data-type='method'><a href="api.tasks.html#.workers">workers</a></li><li data-type='method'><a href="api.tasks.html#.workingOn">workingOn</a></li></ul></li><li><a href="api.utils.html">utils</a><ul class='methods'><li data-type='method'><a href="api.utils.html#.arrayUniqueify">arrayUniqueify</a></li><li data-type='method'><a href="api.utils.html#.asyncWaterfall">asyncWaterfall</a></li><li data-type='method'><a href="api.utils.html#.collapseObjectToArray">collapseObjectToArray</a></li><li data-type='method'><a href="api.utils.html#.createDirSafely">createDirSafely</a></li><li data-type='method'><a href="api.utils.html#.createFileSafely">createFileSafely</a></li><li data-type='method'><a href="api.utils.html#.createLinkfileSafely">createLinkfileSafely</a></li><li data-type='method'><a href="api.utils.html#.createSymlinkSafely">createSymlinkSafely</a></li><li data-type='method'><a href="api.utils.html#.dirExists">dirExists</a></li><li data-type='method'><a href="api.utils.html#.eventLoopDelay">eventLoopDelay</a></li><li data-type='method'><a href="api.utils.html#.fileExists">fileExists</a></li><li data-type='method'><a href="api.utils.html#.filterObjectForLogging">filterObjectForLogging</a></li><li data-type='method'><a href="api.utils.html#.getExternalIPAddress">getExternalIPAddress</a></li><li data-type='method'><a href="api.utils.html#.hashMerge">hashMerge</a></li><li data-type='method'><a href="api.utils.html#.parseCookies">parseCookies</a></li><li data-type='method'><a href="api.utils.html#.parseIPv6URI">parseIPv6URI</a></li><li data-type='method'><a href="api.utils.html#.recursiveDirectoryGlob">recursiveDirectoryGlob</a></li><li data-type='method'><a href="api.utils.html#.removeLinkfileSafely">removeLinkfileSafely</a></li><li data-type='method'><a href="api.utils.html#.sortGlobalMiddleware">sortGlobalMiddleware</a></li></ul></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-actions.html">actions</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">initializers/specHelper.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
+
+const uuid = require('uuid')
+const NodeResque = require('node-resque')
+const ActionHero = require('./../index.js')
+const api = ActionHero.api
+
+/**
+ * A speical "mock" server which enables you to test actions and tasks in a simple way.  Only availalbe in the TEST environment.
+ *
+ * @namespace api.specHelper
+ * @property {Boolean} enabled - Is the specHelper server enabled
+ * @property {Object} Server - The instnace of the SpecHelper server
+ * @extends ActionHero.Initializer
+ */
+module.exports = class SpecHelper extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'specHelper'
+    this.loadPriority = 900
+    this.startPriority = 901
+    this.enabled = false
+  }
+
+  initialize () {
+    if (api.env === 'test' || process.env.SPECHELPER === 'true' || process.env.SPECHELPER === true) {
+      this.enabled = true
+    }
+
+    if (!this.enabled) { return }
+
+    class TestServer extends ActionHero.Server {
+      constructor () {
+        super()
+        this.type = 'testServer'
+        this.attributes = {
+          canChat: true,
+          logConnections: false,
+          logExits: false,
+          sendWelcomeMessage: true,
+          verbs: api.connections.allowedVerbs
+        }
+      }
+
+      start (api) {
+        api.log('loading the testServer', 'warning')
+        this.on('connection', (connection) => { this.handleConnection(connection) })
+        this.on('actionComplete', (data) => { this.actionComplete(data) })
+      }
+
+      stop () {}
+
+      goodbye () {}
+
+      sendMessage (connection, message, messageCount) {
+        process.nextTick(() => {
+          connection.messages.push(message)
+          if (typeof connection.actionCallbacks[messageCount] === 'function') {
+            connection.actionCallbacks[messageCount](message, connection)
+            delete connection.actionCallbacks[messageCount]
+          }
+        })
+      }
+
+      sendFile (connection, error, fileStream, mime, length) {
+        let content = ''
+        let response = {
+          error: error,
+          content: null,
+          mime: mime,
+          length: length
+        }
+
+        try {
+          if (!error) {
+            fileStream.on('data', (d) => { content += d })
+            fileStream.on('end', () => {
+              response.content = content
+              this.sendMessage(connection, response, connection.messageCount)
+            })
+          } else {
+            this.sendMessage(connection, response, connection.messageCount)
+          }
+        } catch (e) {
+          this.log(e, 'warning')
+          this.sendMessage(connection, response, connection.messageCount)
+        }
+      }
+
+      handleConnection (connection) {
+        connection.messages = []
+        connection.actionCallbacks = {}
+      }
+
+      async actionComplete (data) {
+        if (typeof data.response === 'string' || Array.isArray(data.response)) {
+          if (data.response.error) {
+            data.response = await api.config.errors.serializers.servers.specHelper(data.response.error)
+          }
+        } else {
+          if (data.response.error) {
+            data.response.error = await api.config.errors.serializers.servers.specHelper(data.response.error)
+          }
+
+          if (api.specHelper.returnMetadata) {
+            data.response.messageCount = data.messageCount
+
+            data.response.serverInformation = {
+              serverName: api.config.general.serverName,
+              apiVersion: api.config.general.apiVersion
+            }
+
+            data.response.requesterInformation = {
+              id: data.connection.id,
+              remoteIP: data.connection.remoteIP,
+              receivedParams: {}
+            }
+
+            for (let k in data.params) {
+              data.response.requesterInformation.receivedParams[k] = data.params[k]
+            }
+          }
+        }
+
+        if (data.toRender === true) {
+          this.sendMessage(data.connection, data.response, data.messageCount)
+        }
+      }
+    }
+
+    api.specHelper = {
+      returnMetadata: true,
+      Server: TestServer
+    }
+
+    /**
+     * A special connection usable in tests.  Create via `new api.specHelper.Connection()`
+     *
+     * @type {Class}
+     * @memberof api.specHelper
+     */
+    api.specHelper.Connection = class {
+      constructor () {
+        let id = uuid.v4()
+        api.servers.servers.testServer.buildConnection({
+          id: id,
+          rawConnection: {},
+          remoteAddress: 'testServer',
+          remotePort: 0
+        })
+
+        return api.connections.connections[id]
+      }
+    }
+
+    /**
+     * Run an action via the specHelper server.
+     *
+     * @async
+     * @param  {string}  actionName The name of the action to run.
+     * @param  {Object}  input      You can provide either a pre-build connection `new api.specHelper.Connection()`, or just a Object with params for your action.
+     * @return {Promise&lt;Object>}    The `response` from the action.
+     */
+    api.specHelper.runAction = async (actionName, input) => {
+      let connection
+      if (!input) { input = {} }
+      if (input.id &amp;&amp; input.type === 'testServer') {
+        connection = input
+      } else {
+        connection = new api.specHelper.Connection()
+        connection.params = input
+      }
+
+      connection.params.action = actionName
+
+      connection.messageCount++
+      let response = await new Promise((resolve) => {
+        api.servers.servers.testServer.processAction(connection)
+        connection.actionCallbacks[(connection.messageCount)] = resolve
+      })
+
+      return response
+    }
+
+    /**
+     * Mock a specHelper connection requesting a file from the server.
+     *
+     * @async
+     * @param  {string}  file The name &amp; path of the file to request.
+     * @return {Promise&lt;Object>} The body contents and metadata of the file requested.  Conatins: mime, length, body, and more.
+     */
+    api.specHelper.getStaticFile = async (file) => {
+      let connection = new api.specHelper.Connection()
+      connection.params.file = file
+
+      connection.messageCount++
+      let response = await new Promise((resolve) => {
+        api.servers.servers.testServer.processFile(connection)
+        connection.actionCallbacks[(connection.messageCount)] = resolve
+      })
+
+      return response
+    }
+
+    /**
+     * Use the specHelper to run a task.
+     * Note: this only runs the task's `run()` method, and no middleware.  This is faster than api.specHelper.runFullTask.
+     *
+     * @async
+     * @param  {string}   taskName The name of the task.
+     * @param  {Object}   params   Params to pass to the task
+     * @return {Promise&lt;Object>}   The return value from the task.
+     * @see api.specHelper.runFullTask
+     */
+    api.specHelper.runTask = async (taskName, params) => {
+      return api.tasks.tasks[taskName].run(params)
+    }
+
+    /**
+     * Use the specHelper to run a task.
+     * Note: this will run a full Task worker, and will also include any middleware.  This is slower than api.specHelper.runTask.
+     *
+     * @param  {string}   taskName The name of the task.
+     * @param  {Object}   params   Params to pass to the task
+     * @return {Promise&lt;Object>}   The return value from the task.
+     * @see api.specHelper.runTask
+     */
+    api.specHelper.runFullTask = async (taskName, params) => {
+      const worker = new NodeResque.Worker({
+        connection: api.redis.clients.tasks,
+        queues: api.config.tasks.queues || ['default']
+      }, api.tasks.jobs)
+
+      await worker.connect()
+      let result = await worker.performInline(taskName, params)
+      await worker.end()
+      return result
+    }
+  }
+
+  async start () {
+    if (!this.enabled) { return }
+
+    let server = new api.specHelper.Server()
+    server.config = { enabled: true }
+    await server.start(api)
+    api.servers.servers.testServer = server
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Learn more about ActionHero @ <a href="https://www.actionherojs.com">www.actionherojs.com</a>
+    <br />
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> using the <a href="https://github.com/actionhero/docdash-actionhero-theme">docdash-actionhero-theme</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

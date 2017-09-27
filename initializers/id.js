@@ -5,6 +5,12 @@ const argv = require('optimist').argv
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
+/**
+ * I build this server's ID.
+ *
+ * @namespace api.id
+ * @extends ActionHero.Initializer
+ */
 module.exports = class ID extends ActionHero.Initializer {
   constructor () {
     super()

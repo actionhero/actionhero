@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>initializers/utils.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ActionHero.html">ActionHero</a></li><li><a href="ActionHero.Action.html">Action</a><ul class='methods'><li data-type='method'><a href="ActionHero.Action.html#.run">run</a></li></ul></li><li><a href="ActionHero.CLI.html">CLI</a><ul class='methods'><li data-type='method'><a href="ActionHero.CLI.html#.run">run</a></li></ul></li><li><a href="ActionHero.Connection.html">Connection</a><ul class='methods'><li data-type='method'><a href="ActionHero.Connection.html#.destroy">destroy</a></li><li data-type='method'><a href="ActionHero.Connection.html#.localize">localize</a></li></ul></li><li><a href="ActionHero.Initializer.html">Initializer</a><ul class='methods'><li data-type='method'><a href="ActionHero.Initializer.html#.initialize">initialize</a></li><li data-type='method'><a href="ActionHero.Initializer.html#.start">start</a></li><li data-type='method'><a href="ActionHero.Initializer.html#.stop">stop</a></li></ul></li><li><a href="ActionHero.Server.html">Server</a><ul class='methods'><li data-type='method'><a href="ActionHero.Server.html#.buildConnection">buildConnection</a></li><li data-type='method'><a href="ActionHero.Server.html#.connections">connections</a></li><li data-type='method'><a href="ActionHero.Server.html#.initialize">initialize</a></li><li data-type='method'><a href="ActionHero.Server.html#.log">log</a></li><li data-type='method'><a href="ActionHero.Server.html#.processAction">processAction</a></li><li data-type='method'><a href="ActionHero.Server.html#.processFile">processFile</a></li><li data-type='method'><a href="ActionHero.Server.html#.sendFile">sendFile</a></li><li data-type='method'><a href="ActionHero.Server.html#.sendMessage">sendMessage</a></li><li data-type='method'><a href="ActionHero.Server.html#.start">start</a></li><li data-type='method'><a href="ActionHero.Server.html#.stop">stop</a></li></ul></li><li><a href="ActionHero.Task.html">Task</a><ul class='methods'><li data-type='method'><a href="ActionHero.Task.html#.run">run</a></li></ul></li><li><a href="api.specHelper.Connection.html">Connection</a></li></ul><h3>Events</h3><ul><li><a href="ActionHero.Server.html#event:actionComplete">actionComplete</a></li><li><a href="ActionHero.Server.html#event:connection">connection</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a><ul class='methods'><li data-type='method'><a href="api.html#.log">log</a></li><li data-type='method'><a href="api.html#.unWatchAllFiles">unWatchAllFiles</a></li><li data-type='method'><a href="api.html#.watchFileAndAct">watchFileAndAct</a></li></ul></li><li><a href="api.actions.html">actions</a><ul class='methods'><li data-type='method'><a href="api.actions.html#.addMiddleware">addMiddleware</a></li></ul></li><li><a href="api.cache.html">cache</a><ul class='methods'><li data-type='method'><a href="api.cache.html#.clear">clear</a></li><li data-type='method'><a href="api.cache.html#.destroy">destroy</a></li><li data-type='method'><a href="api.cache.html#.dumpRead">dumpRead</a></li><li data-type='method'><a href="api.cache.html#.dumpWrite">dumpWrite</a></li><li data-type='method'><a href="api.cache.html#.keys">keys</a></li><li data-type='method'><a href="api.cache.html#.listLength">listLength</a></li><li data-type='method'><a href="api.cache.html#.load">load</a></li><li data-type='method'><a href="api.cache.html#.lock">lock</a></li><li data-type='method'><a href="api.cache.html#.locks">locks</a></li><li data-type='method'><a href="api.cache.html#.pop">pop</a></li><li data-type='method'><a href="api.cache.html#.push">push</a></li><li data-type='method'><a href="api.cache.html#.save">save</a></li><li data-type='method'><a href="api.cache.html#.size">size</a></li><li data-type='method'><a href="api.cache.html#.unlock">unlock</a></li></ul></li><li><a href="api.chatRoom.html">chatRoom</a><ul class='methods'><li data-type='method'><a href="api.chatRoom.html#.add">add</a></li><li data-type='method'><a href="api.chatRoom.html#.addMember">addMember</a></li><li data-type='method'><a href="api.chatRoom.html#.addMiddleware">addMiddleware</a></li><li data-type='method'><a href="api.chatRoom.html#.broadcast">broadcast</a></li><li data-type='method'><a href="api.chatRoom.html#.destroy">destroy</a></li><li data-type='method'><a href="api.chatRoom.html#.exists">exists</a></li><li data-type='method'><a href="api.chatRoom.html#.generateMemberDetails">generateMemberDetails</a></li><li data-type='method'><a href="api.chatRoom.html#.list">list</a></li><li data-type='method'><a href="api.chatRoom.html#.removeMember">removeMember</a></li><li data-type='method'><a href="api.chatRoom.html#.roomStatus">roomStatus</a></li><li data-type='method'><a href="api.chatRoom.html#.sanitizeMemberDetails">sanitizeMemberDetails</a></li></ul></li><li><a href="api.config.html">config</a></li><li><a href="api.connections.html">connections</a><ul class='methods'><li data-type='method'><a href="api.connections.html#.addMiddleware">addMiddleware</a></li></ul></li><li><a href="api.documentation.html">documentation</a></li><li><a href="api.exceptions.html">exceptions</a></li><li><a href="api.i18n.html">i18n</a><ul class='methods'><li data-type='method'><a href="api.i18n.html#.localize">localize</a></li></ul></li><li><a href="api.id.html">id</a></li><li><a href="api.params.html">params</a></li><li><a href="api.pids.html">pids</a></li><li><a href="api.redis.html">redis</a><ul class='methods'><li data-type='method'><a href="api.redis.html#.doCluster">doCluster</a></li></ul></li><li><a href="api.resque.html">resque</a></li><li><a href="api.routes.html">routes</a><ul class='methods'><li data-type='method'><a href="api.routes.html#.registerRoute">registerRoute</a></li></ul></li><li><a href="api.servers.html">servers</a></li><li><a href="api.specHelper.html">specHelper</a><ul class='methods'><li data-type='method'><a href="api.specHelper.html#.getStaticFile">getStaticFile</a></li><li data-type='method'><a href="api.specHelper.html#.runAction">runAction</a></li><li data-type='method'><a href="api.specHelper.html#.runFullTask">runFullTask</a></li><li data-type='method'><a href="api.specHelper.html#.runTask">runTask</a></li></ul></li><li><a href="api.staticFile.html">staticFile</a><ul class='methods'><li data-type='method'><a href="api.staticFile.html#.get">get</a></li></ul></li><li><a href="api.tasks.html">tasks</a><ul class='methods'><li data-type='method'><a href="api.tasks.html#.allDelayed">allDelayed</a></li><li data-type='method'><a href="api.tasks.html#.allWorkingOn">allWorkingOn</a></li><li data-type='method'><a href="api.tasks.html#.cleanOldWorkers">cleanOldWorkers</a></li><li data-type='method'><a href="api.tasks.html#.del">del</a></li><li data-type='method'><a href="api.tasks.html#.delayedAt">delayedAt</a></li><li data-type='method'><a href="api.tasks.html#.delDelayed">delDelayed</a></li><li data-type='method'><a href="api.tasks.html#.delLock">delLock</a></li><li data-type='method'><a href="api.tasks.html#.delQueue">delQueue</a></li><li data-type='method'><a href="api.tasks.html#.details">details</a></li><li data-type='method'><a href="api.tasks.html#.enqueue">enqueue</a></li><li data-type='method'><a href="api.tasks.html#.enqueueAllRecurrentTasks">enqueueAllRecurrentTasks</a></li><li data-type='method'><a href="api.tasks.html#.enqueueAt">enqueueAt</a></li><li data-type='method'><a href="api.tasks.html#.enqueueIn">enqueueIn</a></li><li data-type='method'><a href="api.tasks.html#.enqueueRecurrentTask">enqueueRecurrentTask</a></li><li data-type='method'><a href="api.tasks.html#.failed">failed</a></li><li data-type='method'><a href="api.tasks.html#.failedCount">failedCount</a></li><li data-type='method'><a href="api.tasks.html#.locks">locks</a></li><li data-type='method'><a href="api.tasks.html#.queued">queued</a></li><li data-type='method'><a href="api.tasks.html#.removeFailed">removeFailed</a></li><li data-type='method'><a href="api.tasks.html#.retryAndRemoveFailed">retryAndRemoveFailed</a></li><li data-type='method'><a href="api.tasks.html#.scheduledAt">scheduledAt</a></li><li data-type='method'><a href="api.tasks.html#.stats">stats</a></li><li data-type='method'><a href="api.tasks.html#.stopRecurrentTask">stopRecurrentTask</a></li><li data-type='method'><a href="api.tasks.html#.timestamps">timestamps</a></li><li data-type='method'><a href="api.tasks.html#.workers">workers</a></li><li data-type='method'><a href="api.tasks.html#.workingOn">workingOn</a></li></ul></li><li><a href="api.utils.html">utils</a><ul class='methods'><li data-type='method'><a href="api.utils.html#.arrayUniqueify">arrayUniqueify</a></li><li data-type='method'><a href="api.utils.html#.asyncWaterfall">asyncWaterfall</a></li><li data-type='method'><a href="api.utils.html#.collapseObjectToArray">collapseObjectToArray</a></li><li data-type='method'><a href="api.utils.html#.createDirSafely">createDirSafely</a></li><li data-type='method'><a href="api.utils.html#.createFileSafely">createFileSafely</a></li><li data-type='method'><a href="api.utils.html#.createLinkfileSafely">createLinkfileSafely</a></li><li data-type='method'><a href="api.utils.html#.createSymlinkSafely">createSymlinkSafely</a></li><li data-type='method'><a href="api.utils.html#.dirExists">dirExists</a></li><li data-type='method'><a href="api.utils.html#.eventLoopDelay">eventLoopDelay</a></li><li data-type='method'><a href="api.utils.html#.fileExists">fileExists</a></li><li data-type='method'><a href="api.utils.html#.filterObjectForLogging">filterObjectForLogging</a></li><li data-type='method'><a href="api.utils.html#.getExternalIPAddress">getExternalIPAddress</a></li><li data-type='method'><a href="api.utils.html#.hashMerge">hashMerge</a></li><li data-type='method'><a href="api.utils.html#.parseCookies">parseCookies</a></li><li data-type='method'><a href="api.utils.html#.parseIPv6URI">parseIPv6URI</a></li><li data-type='method'><a href="api.utils.html#.recursiveDirectoryGlob">recursiveDirectoryGlob</a></li><li data-type='method'><a href="api.utils.html#.removeLinkfileSafely">removeLinkfileSafely</a></li><li data-type='method'><a href="api.utils.html#.sortGlobalMiddleware">sortGlobalMiddleware</a></li></ul></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-actions.html">actions</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">initializers/utils.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
+
+const fs = require('fs')
+const path = require('path')
+const dotProp = require('dot-prop')
+const os = require('os')
+const ActionHero = require('./../index.js')
+const api = ActionHero.api
+
+/**
+ * Utilites for any ActionHero project.
+ *
+ * @namespace api.utils
+ * @property {Object} dotProp - The dotProp package.
+ * @extends ActionHero.Initializer
+ */
+module.exports = class Utils extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'utils'
+    this.loadPriority = 1
+  }
+
+  async initialize () {
+    if (!api.utils) { api.utils = {} }
+
+    api.utils.dotProp = dotProp
+
+    /**
+     * In series, run an array of `async` functions
+     *
+     * @async
+     * @param  {Array}  jobs  Either an array of methods, or an Array of Objects, with `method` and `arg` properties.
+     * @return {Promise&lt;Array>} Array of returned values from the methods in `jobs`
+     * @example
+
+// without arguments
+let sleepyFunc = async () => {
+  await new Promise((resolve) => { setTimeout(resolve, 100) })
+  return (new Date()).getTime()
+}
+
+let jobs = [sleepyFunc, sleepyFunc, sleepyFunc]
+
+let responses = await api.utils.asyncWaterfall(jobs)
+// responses = [1506536188356, 1506536188456, 1506536188456]
+
+// with arguments
+let sleepyFunc = async (response) => {
+  await new Promise((resolve) => { setTimeout(resolve, 100) })
+  return response
+}
+
+let jobs = [
+  {method: sleepyFunc, args: ['a']},
+  {method: sleepyFunc, args: ['b']},
+  {method: sleepyFunc, args: ['c']}
+]
+
+let responses = await api.utils.asyncWaterfall(jobs)
+// responses = ['a', 'b', 'c']
+     */
+    api.utils.asyncWaterfall = async (jobs) => {
+      let results = []
+      while (jobs.length > 0) {
+        let collection = jobs.shift()
+        let job
+        let args
+        if (typeof collection === 'function') {
+          job = collection
+          args = []
+        } else {
+          job = collection.method
+          args = collection.args
+        }
+
+        let value = await job.apply(this, args)
+        results.push(value)
+      }
+
+      if (results.length === 0) { return null }
+      if (results.length === 1) { return results[0] }
+      return results
+    }
+
+    /**
+     * Recursivley merge 2 Objects together.  Will resolve functions if they are present, unless the parent Object has the propery `_toExpand = false`.
+     * ActionHero uses this internally to construct and resolve the config.
+     * Matching keys in B override A.
+     *
+     * @param  {Object} a   Object 1
+     * @param  {Object} b   Object 2
+     * @param  {Object} arg Arguments to pass to any functiosn which should be resolved.
+     * @return {Object}     A new Object, combining A and B
+     */
+    api.utils.hashMerge = (a, b, arg) => {
+      let c = {}
+      let i
+      let response
+
+      for (i in a) {
+        if (api.utils.isPlainObject(a[i]) &amp;&amp; Object.keys(a[i]).length > 0) {
+          c[i] = api.utils.hashMerge(c[i], a[i], arg)
+        } else {
+          if (typeof a[i] === 'function') {
+            response = a[i](arg)
+            if (api.utils.isPlainObject(response)) {
+              c[i] = api.utils.hashMerge(c[i], response, arg)
+            } else {
+              c[i] = response
+            }
+          } else {
+            c[i] = a[i]
+          }
+        }
+      }
+      for (i in b) {
+        if (api.utils.isPlainObject(b[i]) &amp;&amp; Object.keys(b[i]).length > 0) {
+          c[i] = api.utils.hashMerge(c[i], b[i], arg)
+        } else {
+          if (typeof b[i] === 'function') {
+            response = b[i](arg)
+            if (api.utils.isPlainObject(response)) {
+              c[i] = api.utils.hashMerge(c[i], response, arg)
+            } else {
+              c[i] = response
+            }
+          } else {
+            c[i] = b[i]
+          }
+        }
+      }
+      return c
+    }
+
+    /**
+     * @private
+     */
+    api.utils.isPlainObject = (o) => {
+      const safeTypes = [Boolean, Number, String, Function, Array, Date, RegExp, Buffer]
+      const safeInstances = ['boolean', 'number', 'string', 'function']
+      const expandPreventMatchKey = '_toExpand' // set `_toExpand = false` within an object if you don't want to expand it
+      let i
+
+      if (!o) { return false }
+      if ((o instanceof Object) === false) { return false }
+      for (i in safeTypes) {
+        if (o instanceof safeTypes[i]) { return false }
+      }
+      for (i in safeInstances) {
+        if (typeof o === safeInstances[i]) { return false } //eslint-disable-line
+      }
+      if (o[expandPreventMatchKey] === false) { return false }
+      return (o.toString() === '[object Object]')
+    }
+
+    /**
+     * Return only the unique values in an Array.
+     *
+     * @param  {Array} arr Source Array.
+     * @return {Array}     Unique Array.
+     */
+    api.utils.arrayUniqueify = (arr) => {
+      let a = []
+      for (let i = 0; i &lt; arr.length; i++) {
+        for (let j = i + 1; j &lt; arr.length; j++) {
+          if (arr[i] === arr[j]) { j = ++i }
+        }
+        a.push(arr[i])
+      }
+      return a
+    }
+
+    /**
+     * Get the names of all files in a directory which match an extension.
+     * Symlinks will be followed.
+     * ActionHero LinkFiles (created by `ActionHero Link...`) will be followed.
+     *
+     * @param  {string} dir              Starting Directory for the search
+     * @param  {string} extension        What file type are we looking for? (default: `.js`)
+     * @param  {Boolean} followLinkFiles Should we follow ActionHero LinkFiles? (deafult: true)
+     * @return {Array}                   An Array of filenames.
+     */
+    api.utils.recursiveDirectoryGlob = (dir, extension, followLinkFiles) => {
+      let results = []
+
+      if (!extension) { extension = '.js' }
+      if (!followLinkFiles) { followLinkFiles = true }
+
+      extension = extension.replace('.', '')
+
+      if (fs.existsSync(dir)) {
+        fs.readdirSync(dir).forEach((file) => {
+          let fullFilePath = path.join(dir, file)
+          if (file[0] !== '.') { // ignore 'system' files
+            let stats = fs.statSync(fullFilePath)
+            let child
+            if (stats.isDirectory()) {
+              child = api.utils.recursiveDirectoryGlob(fullFilePath, extension, followLinkFiles)
+              child.forEach((c) => { results.push(c) })
+            } else if (stats.isSymbolicLink()) {
+              let realPath = fs.readlinkSync(fullFilePath)
+              child = api.utils.recursiveDirectoryGlob(realPath, extension, followLinkFiles)
+              child.forEach((c) => { results.push(c) })
+            } else if (stats.isFile()) {
+              let fileParts = file.split('.')
+              let ext = fileParts[(fileParts.length - 1)]
+               // real file match
+              if (ext === extension) { results.push(fullFilePath) }
+               // linkfile traversal
+              if (ext === 'link' &amp;&amp; followLinkFiles === true) {
+                let linkedPath = api.utils.sourceRelativeLinkPath(fullFilePath, api.config.general.paths.plugin)
+                if (linkedPath) {
+                  child = api.utils.recursiveDirectoryGlob(linkedPath, extension, followLinkFiles)
+                  child.forEach((c) => { results.push(c) })
+                } else {
+                  try {
+                    api.log(`cannot find linked refrence to \`${file}\``, 'warning')
+                  } catch (e) {
+                    throw new Error('cannot find linked refrence to ' + file)
+                  }
+                }
+              }
+            }
+          }
+        })
+      }
+
+      return results.sort()
+    }
+
+    /**
+     * @private
+     */
+    api.utils.sourceRelativeLinkPath = (linkfile, pluginPaths) => {
+      const type = fs.readFileSync(linkfile).toString()
+      const pathParts = linkfile.split(path.sep)
+      const name = pathParts[(pathParts.length - 1)].split('.')[0]
+      const pathsToTry = pluginPaths.slice(0)
+      let pluginRoot
+
+      pathsToTry.forEach((pluginPath) => {
+        let pluginPathAttempt = path.normalize(pluginPath + path.sep + name)
+        try {
+          let stats = fs.lstatSync(pluginPathAttempt)
+          if (!pluginRoot &amp;&amp; (stats.isDirectory() || stats.isSymbolicLink())) { pluginRoot = pluginPathAttempt }
+        } catch (e) { }
+      })
+
+      if (!pluginRoot) { return false }
+      let pluginSection = path.normalize(pluginRoot + path.sep + type)
+      return pluginSection
+    }
+
+    /**
+     * Collapsses an Object with numerical keys (like `arguments` in a function) to an Array
+     *
+     * @param  {Object} obj An Object with a depth of 1 and only Numerical keys
+     * @return {Array}      Array
+     */
+    api.utils.collapseObjectToArray = (obj) => {
+      try {
+        const keys = Object.keys(obj)
+        if (keys.length &lt; 1) { return false }
+        if (keys[0] !== '0') { return false }
+        if (keys[(keys.length - 1)] !== String(keys.length - 1)) { return false }
+
+        let arr = []
+        for (let i in keys) {
+          let key = keys[i]
+          if (String(parseInt(key)) !== key) { return false } else { arr.push(obj[key]) }
+        }
+
+        return arr
+      } catch (e) {
+        return false
+      }
+    }
+
+    /**
+     * Returns this server's external/public IP address
+     *
+     * @return {string} This server's external IP address.
+     */
+    api.utils.getExternalIPAddress = () => {
+      let ifaces = os.networkInterfaces()
+      let ip = false
+      for (let dev in ifaces) {
+        ifaces[dev].forEach((details) => {
+          if (details.family === 'IPv4' &amp;&amp; details.address !== '127.0.0.1') {
+            ip = details.address
+          }
+        })
+      }
+      return ip
+    }
+
+    /**
+     * Transform the cookie headers of a node HTTP `req` Object into a hash.
+     *
+     * @param  {Object} req A node.js `req` Object
+     * @return {Object}     A Object with Cookies.
+     */
+    api.utils.parseCookies = (req) => {
+      let cookies = {}
+      if (req.headers.cookie) {
+        req.headers.cookie.split(';').forEach((cookie) => {
+          let parts = cookie.split('=')
+          cookies[parts[0].trim()] = (parts[1] || '').trim()
+        })
+      }
+      return cookies
+    }
+
+    /**
+     * Parse an IPv6 address, returning both host and port.
+     *
+     * @param  {string} addr An IPv6 address.
+     * @return {Object}      An Object with {host, port}
+     * @see https://github.com/actionhero/actionhero/issues/275
+     */
+    api.utils.parseIPv6URI = (addr) => {
+      let host = '::1'
+      let port = '80'
+      let regexp = new RegExp(/\[([0-9a-f:]+)]:([0-9]{1,5})/)
+      // if we have brackets parse them and find a port
+      if (addr.indexOf('[') > -1 &amp;&amp; addr.indexOf(']') > -1) {
+        let res = regexp.exec(addr)
+        if (res === null) {
+          throw new Error('failed to parse address')
+        }
+        host = res[1]
+        port = res[2]
+      } else {
+        host = addr
+      }
+      return {host: host, port: parseInt(port, 10)}
+    }
+
+    /**
+     * Returns the averge delay between a tick of hte node.js event loop, as measured for N calls of `process.nextTick`
+     *
+     * @param  {Number}  itterations How many `process.nextTick` cycles of the event loop should we measure?
+     * @return {Promise&lt;Number>}  Returns the average evnent loop dealy measured in ms.
+     */
+    api.utils.eventLoopDelay = async (itterations) => {
+      let jobs = []
+
+      if (!itterations) { throw new Error('itterations is required') }
+
+      let sleepyFunc = async () => {
+        return new Promise((resolve) => {
+          let start = process.hrtime()
+          process.nextTick(() => {
+            let delta = process.hrtime(start)
+            let ms = (delta[0] * 1000) + (delta[1] / 1000000)
+            resolve(ms)
+          })
+        })
+      }
+
+      let i = 0
+      while (i &lt; itterations) {
+        jobs.push(sleepyFunc)
+        i++
+      }
+
+      let results = await api.utils.asyncWaterfall(jobs)
+      let sum = 0
+      results.forEach((t) => { sum += t })
+      let avg = Math.round(sum / results.length * 10000) / 1000
+      return avg
+    }
+
+    /**
+     * Sorts an Array of Objects with a priority key
+     *
+     * @param  {Array} globalMiddlewareList The Array to sort.
+     * @param  {Array} middleware          A specific collection to sort against.
+     */
+    api.utils.sortGlobalMiddleware = (globalMiddlewareList, middleware) => {
+      globalMiddlewareList.sort((a, b) => {
+        if (middleware[a].priority > middleware[b].priority) {
+          return 1
+        } else {
+          return -1
+        }
+      })
+    }
+
+    /**
+     * Prepares acton params for logging.
+     * Hides any sensitieve data as defined by `api.config.general.filteredParams`
+     * Truncates long strings via `api.config.logger.maxLogStringLength`
+     *
+     * @param  {Object} params Params to filter.
+     * @return {Object}        Filtered Params.
+     */
+    api.utils.filterObjectForLogging = (params) => {
+      let filteredParams = {}
+      for (let i in params) {
+        if (api.utils.isPlainObject(params[i])) {
+          filteredParams[i] = Object.assign({}, params[i])
+        } else if (typeof params[i] === 'string') {
+          filteredParams[i] = params[i].substring(0, api.config.logger.maxLogStringLength)
+        } else {
+          filteredParams[i] = params[i]
+        }
+      }
+      api.config.general.filteredParams.forEach((configParam) => {
+        if (api.utils.dotProp.get(params, configParam) !== undefined) {
+          api.utils.dotProp.set(filteredParams, configParam, '[FILTERED]')
+        }
+      })
+      return filteredParams
+    }
+
+    /**
+     * Check if a directory exists.
+     *
+     * @param  {string} dir The directory to check.
+     * @return {Boolean}
+     */
+    api.utils.dirExists = (dir) => {
+      try {
+        let stats = fs.lstatSync(dir)
+        return (stats.isDirectory() || stats.isSymbolicLink())
+      } catch (e) { return false }
+    }
+
+    /**
+     * Check if a file exists.
+     *
+     * @param  {string} file The file to check.
+     * @return {Boolean}
+     */
+    api.utils.fileExists = (file) => {
+      try {
+        let stats = fs.lstatSync(file)
+        return (stats.isFile() || stats.isSymbolicLink())
+      } catch (e) { return false }
+    }
+
+    /**
+     * Create a directory, only if it doesn't exist yet.
+     * Throws an error if the directory already exists, or encounters a filesystem problem.
+     *
+     * @param  {string} dir The directory to create.
+     * @return {string} a message if the file was created to log.
+     */
+    api.utils.createDirSafely = (dir) => {
+      if (api.utils.dirExists(dir)) {
+        throw new Error(`directory '${path.normalize(dir)}' already exists`)
+      } else {
+        fs.mkdirSync(path.normalize(dir), '0766')
+        return `created directory '${path.normalize(dir)}'`
+      }
+    }
+
+    /**
+     * Create a file, only if it doesn't exist yet.
+     * Throws an error if the file already exists, or encounters a filesystem problem.
+     *
+     * @param  {string} file The file to create.
+     * @param  {string} data The new contents of the file.
+     * @param  {boolean} overwrite Should we overwrite an existing file?.
+     * @return {string} a message if the file was created to log.
+     */
+    api.utils.createFileSafely = (file, data, overwrite) => {
+      if (api.utils.fileExists(file) &amp;&amp; !overwrite) {
+        throw new Error(`file '${path.normalize(file)}' already exists`)
+      } else {
+        let message = `wrote file '${path.normalize(file)}'`
+        if (overwrite &amp;&amp; api.utils.fileExists(file)) { message = ` - overwritten file '${path.normalize(file)}'` }
+        fs.writeFileSync(path.normalize(file), data)
+        return message
+      }
+    }
+
+    /**
+     * Create an ActionHero LinkFile, only if it doesn't exist yet.
+     * Throws an error if the file already exists, or encounters a filesystem problem.
+     *
+     * @param  {string} filePath The path of the new LinkFile
+     * @param  {string} type What are we linking (actions, tasks, etc).
+     * @param  {string} refrence What we are refrencing via this link.
+     * @return {string} a message if the file was created to log.
+     */
+    api.utils.createLinkfileSafely = (filePath, type, refrence) => {
+      if (api.utils.fileExists(filePath)) {
+        throw new Error(`link file '${filePath}' already exists`)
+      } else {
+        fs.writeFileSync(filePath, type)
+        return `creating linkfile '${filePath}'`
+      }
+    }
+
+    /**
+     * Remove an ActionHero LinkFile, only if it exists.
+     * Throws an error if the file does not exist, or encounters a filesystem problem.
+     *
+     * @param  {string} filePath The path of the LinkFile
+     * @param  {string} type What are we linking (actions, tasks, etc).
+     * @param  {string} refrence What we are refrencing via this link.
+     * @return {string} a message if the file was created to log.
+     */
+    api.utils.removeLinkfileSafely = (filePath, type, refrence) => {
+      if (!api.utils.fileExists(filePath)) {
+        throw new Error(`link file '${filePath}' doesn't exist`)
+      } else {
+        fs.unlinkSync(filePath)
+        return `removing linkfile '${filePath}'`
+      }
+    }
+
+    /**
+     * Create a system symbolic link.
+     * Throws an error if it encounters a filesystem problem.
+     *
+     * @param  {string} destination
+     * @param  {string} source
+     * @return {string} a message if the symlionk was created to log.
+     */
+    api.utils.createSymlinkSafely = (destination, source) => {
+      if (api.utils.dirExists(destination)) {
+        throw new Error(`symbolic link '${destination}' already exists`)
+      } else {
+        fs.symlinkSync(source, destination, 'dir')
+        return `creating symbolic link '${destination}' => '${source}'`
+      }
+    }
+  }
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Learn more about ActionHero @ <a href="https://www.actionherojs.com">www.actionherojs.com</a>
+    <br />
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> using the <a href="https://github.com/actionhero/docdash-actionhero-theme">docdash-actionhero-theme</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

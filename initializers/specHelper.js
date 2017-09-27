@@ -5,6 +5,14 @@ const NodeResque = require('node-resque')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
+/**
+ * A speical "mock" server which enables you to test actions and tasks in a simple way.  Only availalbe in the TEST environment.
+ *
+ * @namespace api.specHelper
+ * @property {Boolean} enabled - Is the specHelper server enabled
+ * @property {Object} Server - The instnace of the SpecHelper server
+ * @extends ActionHero.Initializer
+ */
 module.exports = class SpecHelper extends ActionHero.Initializer {
   constructor () {
     super()
@@ -125,6 +133,12 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
       Server: TestServer
     }
 
+    /**
+     * A special connection usable in tests.  Create via `new api.specHelper.Connection()`
+     *
+     * @type {Class}
+     * @memberof api.specHelper
+     */
     api.specHelper.Connection = class {
       constructor () {
         let id = uuid.v4()
@@ -139,8 +153,14 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
       }
     }
 
-    // create helpers to run an action
-    // data can be a params hash or a connection
+    /**
+     * Run an action via the specHelper server.
+     *
+     * @async
+     * @param  {string}  actionName The name of the action to run.
+     * @param  {Object}  input      You can provide either a pre-build connection `new api.specHelper.Connection()`, or just a Object with params for your action.
+     * @return {Promise<Object>}    The `response` from the action.
+     */
     api.specHelper.runAction = async (actionName, input) => {
       let connection
       if (!input) { input = {} }
@@ -162,7 +182,13 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
       return response
     }
 
-    // helpers to get files
+    /**
+     * Mock a specHelper connection requesting a file from the server.
+     *
+     * @async
+     * @param  {string}  file The name & path of the file to request.
+     * @return {Promise<Object>} The body contents and metadata of the file requested.  Conatins: mime, length, body, and more.
+     */
     api.specHelper.getStaticFile = async (file) => {
       let connection = new api.specHelper.Connection()
       connection.params.file = file
@@ -176,11 +202,29 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
       return response
     }
 
-    // create helpers to run a task
-    api.specHelper.runTask = async (taskName, params, next) => {
+    /**
+     * Use the specHelper to run a task.
+     * Note: this only runs the task's `run()` method, and no middleware.  This is faster than api.specHelper.runFullTask.
+     *
+     * @async
+     * @param  {string}   taskName The name of the task.
+     * @param  {Object}   params   Params to pass to the task
+     * @return {Promise<Object>}   The return value from the task.
+     * @see api.specHelper.runFullTask
+     */
+    api.specHelper.runTask = async (taskName, params) => {
       return api.tasks.tasks[taskName].run(params)
     }
 
+    /**
+     * Use the specHelper to run a task.
+     * Note: this will run a full Task worker, and will also include any middleware.  This is slower than api.specHelper.runTask.
+     *
+     * @param  {string}   taskName The name of the task.
+     * @param  {Object}   params   Params to pass to the task
+     * @return {Promise<Object>}   The return value from the task.
+     * @see api.specHelper.runTask
+     */
     api.specHelper.runFullTask = async (taskName, params) => {
       const worker = new NodeResque.Worker({
         connection: api.redis.clients.tasks,
