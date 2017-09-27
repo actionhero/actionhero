@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>initializers/servers.js - Documentation</title>
+    <title>Tutorial: logging - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -28,115 +28,67 @@
 
 <div id="main">
     
-    <h1 class="page-title">initializers/servers.js</h1>
+    <h1 class="page-title">Tutorial: logging</h1>
     
 
-    
-
-
-
-    
     <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>'use strict'
 
-const path = require('path')
-const ActionHero = require('./../index.js')
-const api = ActionHero.api
+<header>
+    
 
-/**
- * Manages the servers in this ActionHero instance.
- *
- * @namespace api.servers
- * @property {Object} servers - The collection of servers active in thi ActionHero instance.
- * @extends ActionHero.Initializer
- */
-module.exports = class Servers extends ActionHero.Initializer {
-  constructor () {
-    super()
-    this.name = 'servers'
-    this.loadPriority = 599
-    this.startPriority = 900
-    this.stopPriority = 100
-  }
+    <h2>logging</h2>
+</header>
 
-  async initialize () {
-    api.servers = {
-      servers: {}
+<article>
+    <h2>Overview</h2><p>ActionHero uses the <strong><a href="https://github.com/flatiron/winston">Winston logger</a></strong>. This allows for better, more customizable logging.</p>
+<h2>Defaults</h2><pre class="prettyprint source lang-js"><code>config.logger = {
+  transports: [
+    function(api){
+      return new (winston.transports.Console)({
+        colorize: true,
+        level: &quot;debug&quot;,
+      });
+    },
+    function(api){
+      return new (winston.transports.File)({
+        filename: './log/' + api.pids.title + '.log',
+        level: &quot;info&quot;,
+        timestamp: true,
+      });
     }
+  ]
+};</code></pre><p>In your <code>config/logger.js</code>, you can customize which <code>transports</code> you would like the logger to use. If none are provided, a default logger which only will print to stdout will be used. See winston's documentation for all the logger types, but know that they include console, file, s3, riak, and more.</p>
+<p>You can set a transport directly, IE <code>new (winston.transports.Console)()</code> or in a function which will be passed the <code>api</code> object like the examples above. The benefit of using the function invocation is you will have access to other methods and configuration options (like the title of the process).</p>
+<h2>Levels</h2><pre class="prettyprint source lang-js"><code>api.log('hello'); // will use the default, 'info' level
+api.log('debug message', 'debug') // will not show up unless you have configured your logger in this NODE_ENV to be debug
+api.log('OH NO', 'emerg') // will show up in all logger levels
+api.log('the params were', 'info', data.params) // you can log objects too</code></pre><p>Note that you can set a <code>level</code> which indicates which level (and those above it) you wish to log per transport. The log levels are:</p>
+<ul>
+<li>0=debug</li>
+<li>1=info</li>
+<li>2=notice</li>
+<li>3=warning</li>
+<li>4=error</li>
+<li>5=crit</li>
+<li>6=alert</li>
+<li>7=emerg</li>
+</ul>
+<p>You can customize these via <code>api.config.logger.levels</code> and <code>api.config.logger.colors</code>. See <a href="https://github.com/winstonjs/winston#using-custom-logging-levels">Winston's documenation for more information</a></p>
+<p>For example, if you set the logger's level to &quot;notice&quot;, you would also see &quot;crit&quot; messages, but not &quot;debug&quot; messages.</p>
+<p>To invoke the logger from your code, use: <code>api.log(message, severity, metadata)</code></p>
+<h2>Methods</h2><p><code>api.logger.log</code> and <code>api.logger[severity]</code> also exist which allow you to call and modify the Winston instance directly.</p>
+<p><code>api.log</code> will pass your message to all transports.</p>
+<h3><code>api.log(message, severity, metadata)</code></h3><pre class="prettyprint source lang-js"><code>// the most basic use.  Will assume 'info' as the severity
+api.log('hello');
 
-    let serverFolders = [
-      path.resolve(path.join(__dirname, '..', 'servers'))
-    ]
+// custom severity
+api.log('OH NO!', 'warning');
 
-    api.config.general.paths.server.forEach((p) => {
-      p = path.resolve(p)
-      if (serverFolders.indexOf(p) &lt; 0) { serverFolders.push(p) }
-    })
+// custom severity with a metadata object
+api.log('OH NO, something went wrong', 'warning', { error: new Error('things are busted') });</code></pre>
+</article>
 
-    for (let i in serverFolders) {
-      let p = serverFolders[i]
-      let files = api.utils.recursiveDirectoryGlob(p)
-      for (let j in files) {
-        let filename = files[j]
-        let ServerClass = require(filename)
-        let server = new ServerClass()
-        server.config = api.config.servers[server.type] // shorthand access
-        if (server.config &amp;&amp; server.config.enabled === true) {
-          await server.initialize()
-          api.servers.servers[server.type] = server
-          api.log(`Initialized server: ${server.type}`, 'debug')
-        }
-
-        api.watchFileAndAct(filename, () => {
-          api.log(`*** Rebooting due to server (${server.type}) change ***`, 'info')
-          api.commands.restart()
-        })
-      }
-    }
-  }
-
-  async start () {
-    const serverNames = Object.keys(api.servers.servers)
-    for (let i in serverNames) {
-      let serverName = serverNames[i]
-      let server = api.servers.servers[serverName]
-      if (server &amp;&amp; server.config.enabled === true) {
-        let message = ''
-        message += `Starting server: \`${serverName}\``
-        if (api.config.servers[serverName].bindIP) {
-          message += ` @ ${api.config.servers[serverName].bindIP}`
-        }
-        if (api.config.servers[serverName].port) {
-          message += `:${api.config.servers[serverName].port}`
-        }
-        api.log(message, 'notice')
-        await server.start()
-        api.log(`Server started: ${serverName}`, 'debug')
-      }
-    }
-  }
-
-  async stop () {
-    const serverNames = Object.keys(api.servers.servers)
-    for (let i in serverNames) {
-      let serverName = serverNames[i]
-      let server = api.servers.servers[serverName]
-      if ((server &amp;&amp; server.config.enabled === true) || !server) {
-        api.log(`Stopping server: ${serverName}`, 'notice')
-        await server.stop()
-        server.removeAllListeners()
-        api.log(`Server stopped: ${serverName}`, 'debug')
-      }
-    }
-  }
-}
-</code></pre>
-        </article>
-    </section>
-
-
-
+</section>
 
 </div>
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>initializers/servers.js - Documentation</title>
+    <title>Tutorial: config - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -28,115 +28,70 @@
 
 <div id="main">
     
-    <h1 class="page-title">initializers/servers.js</h1>
+    <h1 class="page-title">Tutorial: config</h1>
     
 
-    
-
-
-
-    
     <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>'use strict'
 
-const path = require('path')
-const ActionHero = require('./../index.js')
-const api = ActionHero.api
+<header>
+    
 
-/**
- * Manages the servers in this ActionHero instance.
- *
- * @namespace api.servers
- * @property {Object} servers - The collection of servers active in thi ActionHero instance.
- * @extends ActionHero.Initializer
- */
-module.exports = class Servers extends ActionHero.Initializer {
-  constructor () {
-    super()
-    this.name = 'servers'
-    this.loadPriority = 599
-    this.startPriority = 900
-    this.stopPriority = 100
-  }
+    <h2>config</h2>
+</header>
 
-  async initialize () {
-    api.servers = {
-      servers: {}
-    }
-
-    let serverFolders = [
-      path.resolve(path.join(__dirname, '..', 'servers'))
-    ]
-
-    api.config.general.paths.server.forEach((p) => {
-      p = path.resolve(p)
-      if (serverFolders.indexOf(p) &lt; 0) { serverFolders.push(p) }
-    })
-
-    for (let i in serverFolders) {
-      let p = serverFolders[i]
-      let files = api.utils.recursiveDirectoryGlob(p)
-      for (let j in files) {
-        let filename = files[j]
-        let ServerClass = require(filename)
-        let server = new ServerClass()
-        server.config = api.config.servers[server.type] // shorthand access
-        if (server.config &amp;&amp; server.config.enabled === true) {
-          await server.initialize()
-          api.servers.servers[server.type] = server
-          api.log(`Initialized server: ${server.type}`, 'debug')
-        }
-
-        api.watchFileAndAct(filename, () => {
-          api.log(`*** Rebooting due to server (${server.type}) change ***`, 'info')
-          api.commands.restart()
-        })
-      }
-    }
-  }
-
-  async start () {
-    const serverNames = Object.keys(api.servers.servers)
-    for (let i in serverNames) {
-      let serverName = serverNames[i]
-      let server = api.servers.servers[serverName]
-      if (server &amp;&amp; server.config.enabled === true) {
-        let message = ''
-        message += `Starting server: \`${serverName}\``
-        if (api.config.servers[serverName].bindIP) {
-          message += ` @ ${api.config.servers[serverName].bindIP}`
-        }
-        if (api.config.servers[serverName].port) {
-          message += `:${api.config.servers[serverName].port}`
-        }
-        api.log(message, 'notice')
-        await server.start()
-        api.log(`Server started: ${serverName}`, 'debug')
-      }
-    }
-  }
-
-  async stop () {
-    const serverNames = Object.keys(api.servers.servers)
-    for (let i in serverNames) {
-      let serverName = serverNames[i]
-      let server = api.servers.servers[serverName]
-      if ((server &amp;&amp; server.config.enabled === true) || !server) {
-        api.log(`Stopping server: ${serverName}`, 'notice')
-        await server.stop()
-        server.removeAllListeners()
-        api.log(`Server stopped: ${serverName}`, 'debug')
-      }
+<article>
+    <h2>Overview</h2><p>There are 2 ways to manage actionHero configuration: config files and overrides. In both cases, ActionHero starts by reading the config in <code>./config/</code>. <a href="https://github.com/actionhero/actionhero/blob/master/config/">Here is a documented example</a>.</p>
+<p>The normal way to deal with configuration changes is to use the files in <code>/config/</code> and to have special options for each environment. First we load in all settings from the <code>default</code> config block, and then we replace those with anything defined in the relevant <code>environment</code> section. ActionHero uses the standard node environment variable <code>NODE_ENV</code> to determine environment, and defaults to ‘development' when one isn't found. This pattern is very similar the Rails and Sails frameworks. A good way to visualize this is to note that, by default, the web server will return metadata in response JSON, but we change that in the production NODE_ENV and disable it.</p>
+<pre class="prettyprint source lang-js"><code>exports.default = {
+  general: function(api){
+    return {
+      //...
+      developmentMode: true
+      //...
     }
   }
 }
-</code></pre>
-        </article>
-    </section>
 
+exports.production = {
+  general: function(api){
+    return {
+      developmentMode: false
+    }
+  }
+}</code></pre><p>The other way to modify the config is to pass a &quot;changes&quot; hash to the server directly at boot. You can do things like: <code>{</code>actionhero.start({configChanges: configChanges}, callback)<code>}</code>.</p>
+<p>The priority order of configs is:</p>
+<ol>
+<li>options passed in to boot with <code>{</code>actionhero.start({configChanges: configChanges}, callback)<code>}</code></li>
+<li>environment-specific values in <code>/config</code></li>
+<li>default values in <code>/config</code></li>
+<li>default values of undefined settings from a plugin</li>
+<li>default values of undefined settings from ActionHero's core</li>
+</ol>
+<p>When building config files of your own, note that an <code>exports.default</code> is always required, and any environment overrides are optional. What is exported is a hash which eventually resolves a synchronous function which accepts the <code>api</code> variable.</p>
+<h2>Config Changes</h2><p>A configChanges example:</p>
+<pre class="prettyprint source lang-js"><code>var actionhero = require(&quot;actionhero&quot;).actionhero;
 
+var params = {};
+params.configChanges = {
+  general: {
+    developmentMode: true
+  }
+}
 
+// start the server!
+actionhero.start(params, function(error, api){
+  api.log(&quot;Boot Successful!&quot;);
+});</code></pre><h2>Boot Options</h2><p>When launching ActionHero you can specify which config directory to use with <code>--config=/path/to/dir</code> or the environment variable <code>ACTIONHERO_CONFIG</code>, otherwise <code>/config/</code> will be used from your working directory.</p>
+<p>The priority of arguments is:</p>
+<ol>
+<li>Use the project 'config' folder, if it exists.</li>
+<li><code>actionhero --config=PATH1 --config=PATH2 --config=PATH3,PATH4</code></li>
+<li><code>ACTIONHERO_CONFIG=PATH1,PATH2 npm start</code></li>
+</ol>
+<p>Note that if <code>--config</code> or <code>ACTIONHERO_CONFIG</code> are used, they <em>overwrite</em> the use of the default <code>/config</code> folder. If you wish to use both, you need to re-specify &quot;config&quot;, e.g. <code>--config=config,local-config</code>. Also, note that specifying multiple <code>--config</code> options on the command line does exactly the same thing as using one parameter with comma separators, however the environment variable method only supports the comma-delimited syntax.</p>
+</article>
+
+</section>
 
 </div>
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>initializers/servers.js - Documentation</title>
+    <title>Tutorial: initializers - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -28,115 +28,47 @@
 
 <div id="main">
     
-    <h1 class="page-title">initializers/servers.js</h1>
+    <h1 class="page-title">Tutorial: initializers</h1>
     
 
-    
-
-
-
-    
     <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>'use strict'
 
-const path = require('path')
-const ActionHero = require('./../index.js')
-const api = ActionHero.api
+<header>
+    
 
-/**
- * Manages the servers in this ActionHero instance.
- *
- * @namespace api.servers
- * @property {Object} servers - The collection of servers active in thi ActionHero instance.
- * @extends ActionHero.Initializer
- */
-module.exports = class Servers extends ActionHero.Initializer {
-  constructor () {
-    super()
-    this.name = 'servers'
-    this.loadPriority = 599
-    this.startPriority = 900
-    this.stopPriority = 100
+    <h2>initializers</h2>
+</header>
+
+<article>
+    <h2>Overview</h2><p>Initializers are the main way you expand your ActionHero server.  This is where you connect to databases, modify the global <code>api</code> object with new classes and helper methods, and set up your <a href="/docs/core/middleware">middleware</a>.</p>
+<p>Initializers run in 3 phases coinciding with the lifecycles of the application: <code>init</code>, <code>start</code>, and <code>stop</code>.  All <code>init</code> steps happen before all <code>start</code> steps.  Initializers can define both methods and priorities which will happen at each phase of the server's lifecycle.</p>
+<p>System initializers (like setting up redis and the cache) have priority levels in the 100 to 1000 level range.  Application initializers should run with a priority level of over 1000 to use methods created by the system.  You can of course set priority levels lower than 1000 in your application (perhaps you connect to a database).  The priority level split is purely convention.</p>
+<p>In general, <code>initialize()</code> methods should create prototypes and new objects, and <code>start()</code> should boot things or connect to external resources.</p>
+<h2>Format</h2><pre class="prettyprint source lang-js"><code>// initializers/stuffInit.js
+
+module.exports = {
+  loadPriority:  1000,
+  startPriority: 1000,
+  stopPriority:  1000,
+  initialize: function(api, next){
+    api.myObject = {};
+
+    next();
+  },
+  start: function(api, next){
+    // connect to server
+    next();
+  },
+  stop: function(api, next){
+    // disconnect from server
+    next();
   }
+}</code></pre><p>To use a custom initializer, create a <code>initializers</code> directory in your project. Export an object with at least one of <code>start</code>, <code>stop</code> or <code>initialize</code> and specify your priorities.</p>
+<p>You can generate a file of this type with <code>actionhero generate initializer --name=stuffInit</code></p>
+<h2>Errors</h2><p>You can throw an error at any step in the initializer.  Doing so will cause ActionHero to log the error and stop the server.  For example, you might throw an error if you cannot connect to an external service at boot, <a href="https://github.com/actionhero/ah-sequelize-plugin/blob/master/initializers/sequelize.js">like a database</a>.</p>
+</article>
 
-  async initialize () {
-    api.servers = {
-      servers: {}
-    }
-
-    let serverFolders = [
-      path.resolve(path.join(__dirname, '..', 'servers'))
-    ]
-
-    api.config.general.paths.server.forEach((p) => {
-      p = path.resolve(p)
-      if (serverFolders.indexOf(p) &lt; 0) { serverFolders.push(p) }
-    })
-
-    for (let i in serverFolders) {
-      let p = serverFolders[i]
-      let files = api.utils.recursiveDirectoryGlob(p)
-      for (let j in files) {
-        let filename = files[j]
-        let ServerClass = require(filename)
-        let server = new ServerClass()
-        server.config = api.config.servers[server.type] // shorthand access
-        if (server.config &amp;&amp; server.config.enabled === true) {
-          await server.initialize()
-          api.servers.servers[server.type] = server
-          api.log(`Initialized server: ${server.type}`, 'debug')
-        }
-
-        api.watchFileAndAct(filename, () => {
-          api.log(`*** Rebooting due to server (${server.type}) change ***`, 'info')
-          api.commands.restart()
-        })
-      }
-    }
-  }
-
-  async start () {
-    const serverNames = Object.keys(api.servers.servers)
-    for (let i in serverNames) {
-      let serverName = serverNames[i]
-      let server = api.servers.servers[serverName]
-      if (server &amp;&amp; server.config.enabled === true) {
-        let message = ''
-        message += `Starting server: \`${serverName}\``
-        if (api.config.servers[serverName].bindIP) {
-          message += ` @ ${api.config.servers[serverName].bindIP}`
-        }
-        if (api.config.servers[serverName].port) {
-          message += `:${api.config.servers[serverName].port}`
-        }
-        api.log(message, 'notice')
-        await server.start()
-        api.log(`Server started: ${serverName}`, 'debug')
-      }
-    }
-  }
-
-  async stop () {
-    const serverNames = Object.keys(api.servers.servers)
-    for (let i in serverNames) {
-      let serverName = serverNames[i]
-      let server = api.servers.servers[serverName]
-      if ((server &amp;&amp; server.config.enabled === true) || !server) {
-        api.log(`Stopping server: ${serverName}`, 'notice')
-        await server.stop()
-        server.removeAllListeners()
-        api.log(`Server stopped: ${serverName}`, 'debug')
-      }
-    }
-  }
-}
-</code></pre>
-        </article>
-    </section>
-
-
-
+</section>
 
 </div>
 

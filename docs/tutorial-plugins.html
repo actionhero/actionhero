@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>initializers/servers.js - Documentation</title>
+    <title>Tutorial: plugins - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -28,115 +28,45 @@
 
 <div id="main">
     
-    <h1 class="page-title">initializers/servers.js</h1>
+    <h1 class="page-title">Tutorial: plugins</h1>
     
 
-    
-
-
-
-    
     <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>'use strict'
 
-const path = require('path')
-const ActionHero = require('./../index.js')
-const api = ActionHero.api
+<header>
+    
 
-/**
- * Manages the servers in this ActionHero instance.
- *
- * @namespace api.servers
- * @property {Object} servers - The collection of servers active in thi ActionHero instance.
- * @extends ActionHero.Initializer
- */
-module.exports = class Servers extends ActionHero.Initializer {
-  constructor () {
-    super()
-    this.name = 'servers'
-    this.loadPriority = 599
-    this.startPriority = 900
-    this.stopPriority = 100
-  }
+    <h2>plugins</h2>
+</header>
 
-  async initialize () {
-    api.servers = {
-      servers: {}
-    }
+<article>
+    <h2>Overview</h2><p>As of ActionHero version <code>v8.0.0</code>, you can create and include plugins for you ActionHero project. Plugins are collections of <code>tasks</code>, <code>actions</code>, <code>servers</code>, and <code>initializers</code> that are collected as a module. You can install plugins via NPM or keep them in a local path.</p>
+<p>Plugins are loaded after all local ActionHero project files, but initializers follow the same priority scheme as all other initializers.</p>
+<h2>Creating</h2><pre class="prettyprint source lang-bash"><code>/
+| - actions
+| - tasks
+| - servers
+| - initializers
+| - scripts
+| - config
+|
+| - package.json</code></pre><p>To create a plugin, create a project with the following structure:</p>
+<p>This structure will allow elements to be loaded into ActionHero (we search <code>/actions</code> for actions, <code>/tasks</code> for tasks, etc)</p>
+<p>When developing your plugin locally, you can load it into an existing ActionHero project to test it out.</p>
+<p>First, add the path your plugin is in to <code>api.config.general.paths.plugin</code>. If your ActionHero app is in <code>/var/ah/actionhero</code> and your plugin is in <code>/var/ah/my_plugin</code>, add <code>/var/ah</code> to <code>api.config.general.paths.plugin</code></p>
+<p><strong>Please use the npm naming convention <code>ah-(name)-plugin</code> when uploading your plugin to npm</strong></p>
+<h2>Methods</h2><p>When creating plugins, you may find yourself wanting to do things which could normally be accomplished easily with a &quot;top level&quot; ActionHero project, but might be difficult from within the <code>node_modules</code> folder. Here are some helpers:</p>
+<h3>Routes:</h3><ul>
+<li><code>api.routes.registerRoute(method, path, action, apiVersion, matchTrailingPathParts)</code><ul>
+<li>Add a route to the system.</li>
+</ul>
+</li>
+</ul>
+<h2>Examples</h2><p><a href="https://github.com/actionhero/ah-sample-plugin">You can view a sample plugin here</a></p>
+<h2>Published</h2><p>You can view a list of plugins maintained by <a href="https://github.com/l0oky">@l0oky</a> via <a href="https://github.com/l0oky/awesome-actionhero"><img src="https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg" alt="Awesome"></a></p>
+</article>
 
-    let serverFolders = [
-      path.resolve(path.join(__dirname, '..', 'servers'))
-    ]
-
-    api.config.general.paths.server.forEach((p) => {
-      p = path.resolve(p)
-      if (serverFolders.indexOf(p) &lt; 0) { serverFolders.push(p) }
-    })
-
-    for (let i in serverFolders) {
-      let p = serverFolders[i]
-      let files = api.utils.recursiveDirectoryGlob(p)
-      for (let j in files) {
-        let filename = files[j]
-        let ServerClass = require(filename)
-        let server = new ServerClass()
-        server.config = api.config.servers[server.type] // shorthand access
-        if (server.config &amp;&amp; server.config.enabled === true) {
-          await server.initialize()
-          api.servers.servers[server.type] = server
-          api.log(`Initialized server: ${server.type}`, 'debug')
-        }
-
-        api.watchFileAndAct(filename, () => {
-          api.log(`*** Rebooting due to server (${server.type}) change ***`, 'info')
-          api.commands.restart()
-        })
-      }
-    }
-  }
-
-  async start () {
-    const serverNames = Object.keys(api.servers.servers)
-    for (let i in serverNames) {
-      let serverName = serverNames[i]
-      let server = api.servers.servers[serverName]
-      if (server &amp;&amp; server.config.enabled === true) {
-        let message = ''
-        message += `Starting server: \`${serverName}\``
-        if (api.config.servers[serverName].bindIP) {
-          message += ` @ ${api.config.servers[serverName].bindIP}`
-        }
-        if (api.config.servers[serverName].port) {
-          message += `:${api.config.servers[serverName].port}`
-        }
-        api.log(message, 'notice')
-        await server.start()
-        api.log(`Server started: ${serverName}`, 'debug')
-      }
-    }
-  }
-
-  async stop () {
-    const serverNames = Object.keys(api.servers.servers)
-    for (let i in serverNames) {
-      let serverName = serverNames[i]
-      let server = api.servers.servers[serverName]
-      if ((server &amp;&amp; server.config.enabled === true) || !server) {
-        api.log(`Stopping server: ${serverName}`, 'notice')
-        await server.stop()
-        server.removeAllListeners()
-        api.log(`Server stopped: ${serverName}`, 'debug')
-      }
-    }
-  }
-}
-</code></pre>
-        </article>
-    </section>
-
-
-
+</section>
 
 </div>
 

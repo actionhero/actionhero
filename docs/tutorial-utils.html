@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>initializers/servers.js - Documentation</title>
+    <title>Tutorial: utils - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -28,115 +28,44 @@
 
 <div id="main">
     
-    <h1 class="page-title">initializers/servers.js</h1>
+    <h1 class="page-title">Tutorial: utils</h1>
     
 
-    
-
-
-
-    
     <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>'use strict'
 
-const path = require('path')
-const ActionHero = require('./../index.js')
-const api = ActionHero.api
+<header>
+    
 
-/**
- * Manages the servers in this ActionHero instance.
- *
- * @namespace api.servers
- * @property {Object} servers - The collection of servers active in thi ActionHero instance.
- * @extends ActionHero.Initializer
- */
-module.exports = class Servers extends ActionHero.Initializer {
-  constructor () {
-    super()
-    this.name = 'servers'
-    this.loadPriority = 599
-    this.startPriority = 900
-    this.stopPriority = 100
-  }
+    <h2>utils</h2>
+</header>
 
-  async initialize () {
-    api.servers = {
-      servers: {}
-    }
+<article>
+    <h2>Overview</h2><p>ActionHero ships with a few utility methods exposed for your convince:</p>
+<h2>Methods</h2><h3><code>api.utils.hashMerge(a, b)</code></h3><ul>
+<li>create a new hash which looks like b merged into a</li>
+<li><code>{</code>{a:1, b:2}<code>}</code> merged with <code>{</code>{b:3, c:4}<code>}</code> looks like <code>{</code>{a: 1, b:3, c:4}<code>}</code></li>
+</ul>
+<h3><code>api.utils.isPlainObject(object)</code></h3><ul>
+<li>determines if <code>object</code> is a plain js 'Object' or something more complex, like a stream</li>
+</ul>
+<h3><code>api.utils.arrayUniqueify(arr)</code></h3><ul>
+<li>removes duplicate entries from an array</li>
+</ul>
+<h3><code>api.utils.objClone(obj)</code></h3><ul>
+<li>creates a new object with the same keys and values of the original object</li>
+</ul>
+<h3><code>api.utils.getExternalIPAddress()</code></h3><ul>
+<li>attempts to determine this server's external IP address out of all plausible addressees this host is listening on</li>
+</ul>
+<h3><code>api.utils.parseCookies(req)</code></h3><ul>
+<li>a helper to parse the request object's headers and returns a hash of the client's cookies</li>
+</ul>
+<h3><code>api.utils.parseIPv6URI(address)</code></h3><ul>
+<li>will return <code>{</code>{host: host, port: port}<code>}</code> for an IPv6 address</li>
+</ul>
+</article>
 
-    let serverFolders = [
-      path.resolve(path.join(__dirname, '..', 'servers'))
-    ]
-
-    api.config.general.paths.server.forEach((p) => {
-      p = path.resolve(p)
-      if (serverFolders.indexOf(p) &lt; 0) { serverFolders.push(p) }
-    })
-
-    for (let i in serverFolders) {
-      let p = serverFolders[i]
-      let files = api.utils.recursiveDirectoryGlob(p)
-      for (let j in files) {
-        let filename = files[j]
-        let ServerClass = require(filename)
-        let server = new ServerClass()
-        server.config = api.config.servers[server.type] // shorthand access
-        if (server.config &amp;&amp; server.config.enabled === true) {
-          await server.initialize()
-          api.servers.servers[server.type] = server
-          api.log(`Initialized server: ${server.type}`, 'debug')
-        }
-
-        api.watchFileAndAct(filename, () => {
-          api.log(`*** Rebooting due to server (${server.type}) change ***`, 'info')
-          api.commands.restart()
-        })
-      }
-    }
-  }
-
-  async start () {
-    const serverNames = Object.keys(api.servers.servers)
-    for (let i in serverNames) {
-      let serverName = serverNames[i]
-      let server = api.servers.servers[serverName]
-      if (server &amp;&amp; server.config.enabled === true) {
-        let message = ''
-        message += `Starting server: \`${serverName}\``
-        if (api.config.servers[serverName].bindIP) {
-          message += ` @ ${api.config.servers[serverName].bindIP}`
-        }
-        if (api.config.servers[serverName].port) {
-          message += `:${api.config.servers[serverName].port}`
-        }
-        api.log(message, 'notice')
-        await server.start()
-        api.log(`Server started: ${serverName}`, 'debug')
-      }
-    }
-  }
-
-  async stop () {
-    const serverNames = Object.keys(api.servers.servers)
-    for (let i in serverNames) {
-      let serverName = serverNames[i]
-      let server = api.servers.servers[serverName]
-      if ((server &amp;&amp; server.config.enabled === true) || !server) {
-        api.log(`Stopping server: ${serverName}`, 'notice')
-        await server.stop()
-        server.removeAllListeners()
-        api.log(`Server stopped: ${serverName}`, 'debug')
-      }
-    }
-  }
-}
-</code></pre>
-        </article>
-    </section>
-
-
-
+</section>
 
 </div>
 

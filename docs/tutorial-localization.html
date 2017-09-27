@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>initializers/servers.js - Documentation</title>
+    <title>Tutorial: localization - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -28,115 +28,64 @@
 
 <div id="main">
     
-    <h1 class="page-title">initializers/servers.js</h1>
+    <h1 class="page-title">Tutorial: localization</h1>
     
 
-    
-
-
-
-    
     <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>'use strict'
 
-const path = require('path')
-const ActionHero = require('./../index.js')
-const api = ActionHero.api
+<header>
+    
 
-/**
- * Manages the servers in this ActionHero instance.
- *
- * @namespace api.servers
- * @property {Object} servers - The collection of servers active in thi ActionHero instance.
- * @extends ActionHero.Initializer
- */
-module.exports = class Servers extends ActionHero.Initializer {
-  constructor () {
-    super()
-    this.name = 'servers'
-    this.loadPriority = 599
-    this.startPriority = 900
-    this.stopPriority = 100
-  }
+    <h2>localization</h2>
+</header>
 
-  async initialize () {
-    api.servers = {
-      servers: {}
-    }
-
-    let serverFolders = [
-      path.resolve(path.join(__dirname, '..', 'servers'))
-    ]
-
-    api.config.general.paths.server.forEach((p) => {
-      p = path.resolve(p)
-      if (serverFolders.indexOf(p) &lt; 0) { serverFolders.push(p) }
-    })
-
-    for (let i in serverFolders) {
-      let p = serverFolders[i]
-      let files = api.utils.recursiveDirectoryGlob(p)
-      for (let j in files) {
-        let filename = files[j]
-        let ServerClass = require(filename)
-        let server = new ServerClass()
-        server.config = api.config.servers[server.type] // shorthand access
-        if (server.config &amp;&amp; server.config.enabled === true) {
-          await server.initialize()
-          api.servers.servers[server.type] = server
-          api.log(`Initialized server: ${server.type}`, 'debug')
+<article>
+    <h2>Overview</h2><p>Starting in ActionHero <code>v13.0.0</code>, you can now use the <a href="https://github.com/mashpie/i18n-node">i18n</a> module to customize all aspects of ActionHero.</p>
+<h2>Locale Files</h2><ul>
+<li>When running ActionHero with <code>api.config.i18n.updateFiles = true</code>, you will see ActionHero generate a 'locales' folder at the top level of your project which will contain translations of all strings in your project with are passed though the new localization system. This includes all uses of <code>api.i18n.localize</code>, <code>connection.localize</code> and <code>api.log</code>.<ul>
+<li>be sure to use sprintf-style string interpolation for variables!</li>
+</ul>
+</li>
+<li>From here, it is an easy matter to change the strings, per locale, to how you would like them presented back in your application. The next time you restart the server, the values you've updated in your locale strings file will be used.</li>
+<li>disable <code>api.config.i18n.updateFiles</code> if you do not want this behavior.</li>
+</ul>
+<h2>Connection Locale</h2><p>p&gt;Since every ActionHero implementation is unique, we cannot ship with a &quot;guess&quot; about how to determine a given connection's locale. Perhaps you have an HTTP server and you can trust your client's <code>accept-language</code> headers. Or perhaps you run your API under a number of different host names and you can presume locale based on them. Whatever the case, you need to create a synchronous method in an initializer which will be called when each connection connects to return its locale.</p>
+<p>For example, I may have an initializer in my project like this:</p>
+<pre class="prettyprint source lang-js"><code>module.exports = {
+  initialize: function(api, next){
+    api.customLocalization = {
+      lookup: function(connection){
+        var locale = 'en';
+        if(connection.type === 'web'){
+          var host = connection.rawConnection.req.headers.host
+          if(host === 'usa.site.com'){ locale = 'en-US'; }
+          if(host === 'uk.site.com'){  locale = 'en-GB'; }
+          if(host === 'es.site.com'){  locale = 'es-ES'; }
+          if(host === 'mx.site.com'){  locale = 'es-MX'; }
         }
-
-        api.watchFileAndAct(filename, () => {
-          api.log(`*** Rebooting due to server (${server.type}) change ***`, 'info')
-          api.commands.restart()
-        })
+        return locale;
       }
     }
+    next();
   }
+}</code></pre><p>To tell the i18n to use this method with a new connection, set <code>api.config.i18n.determineConnectionLocale = 'api.customLocalization.lookup'</code></p>
+<h2>Connection Methods</h2><ul>
+<li><code>connection.localize(string)</code> or <code>connection.localize([string-with-interpolation, value])</code><ul>
+<li>Allows you to interpolate a string based on the connection's current locale. For example, say in an action you wanted to respond with <code>{CountExample}</code> In your locale files, you would define <code>the count was {</code>{{count}}<code>}</code> in every language you cared about, and not need to modify the action itself at all.</li>
+</ul>
+</li>
+</ul>
+<h2>Other Strings</h2><ul>
+<li>To localize strings that are not used in methods mentioned above you can use <code>api.i18n.localize(string, options)</code>.<ul>
+<li>Allows you to interpolate a string.</li>
+<li>Just as the other localize methods above, the input string will be in your locale files for you to change it anytime you want.</li>
+<li>The second <code>options</code> optional argument (default value is <code>api.i18n</code>) allows you to <a href="https://github.com/mashpie/i18n-node#list-of-all-configuration-options">configure</a> i18n. Note that you will use this argument only in very few special cases, It is recommended to edit the global <code>api.config.i18n</code> settings to suit your localization needs.</li>
+</ul>
+</li>
+</ul>
+</article>
 
-  async start () {
-    const serverNames = Object.keys(api.servers.servers)
-    for (let i in serverNames) {
-      let serverName = serverNames[i]
-      let server = api.servers.servers[serverName]
-      if (server &amp;&amp; server.config.enabled === true) {
-        let message = ''
-        message += `Starting server: \`${serverName}\``
-        if (api.config.servers[serverName].bindIP) {
-          message += ` @ ${api.config.servers[serverName].bindIP}`
-        }
-        if (api.config.servers[serverName].port) {
-          message += `:${api.config.servers[serverName].port}`
-        }
-        api.log(message, 'notice')
-        await server.start()
-        api.log(`Server started: ${serverName}`, 'debug')
-      }
-    }
-  }
-
-  async stop () {
-    const serverNames = Object.keys(api.servers.servers)
-    for (let i in serverNames) {
-      let serverName = serverNames[i]
-      let server = api.servers.servers[serverName]
-      if ((server &amp;&amp; server.config.enabled === true) || !server) {
-        api.log(`Stopping server: ${serverName}`, 'notice')
-        await server.stop()
-        server.removeAllListeners()
-        api.log(`Server stopped: ${serverName}`, 'debug')
-      }
-    }
-  }
-}
-</code></pre>
-        </article>
-    </section>
-
-
-
+</section>
 
 </div>
 
