@@ -47,46 +47,72 @@
 
 
     <section class="readme">
-        <article><h1>ActionHero</h1><h2>The reusable, scalable, and quick node.js API server for stateless and stateful applications</h2><p align="center">
+        <article><h1>ActionHero</h1><h2>The reusable, scalable, and quick node.js API server for stateless and stateful applications</h2><div align="center">
   <img src="https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png" alt="ActionHero Logo" />
-</p>
+</div>
 
 <hr>
-<p><strong><a href="https://npmjs.org/package/actionhero">NPM</a> | <a href="http://actionherojs.com/docs">Docs</a> | <a href="https://www.actionherojs.com">Web Site</a> | <a href="https://github.com/actionhero/actionhero">GitHub</a> | <a href="http://slack.actionherojs.com">Slack</a> | <a href="https://github.com/actionhero/actionhero-client">Client</a></strong></p>
+<div align="center">
+
+<strong><a href="https://npmjs.org/package/actionhero">NPM</a> |
+<a href="https://www.actionherojs.com">Web Site</a> |
+<a href="https://docs.actionherojs.com">Latest Docs</a> |
+<a href="https://github.com/actionhero/actionhero">GitHub</a> |
+<a href="https://slack.actionherojs.com">Slack</a> |
+<a href="https://twitter.com/actionherojs">Twitter</a></strong>
+
+</div>
+
 <hr>
-<p><a href="https://www.npmjs.com/package/actionhero"><img src="https://img.shields.io/npm/v/actionhero.svg?style=flat-square" alt="NPM Version"></a><a href="https://npmjs.org/package/actionhero"><img src="https://img.shields.io/node/v/actionhero.svg?style=flat-square" alt="Node Version"></a><a href="https://npmjs.org/package/actionhero"><img src="https://img.shields.io/npm/dm/actionhero.svg?style=flat-square" alt="NPM"></a><a href="https://david-dm.org/actionhero/actionhero"><img src="https://david-dm.org/actionhero/actionhero.svg?style=flat-square" alt="Dependency Status"></a>
-<a href="https://greenkeeper.io/"><img src="https://badges.greenkeeper.io/actionhero/actionhero.svg" alt="Greenkeeper badge"></a></p>
-<p><a href="https://circleci.com/gh/actionhero/actionhero"><img src="https://circleci.com/gh/actionhero/actionhero.png" alt="Build Status"></a>
+<div align="center">
+
+<a href="https://www.npmjs.com/package/actionhero"><img src="https://img.shields.io/npm/v/actionhero.svg?style=flat-square" alt="NPM Version"></a>
+<a href="https://npmjs.org/package/actionhero"><img src="https://img.shields.io/node/v/actionhero.svg?style=flat-square" alt="Node Version"></a>
+<a href="https://npmjs.org/package/actionhero"><img src="https://img.shields.io/npm/dm/actionhero.svg?style=flat-square" alt="NPM"></a>
+<a href="https://david-dm.org/actionhero/actionhero"><img src="https://david-dm.org/actionhero/actionhero.svg?style=flat-square" alt="Dependency Status"></a>
+<a href="https://greenkeeper.io/"><img src="https://badges.greenkeeper.io/actionhero/actionhero.svg" alt="Greenkeeper badge"></a>
+<a href="https://circleci.com/gh/actionhero/actionhero"><img src="https://circleci.com/gh/actionhero/actionhero.png" alt="Build Status"></a>
 <a href="https://github.com/l0oky/awesome-actionhero"><img src="https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg" alt="Awesome"></a>
-<a href="http://slack.actionherojs.com"><img src="http://slack.actionherojs.com/badge.svg" alt="Chat"></a></p>
-<h2>Who is the ActionHero?</h2><p>ActionHero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making <strong>reusable</strong> &amp; <strong>scalable</strong> APIs for HTTP, WebSockets, and more.  Clients connected to an actionhero server can <a href="https://www.actionherojs.com/docs/core/actions"><strong>consume the api</strong></a>, <a href="https://www.actionherojs.com/docs/core/file-server"><strong>consume static content</strong></a>, and <a href="https://www.actionherojs.com/docs/core/chat"><strong>communicate with each other</strong></a>.  ActionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.</p>
+<a href="http://slack.actionherojs.com"><img src="https://slack.actionherojs.com/badge.svg" alt="Chat"></a>
+
+</div>
+
+<hr>
+<h2>Who is the ActionHero?</h2><p>ActionHero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making <strong>reusable</strong> &amp; <strong>scalable</strong> APIs for HTTP, WebSockets, and more.  Clients connected to an actionhero server can <a href="https://docs.actionherojs.com/tutorial-actions.html"><strong>consume the api</strong></a>, <a href="https://docs.actionherojs.com/tutorial-file_server.html"><strong>consume static content</strong></a>, and <a href="https://docs.actionherojs.com/tutorial-chat.html"><strong>communicate with each other</strong></a>.  ActionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.  ActionHero provides a simple Async/Await API for managing every type of connection and background task.</p>
 <p>Currently actionhero supports the following out of the box...</p>
 <ul>
-<li><a href="http://www.actionherojs.com/docs/servers/web">Web Clients</a>: HTTP, HTTPS</li>
-<li><a href="http://www.actionherojs.com/docs/servers/socket">Socket Clients</a>: TCP (telnet), TLS</li>
-<li><a href="http://www.actionherojs.com/docs/servers/websocket">Web Socket Clients</a>: HTTP, HTTPS</li>
+<li><a href="https://docs.actionherojs.com/tutorial-web.html">Web Clients</a>: HTTP, HTTPS</li>
+<li><a href="https://docs.actionherojs.com/tutorial-socket.html">Socket Clients</a>: TCP (telnet), TLS</li>
+<li><a href="https://docs.actionherojs.com/tutorial-web_socket.html">Web Socket Clients</a>: HTTP, HTTPS</li>
 </ul>
-<p><a href="https://www.actionherojs.com/docs/core/servers">... and you can also make your own servers and transports.</a></p>
+<p><a href="https://docs.actionherojs.com/ActionHero.Server.html">... and you can also make your own servers and transports.</a></p>
 <h2>Quick Start</h2><pre class="prettyprint source lang-bash"><code># mkdir new_project; cd new_project
 npm install actionhero
 ./node_modules/.bin/actionhero generate
-npm start</code></pre><p>Or deploy a web API server now:</p>
+npm start</code></pre><p>Your new project will come with example actions, tests, and more.</p>
+<p>Or deploy a free API server now:</p>
 <p><a href="https://heroku.com/deploy?template=https://github.com/actionhero/actionhero"><img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy to Heroku"></a></p>
 <h2>Want more?</h2><ul>
 <li><a href="https://www.actionherojs.com/get-started">Getting Started</a></li>
-<li><a href="https://www.actionherojs.com/docs/ops/running-actionhero">Running actionhero</a></li>
-<li><a href="http://www.actionherojs.com/docs/">Read the documentation</a></li>
+<li><a href="http://docs.actionherojs.com/">Read the documentation</a></li>
 <li><a href="https://github.com/l0oky/awesome-actionhero">Find community-based resources</a></li>
-<li><a href="https://github.com/actionhero/actionhero-tutorial">See a Sample Project (simple)</a></li>
-<li><a href="https://github.com/actionhero/actionhero-angular-bootstrap-cors-csrf">See a Sample Project (elaborate)</a></li>
 <li><a href="https://www.actionherojs.com/community">Interact with the Community &amp; View the Release History</a></li>
+<li><a href="https://github.com/actionhero/actionhero-client">Server Client</a></li>
 </ul>
-<h2>Documentation</h2><p>ActionHero's documentation can be found @ <a href="https://github.com/actionhero/www.actionherojs.com/">https://github.com/actionhero/www.actionherojs.com/</a>.  If you want to contribute to this documentation, visit the <a href="https://github.com/actionhero/www.actionherojs.com">related project</a></p>
+<h2>Sample Projects</h2><ul>
+<li><a href="https://github.com/actionhero/actionhero-tutorial">Simple</a></li>
+<li><a href="https://github.com/actionhero/actionhero-angular-bootstrap-cors-csrf">Elaborate (Angular, Sequelize)</a></li>
+<li><a href="https://github.com/actionhero/actionhero-react-next-chat">Client Use: React</a></li>
+<li><a href="https://github.com/actionhero/actionhero-react-native">Client Use: React Native</a></li>
+</ul>
+<h2>Documentation</h2><ul>
+<li>Starting with ActionHero version 18, the documentation for each version is included in this repository (and the NPM package) in the <code>/docs</code> folder.  The current version of this documenation is also automatically deployed to https://docs.actionherojs.com.</li>
+<li>ActionHero's marketing site can be found @ <a href="https://github.com/actionhero/www.actionherojs.com/">https://github.com/actionhero/www.actionherojs.com/</a>.  If you want to contribute to this site, visit the <a href="https://github.com/actionhero/www.actionherojs.com">related project</a></li>
+</ul>
 <h2>Who?</h2><ul>
 <li>The primary creator of the actionhero framework is <a href="http://evantahler.com">Evan Tahler</a>, but many others <a href="https://github.com/actionhero/actionhero/graphs/contributors">have helped</a></li>
 <li>If you want to contribute to actionhero, contribute to the conversation on <a href="https://github.com/actionhero/actionhero">github</a> and join us on <a href="https://slack.actionherojs.com">slack</a></li>
-</ul>
-<p>###</p></article>
+</ul></article>
     </section>
 
 
