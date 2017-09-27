@@ -15,7 +15,7 @@ module.exports = class ActionProcessor {
     this.toProcess = true
     this.toRender = true
     this.messageCount = connection.messageCount
-    this.params = connection.params
+    this.params = Object.assign({}, connection.params)
     this.missingParams = []
     this.validatorErrors = []
     this.actionStartTime = null
@@ -244,6 +244,10 @@ module.exports = class ActionProcessor {
     }
   }
 
+  lockParams () {
+    this.params = Object.freeze(this.params)
+  }
+
   async processAction () {
     this.actionStartTime = new Date().getTime()
     this.working = true
@@ -282,6 +286,7 @@ module.exports = class ActionProcessor {
       await this.preProcessAction()
       await this.reduceParams()
       await this.validateParams()
+      this.lockParams()
     } catch (error) {
       return this.completeAction(error)
     }

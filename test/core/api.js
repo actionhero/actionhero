@@ -429,4 +429,34 @@ describe('Core: API', () => {
       expect(response.a).to.equal('~*6*~')
     })
   })
+
+  describe('immutability of data.params', () => {
+    before(() => {
+      api.actions.versions.testAction = [1]
+      api.actions.actions.testAction = {
+        '1': {
+          name: 'testAction',
+          description: 'I am a test',
+          inputs: {
+            a: {required: true}
+          },
+          run: async ({params, response}) => {
+            params.a = 'changed!'
+            response.a = params.a
+          }
+        }
+      }
+    })
+
+    after(() => {
+      delete api.actions.actions.testAction
+      delete api.actions.versions.testAction
+    })
+
+    it('prevents data.params from being modified', async () => {
+      let response = await api.specHelper.runAction('testAction', {a: 'original'})
+      expect(response.a).to.not.exist()
+      expect(response.error).to.match(/Cannot assign to read only property 'a' of object/)
+    })
+  })
 })
