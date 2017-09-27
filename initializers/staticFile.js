@@ -24,6 +24,13 @@ function asyncReadLink (file) {
   })
 }
 
+/**
+ * Countains helpers for returning flies to connections.
+ *
+ * @namespace api.staticFile
+ * @property {Array} searchLoactions - This paths which can be searched for this file.  Comprised of paths from api.config.general.paths and plugins.
+ * @extends ActionHero.Initializer
+ */
 module.exports = class StaticFile extends ActionHero.Initializer {
   constructor () {
     super()
@@ -38,6 +45,17 @@ module.exports = class StaticFile extends ActionHero.Initializer {
 
     // connection.params.file should be set
     // return is of the form: {connection, error, fileStream, mime, length}
+
+    /**
+     * For a connection with `connecton.params.file` set, return a file if we can find it, or a not-found message.
+     * `searchLoactions` will be cheked in the following order: first paths in this project, then plugins.
+     * This can be used in Actions to return files to clients.  If done, set `data.toRender = false` within the action.
+     *
+     * @async
+     * @param  {Object}  connection An ActionHero.Connection
+     * @param  {Nmbber}  counter    (do not set) An internal couner to track which path we should check on (recursive)
+     * @return {Promise<Object>}    Returns a collection of metadata and a FileStream: {connection, fileStream, mime, length, lastModified}
+     */
     api.staticFile.get = async (connection, counter) => {
       let file
 

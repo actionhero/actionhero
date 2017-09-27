@@ -4,6 +4,13 @@ const path = require('path')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
+/**
+ * Manages the servers in this ActionHero instance.
+ *
+ * @namespace api.servers
+ * @property {Object} servers - The collection of servers active in thi ActionHero instance.
+ * @extends ActionHero.Initializer
+ */
 module.exports = class Servers extends ActionHero.Initializer {
   constructor () {
     super()

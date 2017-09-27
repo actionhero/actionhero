@@ -58,6 +58,20 @@ describe('Utils', () => {
     })
   })
 
+  describe('utils.collapseObjectToArray', () => {
+    it('fails with numerical keys', () => {
+      let o = {0: 'a', 1: 'b'}
+      let response = api.utils.collapseObjectToArray(o)
+      expect(response).to.deep.equal(['a', 'b'])
+    })
+
+    it('fails with non-numerical keys', () => {
+      let o = {a: 1}
+      let response = api.utils.collapseObjectToArray(o)
+      expect(response).to.equal(false)
+    })
+  })
+
   describe('utils.hashMerge', () => {
     let A = {a: 1, b: 2}
     let B = {b: -2, c: 3}
@@ -85,21 +99,6 @@ describe('Utils', () => {
       expect(Z.b.n).to.equal(111)
       expect(Z.b.o).to.equal(22)
     })
-  })
-
-  it('utils.objClone', () => {
-    let a = {
-      a: 1,
-      b: 2,
-      c: {
-        first: 1,
-        second: 2
-      }
-    }
-    let b = api.utils.objClone(a)
-    expect(a).to.deep.equal(b)
-    delete a.a
-    expect(a).not.to.equal(b)
   })
 
   describe('eventLoopDelay', () => {

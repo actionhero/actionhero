@@ -7,6 +7,13 @@ const os = require('os')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
+/**
+ * Utilites for any ActionHero project.
+ *
+ * @namespace api.utils
+ * @property {Object} dotProp - The dotProp package.
+ * @extends ActionHero.Initializer
+ */
 module.exports = class Utils extends ActionHero.Initializer {
   constructor () {
     super()
@@ -19,8 +26,40 @@ module.exports = class Utils extends ActionHero.Initializer {
 
     api.utils.dotProp = dotProp
 
-    // //////////////////////////////////////////////////////////////////////////
-    // do an array of async functions in order (either with or without args)
+    /**
+     * In series, run an array of `async` functions
+     *
+     * @async
+     * @param  {Array}  jobs  Either an array of methods, or an Array of Objects, with `method` and `arg` properties.
+     * @return {Promise<Array>} Array of returned values from the methods in `jobs`
+     * @example
+
+// without arguments
+let sleepyFunc = async () => {
+  await new Promise((resolve) => { setTimeout(resolve, 100) })
+  return (new Date()).getTime()
+}
+
+let jobs = [sleepyFunc, sleepyFunc, sleepyFunc]
+
+let responses = await api.utils.asyncWaterfall(jobs)
+// responses = [1506536188356, 1506536188456, 1506536188456]
+
+// with arguments
+let sleepyFunc = async (response) => {
+  await new Promise((resolve) => { setTimeout(resolve, 100) })
+  return response
+}
+
+let jobs = [
+  {method: sleepyFunc, args: ['a']},
+  {method: sleepyFunc, args: ['b']},
+  {method: sleepyFunc, args: ['c']}
+]
+
+let responses = await api.utils.asyncWaterfall(jobs)
+// responses = ['a', 'b', 'c']
+     */
     api.utils.asyncWaterfall = async (jobs) => {
       let results = []
       while (jobs.length > 0) {
@@ -44,8 +83,16 @@ module.exports = class Utils extends ActionHero.Initializer {
       return results
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // merge two hashes recursively
+    /**
+     * Recursivley merge 2 Objects together.  Will resolve functions if they are present, unless the parent Object has the propery `_toExpand = false`.
+     * ActionHero uses this internally to construct and resolve the config.
+     * Matching keys in B override A.
+     *
+     * @param  {Object} a   Object 1
+     * @param  {Object} b   Object 2
+     * @param  {Object} arg Arguments to pass to any functiosn which should be resolved.
+     * @return {Object}     A new Object, combining A and B
+     */
     api.utils.hashMerge = (a, b, arg) => {
       let c = {}
       let i
@@ -86,6 +133,9 @@ module.exports = class Utils extends ActionHero.Initializer {
       return c
     }
 
+    /**
+     * @private
+     */
     api.utils.isPlainObject = (o) => {
       const safeTypes = [Boolean, Number, String, Function, Array, Date, RegExp, Buffer]
       const safeInstances = ['boolean', 'number', 'string', 'function']
@@ -104,8 +154,12 @@ module.exports = class Utils extends ActionHero.Initializer {
       return (o.toString() === '[object Object]')
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // unique-ify an array
+    /**
+     * Return only the unique values in an Array.
+     *
+     * @param  {Array} arr Source Array.
+     * @return {Array}     Unique Array.
+     */
     api.utils.arrayUniqueify = (arr) => {
       let a = []
       for (let i = 0; i < arr.length; i++) {
@@ -117,8 +171,16 @@ module.exports = class Utils extends ActionHero.Initializer {
       return a
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // get all .js files in a directory
+    /**
+     * Get the names of all files in a directory which match an extension.
+     * Symlinks will be followed.
+     * ActionHero LinkFiles (created by `ActionHero Link...`) will be followed.
+     *
+     * @param  {string} dir              Starting Directory for the search
+     * @param  {string} extension        What file type are we looking for? (default: `.js`)
+     * @param  {Boolean} followLinkFiles Should we follow ActionHero LinkFiles? (deafult: true)
+     * @return {Array}                   An Array of filenames.
+     */
     api.utils.recursiveDirectoryGlob = (dir, extension, followLinkFiles) => {
       let results = []
 
@@ -167,6 +229,9 @@ module.exports = class Utils extends ActionHero.Initializer {
       return results.sort()
     }
 
+    /**
+     * @private
+     */
     api.utils.sourceRelativeLinkPath = (linkfile, pluginPaths) => {
       const type = fs.readFileSync(linkfile).toString()
       const pathParts = linkfile.split(path.sep)
@@ -187,16 +252,12 @@ module.exports = class Utils extends ActionHero.Initializer {
       return pluginSection
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // object Clone
-    api.utils.objClone = (obj) => {
-      return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyNames(obj).reduce((memo, name) => {
-        return (memo[name] = Object.getOwnPropertyDescriptor(obj, name)) && memo
-      }, {}))
-    }
-
-    // //////////////////////////////////////////////////////////////////////////
-    // attempt to collapse this object to an array; ie: {"0": "a", "1": "b"}
+    /**
+     * Collapsses an Object with numerical keys (like `arguments` in a function) to an Array
+     *
+     * @param  {Object} obj An Object with a depth of 1 and only Numerical keys
+     * @return {Array}      Array
+     */
     api.utils.collapseObjectToArray = (obj) => {
       try {
         const keys = Object.keys(obj)
@@ -216,8 +277,11 @@ module.exports = class Utils extends ActionHero.Initializer {
       }
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // get this servers external interface
+    /**
+     * Returns this server's external/public IP address
+     *
+     * @return {string} This server's external IP address.
+     */
     api.utils.getExternalIPAddress = () => {
       let ifaces = os.networkInterfaces()
       let ip = false
@@ -231,8 +295,12 @@ module.exports = class Utils extends ActionHero.Initializer {
       return ip
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // cookie parse from headers of http(s) requests
+    /**
+     * Transform the cookie headers of a node HTTP `req` Object into a hash.
+     *
+     * @param  {Object} req A node.js `req` Object
+     * @return {Object}     A Object with Cookies.
+     */
     api.utils.parseCookies = (req) => {
       let cookies = {}
       if (req.headers.cookie) {
@@ -244,9 +312,13 @@ module.exports = class Utils extends ActionHero.Initializer {
       return cookies
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // parse an IPv6 address
-    // https://github.com/actionhero/actionhero/issues/275 && https://github.com/nullivex
+    /**
+     * Parse an IPv6 address, returning both host and port.
+     *
+     * @param  {string} addr An IPv6 address.
+     * @return {Object}      An Object with {host, port}
+     * @see https://github.com/actionhero/actionhero/issues/275
+     */
     api.utils.parseIPv6URI = (addr) => {
       let host = '::1'
       let port = '80'
@@ -265,8 +337,12 @@ module.exports = class Utils extends ActionHero.Initializer {
       return {host: host, port: parseInt(port, 10)}
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // Check on how long the event loop is blocked for
+    /**
+     * Returns the averge delay between a tick of hte node.js event loop, as measured for N calls of `process.nextTick`
+     *
+     * @param  {Number}  itterations How many `process.nextTick` cycles of the event loop should we measure?
+     * @return {Promise<Number>}  Returns the average evnent loop dealy measured in ms.
+     */
     api.utils.eventLoopDelay = async (itterations) => {
       let jobs = []
 
@@ -296,8 +372,12 @@ module.exports = class Utils extends ActionHero.Initializer {
       return avg
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // Sort Global Middleware
+    /**
+     * Sorts an Array of Objects with a priority key
+     *
+     * @param  {Array} globalMiddlewareList The Array to sort.
+     * @param  {Array} middleware          A specific collection to sort against.
+     */
     api.utils.sortGlobalMiddleware = (globalMiddlewareList, middleware) => {
       globalMiddlewareList.sort((a, b) => {
         if (middleware[a].priority > middleware[b].priority) {
@@ -308,29 +388,39 @@ module.exports = class Utils extends ActionHero.Initializer {
       })
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // Logger Helper for action payloads
-    api.utils.filterObjectForLogging = (actionParams) => {
+    /**
+     * Prepares acton params for logging.
+     * Hides any sensitieve data as defined by `api.config.general.filteredParams`
+     * Truncates long strings via `api.config.logger.maxLogStringLength`
+     *
+     * @param  {Object} params Params to filter.
+     * @return {Object}        Filtered Params.
+     */
+    api.utils.filterObjectForLogging = (params) => {
       let filteredParams = {}
-      for (let i in actionParams) {
-        if (api.utils.isPlainObject(actionParams[i])) {
-          filteredParams[i] = api.utils.objClone(actionParams[i])
-        } else if (typeof actionParams[i] === 'string') {
-          filteredParams[i] = actionParams[i].substring(0, api.config.logger.maxLogStringLength)
+      for (let i in params) {
+        if (api.utils.isPlainObject(params[i])) {
+          filteredParams[i] = Object.assign({}, params[i])
+        } else if (typeof params[i] === 'string') {
+          filteredParams[i] = params[i].substring(0, api.config.logger.maxLogStringLength)
         } else {
-          filteredParams[i] = actionParams[i]
+          filteredParams[i] = params[i]
         }
       }
       api.config.general.filteredParams.forEach((configParam) => {
-        if (api.utils.dotProp.get(actionParams, configParam) !== undefined) {
+        if (api.utils.dotProp.get(params, configParam) !== undefined) {
           api.utils.dotProp.set(filteredParams, configParam, '[FILTERED]')
         }
       })
       return filteredParams
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // File utils
+    /**
+     * Check if a directory exists.
+     *
+     * @param  {string} dir The directory to check.
+     * @return {Boolean}
+     */
     api.utils.dirExists = (dir) => {
       try {
         let stats = fs.lstatSync(dir)
@@ -338,6 +428,12 @@ module.exports = class Utils extends ActionHero.Initializer {
       } catch (e) { return false }
     }
 
+    /**
+     * Check if a file exists.
+     *
+     * @param  {string} file The file to check.
+     * @return {Boolean}
+     */
     api.utils.fileExists = (file) => {
       try {
         let stats = fs.lstatSync(file)
@@ -345,6 +441,13 @@ module.exports = class Utils extends ActionHero.Initializer {
       } catch (e) { return false }
     }
 
+    /**
+     * Create a directory, only if it doesn't exist yet.
+     * Throws an error if the directory already exists, or encounters a filesystem problem.
+     *
+     * @param  {string} dir The directory to create.
+     * @return {string} a message if the file was created to log.
+     */
     api.utils.createDirSafely = (dir) => {
       if (api.utils.dirExists(dir)) {
         throw new Error(`directory '${path.normalize(dir)}' already exists`)
@@ -354,6 +457,15 @@ module.exports = class Utils extends ActionHero.Initializer {
       }
     }
 
+    /**
+     * Create a file, only if it doesn't exist yet.
+     * Throws an error if the file already exists, or encounters a filesystem problem.
+     *
+     * @param  {string} file The file to create.
+     * @param  {string} data The new contents of the file.
+     * @param  {boolean} overwrite Should we overwrite an existing file?.
+     * @return {string} a message if the file was created to log.
+     */
     api.utils.createFileSafely = (file, data, overwrite) => {
       if (api.utils.fileExists(file) && !overwrite) {
         throw new Error(`file '${path.normalize(file)}' already exists`)
@@ -365,6 +477,15 @@ module.exports = class Utils extends ActionHero.Initializer {
       }
     }
 
+    /**
+     * Create an ActionHero LinkFile, only if it doesn't exist yet.
+     * Throws an error if the file already exists, or encounters a filesystem problem.
+     *
+     * @param  {string} filePath The path of the new LinkFile
+     * @param  {string} type What are we linking (actions, tasks, etc).
+     * @param  {string} refrence What we are refrencing via this link.
+     * @return {string} a message if the file was created to log.
+     */
     api.utils.createLinkfileSafely = (filePath, type, refrence) => {
       if (api.utils.fileExists(filePath)) {
         throw new Error(`link file '${filePath}' already exists`)
@@ -374,6 +495,15 @@ module.exports = class Utils extends ActionHero.Initializer {
       }
     }
 
+    /**
+     * Remove an ActionHero LinkFile, only if it exists.
+     * Throws an error if the file does not exist, or encounters a filesystem problem.
+     *
+     * @param  {string} filePath The path of the LinkFile
+     * @param  {string} type What are we linking (actions, tasks, etc).
+     * @param  {string} refrence What we are refrencing via this link.
+     * @return {string} a message if the file was created to log.
+     */
     api.utils.removeLinkfileSafely = (filePath, type, refrence) => {
       if (!api.utils.fileExists(filePath)) {
         throw new Error(`link file '${filePath}' doesn't exist`)
@@ -383,6 +513,14 @@ module.exports = class Utils extends ActionHero.Initializer {
       }
     }
 
+    /**
+     * Create a system symbolic link.
+     * Throws an error if it encounters a filesystem problem.
+     *
+     * @param  {string} destination
+     * @param  {string} source
+     * @return {string} a message if the symlionk was created to log.
+     */
     api.utils.createSymlinkSafely = (destination, source) => {
       if (api.utils.dirExists(destination)) {
         throw new Error(`symbolic link '${destination}' already exists`)
