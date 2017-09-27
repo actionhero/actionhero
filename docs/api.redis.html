@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>redis - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ActionHero.html">ActionHero</a></li><li><a href="ActionHero.Action.html">Action</a><ul class='methods'><li data-type='method'><a href="ActionHero.Action.html#.run">run</a></li></ul></li><li><a href="ActionHero.CLI.html">CLI</a><ul class='methods'><li data-type='method'><a href="ActionHero.CLI.html#.run">run</a></li></ul></li><li><a href="ActionHero.Connection.html">Connection</a><ul class='methods'><li data-type='method'><a href="ActionHero.Connection.html#.destroy">destroy</a></li><li data-type='method'><a href="ActionHero.Connection.html#.localize">localize</a></li></ul></li><li><a href="ActionHero.Initializer.html">Initializer</a><ul class='methods'><li data-type='method'><a href="ActionHero.Initializer.html#.initialize">initialize</a></li><li data-type='method'><a href="ActionHero.Initializer.html#.start">start</a></li><li data-type='method'><a href="ActionHero.Initializer.html#.stop">stop</a></li></ul></li><li><a href="ActionHero.Server.html">Server</a><ul class='methods'><li data-type='method'><a href="ActionHero.Server.html#.buildConnection">buildConnection</a></li><li data-type='method'><a href="ActionHero.Server.html#.connections">connections</a></li><li data-type='method'><a href="ActionHero.Server.html#.initialize">initialize</a></li><li data-type='method'><a href="ActionHero.Server.html#.log">log</a></li><li data-type='method'><a href="ActionHero.Server.html#.processAction">processAction</a></li><li data-type='method'><a href="ActionHero.Server.html#.processFile">processFile</a></li><li data-type='method'><a href="ActionHero.Server.html#.sendFile">sendFile</a></li><li data-type='method'><a href="ActionHero.Server.html#.sendMessage">sendMessage</a></li><li data-type='method'><a href="ActionHero.Server.html#.start">start</a></li><li data-type='method'><a href="ActionHero.Server.html#.stop">stop</a></li></ul></li><li><a href="ActionHero.Task.html">Task</a><ul class='methods'><li data-type='method'><a href="ActionHero.Task.html#.run">run</a></li></ul></li></ul><h3>Events</h3><ul><li><a href="ActionHero.Server.html#event:actionComplete">actionComplete</a></li><li><a href="ActionHero.Server.html#event:connection">connection</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a><ul class='methods'><li data-type='method'><a href="api.html#.log">log</a></li></ul></li><li><a href="api.actions.html">actions</a><ul class='methods'><li data-type='method'><a href="api.actions.html#.addMiddleware">addMiddleware</a></li></ul></li><li><a href="api.cache.html">cache</a><ul class='methods'><li data-type='method'><a href="api.cache.html#.clear">clear</a></li><li data-type='method'><a href="api.cache.html#.destroy">destroy</a></li><li data-type='method'><a href="api.cache.html#.dumpRead">dumpRead</a></li><li data-type='method'><a href="api.cache.html#.dumpWrite">dumpWrite</a></li><li data-type='method'><a href="api.cache.html#.keys">keys</a></li><li data-type='method'><a href="api.cache.html#.listLength">listLength</a></li><li data-type='method'><a href="api.cache.html#.load">load</a></li><li data-type='method'><a href="api.cache.html#.lock">lock</a></li><li data-type='method'><a href="api.cache.html#.locks">locks</a></li><li data-type='method'><a href="api.cache.html#.pop">pop</a></li><li data-type='method'><a href="api.cache.html#.push">push</a></li><li data-type='method'><a href="api.cache.html#.save">save</a></li><li data-type='method'><a href="api.cache.html#.size">size</a></li><li data-type='method'><a href="api.cache.html#.unlock">unlock</a></li></ul></li><li><a href="api.chatRoom.html">chatRoom</a><ul class='methods'><li data-type='method'><a href="api.chatRoom.html#.add">add</a></li><li data-type='method'><a href="api.chatRoom.html#.addMember">addMember</a></li><li data-type='method'><a href="api.chatRoom.html#.addMiddleware">addMiddleware</a></li><li data-type='method'><a href="api.chatRoom.html#.broadcast">broadcast</a></li><li data-type='method'><a href="api.chatRoom.html#.destroy">destroy</a></li><li data-type='method'><a href="api.chatRoom.html#.exists">exists</a></li><li data-type='method'><a href="api.chatRoom.html#.generateMemberDetails">generateMemberDetails</a></li><li data-type='method'><a href="api.chatRoom.html#.list">list</a></li><li data-type='method'><a href="api.chatRoom.html#.removeMember">removeMember</a></li><li data-type='method'><a href="api.chatRoom.html#.roomStatus">roomStatus</a></li><li data-type='method'><a href="api.chatRoom.html#.sanitizeMemberDetails">sanitizeMemberDetails</a></li></ul></li><li><a href="api.connections.html">connections</a><ul class='methods'><li data-type='method'><a href="api.connections.html#.addMiddleware">addMiddleware</a></li></ul></li><li><a href="api.documentation.html">documentation</a></li><li><a href="api.i18n.html">i18n</a><ul class='methods'><li data-type='method'><a href="api.i18n.html#.localize">localize</a></li></ul></li><li><a href="api.pids.html">pids</a></li><li><a href="api.redis.html">redis</a><ul class='methods'><li data-type='method'><a href="api.redis.html#.doCluster">doCluster</a></li></ul></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-actions.html">actions</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">redis</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="api.html">api</a>.</span>
+        
+        redis
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="initializers_redis.js.html">initializers/redis.js</a>, <a href="initializers_redis.js.html#line7">line 7</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>clients</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Holds the redis clients.  Contains 3 redis connections: 'client', 'subscriber' and 'tasks'.  Configured via <code>api.config.redis</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>subscriptionHandlers</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Callbacks for redis pub/sub</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>rpcCallbacks</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>RPC callbacks for responses to other clients</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>status</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Redis connection statuses</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+        
+            <div class="description"><p>Redis helpers and connections.</p></div>
+        
+
+        
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="ActionHero.Initializer.html">ActionHero.Initializer</a></li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".doCluster"><span class="type-signature">(async, static) </span>doCluster<span class="signature">(method, args, connectionId, waitForRespons)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="initializers_redis.js.html">initializers/redis.js</a>, <a href="initializers_redis.js.html#line79">line 79</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Invoke a command on all servers in this cluster.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>method</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The method to call on the remote server.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>args</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The arguments to pass to <code>method</code></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>connectionId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>(optional) Should this method only apply to a server which <code>connectionId</code> is connected to?</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>waitForRespons</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>(optional) Should we await a response from a remote server in the cluster?</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The return value from the remote server.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Learn more about ActionHero @ <a href="https://www.actionherojs.com">www.actionherojs.com</a>
+    <br />
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> using the <a href="https://github.com/actionhero/docdash-actionhero-theme">docdash-actionhero-theme</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

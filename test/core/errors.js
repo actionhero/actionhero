@@ -1,50 +1,55 @@
 'use strict'
 
-var should = require('should')
-let path = require('path')
-var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-var actionhero = new ActionheroPrototype()
-var api
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 
-describe('Core: Errors', function () {
-  before(function (done) {
-    actionhero.start(function (error, a) {
-      should.not.exist(error)
-      api = a
-      done()
-    })
+const path = require('path')
+const ActionHero = require(path.join(__dirname, '/../../index.js'))
+const actionhero = new ActionHero.Process()
+
+let api
+let originalUnknownAction
+
+describe('Core: Errors', () => {
+  before(async () => {
+    api = await actionhero.start()
+    originalUnknownAction = api.config.errors.unknownAction
   })
 
-  after(function (done) {
-    actionhero.stop(function () {
-      done()
-    })
+  after(async () => {
+    await actionhero.stop()
+    api.config.errors.unknownAction = originalUnknownAction
   })
 
-  it('returns string errors properly', function (done) {
-    api.specHelper.runAction('notARealAction', {}, function (response) {
-      response.error.should.equal('Error: unknown action or invalid apiVersion')
-      done()
-    })
+  it('returns string errors properly', async () => {
+    let {error} = await api.specHelper.runAction('notARealAction')
+    expect(error).to.equal('Error: unknown action or invalid apiVersion')
   })
 
-  it('returns Error object properly', function (done) {
-    api.config.errors.unknownAction = function () {
-      return new Error('error test')
+  it('returns Error object properly', async () => {
+    api.config.errors.unknownAction = () => { return new Error('error test') }
+    let {error} = await api.specHelper.runAction('notARealAction')
+    expect(error).to.equal('Error: error test')
+  })
+
+  it('returns generic object properly', async () => {
+    api.config.errors.unknownAction = () => { return {code: 'error111', reason: 'busted'} }
+
+    let {error} = await api.specHelper.runAction('notARealAction')
+    expect(error.code).to.equal('error111')
+    expect(error.reason).to.equal('busted')
+  })
+
+  it('can have async error handlers', async () => {
+    api.config.errors.unknownAction = async () => {
+      return new Promise((resolve) => {
+        setTimeout(() => { resolve({sleepy: true}) }, 100)
+      })
     }
-    api.specHelper.runAction('notARealAction', {}, function (response) {
-      response.error.should.equal('Error: error test')
-      done()
-    })
-  })
 
-  it('returns generic object properly', function (done) {
-    api.config.errors.unknownAction = function () {
-      return {code: 'error111'}
-    }
-    api.specHelper.runAction('notARealAction', {}, function (response) {
-      response.error.should.have.property('code').equal('error111')
-      done()
-    })
+    let {error} = await api.specHelper.runAction('notARealAction')
+    expect(error.sleepy).to.equal(true)
   })
 })

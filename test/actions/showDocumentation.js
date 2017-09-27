@@ -1,31 +1,22 @@
 'use strict'
 
-var should = require('should')
-let path = require('path')
-var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-var actionhero = new ActionheroPrototype()
-var api
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 
-describe('Action: Show Documentation', function () {
-  before(function (done) {
-    actionhero.start(function (error, a) {
-      should.not.exist(error)
-      api = a
-      done()
-    })
-  })
+const path = require('path')
+const ActionHero = require(path.join(__dirname, '/../../index.js'))
+const actionhero = new ActionHero.Process()
+let api
 
-  after(function (done) {
-    actionhero.stop(function () {
-      done()
-    })
-  })
+describe('Action: Show Documentation', () => {
+  before(async () => { api = await actionhero.start() })
+  after(async () => { await actionhero.stop() })
 
-  it('returns the correct parts', function (done) {
-    api.specHelper.runAction('showDocumentation', function (response) {
-      Object.keys(response.documentation).length.should.equal(6) // 6 actions
-      response.serverInformation.serverName.should.equal('actionhero')
-      done()
-    })
+  it('returns the correct parts', async () => {
+    let {documentation, serverInformation} = await api.specHelper.runAction('showDocumentation')
+    expect(Object.keys(documentation).length).to.equal(6) // 6 actions
+    expect(serverInformation.serverName).to.equal('actionhero')
   })
 })

@@ -2,19 +2,17 @@
 
 const fs = require('fs')
 const path = require('path')
+const ActionHero = require('./../../index.js')
+const api = ActionHero.api
 
-module.exports = function (api, next) {
-  // proxy the logger, as we can't use the real one yet
-  api.log = function (message) {
-    console.log(message)
+module.exports = class ActionsList extends ActionHero.CLI {
+  constructor () {
+    super()
+    this.name = 'generate'
+    this.description = 'will prepare an empty directory with a template ActionHero project'
   }
 
-  // reload utils, as they won't have been loaded yet
-  api.utils = require(path.normalize(path.join(__dirname, '/../../initializers/utils.js'))).initialize(api, function (error) {
-    if (error) { return next(error) }
-
-    // ////// DOCUMENTS ////////
-
+  run () {
     let documents = {}
 
     documents.projectMap = fs.readFileSync(path.join(__dirname, '/../templates/projectMap.txt'))
@@ -38,11 +36,13 @@ module.exports = function (api, next) {
       publicChat: '/public/chat.html',
       publicLogo: '/public/logo/actionhero.png',
       publicCss: '/public/css/cosmo.css',
-      exampleTest: '/test/template.js.example'
+      exampleTest: '/test/template.js.example',
+      enLocale: '/locales/en.json'
     }
 
     for (let name in oldFileMap) {
-      documents[name] = fs.readFileSync(path.join(__dirname, '/../../', oldFileMap[name]))
+      documents[name] = fs.readFileSync(path.join(__dirname, '/../../', oldFileMap[name])).toString()
+      documents[name] = documents[name].replace('require(\'./../index.js\')', 'require(\'actionhero\')')
     }
 
     const AHversionNumber = JSON.parse(documents.packageJson).version
@@ -51,11 +51,8 @@ module.exports = function (api, next) {
     documents.packageJson = documents.packageJson.replace('%%versionNumber%%', AHversionNumber)
     documents.readmeMd = String(fs.readFileSync(path.join(__dirname, '/../templates/README.md')))
 
-    // ////// LOGIC ////////
+    console.log('Generating a new actionhero project...');
 
-    api.log('Generating a new actionhero project...');
-
-    // make directories
     [
       '/actions',
       '/pids',
@@ -63,6 +60,8 @@ module.exports = function (api, next) {
       '/config/servers',
       '/initializers',
       '/log',
+      '/locales',
+      '/bin',
       '/servers',
       '/public',
       '/public/javascript',
@@ -70,11 +69,15 @@ module.exports = function (api, next) {
       '/public/logo',
       '/tasks',
       '/test'
-    ].forEach(function (dir) {
-      api.utils.createDirSafely(api.projectRoot + dir)
+    ].forEach((dir) => {
+      try {
+        let message = api.utils.createDirSafely(api.projectRoot + dir)
+        console.log(message)
+      } catch (error) {
+        console.log(error.toString())
+      }
     })
 
-    // make files
     const newFileMap = {
       '/config/api.js': 'configApiJs',
       '/config/logger.js': 'configLoggerJs',
@@ -95,24 +98,30 @@ module.exports = function (api, next) {
       '/public/css/cosmo.css': 'publicCss',
       '/public/logo/actionhero.png': 'publicLogo',
       '/README.md': 'readmeMd',
-      '/test/example.js': 'exampleTest'
+      '/test/example.js': 'exampleTest',
+      '/locales/en.json': 'enLocale'
     }
 
     for (let file in newFileMap) {
-      api.utils.createFileSafely(api.projectRoot + file, documents[newFileMap[file]])
+      try {
+        let message = api.utils.createFileSafely(api.projectRoot + file, documents[newFileMap[file]])
+        console.log(message)
+      } catch (error) {
+        console.log(error.toString())
+      }
     }
 
-    api.log('')
-    api.log('Generation Complete.  Your project directory should look like this:')
+    console.log('')
+    console.log('Generation Complete.  Your project directory should look like this:')
 
-    api.log('')
+    console.log('')
     documents.projectMap.toString().split('\n').forEach(function (line) {
-      api.log(line)
+      console.log(line)
     })
 
-    api.log('You may need to run `npm install` to install some dependancies', 'alert')
-    api.log('Run \'npm start\' to start your server')
+    console.log('You may need to run `npm install` to install some dependancies', 'alert')
+    console.log('Run \'npm start\' to start your server')
 
-    next(null, true)
-  })
+    return true
+  }
 }

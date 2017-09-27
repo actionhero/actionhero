@@ -1,16 +1,16 @@
 'use strict'
+const ActionHero = require('./../index.js')
 
-exports.randomNumber = {
-  name: 'randomNumber',
-  description: 'I am an API method which will generate a random number',
-  outputExample: {
-    randomNumber: 0.123
-  },
-
-  run: function (api, data, next) {
-    data.response.randomNumber = Math.random()
-    data.response.stringRandomNumber = data.connection.localize(['Your random number is %s', Math.random()])
-    next(null)
+module.exports = class RandomNumber extends ActionHero.Action {
+  constructor () {
+    super()
+    this.name = 'randomNumber'
+    this.description = 'I am an API method which will generate a random number'
+    this.outputExample = { randomNumber: 0.123 }
   }
 
+  async run ({connection, response}) {
+    response.randomNumber = Math.random()
+    response.stringRandomNumber = connection.localize(['Your random number is {{number}}', {number: Math.random()}])
+  }
 }

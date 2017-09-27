@@ -1,13 +1,19 @@
 'use strict'
 
 const cluster = require('cluster')
-const path = require('path')
 const argv = require('optimist').argv
+const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
-module.exports = {
-  loadPriority: 10,
-  startPriority: 2,
-  initialize: function (api, next) {
+module.exports = class ID extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'id'
+    this.loadPriority = 10
+    this.startPriority = 2
+  }
+
+  initialize () {
     if (argv.title) {
       api.id = argv.title
     } else if (process.env.ACTIONHERO_TITLE) {
@@ -29,14 +35,9 @@ module.exports = {
     } else {
       api.id = api.config.general.id
     }
+  }
 
-    api.actionheroVersion = require('..' + path.sep + 'package.json').version
-
-    next()
-  },
-
-  start: function (api, next) {
-    api.log(['server ID: %s', api.id], 'notice')
-    next()
+  start () {
+    api.log(`server ID: ${api.id}`, 'notice')
   }
 }

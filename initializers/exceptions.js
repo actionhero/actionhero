@@ -1,14 +1,25 @@
 'use strict'
 
 const os = require('os')
+const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
-module.exports = {
-  loadPriority: 130,
-  initialize: function (api, next) {
+module.exports = class Exceptions extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'exceptions'
+    this.loadPriority = 130
+  }
+
+  relevantDetails () {
+    return ['action', 'remoteIP', 'type', 'params', 'room']
+  }
+
+  initialize () {
     api.exceptionHandlers = {}
     api.exceptionHandlers.reporters = []
 
-    const consoleReporter = function (error, type, name, objects, severity) {
+    const consoleReporter = (error, type, name, objects, severity) => {
       let extraMessages = []
 
       if (type === 'loader') {
@@ -16,14 +27,15 @@ module.exports = {
       } else if (type === 'action') {
         extraMessages.push('! uncaught error from action: ' + name)
         extraMessages.push('! connection details:')
-        const relevantDetails = ['action', 'remoteIP', 'type', 'params', 'room']
+        let relevantDetails = this.relevantDetails()
         for (let i in relevantDetails) {
+          let relevantDetail = relevantDetails[i]
           if (
-            objects.connection[relevantDetails[i]] !== null &&
-            objects.connection[relevantDetails[i]] !== undefined &&
-            typeof objects.connection[relevantDetails[i]] !== 'function'
+            objects.connection[relevantDetail] !== null &&
+            objects.connection[relevantDetail] !== undefined &&
+            typeof objects.connection[relevantDetail] !== 'function'
           ) {
-            extraMessages.push('!     ' + relevantDetails[i] + ': ' + JSON.stringify(objects.connection[relevantDetails[i]]))
+            extraMessages.push('!     ' + relevantDetail + ': ' + JSON.stringify(objects.connection[relevantDetail]))
           }
         }
       } else if (type === 'task') {
@@ -56,23 +68,19 @@ module.exports = {
 
     api.exceptionHandlers.reporters.push(consoleReporter)
 
-    api.exceptionHandlers.report = function (error, type, name, objects, severity) {
+    api.exceptionHandlers.report = (error, type, name, objects, severity) => {
       if (!severity) { severity = 'error' }
       for (let i in api.exceptionHandlers.reporters) {
         api.exceptionHandlers.reporters[i](error, type, name, objects, severity)
       }
     }
 
-    // /////////
-    // TYPES //
-    // /////////
-
-    api.exceptionHandlers.loader = function (fullFilePath, error) {
+    api.exceptionHandlers.loader = (fullFilePath, error) => {
       let name = 'loader:' + fullFilePath
       api.exceptionHandlers.report(error, 'loader', name, {fullFilePath: fullFilePath}, 'alert')
     }
 
-    api.exceptionHandlers.action = function (error, data, next) {
+    api.exceptionHandlers.action = (error, data, next) => {
       let simpleName
       try {
         simpleName = data.action
@@ -85,7 +93,7 @@ module.exports = {
       if (typeof next === 'function') { next() }
     }
 
-    api.exceptionHandlers.task = function (error, queue, task, workerId) {
+    api.exceptionHandlers.task = (error, queue, task, workerId) => {
       let simpleName
       try {
         simpleName = task['class']
@@ -95,7 +103,5 @@ module.exports = {
       let name = 'task:' + simpleName
       api.exceptionHandlers.report(error, 'task', name, {task: task, queue: queue, workerId: workerId}, api.config.tasks.workerLogging.failure)
     }
-
-    next()
   }
 }

@@ -1,66 +1,94 @@
 'use strict'
 
-let path = require('path')
-let should = require('should')
-var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-var actionhero = new ActionheroPrototype()
-var api
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 
-describe('Utils', function () {
-  before(function (done) {
-    actionhero.start(function (error, a) {
-      should.not.exist(error)
-      api = a
-      done()
+const path = require('path')
+const ActionHero = require(path.join(__dirname, '/../../index.js'))
+const actionhero = new ActionHero.Process()
+let api
+
+describe('Utils', () => {
+  before(async () => { api = await actionhero.start() })
+  after(async () => { await actionhero.stop() })
+
+  describe('utils.arrayUniqueify', () => {
+    it('works', () => {
+      let a = [1, 2, 3, 3, 4, 4, 4, 5, 5, 5]
+      expect(api.utils.arrayUniqueify(a)).to.deep.equal([1, 2, 3, 4, 5])
     })
   })
 
-  after(function (done) {
-    actionhero.stop(function () {
-      done()
+  describe('utils.asyncWaterfall', () => {
+    it('works with no args', async () => {
+      let sleepyFunc = async () => {
+        await new Promise((resolve) => { setTimeout(resolve, 100) })
+        return (new Date()).getTime()
+      }
+
+      let jobs = [sleepyFunc, sleepyFunc, sleepyFunc]
+
+      let start = (new Date()).getTime()
+      let results = await api.utils.asyncWaterfall(jobs)
+      expect((new Date()).getTime() - start).to.be.above(290)
+      expect(results[1]).to.be.above(results[0])
+      expect(results[2]).to.be.above(results[1])
+    })
+
+    it('works with args', async () => {
+      let sleepyFunc = async (response) => {
+        await new Promise((resolve) => { setTimeout(resolve, 100) })
+        return response
+      }
+
+      let jobs = [
+        {method: sleepyFunc, args: ['a']},
+        {method: sleepyFunc, args: ['b']},
+        {method: sleepyFunc, args: ['c']}
+      ]
+
+      let start = (new Date()).getTime()
+      let results = await api.utils.asyncWaterfall(jobs)
+      expect((new Date()).getTime() - start).to.be.above(290)
+      expect(results[0]).to.equal('a')
+      expect(results[1]).to.equal('b')
+      expect(results[2]).to.equal('c')
     })
   })
 
-  it('utils.arrayUniqueify', function (done) {
-    var a = [1, 2, 3, 3, 4, 4, 4, 5, 5, 5]
-    api.utils.arrayUniqueify(a).should.eql([1, 2, 3, 4, 5])
-    done()
-  })
+  describe('utils.hashMerge', () => {
+    let A = {a: 1, b: 2}
+    let B = {b: -2, c: 3}
+    let C = {a: 1, b: {m: 10, n: 11}}
+    let D = {a: 1, b: {n: 111, o: 22}}
 
-  describe('utils.hashMerge', function () {
-    var A = {a: 1, b: 2}
-    var B = {b: -2, c: 3}
-    var C = {a: 1, b: {m: 10, n: 11}}
-    var D = {a: 1, b: {n: 111, o: 22}}
-
-    it('simple', function (done) {
-      var Z = api.utils.hashMerge(A, B)
-      Z.a.should.equal(1)
-      Z.b.should.equal(-2)
-      Z.c.should.equal(3)
-      done()
+    it('simple', () => {
+      let Z = api.utils.hashMerge(A, B)
+      expect(Z.a).to.equal(1)
+      expect(Z.b).to.equal(-2)
+      expect(Z.c).to.equal(3)
     })
 
-    it('directional', function (done) {
-      var Z = api.utils.hashMerge(B, A)
-      Z.a.should.equal(1)
-      Z.b.should.equal(2)
-      Z.c.should.equal(3)
-      done()
+    it('directional', () => {
+      let Z = api.utils.hashMerge(B, A)
+      expect(Z.a).to.equal(1)
+      expect(Z.b).to.equal(2)
+      expect(Z.c).to.equal(3)
     })
 
-    it('nested', function (done) {
-      var Z = api.utils.hashMerge(C, D)
-      Z.a.should.equal(1)
-      Z.b.m.should.equal(10)
-      Z.b.n.should.equal(111)
-      Z.b.o.should.equal(22)
-      done()
+    it('nested', () => {
+      let Z = api.utils.hashMerge(C, D)
+      expect(Z.a).to.equal(1)
+      expect(Z.b.m).to.equal(10)
+      expect(Z.b.n).to.equal(111)
+      expect(Z.b.o).to.equal(22)
     })
   })
 
-  it('utils.objClone', function (done) {
-    var a = {
+  it('utils.objClone', () => {
+    let a = {
       a: 1,
       b: 2,
       c: {
@@ -68,43 +96,124 @@ describe('Utils', function () {
         second: 2
       }
     }
-    var b = api.utils.objClone(a)
-    a.should.eql(b)
+    let b = api.utils.objClone(a)
+    expect(a).to.deep.equal(b)
     delete a.a
-    a.should.not.eql(b)
-    done()
+    expect(a).not.to.equal(b)
   })
 
-  describe('#parseIPv6URI', function () {
-    it('address and port', function () {
-      var uri = '[2604:4480::5]:8080'
-      var parts = api.utils.parseIPv6URI(uri)
-      parts.host.should.equal('2604:4480::5')
-      parts.port.should.equal(8080)
+  describe('eventLoopDelay', () => {
+    it('works', async () => {
+      let eventLoopDelay = await api.utils.eventLoopDelay(10000)
+      expect(eventLoopDelay).to.be.above(0)
+      expect(eventLoopDelay).to.be.below(1)
+    })
+  })
+
+  describe('#parseIPv6URI', () => {
+    it('address and port', () => {
+      let uri = '[2604:4480::5]:8080'
+      let parts = api.utils.parseIPv6URI(uri)
+      expect(parts.host).to.equal('2604:4480::5')
+      expect(parts.port).to.equal(8080)
     })
 
-    it('address without port', function () {
-      var uri = '2604:4480::5'
-      var parts = api.utils.parseIPv6URI(uri)
-      parts.host.should.equal('2604:4480::5')
-      parts.port.should.equal(80)
+    it('address without port', () => {
+      let uri = '2604:4480::5'
+      let parts = api.utils.parseIPv6URI(uri)
+      expect(parts.host).to.equal('2604:4480::5')
+      expect(parts.port).to.equal(80)
     })
 
-    it('full uri', function () {
-      var uri = 'http://[2604:4480::5]:8080/foo/bar'
-      var parts = api.utils.parseIPv6URI(uri)
-      parts.host.should.equal('2604:4480::5')
-      parts.port.should.equal(8080)
+    it('full uri', () => {
+      let uri = 'http://[2604:4480::5]:8080/foo/bar'
+      let parts = api.utils.parseIPv6URI(uri)
+      expect(parts.host).to.equal('2604:4480::5')
+      expect(parts.port).to.equal(8080)
     })
 
-    it('failing address', function () {
-      var uri = '[2604:4480:z:5]:80'
+    it('failing address', () => {
+      let uri = '[2604:4480:z:5]:80'
       try {
-        var parts = api.utils.parseIPv6URI(uri)
+        let parts = api.utils.parseIPv6URI(uri)
         console.log(parts)
       } catch (e) {
-        e.message.should.equal('failed to parse address')
+        expect(e.message).to.equal('failed to parse address')
       }
+    })
+  })
+
+  describe('utils.filterObjectForLogging', () => {
+    beforeEach(() => {
+      expect(api.config.general.filteredParams.length).to.equal(0)
+    })
+
+    afterEach(() => {
+      // after each test, empty the array
+      api.config.general.filteredParams.length = 0
+    })
+
+    let testInput = {
+      p1: 1,
+      p2: 's3cr3t',
+      o1: {
+        o1p1: 1,
+        o1p2: 'also-s3cr3t',
+        o2: {
+          o2p1: 'this is ok',
+          o2p2: 'extremely-s3cr3t'
+        }
+      },
+      o2: {
+        name: 'same as o1`s inner object!',
+        o2p1: 'nothing secret'
+      }
+    }
+
+    it('can filter top level params, no matter the type', () => {
+      let inputs = JSON.parse(JSON.stringify(testInput)) // quick deep Clone
+      api.config.general.filteredParams.push('p1', 'p2', 'o2')
+      let filteredParams = api.utils.filterObjectForLogging(inputs)
+      expect(filteredParams.p1).to.equal('[FILTERED]')
+      expect(filteredParams.p2).to.equal('[FILTERED]')
+      expect(filteredParams.o2).to.equal('[FILTERED]') // entire object filtered
+      expect(filteredParams.o1).to.deep.equal(testInput.o1) // unchanged
+    })
+
+    it('will not filter things that do not exist', () => {
+      // Identity
+      let inputs = JSON.parse(JSON.stringify(testInput)) // quick deep Clone
+      let filteredParams = api.utils.filterObjectForLogging(inputs)
+      expect(filteredParams).to.deep.equal(testInput)
+
+      api.config.general.filteredParams.push('p3', 'p4', 'o1.o3', 'o1.o2.p1')
+      let filteredParams2 = api.utils.filterObjectForLogging(inputs)
+      expect(filteredParams2).to.deep.equal(testInput)
+    })
+
+    it('can filter a single level dot notation', () => {
+      let inputs = JSON.parse(JSON.stringify(testInput)) // quick deep Clone
+      api.config.general.filteredParams.push('p1', 'o1.o1p1', 'somethingNotExist')
+      let filteredParams = api.utils.filterObjectForLogging(inputs)
+      expect(filteredParams.p1).to.equal('[FILTERED]')
+      expect(filteredParams.o1.o1p1).to.equal('[FILTERED]')
+      // Unchanged things
+      expect(filteredParams.p2).to.equal(testInput.p2)
+      expect(filteredParams.o1.o1p2).to.equal(testInput.o1.o1p2)
+      expect(filteredParams.o1.o2).to.deep.equal(testInput.o1.o2)
+      expect(filteredParams.o2).to.deep.equal(testInput.o2)
+    })
+
+    it('can filter two levels deep', () => {
+      let inputs = JSON.parse(JSON.stringify(testInput)) // quick deep Clone
+      api.config.general.filteredParams.push('p2', 'o1.o2.o2p1', 'o1.o2.notThere')
+      let filteredParams = api.utils.filterObjectForLogging(inputs)
+      expect(filteredParams.p2).to.equal('[FILTERED]')
+      expect(filteredParams.o1.o2.o2p1).to.equal('[FILTERED]')
+      // Unchanged things
+      expect(filteredParams.p1).to.equal(testInput.p1)
+      expect(filteredParams.o1.o1p1).to.equal(testInput.o1.o1p1)
+      expect(filteredParams.o1.o2.o2p2).to.equal(testInput.o1.o2.o2p2)
     })
   })
 })

@@ -2,24 +2,34 @@
 
 const fs = require('fs')
 const path = require('path')
-const optimist = require('optimist')
-const argv = optimist
-  .demand('name')
-  .describe('name', 'The name of the initializer')
-  .argv
+const ActionHero = require('./../../../index.js')
+const api = ActionHero.api
 
-module.exports = function (api, next) {
-  let data = fs.readFileSync(path.join(__dirname, '/../../templates/server.js'))
-  data = String(data);
+module.exports = class GenerateAction extends ActionHero.CLI {
+  constructor () {
+    super()
+    this.name = 'generate server'
+    this.description = 'generate a new server'
+    this.example = 'actionhero generate server --name=[name]'
+    this.inputs = {
+      name: {required: true}
+    }
+  }
 
-  [
-    'name'
-  ].forEach(function (v) {
-    let regex = new RegExp('%%' + v + '%%', 'g')
-    data = data.replace(regex, argv[v])
-  })
+  run ({params}) {
+    let template = fs.readFileSync(path.join(__dirname, '/../../templates/server.js'))
+    template = String(template);
 
-  api.utils.createFileSafely(api.config.general.paths.server[0] + '/' + argv.name + '.js', data)
+    [
+      'name'
+    ].forEach((v) => {
+      let regex = new RegExp('%%' + v + '%%', 'g')
+      template = template.replace(regex, params[v])
+    })
 
-  next(null, true)
+    let message = api.utils.createFileSafely(api.config.general.paths.server[0] + '/' + params.name + '.js', template)
+    console.log(message)
+
+    return true
+  }
 }

@@ -2,27 +2,36 @@
 
 const fs = require('fs')
 const path = require('path')
-const optimist = require('optimist')
-const argv = optimist
-  .demand('name')
-  .describe('name', 'The name of the action')
-  .describe('description', 'The description of the action')
-  .default('description', 'My Action')
-  .argv
+const ActionHero = require('./../../../index.js')
+const api = ActionHero.api
 
-module.exports = function (api, next) {
-  let data = fs.readFileSync(path.join(__dirname, '/../../templates/action.js'))
-  data = String(data);
+module.exports = class GenerateAction extends ActionHero.CLI {
+  constructor () {
+    super()
+    this.name = 'generate action'
+    this.description = 'generate a new action'
+    this.example = 'actionhero generate action --name=[name] --description=[description]'
+    this.inputs = {
+      name: {required: true},
+      description: {required: true, default: `an actionhero action`}
+    }
+  }
 
-  [
-    'name',
-    'description'
-  ].forEach(function (v) {
-    let regex = new RegExp('%%' + v + '%%', 'g')
-    data = data.replace(regex, argv[v])
-  })
+  run ({params}) {
+    let template = fs.readFileSync(path.join(__dirname, '/../../templates/action.js'))
+    template = String(template);
 
-  api.utils.createFileSafely(api.config.general.paths.action[0] + '/' + argv.name + '.js', data)
+    [
+      'name',
+      'description'
+    ].forEach((v) => {
+      let regex = new RegExp('%%' + v + '%%', 'g')
+      template = template.replace(regex, params[v])
+    })
 
-  next(null, true)
+    let message = api.utils.createFileSafely(api.config.general.paths.action[0] + '/' + params.name + '.js', template)
+    console.info(message)
+
+    return true
+  }
 }

@@ -1,17 +1,23 @@
 'use strict'
 
 const path = require('path')
+const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
-module.exports = {
-  loadPriority: 500,
-  initialize: function (api, next) {
-    api.routes = {}
-    api.routes.routes = {}
-    api.routes.verbs = ['head', 'get', 'post', 'put', 'patch', 'delete']
+module.exports = class Routes extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'routes'
+    this.loadPriority = 500
+  }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // route processing for web clients
-    api.routes.processRoute = function (connection, pathParts) {
+  initialize () {
+    api.routes = {
+      routes: {},
+      verbs: ['head', 'get', 'post', 'put', 'patch', 'delete']
+    }
+
+    api.routes.processRoute = (connection, pathParts) => {
       if (connection.params.action === undefined || api.actions.actions[connection.params.action] === undefined) {
         let method = connection.rawConnection.method.toLowerCase()
         if (method === 'head' && !api.routes.routes.head) { method = 'get' }
@@ -46,7 +52,7 @@ module.exports = {
       }
     }
 
-    api.routes.matchURL = function (pathParts, match, matchTrailingPathParts) {
+    api.routes.matchURL = (pathParts, match, matchTrailingPathParts) => {
       let response = {match: false, params: {}}
       let matchParts = match.split('/')
       let regexp = ''
@@ -98,9 +104,9 @@ module.exports = {
       return response
     }
 
-    // don't ever remove this!
+    // don't remove this
     // this is really handy for plugins
-    api.routes.registerRoute = function (method, path, action, apiVersion, matchTrailingPathParts, dir) {
+    api.routes.registerRoute = (method, path, action, apiVersion, matchTrailingPathParts, dir) => {
       if (!matchTrailingPathParts) { matchTrailingPathParts = false }
       api.routes.routes[method].push({
         path: path,
@@ -112,7 +118,7 @@ module.exports = {
     }
 
     // load in the routes file
-    api.routes.loadRoutes = function (rawRoutes) {
+    api.routes.loadRoutes = (rawRoutes) => {
       let counter = 0
 
       api.routes.routes = {'head': [], 'get': [], 'post': [], 'put': [], 'patch': [], 'delete': []}
@@ -142,7 +148,7 @@ module.exports = {
       }
 
       api.params.postVariables = api.utils.arrayUniqueify(api.params.postVariables)
-      api.log(['%s routes loaded from %s', counter, api.routes.routesFile], 'debug')
+      api.log(`${counter} routes loaded from ${api.routes.routesFile}`, 'debug')
 
       if (api.config.servers.web && api.config.servers.web.simpleRouting === true) {
         let simplePaths = []
@@ -154,13 +160,12 @@ module.exports = {
             api.routes.registerRoute(verb, '/' + action, action)
           }
         }
-        api.log(['%s simple routes loaded from action names', simplePaths.length], 'debug')
+        api.log(`${simplePaths.length} simple routes loaded from action names`, 'debug')
 
         api.log('routes:', 'debug', api.routes.routes)
       }
     }
 
     api.routes.loadRoutes()
-    next()
   }
 }

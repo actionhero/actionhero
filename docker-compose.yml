@@ -17,7 +17,7 @@ services:
   redis:
     image: redis
   actionhero:
-    image: evantahler/actionhero
+    image: actionhero/actionhero
     ports:
      - 8080
      - 5000

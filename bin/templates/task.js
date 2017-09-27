@@ -1,14 +1,17 @@
 'use strict'
+const ActionHero = require('actionhero')
 
-exports.task = {
-  name: '%%name%%',
-  description: '%%description%%',
-  frequency: %%frequency%%,
-  queue: '%%queue%%',
-  middleware: [],
-
-  run: function (api, params, next) {
-    // your logic here
-    next (error, resultLogMessage)
+module.exports = class MyTask extends ActionHero.Task {
+  constructor () {
+    super()
+    this.name = '%%name%%'
+    this.description = '%%description%%'
+    this.frequency = %%frequency%%
+    this.queue = '%%queue%%'
+    this.middleware = []
   }
-};
+
+  async run (data) {
+    // your logic here
+  }
+}

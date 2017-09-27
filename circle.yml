@@ -1,0 +1,14 @@
+---
+machine:
+  environment:
+    FAKEREDIS: false
+    maxMemoryAlloted: 500
+  services:
+    - redis
+  node:
+    version: 8
+
+test:
+  override:
+    - "echo Node Version: `node --version` && npm test":
+        parallel: true

@@ -2,16 +2,51 @@
 
 const fs = require('fs')
 const path = require('path')
-const async = require('async')
+const dotProp = require('dot-prop')
+const os = require('os')
+const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
-module.exports = {
-  loadPriority: 0,
-  initialize: function (api, next) {
+module.exports = class Utils extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'utils'
+    this.loadPriority = 1
+  }
+
+  async initialize () {
     if (!api.utils) { api.utils = {} }
+
+    api.utils.dotProp = dotProp
+
+    // //////////////////////////////////////////////////////////////////////////
+    // do an array of async functions in order (either with or without args)
+    api.utils.asyncWaterfall = async (jobs) => {
+      let results = []
+      while (jobs.length > 0) {
+        let collection = jobs.shift()
+        let job
+        let args
+        if (typeof collection === 'function') {
+          job = collection
+          args = []
+        } else {
+          job = collection.method
+          args = collection.args
+        }
+
+        let value = await job.apply(this, args)
+        results.push(value)
+      }
+
+      if (results.length === 0) { return null }
+      if (results.length === 1) { return results[0] }
+      return results
+    }
 
     // //////////////////////////////////////////////////////////////////////////
     // merge two hashes recursively
-    api.utils.hashMerge = function (a, b, arg) {
+    api.utils.hashMerge = (a, b, arg) => {
       let c = {}
       let i
       let response
@@ -51,7 +86,7 @@ module.exports = {
       return c
     }
 
-    api.utils.isPlainObject = function (o) {
+    api.utils.isPlainObject = (o) => {
       const safeTypes = [Boolean, Number, String, Function, Array, Date, RegExp, Buffer]
       const safeInstances = ['boolean', 'number', 'string', 'function']
       const expandPreventMatchKey = '_toExpand' // set `_toExpand = false` within an object if you don't want to expand it
@@ -63,24 +98,15 @@ module.exports = {
         if (o instanceof safeTypes[i]) { return false }
       }
       for (i in safeInstances) {
-        if (typeof o === safeInstances[i]) { return false }
+        if (typeof o === safeInstances[i]) { return false } //eslint-disable-line
       }
       if (o[expandPreventMatchKey] === false) { return false }
       return (o.toString() === '[object Object]')
     }
 
     // //////////////////////////////////////////////////////////////////////////
-    // string to hash
-    // http://stackoverflow.com/questions/6393943/convert-javascript-string-in-dot-notation-into-an-object-reference
-    api.utils.stringToHash = function (path, object) {
-      if (!object) { object = api }
-      function _index (obj, i) { return obj[i] }
-      return path.split('.').reduce(_index, object)
-    }
-
-    // //////////////////////////////////////////////////////////////////////////
     // unique-ify an array
-    api.utils.arrayUniqueify = function (arr) {
+    api.utils.arrayUniqueify = (arr) => {
       let a = []
       for (let i = 0; i < arr.length; i++) {
         for (let j = i + 1; j < arr.length; j++) {
@@ -93,7 +119,7 @@ module.exports = {
 
     // //////////////////////////////////////////////////////////////////////////
     // get all .js files in a directory
-    api.utils.recursiveDirectoryGlob = function (dir, extension, followLinkFiles) {
+    api.utils.recursiveDirectoryGlob = (dir, extension, followLinkFiles) => {
       let results = []
 
       if (!extension) { extension = '.js' }
@@ -117,9 +143,9 @@ module.exports = {
             } else if (stats.isFile()) {
               let fileParts = file.split('.')
               let ext = fileParts[(fileParts.length - 1)]
-              // real file match
+               // real file match
               if (ext === extension) { results.push(fullFilePath) }
-              // linkfile traversal
+               // linkfile traversal
               if (ext === 'link' && followLinkFiles === true) {
                 let linkedPath = api.utils.sourceRelativeLinkPath(fullFilePath, api.config.general.paths.plugin)
                 if (linkedPath) {
@@ -127,7 +153,7 @@ module.exports = {
                   child.forEach((c) => { results.push(c) })
                 } else {
                   try {
-                    api.log(['cannot find linked refrence to `%s`', file], 'warning')
+                    api.log(`cannot find linked refrence to \`${file}\``, 'warning')
                   } catch (e) {
                     throw new Error('cannot find linked refrence to ' + file)
                   }
@@ -141,15 +167,12 @@ module.exports = {
       return results.sort()
     }
 
-    api.utils.sourceRelativeLinkPath = function (linkfile, pluginPaths) {
+    api.utils.sourceRelativeLinkPath = (linkfile, pluginPaths) => {
       const type = fs.readFileSync(linkfile).toString()
       const pathParts = linkfile.split(path.sep)
       const name = pathParts[(pathParts.length - 1)].split('.')[0]
       const pathsToTry = pluginPaths.slice(0)
       let pluginRoot
-
-      // TODO: always also try the local destination's `node_modules` to allow for nested plugins
-      // This might be a security risk without requiring explicit sourcing
 
       pathsToTry.forEach((pluginPath) => {
         let pluginPathAttempt = path.normalize(pluginPath + path.sep + name)
@@ -166,7 +189,7 @@ module.exports = {
 
     // //////////////////////////////////////////////////////////////////////////
     // object Clone
-    api.utils.objClone = function (obj) {
+    api.utils.objClone = (obj) => {
       return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyNames(obj).reduce((memo, name) => {
         return (memo[name] = Object.getOwnPropertyDescriptor(obj, name)) && memo
       }, {}))
@@ -174,7 +197,7 @@ module.exports = {
 
     // //////////////////////////////////////////////////////////////////////////
     // attempt to collapse this object to an array; ie: {"0": "a", "1": "b"}
-    api.utils.collapseObjectToArray = function (obj) {
+    api.utils.collapseObjectToArray = (obj) => {
       try {
         const keys = Object.keys(obj)
         if (keys.length < 1) { return false }
@@ -195,9 +218,8 @@ module.exports = {
 
     // //////////////////////////////////////////////////////////////////////////
     // get this servers external interface
-    api.utils.getExternalIPAddress = function () {
-      const os = require('os')
-      const ifaces = os.networkInterfaces()
+    api.utils.getExternalIPAddress = () => {
+      let ifaces = os.networkInterfaces()
       let ip = false
       for (let dev in ifaces) {
         ifaces[dev].forEach((details) => {
@@ -211,7 +233,7 @@ module.exports = {
 
     // //////////////////////////////////////////////////////////////////////////
     // cookie parse from headers of http(s) requests
-    api.utils.parseCookies = function (req) {
+    api.utils.parseCookies = (req) => {
       let cookies = {}
       if (req.headers.cookie) {
         req.headers.cookie.split(';').forEach((cookie) => {
@@ -224,11 +246,11 @@ module.exports = {
 
     // //////////////////////////////////////////////////////////////////////////
     // parse an IPv6 address
-    // https://github.com/evantahler/actionhero/issues/275 && https://github.com/nullivex
-    api.utils.parseIPv6URI = function (addr) {
+    // https://github.com/actionhero/actionhero/issues/275 && https://github.com/nullivex
+    api.utils.parseIPv6URI = (addr) => {
       let host = '::1'
       let port = '80'
-      let regexp = new RegExp(/\[([0-9a-f:]+)\]:([0-9]{1,5})/)
+      let regexp = new RegExp(/\[([0-9a-f:]+)]:([0-9]{1,5})/)
       // if we have brackets parse them and find a port
       if (addr.indexOf('[') > -1 && addr.indexOf(']') > -1) {
         let res = regexp.exec(addr)
@@ -245,37 +267,38 @@ module.exports = {
 
     // //////////////////////////////////////////////////////////////////////////
     // Check on how long the event loop is blocked for
-    api.utils.eventLoopDelay = function (itterations, callback) {
-      let intervalJobs = []
-      let intervalTimes = []
+    api.utils.eventLoopDelay = async (itterations) => {
+      let jobs = []
 
-      if (!itterations) { return callback(new Error('itterations is required')) }
+      if (!itterations) { throw new Error('itterations is required') }
 
-      let i = 0
-      while (i < itterations) {
-        intervalJobs.push((intervalDone) => {
+      let sleepyFunc = async () => {
+        return new Promise((resolve) => {
           let start = process.hrtime()
           process.nextTick(() => {
             let delta = process.hrtime(start)
             let ms = (delta[0] * 1000) + (delta[1] / 1000000)
-            intervalTimes.push(ms)
-            intervalDone()
+            resolve(ms)
           })
         })
+      }
+
+      let i = 0
+      while (i < itterations) {
+        jobs.push(sleepyFunc)
         i++
       }
 
-      async.series(intervalJobs, function () {
-        let sum = 0
-        intervalTimes.forEach((t) => { sum += t })
-        let avg = Math.round(sum / intervalTimes.length * 10000) / 1000
-        return callback(null, avg)
-      })
+      let results = await api.utils.asyncWaterfall(jobs)
+      let sum = 0
+      results.forEach((t) => { sum += t })
+      let avg = Math.round(sum / results.length * 10000) / 1000
+      return avg
     }
 
     // //////////////////////////////////////////////////////////////////////////
     // Sort Global Middleware
-    api.utils.sortGlobalMiddleware = function (globalMiddlewareList, middleware) {
+    api.utils.sortGlobalMiddleware = (globalMiddlewareList, middleware) => {
       globalMiddlewareList.sort((a, b) => {
         if (middleware[a].priority > middleware[b].priority) {
           return 1
@@ -286,70 +309,87 @@ module.exports = {
     }
 
     // //////////////////////////////////////////////////////////////////////////
+    // Logger Helper for action payloads
+    api.utils.filterObjectForLogging = (actionParams) => {
+      let filteredParams = {}
+      for (let i in actionParams) {
+        if (api.utils.isPlainObject(actionParams[i])) {
+          filteredParams[i] = api.utils.objClone(actionParams[i])
+        } else if (typeof actionParams[i] === 'string') {
+          filteredParams[i] = actionParams[i].substring(0, api.config.logger.maxLogStringLength)
+        } else {
+          filteredParams[i] = actionParams[i]
+        }
+      }
+      api.config.general.filteredParams.forEach((configParam) => {
+        if (api.utils.dotProp.get(actionParams, configParam) !== undefined) {
+          api.utils.dotProp.set(filteredParams, configParam, '[FILTERED]')
+        }
+      })
+      return filteredParams
+    }
+
+    // //////////////////////////////////////////////////////////////////////////
     // File utils
-    api.utils.dirExists = function (dir) {
+    api.utils.dirExists = (dir) => {
       try {
         let stats = fs.lstatSync(dir)
         return (stats.isDirectory() || stats.isSymbolicLink())
       } catch (e) { return false }
     }
 
-    api.utils.fileExists = function (file) {
+    api.utils.fileExists = (file) => {
       try {
         let stats = fs.lstatSync(file)
         return (stats.isFile() || stats.isSymbolicLink())
       } catch (e) { return false }
     }
 
-    api.utils.createDirSafely = function (dir) {
+    api.utils.createDirSafely = (dir) => {
       if (api.utils.dirExists(dir)) {
-        api.log([' - directory \'%s\' already exists, skipping', path.normalize(dir)], 'alert')
+        throw new Error(`directory '${path.normalize(dir)}' already exists`)
       } else {
-        api.log([' - creating directory \'%s\'', path.normalize(dir)])
         fs.mkdirSync(path.normalize(dir), '0766')
+        return `created directory '${path.normalize(dir)}'`
       }
     }
 
-    api.utils.createFileSafely = function (file, data, overwrite) {
+    api.utils.createFileSafely = (file, data, overwrite) => {
       if (api.utils.fileExists(file) && !overwrite) {
-        api.log([' - file \'%s\' already exists, skipping', path.normalize(file)], 'alert')
+        throw new Error(`file '${path.normalize(file)}' already exists`)
       } else {
-        if (overwrite && api.utils.fileExists(file)) {
-          api.log([' - overwritten file \'%s\'', path.normalize(file)])
-        } else {
-          api.log([' - wrote file \'%s\'', path.normalize(file)])
-        }
+        let message = `wrote file '${path.normalize(file)}'`
+        if (overwrite && api.utils.fileExists(file)) { message = ` - overwritten file '${path.normalize(file)}'` }
         fs.writeFileSync(path.normalize(file), data)
+        return message
       }
     }
 
-    api.utils.createLinkfileSafely = function (filePath, type, refrence) {
+    api.utils.createLinkfileSafely = (filePath, type, refrence) => {
       if (api.utils.fileExists(filePath)) {
-        api.log([' - link file \'%s\' already exists, skipping', filePath], 'alert')
+        throw new Error(`link file '${filePath}' already exists`)
       } else {
-        api.log([' - creating linkfile \'%s\'', filePath])
         fs.writeFileSync(filePath, type)
+        return `creating linkfile '${filePath}'`
       }
     }
 
-    api.utils.removeLinkfileSafely = function (filePath, type, refrence) {
+    api.utils.removeLinkfileSafely = (filePath, type, refrence) => {
       if (!api.utils.fileExists(filePath)) {
-        api.log([' - link file \'%s\' doesn\'t exist, skipping', filePath], 'alert')
+        throw new Error(`link file '${filePath}' doesn't exist`)
       } else {
-        api.log([' - removing linkfile \'%s\'', filePath])
         fs.unlinkSync(filePath)
+        return `removing linkfile '${filePath}'`
       }
     }
 
-    api.utils.createSymlinkSafely = function (destination, source) {
+    api.utils.createSymlinkSafely = (destination, source) => {
       if (api.utils.dirExists(destination)) {
-        api.log([' - symbolic link \'%s\' already exists, skipping', destination], 'alert')
+        throw new Error(`symbolic link '${destination}' already exists`)
       } else {
-        api.log([' - creating symbolic link \'%s\' => \'%s\'', destination, source])
         fs.symlinkSync(source, destination, 'dir')
+        return `creating symbolic link '${destination}' => '${source}'`
       }
     }
-
-    next()
   }
 }

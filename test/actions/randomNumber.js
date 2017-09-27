@@ -1,41 +1,31 @@
 'use strict'
 
-var should = require('should')
-let path = require('path')
-var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
-var actionhero = new ActionheroPrototype()
-var api
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
 
-describe('Action: RandomNumber', function () {
-  before(function (done) {
-    actionhero.start(function (error, a) {
-      should.not.exist(error)
-      api = a
-      done()
-    })
+const path = require('path')
+const ActionHero = require(path.join(__dirname, '/../../index.js'))
+const actionhero = new ActionHero.Process()
+let api
+
+describe('Action: RandomNumber', () => {
+  before(async () => { api = await actionhero.start() })
+  after(async () => { await actionhero.stop() })
+
+  let firstNumber = null
+  it('generates random numbers', async () => {
+    let {randomNumber} = await api.specHelper.runAction('randomNumber')
+    expect(randomNumber).to.be.at.least(0)
+    expect(randomNumber).to.be.at.most(1)
+    firstNumber = randomNumber
   })
 
-  after(function (done) {
-    actionhero.stop(function () {
-      done()
-    })
-  })
-
-  var firstNumber = null
-  it('generates random numbers', function (done) {
-    api.specHelper.runAction('randomNumber', function (response) {
-      response.randomNumber.should.be.a.Number
-      response.randomNumber.should.be.within(0, 1)
-      firstNumber = response.randomNumber
-      done()
-    })
-  })
-
-  it('is unique / random', function (done) {
-    api.specHelper.runAction('randomNumber', function (response) {
-      response.randomNumber.should.be.a.Number
-      response.randomNumber.should.not.equal(firstNumber)
-      done()
-    })
+  it('is unique / random', async () => {
+    let {randomNumber} = await api.specHelper.runAction('randomNumber')
+    expect(randomNumber).to.be.at.least(0)
+    expect(randomNumber).to.be.at.most(1)
+    expect(randomNumber).not.to.equal(firstNumber)
   })
 })

@@ -1,63 +1,50 @@
 'use strict'
+const ActionHero = require('actionhero')
 
-const initialize = function (api, options, next) {
-  // ////////
-  // INIT //
-  // ////////
+module.exports = class MyServer extends ActionHero.Server {
+  constructor () {
+    super()
+    this.type = '%%name%%'
 
-  const type = '%%name%%'
-
-  const attributes = {
-    canChat: true,
-    logConnections: true,
-    logExits: true,
-    sendWelcomeMessage: true,
-    verbs: []
+    this.attributes = {
+      canChat: false,
+      logConnections: true,
+      logExits: true,
+      sendWelcomeMessage: false,
+      verbs: []
+    }
+    // this.config will be set to equal api.config.servers[this.type]
   }
 
-  const server = new api.GenericServer(type, options, attributes)
+  initialize () {
+    this.on('connection', (conection) => {
 
-  // ////////////////////
-  // REQUIRED METHODS //
-  // ////////////////////
+    })
 
-  server.start = function (next) {
-    next()
+    this.on('actionComplete', (data) => {
+
+    })
   }
 
-  server.stop = function (next) {
-    next()
+  start () {
+    // this.buildConnection (data)
+    // this.processAction (connection)
+    // this.processFile (connection)
   }
 
-  server.sendMessage = function (connection, message, messageCount) {
-
-  }
-
-  server.sendFile = function (connection, error, fileStream, mime, length) {
-
-  }
-
-  server.goodbye = function (connection, reason) {
+  stop () {
 
   }
 
-  // //////////
-  // EVENTS //
-  // //////////
+  sendMessage (connection, message, messageCount) {
 
-  server.on('connection', function (connection) {
+  }
 
-  })
+  sendFile (connection, error, fileStream, mime, length, lastModified) {
 
-  server.on('actionComplete', function (data) {
+  }
 
-  })
+  goodbye (connection) {
 
-  // ///////////
-  // HELPERS //
-  // ///////////
-
-  next(server)
+  }
 }
-
-exports.initialize = initialize

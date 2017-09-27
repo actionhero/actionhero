@@ -2,7 +2,11 @@
 
 First, **THANK YOU**.  
 
-Actionhero would not be the success it is today without the contributions of [many people](https://github.com/evantahler/actionhero/graphs/contributors).  Thank you for taking the time to help out this open source project, and create something we can all use.
+Actionhero would not be the success it is today without the contributions of [many people](https://github.com/actionhero/actionhero/graphs/contributors).  Thank you for taking the time to help out this open source project, and create something we can all use!
+
+## Pull Requests
+
+All changes to ActionHero should be sent in as [Pull Requests](https://help.github.com/articles/about-pull-requests) to our [Github Project](https://github.com/actionhero/actionhero).  Changes by any other method will be instantly rejected.  GitHub allows us to coordinate and communicate in a single place.
 
 ## Testing
 
@@ -11,28 +15,12 @@ You will need redis and node.js installed.  No other external dependancies are n
 
 **Every contribution to the codebase should have an associated test**
 
-If you need help writing tests, please ask for help in the [chat room](http://slack.actionherojs.com)
+If you need help writing tests, please ask for help in the [slack team](http://slack.actionherojs.com)
 
-## Syntax-checking
+## Linting
 
-Spandex does not create much of it, but when it does, [true action
-hero](http://www.body-pixel.com/2010/10/12/lavanderman-–-croatian-comic-book-hero/)
-removes his bellybutton lint with special utility-belt tools, namely
-[ESLint](http://eslint.org). Not only that, she does it in style too.
+We use [standard.js](https://standardjs.com) to manage our lint rules.  We run `standard` as part of our test suite, and your contributions must pass.  Standard is *very* opinionated and inflexible such that we cannot inject our own opinions.  There are no eslint/jshint files to manage in this project.  
 
-Basic code style as well as linting suggestions are governed by `.eslintrc`
-ruleset. Your favorite editor most likely has a plugin to help you with that
-too, and here's a list of few select plugins for your convenience:
+## Documentation
 
-- [Atom editor plugin](https://atom.io/packages/linter-eslint)
-- [Sublime Text plugin](https://github.com/roadhump/SublimeLinter-eslint)
-- [generic syntax-checking Vim plugin](https://github.com/scrooloose/syntastic)
-
-It's easy to check that you got it right even without plugin - just run `npm run lint`!
-
-*Person who does not change is a monument of itself*, so, be not afraid of
-improving the ruleset, but do run through the entirety of the codebase to adjust
-for the changes.
-
-NOTE: Currently, templates and actionhero client code throws few linting errors
-that'd be too hacky to work around in linting ruleset.
+If your contribution adds a new feature of modifies an existing behavior, you will also need to update the [ActionHero Documentation Site](https://www.actionherojs.com) with your changes.  The description in your pull request and changes to the site should be very similar.  Open related pull request on the [ActionHero Website Repository](https://github.com/actionhero/www.actionherojs.com) with a link back to the pull request here.

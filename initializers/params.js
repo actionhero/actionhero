@@ -1,9 +1,19 @@
 'use strict'
 
-module.exports = {
-  loadPriority: 420,
-  initialize: function (api, next) {
-    api.params = {}
+const ActionHero = require('./../index.js')
+const api = ActionHero.api
+
+module.exports = class Params extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'params'
+    this.loadPriority = 420
+  }
+
+  initialize () {
+    api.params = {
+      postVariables: []
+    }
 
     // special params we will always accept
     api.params.globalSafeParams = [
@@ -36,6 +46,5 @@ module.exports = {
     }
 
     api.params.buildPostVariables()
-    next()
   }
 }

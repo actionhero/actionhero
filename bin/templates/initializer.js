@@ -1,18 +1,19 @@
 'use strict'
+const ActionHero = require('actionhero')
 
-module.exports = {
-  loadPriority:  %%loadPriority%%,
-  startPriority: %%startPriority%%,
-  stopPriority:  %%stopPriority%%,
-  initialize: function (api, next) {
-    api.%%name%% = {};
-
-    next()
-  },
-  start: function (api, next) {
-    next()
-  },
-  stop: function (api, next) {
-    next()
+module.exports = class MyInitializer extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = '%%name%%'
+    this.loadPriority = %%loadPriority%%
+    this.startPriority = %%startPriority%%
+    this.stopPriority = %%stopPriority%%
   }
+
+  async initialize () {
+    ActionHero.api['%%name%%'] = {}
+  }
+
+  async start () {}
+  async stop () {}
 }

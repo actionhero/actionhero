@@ -1,12 +1,18 @@
-const host = process.env.REDIS_HOST || '127.0.0.1'
-const port = process.env.REDIS_PORT || 6379
-const db = process.env.REDIS_DB || 0
-const password = process.env.REDIS_PASSWORD || null
+let host = process.env.REDIS_HOST || '127.0.0.1'
+let port = process.env.REDIS_PORT || 6379
+let db = process.env.REDIS_DB || 0
+let password = process.env.REDIS_PASSWORD || null
 const maxBackoff = 1000
 
+if (process.env.REDIS_URL) {
+  password = process.env.REDIS_URL.match(/redis:\/\/.*:(.*)@.*:\d*$/i)[1]
+  host = process.env.REDIS_URL.match(/redis:\/\/.*:.*@(.*):\d*$/i)[1]
+  port = parseInt(process.env.REDIS_URL.match(/redis:\/\/.*:.*@.*:(\d*)$/i)[1])
+}
+
 exports['default'] = {
-  redis: function (api) {
-    // konstructor: The redis client constructor method
+  redis: (api) => {
+    // konstructor: The redis client constructor method.  All redis methods must be promises
     // args: The arguments to pass to the constructor
     // buildNew: is it `new konstructor()` or just `konstructor()`?
 
@@ -18,43 +24,24 @@ exports['default'] = {
       return Math.min(times * 50, maxBackoff)
     }
 
-    if (process.env.FAKEREDIS === 'false' || process.env.REDIS_HOST !== undefined) {
-      return {
-        '_toExpand': false,
-        client: {
-          konstructor: require('ioredis'),
-          args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy }],
-          buildNew: true
-        },
-        subscriber: {
-          konstructor: require('ioredis'),
-          args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy }],
-          buildNew: true
-        },
-        tasks: {
-          konstructor: require('ioredis'),
-          args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy }],
-          buildNew: true
-        }
-      }
-    } else {
-      return {
-        '_toExpand': false,
-        client: {
-          konstructor: require('fakeredis').createClient,
-          args: [port, host, {fast: true}],
-          buildNew: false
-        },
-        subscriber: {
-          konstructor: require('fakeredis').createClient,
-          args: [port, host, {fast: true}],
-          buildNew: false
-        },
-        tasks: {
-          konstructor: require('fakeredis').createClient,
-          args: [port, host, {fast: true}],
-          buildNew: false
-        }
+    return {
+      enabled: true,
+
+      '_toExpand': false,
+      client: {
+        konstructor: require('ioredis'),
+        args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy }],
+        buildNew: true
+      },
+      subscriber: {
+        konstructor: require('ioredis'),
+        args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy }],
+        buildNew: true
+      },
+      tasks: {
+        konstructor: require('ioredis'),
+        args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy }],
+        buildNew: true
       }
     }
   }

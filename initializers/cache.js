@@ -1,189 +1,215 @@
 'use strict'
 
 const fs = require('fs')
-const async = require('async')
+const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
-module.exports = {
-  startPriority: 300,
-  loadPriority: 300,
-  initialize: function (api, next) {
-    api.cache = {}
-    api.cache.redisPrefix = api.config.general.cachePrefix
-    api.cache.lockPrefix = api.config.general.lockPrefix
-    api.cache.lockDuration = api.config.general.lockDuration
-    api.cache.lockName = api.id
-    api.cache.lockRetry = 100
+/**
+ * Redis cache connectivity and support methods.
+ *
+ * @namespace api.cache
+ * @property {string} redisPrefix - The prefix for all redis keys (from `api.config.general.cachePrefix`).
+ * @property {string} redisPrefix - The prefix for all redis locks (from `api.config.general.lockPrefix`).
+ * @property {Number} lockDuration - The default time a key will be locked for (from `api.config.general.lockDuration`).
+ * @property {string} lockName - The name of the lock for this ActionHero instance (from `api.id`).
+ * @property {Number} lockRetry - How long to wait before trying to get a lock again (100ms).
+ * @extends ActionHero.Initializer
+ */
+class Cache extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'cache'
+    this.loadPriority = 300
+    this.startPriority = 300
+  }
 
+  initialize () {
     const redis = api.redis.clients.client
 
-    api.cache.keys = function (callback) {
-      redis.keys(api.cache.redisPrefix + '*', callback)
+    api.cache = {
+      redisPrefix: api.config.general.cachePrefix,
+      lockPrefix: api.config.general.lockPrefix,
+      lockDuration: api.config.general.lockDuration,
+      lockName: api.id,
+      lockRetry: 100
     }
 
-    api.cache.locks = function (callback) {
-      redis.keys(api.cache.lockPrefix + '*', callback)
+    /**
+     * Returns all the keys in redis which are under this ActionHero namespace.  Potentially very slow.
+     *
+     * @async
+     * @return {Promise<Array>} Promise resolves an Array of keys
+     */
+    api.cache.keys = async () => {
+      return redis.keys(api.cache.redisPrefix + '*')
     }
 
-    api.cache.size = function (callback) {
-      api.cache.keys((error, keys) => {
-        let length = 0
-        if (keys) { length = keys.length }
-        callback(error, length)
-      })
+    /**
+     * Returns all the locks in redis which are under this ActionHero namespace.  Potentially slow.
+     *
+     * @async
+     * @return {Promise<Array>} Promise resolves an Array of keys
+     */
+    api.cache.locks = async () => {
+      return redis.keys(api.cache.lockPrefix + '*')
     }
 
-    api.cache.clear = function (callback) {
-      api.cache.keys((error, keys) => {
-        if (error && typeof callback === 'function') { return callback(error) }
-        let jobs = []
-        keys.forEach((key) => {
-          jobs.push((done) => { redis.del(key, done) })
-        })
-
-        async.parallel(jobs, (error) => {
-          if (typeof callback === 'function') { return callback(error) }
-        })
-      })
+    /**
+     * Returns the number of keys in redis which are under this ActionHero namespace.  Potentially very slow.
+     *
+     * @async
+     * @return {Promise<Number>} Promise reslves in interger (length)
+     */
+    api.cache.size = async () => {
+      let keys = await api.cache.keys()
+      let length = 0
+      if (keys) { length = keys.length }
+      return length
     }
 
-    api.cache.dumpWrite = function (file, callback) {
+    /**
+     * Removes all keys in redis which are under this ActionHero namespace.  Potentially very slow.
+     *
+     * @async
+     * @return {Promise<Boolean>} will return true if successful.
+     */
+    api.cache.clear = async () => {
+      let keys = await api.cache.keys()
+      let jobs = []
+      keys.forEach((key) => { jobs.push(redis.del(key)) })
+      await Promise.all(jobs)
+      return true
+    }
+
+    /**
+     * Write the current concents of redis (only the keys in ActionHero's namespace) to a file.
+     *
+     * @async
+     * @param  {string}  file The file to save the cache to.
+     * @return {Promise<Number>} The number of keys saved to disk.
+     * @see api.cache.dumpRead
+     */
+    api.cache.dumpWrite = async (file) => {
       let data = {}
-      api.cache.keys((error, keys) => {
-        if (error && typeof callback === 'function') { return callback(error) }
-        let jobs = []
-        keys.forEach((key) => {
-          jobs.push((done) => {
-            redis.get(key, (error, content) => {
-              if (error) { return done(error) }
-              data[key] = content
-              return done()
-            })
-          })
-        })
+      let jobs = []
+      let keys = await api.cache.keys()
 
-        async.parallel(jobs, function (error) {
-          if (error) {
-            if (typeof callback === 'function') { return callback(error) }
-          } else {
-            fs.writeFileSync(file, JSON.stringify(data))
-            if (typeof callback === 'function') { return callback(null, keys.length) }
-          }
-        })
+      keys.forEach((key) => {
+        jobs.push(redis.get(key).then((content) => { data[key] = content }))
       })
+
+      await Promise.all(jobs)
+
+      fs.writeFileSync(file, JSON.stringify(data))
+      return keys.length
     }
 
-    api.cache.dumpRead = function (file, callback) {
-      api.cache.clear((error) => {
-        if (error) {
-          if (typeof callback === 'function') { return callback(error) }
+    /**
+     * Load in contents for redis (and api.cache) saved to a file
+     * Warning! Any existing keys in redis (under this ActionHero namespace) will be removed.
+     *
+     * @async
+     * @param  {string}  file The file to load into the cache.
+     * @return {Promise<Number>} The number of keys loaded into redis.
+     * @see api.cache.dumpWrite
+     */
+    api.cache.dumpRead = async (file) => {
+      let jobs = []
+      await api.cache.clear()
+      let data = JSON.parse(fs.readFileSync(file))
+      let count = Object.keys(data).length
+
+      Object.keys(data).forEach((key) => {
+        let content = data[key]
+        jobs.push(api.cache.saveDumpedElement(key, content))
+      })
+
+      await Promise.all(jobs)
+      return count
+    }
+
+    api.cache.saveDumpedElement = async (key, content) => {
+      let parsedContent = JSON.parse(content)
+      await redis.set(key, content)
+      if (parsedContent.expireTimestamp) {
+        let expireTimeSeconds = Math.ceil((parsedContent.expireTimestamp - new Date().getTime()) / 1000)
+        await redis.expire(key, expireTimeSeconds)
+      }
+    }
+
+    /**
+     * Load an item from the cache.  Will throw an error if the item named by `key` cannot be found.
+     *
+     * @async
+     * @param  {string}  key     The name of the item to load from the cache.
+     * @param  {Object}  options  Options is an object with the propety `expireTimeMS`.  This can be used to re-set an expiry time on the cached object after reading it.
+     * @return {Promise<Object>}   Returns an object with {key, value, expireTimestamp, createdAt, lastReadAt}
+     * @see api.cache.save
+     * @see api.cache.destroy
+     */
+    api.cache.load = async (key, options) => {
+      if (!options) { options = {} }
+      let cacheObj = await redis.get(api.cache.redisPrefix + key)
+      try { cacheObj = JSON.parse(cacheObj) } catch (e) {}
+
+      if (!cacheObj) { throw new Error(api.i18n.localize('actionhero.cache.objectNotFound')) }
+      if (cacheObj.expireTimestamp && cacheObj.expireTimestamp < new Date().getTime()) { throw new Error(api.i18n.localize('actionhero.cache.objectExpired')) }
+
+      let lastReadAt = cacheObj.readAt
+      let expireTimeSeconds
+      cacheObj.readAt = new Date().getTime()
+
+      if (cacheObj.expireTimestamp) {
+        if (options.expireTimeMS) {
+          cacheObj.expireTimestamp = new Date().getTime() + options.expireTimeMS
+          expireTimeSeconds = Math.ceil(options.expireTimeMS / 1000)
         } else {
-          let jobs = []
-          let data
-          try {
-            data = JSON.parse(fs.readFileSync(file))
-          } catch (error) { return callback(error) }
-
-          Object.keys(data).forEach((key) => {
-            let content = data[key]
-            jobs.push(function (done) { api.cache.saveDumpedElement(key, content, done) })
-          })
-
-          async.series(jobs, (error) => {
-            if (typeof callback === 'function') { return callback(error, Object.keys(data).length) }
-          })
+          expireTimeSeconds = Math.floor((cacheObj.expireTimestamp - new Date().getTime()) / 1000)
         }
-      })
-    }
-
-    api.cache.saveDumpedElement = function (key, content, callback) {
-      let parsedContent
-      try {
-        parsedContent = JSON.parse(content)
-      } catch (error) { return callback(error) }
-
-      redis.set(key, content, (error) => {
-        if (error) { return callback(error) } else if (parsedContent.expireTimestamp) {
-          const expireTimeSeconds = Math.ceil((parsedContent.expireTimestamp - new Date().getTime()) / 1000)
-          redis.expire(key, expireTimeSeconds, () => {
-            return callback(error)
-          })
-        } else {
-          return callback()
-        }
-      })
-    }
-
-    api.cache.load = function (key, options, callback) {
-      // optons: options.expireTimeMS, options.retry
-      if (typeof options === 'function') {
-        callback = options
-        options = {}
       }
 
-      redis.get(api.cache.redisPrefix + key, function (error, cacheObj) {
-        if (error) { api.log(error, 'error') }
-        try { cacheObj = JSON.parse(cacheObj) } catch (e) {}
-        if (!cacheObj) {
-          if (typeof callback === 'function') {
-            return callback(new Error(api.i18n.localize('Object not found')), null, null, null, null)
-          }
-        } else if (cacheObj.expireTimestamp >= new Date().getTime() || cacheObj.expireTimestamp === null) {
-          const lastReadAt = cacheObj.readAt
-          let expireTimeSeconds
-          cacheObj.readAt = new Date().getTime()
-          if (cacheObj.expireTimestamp) {
-            if (options.expireTimeMS) {
-              cacheObj.expireTimestamp = new Date().getTime() + options.expireTimeMS
-              expireTimeSeconds = Math.ceil(options.expireTimeMS / 1000)
-            } else {
-              expireTimeSeconds = Math.floor((cacheObj.expireTimestamp - new Date().getTime()) / 1000)
-            }
-          }
+      let lockOk = await api.cache.checkLock(key, options.retry)
+      if (lockOk !== true) { throw new Error(api.i18n.localize('actionhero.cache.objectLocked')) }
 
-          api.cache.checkLock(key, options.retry, function (error, lockOk) {
-            if (error || lockOk !== true) {
-              if (typeof callback === 'function') { return callback(new Error(api.i18n.localize('Object Locked'))) }
-            } else {
-              redis.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), (error) => {
-                if (typeof callback === 'function' && typeof expireTimeSeconds !== 'number') {
-                  return callback(error, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, lastReadAt)
-                } else {
-                  redis.expire(api.cache.redisPrefix + key, expireTimeSeconds, (error) => {
-                    if (typeof callback === 'function') { return callback(error, cacheObj.value, cacheObj.expireTimestamp, cacheObj.createdAt, lastReadAt) }
-                  })
-                }
-              })
-            }
-          })
-        } else {
-          if (typeof callback === 'function') {
-            return callback(new Error(api.i18n.localize('Object Expired')))
-          }
-        }
-      })
-    }
-
-    api.cache.destroy = function (key, callback) {
-      api.cache.checkLock(key, null, (error, lockOk) => {
-        if (error || lockOk !== true) {
-          if (typeof callback === 'function') { callback(new Error(api.i18n.localize('Object Locked'))) }
-        } else {
-          redis.del(api.cache.redisPrefix + key, (error, count) => {
-            if (error) { api.log(error, 'error') }
-            let resp = true
-            if (count !== 1) { resp = false }
-            if (typeof callback === 'function') { callback(error, resp) }
-          })
-        }
-      })
-    }
-
-    api.cache.save = function (key, value, expireTimeMS, callback) {
-      if (typeof expireTimeMS === 'function' && typeof callback === 'undefined') {
-        callback = expireTimeMS
-        expireTimeMS = null
+      await redis.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj))
+      if (expireTimeSeconds) {
+        await redis.expire(api.cache.redisPrefix + key, expireTimeSeconds)
+        return {key, value: cacheObj.value, expireTimestamp: cacheObj.expireTimestamp, createdAt: cacheObj.createdAt, lastReadAt}
+      } else {
+        return {key, value: cacheObj.value, expireTimestamp: cacheObj.expireTimestamp, createdAt: cacheObj.createdAt, lastReadAt}
       }
+    }
 
+    /**
+     * Delete an item in the cache.  Will throw an error if the item named by `key` is locked.
+     *
+     * @async
+     * @param  {string}  key The name of the item to destroy in the cache.
+     * @return {Promise<Boolean>}     returns true if the item was deleted, false if it was not (or not found).
+     * @see api.cache.load
+     * @see api.cache.destroy
+     */
+    api.cache.destroy = async (key) => {
+      let lockOk = await api.cache.checkLock(key, null)
+      if (!lockOk) { throw new Error(api.i18n.localize('actionhero.cache.objectLocked')) }
+      let count = await redis.del(api.cache.redisPrefix + key)
+      let response = true
+      if (count !== 1) { response = false }
+      return response
+    }
+
+    /**
+     * Save an item in the cache.  If an item is already in the cache with the same key, it will be overritten.  Throws an error if the object is already in the cache and is locked.
+     *
+     * @async
+     * @param  {string}  key          The name of the object to save.
+     * @param  {Object}  value        The object to save.  It can also be a Number, String, or Array.
+     * @param  {Number}  expireTimeMS (optional) Should the saved item expire after expireTimeMS?
+     * @return {Promise<Boolean>}     Returns true if the object was saved.
+     * @see api.cache.load
+     * @see api.cache.destroy
+     */
+    api.cache.save = async (key, value, expireTimeMS) => {
       let expireTimeSeconds = null
       let expireTimestamp = null
       if (expireTimeMS !== null) {
@@ -191,116 +217,124 @@ module.exports = {
         expireTimestamp = new Date().getTime() + expireTimeMS
       }
 
-      const cacheObj = {
+      let cacheObj = {
         value: value,
         expireTimestamp: expireTimestamp,
         createdAt: new Date().getTime(),
         readAt: null
       }
 
-      api.cache.checkLock(key, null, function (error, lockOk) {
-        if (error || lockOk !== true) {
-          if (typeof callback === 'function') { return callback(new Error(api.i18n.localize('Object Locked'))) }
-        } else {
-          redis.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj), (error) => {
-            if (!error && expireTimeSeconds) {
-              redis.expire(api.cache.redisPrefix + key, expireTimeSeconds, (error) => {
-                if (typeof callback === 'function') { return callback(error, true) }
-              })
-            } else {
-              if (typeof callback === 'function') { return callback(error, true) }
-            }
-          })
-        }
-      })
+      let lockOk = await api.cache.checkLock(key, null)
+      if (!lockOk) { throw new Error(api.i18n.localize('actionhero.cache.objectLocked')) }
+      await redis.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj))
+      if (expireTimeSeconds) {
+        await redis.expire(api.cache.redisPrefix + key, expireTimeSeconds)
+      }
+      return true
     }
 
-    api.cache.push = function (key, item, callback) {
+    /**
+     * Push an item to a shared queue/list in redis.
+     *
+     * @async
+     * @param  {string}  key  Name of the shared queue/list.
+     * @param  {Object}  item The item The object to save.  It can also be a Number, String, or Array.
+     * @return {Promise<Boolean>}      Returns true if the object was pushed.
+     * @see api.cache.pop
+     * @see api.cache.listLength
+     */
+    api.cache.push = async (key, item) => {
       let object = JSON.stringify({data: item})
-      redis.rpush(api.cache.redisPrefix + key, object, (error) => {
-        if (typeof callback === 'function') { callback(error) }
-      })
+      await redis.rpush(api.cache.redisPrefix + key, object)
+      return true
     }
 
-    api.cache.pop = function (key, callback) {
-      redis.lpop(api.cache.redisPrefix + key, (error, object) => {
-        if (error) { return callback(error) }
-        if (!object) { return callback() }
-        let item
-        try {
-          item = JSON.parse(object)
-        } catch (error) { return callback(error) }
-        return callback(null, item.data)
-      })
+    /**
+     * Pop (get) an item to a shared queue/list in redis.
+     *
+     * @async
+     * @param  {string}  key  The name of the shared queue/list.
+     * @return {Promise<Object>}   The item The object which was saved.  It can also be a Number, String, or Array.
+     * @see api.cache.push
+     * @see api.cache.listLength
+     */
+    api.cache.pop = async (key) => {
+      let object = await redis.lpop(api.cache.redisPrefix + key)
+      if (!object) { return null }
+      let item = JSON.parse(object)
+      return item.data
     }
 
-    api.cache.listLength = function (key, callback) {
-      redis.llen(api.cache.redisPrefix + key, callback)
+    /**
+     * Check how many items are stored in a shared queue/list in redis.
+     *
+     * @async
+     * @param  {string}  key  The name of the object to save.
+     * @return {Promise<Number>}     The length of the list in redis.  0 will re returned for non-existant lists.
+     */
+    api.cache.listLength = async (key) => {
+      return redis.llen(api.cache.redisPrefix + key)
     }
 
-    api.cache.lock = function (key, expireTimeMS, callback) {
-      if (typeof expireTimeMS === 'function' && callback === null) {
-        callback = expireTimeMS
-        expireTimeMS = null
+    /**
+     * Lock an item in redis (can be a list or a saved item) to this ActionHero process.
+     *
+     * @async
+     * @param  {string}  key          The name of the object to lock.
+     * @param  {string}  expireTimeMS How long to lock this item for.
+     * @return {Promise<Boolean>}     Returns true or false, depending on if the item was locked successfully.
+     * @see api.cache.unlock
+     * @see api.cache.checkLock
+     */
+    api.cache.lock = async (key, expireTimeMS) => {
+      if (expireTimeMS === null) { expireTimeMS = api.cache.lockDuration }
+      let lockOk = await api.cache.checkLock(key, null)
+      if (!lockOk) { return false }
+
+      let result = await redis.setnx(api.cache.lockPrefix + key, api.cache.lockName)
+      if (!result) { return false } // value was already set, so we cannot obtain the lock
+
+      await redis.expire(api.cache.lockPrefix + key, Math.ceil(expireTimeMS / 1000))
+      return true
+    }
+
+    /**
+     * Unlock an item in redis (can be a list or a saved item) which was previously locked by this ActionHero process.
+     *
+     * @async
+     * @param  {string}  key The name of the object to unlock.
+     * @return {Promise<Boolean>}     Returns true or false, depending on if the item was unlocked successfully.
+     * @see api.cache.lock
+     * @see api.cache.checkLock
+     */
+    api.cache.unlock = async (key) => {
+      let lockOk = await api.cache.checkLock(key, null)
+      if (!lockOk) { return false }
+
+      await redis.del(api.cache.lockPrefix + key)
+      return true
+    }
+
+    /**
+     * @private
+     */
+    api.cache.checkLock = async (key, retry, startTime) => {
+      if (!startTime) { startTime = new Date().getTime() }
+
+      let lockedBy = await redis.get(api.cache.lockPrefix + key)
+      if (lockedBy === api.cache.lockName || lockedBy === null) {
+        return true
+      } else {
+        let delta = new Date().getTime() - startTime
+        if (!retry || retry === false || delta > retry) {
+          return false
+        }
+
+        await new Promise((resolve) => { setTimeout(resolve, api.cache.lockRetry) })
+        return api.cache.checkLock(key, retry, startTime)
       }
-      if (expireTimeMS === null) {
-        expireTimeMS = api.cache.lockDuration
-      }
-
-      api.cache.checkLock(key, null, (error, lockOk) => {
-        if (error || lockOk !== true) {
-          return callback(error, false)
-        } else {
-          redis.setnx(api.cache.lockPrefix + key, api.cache.lockName, (error) => {
-            if (error) {
-              return callback(error)
-            } else {
-              redis.expire(api.cache.lockPrefix + key, Math.ceil(expireTimeMS / 1000), (error) => {
-                lockOk = true
-                if (error) { lockOk = false }
-                return callback(error, lockOk)
-              })
-            }
-          })
-        }
-      })
     }
-
-    api.cache.unlock = function (key, callback) {
-      api.cache.checkLock(key, null, (error, lockOk) => {
-        if (error || lockOk !== true) {
-          return callback(error, false)
-        } else {
-          redis.del(api.cache.lockPrefix + key, (error) => {
-            lockOk = true
-            if (error) { lockOk = false }
-            return callback(error, lockOk)
-          })
-        }
-      })
-    }
-
-    api.cache.checkLock = function (key, retry, callback, startTime) {
-      if (startTime === null) { startTime = new Date().getTime() }
-
-      redis.get(api.cache.lockPrefix + key, (error, lockedBy) => {
-        if (error) {
-          return callback(error, false)
-        } else if (lockedBy === api.cache.lockName || lockedBy === null) {
-          return callback(null, true)
-        } else {
-          const delta = new Date().getTime() - startTime
-          if (retry === null || retry === false || delta > retry) {
-            return callback(null, false)
-          } else {
-            return setTimeout(() => {
-              api.cache.checkLock(key, retry, callback, startTime)
-            }, api.cache.lockRetry)
-          }
-        }
-      })
-    }
-
-    next()
   }
 }
+
+module.exports = Cache

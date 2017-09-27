@@ -2,33 +2,40 @@
 
 const fs = require('fs')
 const path = require('path')
-const optimist = require('optimist')
-const argv = optimist
-  .demand('name')
-  .describe('name', 'The name of the initializer')
-  .describe('loadPriority', 'order of operations')
-  .describe('startPriority', 'order of operations')
-  .describe('stopPriority', 'order of operations')
-  .default('loadPriority', 1000)
-  .default('startPriority', 1000)
-  .default('stopPriority', 1000)
-  .argv
+const ActionHero = require('./../../../index.js')
+const api = ActionHero.api
 
-module.exports = function (api, next) {
-  let data = fs.readFileSync(path.join(__dirname, '/../../templates/initializer.js'))
-  data = String(data);
+module.exports = class GenerateAction extends ActionHero.CLI {
+  constructor () {
+    super()
+    this.name = 'generate initializer'
+    this.description = 'generate a new initializer'
+    this.example = 'actionhero generate initializer --name=[name] --loadPriority=[p] --startPriority=[p] --stopPriority=[p]'
+    this.inputs = {
+      name: {required: true},
+      loadPriority: {required: true, default: 1000},
+      startPriority: {required: true, default: 1000},
+      stopPriority: {required: true, default: 1000}
+    }
+  }
 
-  [
-    'name',
-    'loadPriority',
-    'startPriority',
-    'stopPriority'
-  ].forEach(function (v) {
-    let regex = new RegExp('%%' + v + '%%', 'g')
-    data = data.replace(regex, argv[v])
-  })
+  run ({params}) {
+    let template = fs.readFileSync(path.join(__dirname, '/../../templates/initializer.js'))
+    template = String(template);
 
-  api.utils.createFileSafely(api.config.general.paths.initializer[0] + '/' + argv.name + '.js', data)
+    [
+      'name',
+      'loadPriority',
+      'startPriority',
+      'stopPriority'
+    ].forEach((v) => {
+      let regex = new RegExp('%%' + v + '%%', 'g')
+      template = template.replace(regex, params[v])
+    })
 
-  next(null, true)
+    let message = api.utils.createFileSafely(api.config.general.paths.initializer[0] + '/' + params.name + '.js', template)
+    console.log(message)
+
+    return true
+  }
 }

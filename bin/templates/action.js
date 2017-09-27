@@ -1,20 +1,15 @@
 'use strict'
+const ActionHero = require('actionhero')
 
-exports.action = {
-  name: '%%name%%',
-  description: '%%description%%',
-  blockedConnectionTypes: [],
-  outputExample: {},
-  matchExtensionMimeType: false,
-  version: 1.0,
-  toDocument: true,
-  middleware: [],
+module.exports = class MyAction extends ActionHero.Action {
+  constructor () {
+    super()
+    this.name = '%%name%%'
+    this.description = '%%description%%'
+    this.outputExample = {}
+  }
 
-  inputs: {},
-
-  run: function (api, data, next) {
-    let error = null
+  async run (data) {
     // your logic here
-    next(error)
   }
 }

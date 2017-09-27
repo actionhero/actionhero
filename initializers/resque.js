@@ -1,12 +1,21 @@
 'use strict'
 
-const NR = require('node-resque')
+const NodeResque = require('node-resque')
+const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
-module.exports = {
-  startPriority: 200,
-  stopPriority: 100,
-  loadPriority: 600,
-  initialize: function (api, next) {
+module.exports = class Resque extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'resque'
+    this.loadPriority = 600
+    this.startPriority = 200
+    this.stopPriority = 100
+  }
+
+  initialize () {
+    if (api.config.redis === false) { return }
+
     const resqueOverrides = api.config.tasks.resque_overrides
 
     api.resque = {
@@ -16,67 +25,60 @@ module.exports = {
       scheduler: null,
       connectionDetails: {redis: api.redis.clients.tasks},
 
-      startQueue: function (callback) {
-        let Queue = NR.queue
+      startQueue: async () => {
+        let Queue = NodeResque.Queue
         if (resqueOverrides && resqueOverrides.queue) { Queue = resqueOverrides.queue }
-        this.queue = new Queue({connection: this.connectionDetails}, api.tasks.jobs)
+        api.resque.queue = new Queue({connection: api.resque.connectionDetails}, api.tasks.jobs)
 
-        this.queue.on('error', (error) => {
+        api.resque.queue.on('error', (error) => {
           api.log(error, 'error', '[api.resque.queue]')
         })
 
-        this.queue.connect(callback)
+        await api.resque.queue.connect()
       },
 
-      stopQueue: function (callback) {
-        if (api.resque.queue) { api.resque.queue.end(callback) } else { callback() }
+      stopQueue: async () => {
+        if (api.resque.queue) {
+          return api.resque.queue.end()
+        }
       },
 
-      startScheduler: function (callback) {
-        let Scheduler = NR.scheduler
+      startScheduler: async () => {
+        let Scheduler = NodeResque.Scheduler
         if (resqueOverrides && resqueOverrides.scheduler) { Scheduler = resqueOverrides.scheduler }
         if (api.config.tasks.scheduler === true) {
-          this.schedulerLogging = api.config.tasks.schedulerLogging
-          this.scheduler = new Scheduler({connection: this.connectionDetails, timeout: api.config.tasks.timeout})
+          api.resque.schedulerLogging = api.config.tasks.schedulerLogging
+          api.resque.scheduler = new Scheduler({connection: api.resque.connectionDetails, timeout: api.config.tasks.timeout})
 
-          this.scheduler.on('error', (error) => {
+          api.resque.scheduler.on('error', (error) => {
             api.log(error, 'error', '[api.resque.scheduler]')
           })
 
-          this.scheduler.connect(() => {
-            this.scheduler.on('start', () => { api.log('resque scheduler started', this.schedulerLogging.start) })
-            this.scheduler.on('end', () => { api.log('resque scheduler ended', this.schedulerLogging.end) })
-            this.scheduler.on('poll', () => { api.log('resque scheduler polling', this.schedulerLogging.poll) })
-            this.scheduler.on('working_timestamp', (timestamp) => { api.log(['resque scheduler working timestamp %s', timestamp], this.schedulerLogging.working_timestamp) })
-            this.scheduler.on('transferred_job', (timestamp, job) => { api.log(['resque scheduler enqueuing job %s', timestamp], this.schedulerLogging.transferred_job, job) })
-            this.scheduler.on('master', (state) => { api.log(['This node is now the Resque scheduler master']) })
+          await api.resque.scheduler.connect()
+          api.resque.scheduler.on('start', () => { api.log('resque scheduler started', api.resque.schedulerLogging.start) })
+          api.resque.scheduler.on('end', () => { api.log('resque scheduler ended', api.resque.schedulerLogging.end) })
+          api.resque.scheduler.on('poll', () => { api.log('resque scheduler polling', api.resque.schedulerLogging.poll) })
+          api.resque.scheduler.on('working_timestamp', (timestamp) => { api.log(`resque scheduler working timestamp ${timestamp}`, api.resque.schedulerLogging.working_timestamp) })
+          api.resque.scheduler.on('transferred_job', (timestamp, job) => { api.log(`resque scheduler enqueuing job ${timestamp}`, api.resque.schedulerLogging.transferred_job, job) })
+          api.resque.scheduler.on('master', (state) => { api.log('This node is now the Resque scheduler master') })
 
-            this.scheduler.start()
-            callback()
-          })
-        } else {
-          callback()
+          api.resque.scheduler.start()
         }
       },
 
-      stopScheduler: function (callback) {
-        if (!this.scheduler) {
-          callback()
-        } else {
-          this.scheduler.end(() => {
-            delete this.scheduler
-            callback()
-          })
+      stopScheduler: async () => {
+        if (api.resque.scheduler) {
+          return api.resque.scheduler.end()
         }
       },
 
-      startMultiWorker: function (callback) {
-        let MultiWorker = NR.multiWorker
+      startMultiWorker: async () => {
+        let MultiWorker = NodeResque.MultiWorker
         if (resqueOverrides && resqueOverrides.multiWorker) { MultiWorker = resqueOverrides.multiWorker }
-        this.workerLogging = api.config.tasks.workerLogging
-        this.schedulerLogging = api.config.tasks.schedulerLogging
+        api.resque.workerLogging = api.config.tasks.workerLogging
+        api.resque.schedulerLogging = api.config.tasks.schedulerLogging
 
-        this.multiWorker = new MultiWorker({
+        api.resque.multiWorker = new MultiWorker({
           connection: api.resque.connectionDetails,
           queues: api.config.tasks.queues,
           timeout: api.config.tasks.timeout,
@@ -88,67 +90,64 @@ module.exports = {
         }, api.tasks.jobs)
 
         // normal worker emitters
-        this.multiWorker.on('start', (workerId) => { api.log('worker: started', this.workerLogging.start, {workerId: workerId}) })
-        this.multiWorker.on('end', (workerId) => { api.log('worker: ended', this.workerLogging.end, {workerId: workerId}) })
-        this.multiWorker.on('cleaning_worker', (workerId, worker, pid) => { api.log(['worker: cleaning old worker %s, (%s)', worker, pid], this.workerLogging.cleaning_worker) })
-        this.multiWorker.on('poll', (workerId, queue) => { api.log(['worker: polling %s', queue], this.workerLogging.poll, {workerId: workerId}) })
-        this.multiWorker.on('job', (workerId, queue, job) => { api.log(['worker: working job %s', queue], this.workerLogging.job, {workerId: workerId, job: {class: job['class'], queue: job.queue}}) })
-        this.multiWorker.on('reEnqueue', (workerId, queue, job, plugin) => { api.log('worker: reEnqueue job', this.workerLogging.reEnqueue, {workerId: workerId, plugin: plugin, job: {class: job['class'], queue: job.queue}}) })
-        this.multiWorker.on('success', (workerId, queue, job, result) => { api.log(['worker: job success %s', queue], this.workerLogging.success, {workerId: workerId, job: {class: job['class'], queue: job.queue}, result: result}) })
-        this.multiWorker.on('pause', (workerId) => { api.log('worker: paused', this.workerLogging.pause, {workerId: workerId}) })
+        api.resque.multiWorker.on('start', (workerId) => { api.log('[ worker ] started', api.resque.workerLogging.start, {workerId}) })
+        api.resque.multiWorker.on('end', (workerId) => { api.log('[ worker ] ended', api.resque.workerLogging.end, {workerId}) })
+        api.resque.multiWorker.on('cleaning_worker', (workerId, worker, pid) => { api.log(`[ worker ] cleaning old worker ${worker}, (${pid})`, api.resque.workerLogging.cleaning_worker) })
+        api.resque.multiWorker.on('poll', (workerId, queue) => { api.log(`[ worker ] polling ${queue}`, api.resque.workerLogging.poll, {workerId}) })
+        api.resque.multiWorker.on('job', (workerId, queue, job) => { api.log(`[ worker ] working job ${queue}`, api.resque.workerLogging.job, {workerId, job: {class: job['class'], queue: job.queue}}) })
+        api.resque.multiWorker.on('reEnqueue', (workerId, queue, job, plugin) => { api.log('[ worker ] reEnqueue job', api.resque.workerLogging.reEnqueue, {workerId, plugin: plugin, job: {class: job['class'], queue: job.queue}}) })
+        api.resque.multiWorker.on('pause', (workerId) => { api.log('[ worker ] paused', api.resque.workerLogging.pause, {workerId}) })
 
-        this.multiWorker.on('failure', (workerId, queue, job, failure) => { api.exceptionHandlers.task(failure, queue, job, workerId) })
-        this.multiWorker.on('error', (workerId, queue, job, error) => { api.exceptionHandlers.task(error, queue, job, workerId) })
+        api.resque.multiWorker.on('failure', (workerId, queue, job, failure) => { api.exceptionHandlers.task(failure, queue, job, workerId) })
+        api.resque.multiWorker.on('error', (error, workerId, queue, job) => { api.exceptionHandlers.task(error, queue, job, workerId) })
+
+        api.resque.multiWorker.on('success', (workerId, queue, job, result) => {
+          let payload = {
+            workerId,
+            job: {
+              class: job['class'],
+              queue: job.queue
+            }
+          }
+
+          if (result !== null && result !== undefined) { payload.result = result }
+          api.log(`[ worker ] job success ${queue}`, api.resque.workerLogging.success, payload)
+        })
 
         // multiWorker emitters
-        this.multiWorker.on('internalError', (error) => { api.log(error, this.workerLogging.internalError) })
-        this.multiWorker.on('multiWorkerAction', (verb, delay) => { api.log(['*** checked for worker status: %s (event loop delay: %sms)', verb, delay], this.workerLogging.multiWorkerAction) })
+        api.resque.multiWorker.on('internalError', (error) => { api.log(error, api.resque.workerLogging.internalError) })
+        api.resque.multiWorker.on('multiWorkerAction', (verb, delay) => { api.log(`[ multiworker ] checked for worker status: ${verb} (event loop delay: ${delay}ms)`, api.resque.workerLogging.multiWorkerAction) })
 
         if (api.config.tasks.minTaskProcessors > 0) {
-          this.multiWorker.start(() => {
-            if (typeof callback === 'function') { callback() }
-          })
-        } else {
-          if (typeof callback === 'function') { callback() }
+          api.resque.multiWorker.start()
         }
       },
 
-      stopMultiWorker: function (callback) {
-        if (this.multiWorker && api.config.tasks.minTaskProcessors > 0) {
-          this.multiWorker.stop(() => {
-            api.log('task workers stopped')
-            callback()
-          })
-        } else {
-          callback()
+      stopMultiWorker: async () => {
+        if (api.resque.multiWorker && api.config.tasks.minTaskProcessors > 0) {
+          return api.resque.multiWorker.stop()
         }
       }
     }
+  }
 
-    next()
-  },
+  async start () {
+    if (api.config.redis.enabled === false) { return }
 
-  start: function (api, next) {
     if (api.config.tasks.minTaskProcessors === 0 && api.config.tasks.maxTaskProcessors > 0) {
       api.config.tasks.minTaskProcessors = 1
     }
 
-    api.resque.startQueue(function () {
-      api.resque.startScheduler(function () {
-        api.resque.startMultiWorker(function () {
-          next()
-        })
-      })
-    })
-  },
+    await api.resque.startQueue()
+    await api.resque.startScheduler()
+    await api.resque.startMultiWorker()
+  }
 
-  stop: function (api, next) {
-    api.resque.stopScheduler(function () {
-      api.resque.stopMultiWorker(function () {
-        api.resque.stopQueue(function () {
-          next()
-        })
-      })
-    })
+  async stop () {
+    if (api.config.redis.enabled === false) { return }
+
+    await api.resque.stopScheduler()
+    await api.resque.stopMultiWorker()
+    await api.resque.stopQueue()
   }
 }

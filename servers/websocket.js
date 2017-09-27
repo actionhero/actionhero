@@ -5,68 +5,69 @@ const UglifyJS = require('uglify-js')
 const fs = require('fs')
 const path = require('path')
 const util = require('util')
-const browserFingerprint = require('browser_fingerprint')
+const BrowserFingerprint = require('browser_fingerprint')
+const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
-const initialize = function (api, options, next) {
-  // ////////
-  // INIT //
-  // ////////
+module.exports = class WebSocketServer extends ActionHero.Server {
+  constructor () {
+    super()
+    this.type = 'websocket'
 
-  const type = 'websocket'
-  const attributes = {
-    canChat: true,
-    logConnections: true,
-    logExits: true,
-    sendWelcomeMessage: true,
-    verbs: [
-      'quit',
-      'exit',
-      'documentation',
-      'roomAdd',
-      'roomLeave',
-      'roomView',
-      'detailsView',
-      'say'
-    ]
-  }
-
-  const server = new api.GenericServer(type, options, attributes)
-
-  // ////////////////////
-  // REQUIRED METHODS //
-  // ////////////////////
-
-  server.start = function (next) {
-    const webserver = api.servers.servers.web
-    server.server = new Primus(webserver.server, api.config.servers.websocket.server)
-
-    server.server.on('connection', (rawConnection) => {
-      handleConnection(rawConnection)
-    })
-
-    server.server.on('disconnection', (rawConnection) => {
-      handleDisconnection(rawConnection)
-    })
-
-    api.log(['webSockets bound to %s: %s', webserver.options.bindIP, webserver.options.port], 'debug')
-    server.active = true
-
-    server.writeClientJS()
-
-    next()
-  }
-
-  server.stop = function (next) {
-    server.active = false
-    if (api.config.servers.websocket.destroyClientsOnShutdown === true) {
-      server.connections().forEach((connection) => {
-        connection.destroy()
-      })
+    this.attributes = {
+      canChat: true,
+      logConnections: true,
+      logExits: true,
+      sendWelcomeMessage: true,
+      verbs: [
+        'quit',
+        'exit',
+        'documentation',
+        'roomAdd',
+        'roomLeave',
+        'roomView',
+        'detailsView',
+        'say'
+      ]
     }
-    process.nextTick(next)
   }
 
-  server.sendMessage = function (connection, message, messageCount) {
+  initialize () {
+    this.fingerprinter = new BrowserFingerprint(api.config.servers.web.fingerprintOptions)
+  }
+
+  start () {
+    const webserver = api.servers.servers.web
+    this.server = new Primus(webserver.server, this.config.server)
+
+    this.writeClientJS()
+
+    this.server.on('connection', (rawConnection) => { this.handleConnection(rawConnection) })
+    this.server.on('disconnection', (rawConnection) => { this.handleDisconnection(rawConnection) })
+
+    this.log(`webSockets bound to ${webserver.options.bindIP}: ${webserver.options.port}`, 'debug')
+    this.active = true
+
+    this.on('connection', (connection) => {
+      connection.rawConnection.on('data', (data) => { this.handleData(connection, data) })
+    })
+
+    this.on('actionComplete', (data) => {
+      if (data.toRender !== false) {
+        data.connection.response.messageCount = data.messageCount
+        this.sendMessage(data.connection, data.response, data.messageCount)
+      }
+    })
+  }
+
+  stop () {
+    this.active = false
+    if (this.config.destroyClientsOnShutdown === true) {
+      this.connections().forEach((connection) => { connection.destroy() })
+    }
+  }
+
+  sendMessage (connection, message, messageCount) {
     if (message.error) {
       message.error = api.config.errors.serializers.servers.websocket(message.error)
     }
@@ -77,7 +78,7 @@ const initialize = function (api, options, next) {
     connection.rawConnection.write(message)
   }
 
-  server.sendFile = function (connection, error, fileStream, mime, length, lastModified) {
+  sendFile (connection, error, fileStream, mime, length, lastModified) {
     let content = ''
     let response = {
       error: error,
@@ -89,53 +90,30 @@ const initialize = function (api, options, next) {
 
     try {
       if (!error) {
-        fileStream.on('data', function (d) { content += d })
+        fileStream.on('data', (d) => { content += d })
         fileStream.on('end', () => {
           response.content = content
-          server.sendMessage(connection, response, connection.messageCount)
+          this.sendMessage(connection, response, connection.messageCount)
         })
       } else {
-        server.sendMessage(connection, response, connection.messageCount)
+        this.sendMessage(connection, response, connection.messageCount)
       }
     } catch (e) {
-      api.log(e, 'warning')
-      server.sendMessage(connection, response, connection.messageCount)
+      this.log(e, 'warning')
+      this.sendMessage(connection, response, connection.messageCount)
     }
   }
 
-  server.goodbye = function (connection) {
+  goodbye (connection) {
     connection.rawConnection.end()
   }
 
-  // //////////
-  // EVENTS //
-  // //////////
-
-  server.on('connection', function (connection) {
-    connection.rawConnection.on('data', (data) => {
-      handleData(connection, data)
-    })
-  })
-
-  server.on('actionComplete', function (data) {
-    if (data.toRender !== false) {
-      data.connection.response.messageCount = data.messageCount
-      server.sendMessage(data.connection, data.response, data.messageCount)
-    }
-  })
-
-  // //////////
-  // CLIENT //
-  // //////////
-
-  server.compileActionheroClientJS = function () {
+  compileActionheroClientJS () {
     let ahClientSource = fs.readFileSync(path.join(__dirname, '/../client/actionheroClient.js')).toString()
-    let url = api.config.servers.websocket.clientUrl
+    let url = this.config.clientUrl
     ahClientSource = ahClientSource.replace(/%%URL%%/g, url)
     let defaults = {}
-    for (let i in api.config.servers.websocket.client) {
-      defaults[i] = api.config.servers.websocket.client[i]
-    }
+    for (let i in this.config.client) { defaults[i] = this.config.client[i] }
     defaults.url = url
     let defaultsString = util.inspect(defaults)
     defaultsString = defaultsString.replace('\'window.location.origin\'', 'window.location.origin')
@@ -144,10 +122,10 @@ const initialize = function (api, options, next) {
     return ahClientSource
   }
 
-  server.renderClientJS = function (minimize) {
+  renderClientJS (minimize) {
     if (!minimize) { minimize = false }
     let libSource = api.servers.servers.websocket.server.library()
-    let ahClientSource = server.compileActionheroClientJS()
+    let ahClientSource = this.compileActionheroClientJS()
     ahClientSource =
       ';;;\r\n' +
       '(function(exports){ \r\n' +
@@ -156,34 +134,36 @@ const initialize = function (api, options, next) {
       'exports.ActionheroClient = ActionheroClient; \r\n' +
       'exports.actionheroClient = actionheroClient; \r\n' +
       '})(typeof exports === \'undefined\' ? window : exports);'
+
     if (minimize) {
-      return UglifyJS.minify(libSource + '\r\n\r\n\r\n' + ahClientSource, {fromString: true}).code
+      return UglifyJS.minify(libSource + '\r\n\r\n\r\n' + ahClientSource).code
     } else {
       return (libSource + '\r\n\r\n\r\n' + ahClientSource)
     }
   }
 
-  server.writeClientJS = function () {
+  writeClientJS () {
     if (!api.config.general.paths['public'] || api.config.general.paths['public'].length === 0) {
       return
     }
-    if (api.config.servers.websocket.clientJsPath && api.config.servers.websocket.clientJsName) {
+
+    if (this.config.clientJsPath && this.config.clientJsName) {
       let clientJSPath = path.normalize(
         api.config.general.paths['public'][0] +
         path.sep +
-        api.config.servers.websocket.clientJsPath +
+        this.config.clientJsPath +
         path.sep
       )
-      let clientJSName = api.config.servers.websocket.clientJsName
+      let clientJSName = this.config.clientJsName
       let clientJSFullPath = clientJSPath + clientJSName
       try {
         if (!fs.existsSync(clientJSPath)) {
           fs.mkdirSync(clientJSPath)
         }
-        fs.writeFileSync(clientJSFullPath + '.js', server.renderClientJS(false))
-        api.log(['wrote %s.js', clientJSFullPath], 'debug')
-        fs.writeFileSync(clientJSFullPath + '.min.js', server.renderClientJS(true))
-        api.log(['wrote %s.min.js', clientJSFullPath], 'debug')
+        fs.writeFileSync(clientJSFullPath + '.js', this.renderClientJS(false))
+        api.log(`wrote ${clientJSFullPath}.js`, 'debug')
+        fs.writeFileSync(clientJSFullPath + '.min.js', this.renderClientJS(true))
+        api.log(`wrote ${clientJSFullPath}.min.js`, 'debug')
       } catch (e) {
         api.log('Cannot write client-side JS for websocket server:', 'warning')
         api.log(e, 'warning')
@@ -192,14 +172,10 @@ const initialize = function (api, options, next) {
     }
   }
 
-  // ///////////
-  // HELPERS //
-  // ///////////
-
-  const handleConnection = function (rawConnection) {
-    const parsedCookies = browserFingerprint.parseCookies(rawConnection)
+  handleConnection (rawConnection) {
+    const parsedCookies = this.fingerprinter.parseCookies(rawConnection)
     const fingerprint = parsedCookies[api.config.servers.web.fingerprintOptions.cookieKey]
-    server.buildConnection({
+    this.buildConnection({
       rawConnection: rawConnection,
       remoteAddress: rawConnection.address.ip,
       remotePort: rawConnection.address.port,
@@ -207,55 +183,52 @@ const initialize = function (api, options, next) {
     })
   }
 
-  const handleDisconnection = function (rawConnection) {
-    for (let i in server.connections()) {
-      if (server.connections()[i] && rawConnection.id === server.connections()[i].rawConnection.id) {
-        server.connections()[i].destroy()
+  handleDisconnection (rawConnection) {
+    const connections = this.connections()
+    for (let i in connections) {
+      if (connections[i] && rawConnection.id === connections[i].rawConnection.id) {
+        connections[i].destroy()
         break
       }
     }
   }
 
-  const handleData = function (connection, data) {
+  async handleData (connection, data) {
     const verb = data.event
     delete data.event
     connection.messageCount++
     connection.params = {}
+
     if (verb === 'action') {
       for (let v in data.params) {
         connection.params[v] = data.params[v]
       }
       connection.error = null
       connection.response = {}
-      server.processAction(connection)
-    } else if (verb === 'file') {
+      return this.processAction(connection)
+    }
+
+    if (verb === 'file') {
       connection.params = {
         file: data.file
       }
-      server.processFile(connection)
-    } else {
-      let words = []
-      let message
-      if (data.room) {
-        words.push(data.room)
-        delete data.room
-      }
-      for (let i in data) { words.push(data[i]) }
-      connection.verbs(verb, words, (error, data) => {
-        if (!error) {
-          message = {status: 'OK', context: 'response', data: data}
-          server.sendMessage(connection, message)
-        } else {
-          message = {status: error, context: 'response', data: data}
-          server.sendMessage(connection, message)
-        }
-      })
+      return this.processFile(connection)
+    }
+
+    let words = []
+    let message
+    if (data.room) {
+      words.push(data.room)
+      delete data.room
+    }
+    for (let i in data) { words.push(data[i]) }
+    try {
+      let data = await connection.verbs(verb, words)
+      message = {status: 'OK', context: 'response', data: data}
+      return this.sendMessage(connection, message)
+    } catch (error) {
+      message = {status: error, context: 'response', data: data}
+      return this.sendMessage(connection, message)
     }
   }
-
-  next(server)
 }
-
-// ///////////////////////////////////////////////////////////////////
-// exports
-exports.initialize = initialize

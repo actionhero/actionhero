@@ -1,24 +1,42 @@
 {
-  "author"      : "YOU <YOU@example.com>",
-  "name"        : "my_actionhero_project",
+  "author" : "YOU <YOU@example.com>",
+  "name" : "my_actionhero_project",
   "description" : "my actionhero project",
-  "version"     : "0.0.1",
-  "engines"     : {
+  "version" : "0.0.1",
+  "engines" : {
     "node": ">=4.0.0"
   },
   "dependencies" : {
     "actionhero" : "%%versionNumber%%",
-    "ws"         : "latest",
-    "fakeredis"  : "latest",
-    "ioredis"    : "latest"
+    "ws" : "latest",
+    "fakeredis" : "latest",
+    "ioredis" : "latest"
   },
   "devDependencies" : {
-    "mocha"  : "latest",
-    "should" : "latest"
+    "cross-env" : "latest",
+    "chai" : "latest",
+    "dirty-chai" : "latest",
+    "mocha" : "latest",
+    "standard" : "latest"
   },
   "scripts" : {
-    "start"        : "actionhero start",
-    "actionhero"   : "actionhero",
-    "test"         : "NODE_ENV=test mocha"
+    "start" : "actionhero start",
+    "actionhero" : "actionhero",
+    "pretest": "standard",
+    "test" : "cross-env NODE_ENV=test mocha"
+  },
+  "standard": {
+    "ignore": [
+      "public/javascript/actionheroClient.*"
+    ],
+    "globals": [
+      "describe",
+      "before",
+      "beforeEach",
+      "after",
+      "afterEach",
+      "it",
+      "expect"
+    ]
   }
 }

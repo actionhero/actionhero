@@ -1,10 +1,8 @@
 'use strict'
 
 // error messages can be strings of objects
-const util = require('util')
-
 exports['default'] = {
-  errors: function (api) {
+  errors: (api) => {
     return {
       '_toExpand': false,
 
@@ -14,29 +12,29 @@ exports['default'] = {
 
       serializers: {
         servers: {
-          web: function (error) {
-            if (util.isError(error)) {
+          web: (error) => {
+            if (error.message) {
               return String(error.message)
             } else {
               return error
             }
           },
-          websocket: function (error) {
-            if (util.isError(error)) {
+          websocket: (error) => {
+            if (error.message) {
               return String(error.message)
             } else {
               return error
             }
           },
-          socket: function (error) {
-            if (util.isError(error)) {
+          socket: (error) => {
+            if (error.message) {
               return String(error.message)
             } else {
               return error
             }
           },
-          specHelper: function (error) {
-            if (util.isError(error)) {
+          specHelper: (error) => {
+            if (error.message) {
               return 'Error: ' + String(error.message)
             } else {
               return error
@@ -50,39 +48,39 @@ exports['default'] = {
       // ///////////
 
       // When a params for an action is invalid
-      invalidParams: function (data, validationErrors) {
+      invalidParams: (data, validationErrors) => {
         if (validationErrors.length >= 0) { return validationErrors[0] }
-        return 'validation error'
+        return data.connection.localize('actionhero.errors.invalidParams')
       },
 
       // When a required param for an action is not provided
-      missingParams: function (data, missingParams) {
-        return data.connection.localize(['%s is a required parameter for this action', missingParams[0]])
+      missingParams: (data, missingParams) => {
+        return data.connection.localize(['actionhero.errors.missingParams', {param: missingParams[0]}])
       },
 
       // user requested an unknown action
-      unknownAction: function (data) {
-        return data.connection.localize('unknown action or invalid apiVersion')
+      unknownAction: (data) => {
+        return data.connection.localize('actionhero.errors.unknownAction')
       },
 
       // action not useable by this client/server type
-      unsupportedServerType: function (data) {
-        return data.connection.localize(['this action does not support the %s connection type', data.connection.type])
+      unsupportedServerType: (data) => {
+        return data.connection.localize(['actionhero.errors.unsupportedServerType', {type: data.connection.type}])
       },
 
       // action failed because server is mid-shutdown
-      serverShuttingDown: function (data) {
-        return data.connection.localize('the server is shutting down')
+      serverShuttingDown: (data) => {
+        return data.connection.localize('actionhero.errors.serverShuttingDown')
       },
 
       // action failed because this client already has too many pending acitons
       // limit defined in api.config.general.simultaneousActions
-      tooManyPendingActions: function (data) {
-        return data.connection.localize('you have too many pending requests')
+      tooManyPendingActions: (data) => {
+        return data.connection.localize('actionhero.errors.tooManyPendingActions')
       },
 
-      dataLengthTooLarge: function (maxLength, receivedLength) {
-        return api.i18n.localize(['data length is too big (%u received/%u max)', maxLength, receivedLength])
+      dataLengthTooLarge: (maxLength, receivedLength) => {
+        return api.i18n.localize(['actionhero.errors.dataLengthTooLarge', {maxLength: maxLength, receivedLength: receivedLength}])
       },
 
       // ///////////////
@@ -91,58 +89,58 @@ exports['default'] = {
 
       // The body message to accompany 404 (file not found) errors regarding flat files
       // You may want to load in the contnet of 404.html or similar
-      fileNotFound: function (connection) {
-        return connection.localize(['That file is not found'])
+      fileNotFound: (connection) => {
+        return connection.localize(['actionhero.errors.fileNotFound'])
       },
 
       // user didn't request a file
-      fileNotProvided: function (connection) {
-        return connection.localize('file is a required param to send a file')
+      fileNotProvided: (connection) => {
+        return connection.localize('actionhero.errors.fileNotProvided')
       },
 
       // something went wrong trying to read the file
-      fileReadError: function (connection, error) {
-        return connection.localize(['error reading file: %s', String(error)])
+      fileReadError: (connection, error) => {
+        return connection.localize(['actionhero.errors.fileReadError', {error: String(error)}])
       },
 
       // ///////////////
       // CONNECTIONS //
       // ///////////////
 
-      verbNotFound: function (connection, verb) {
-        return connection.localize(['I do not know know to perform this verb (%s)', verb])
+      verbNotFound: (connection, verb) => {
+        return connection.localize(['actionhero.errors.verbNotFound', {verb: verb}])
       },
 
-      verbNotAllowed: function (connection, verb) {
-        return connection.localize(['verb not found or not allowed (%s)', verb])
+      verbNotAllowed: (connection, verb) => {
+        return connection.localize(['actionhero.errors.verbNotAllowed', {verb: verb}])
       },
 
-      connectionRoomAndMessage: function (connection) {
-        return connection.localize('both room and message are required')
+      connectionRoomAndMessage: (connection) => {
+        return connection.localize('actionhero.errors.connectionRoomAndMessage')
       },
 
-      connectionNotInRoom: function (connection, room) {
-        return connection.localize(['connection not in this room (%s)', room])
+      connectionNotInRoom: (connection, room) => {
+        return connection.localize(['actionhero.errors.connectionNotInRoom', {room: room}])
       },
 
-      connectionAlreadyInRoom: function (connection, room) {
-        return connection.localize(['connection already in this room (%s)', room])
+      connectionAlreadyInRoom: (connection, room) => {
+        return connection.localize(['actionhero.errors.connectionAlreadyInRoom', {room: room}])
       },
 
-      connectionRoomHasBeenDeleted: function (room) {
-        return api.i18n.localize('this room has been deleted')
+      connectionRoomHasBeenDeleted: (room) => {
+        return api.i18n.localize('actionhero.errors.connectionRoomHasBeenDeleted')
       },
 
-      connectionRoomNotExist: function (room) {
-        return api.i18n.localize('room does not exist')
+      connectionRoomNotExist: (room) => {
+        return api.i18n.localize('actionhero.errors.connectionRoomNotExist')
       },
 
-      connectionRoomExists: function (room) {
-        return api.i18n.localize('room exists')
+      connectionRoomExists: (room) => {
+        return api.i18n.localize('actionhero.errors.connectionRoomExists')
       },
 
-      connectionRoomRequired: function (room) {
-        return api.i18n.localize('a room is required')
+      connectionRoomRequired: (room) => {
+        return api.i18n.localize('actionhero.errors.connectionRoomRequired')
       }
 
     }

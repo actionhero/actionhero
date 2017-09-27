@@ -1,5 +1,5 @@
 exports['default'] = {
-  i18n: function (api) {
+  i18n: (api) => {
     return {
       // visit https://github.com/mashpie/i18n-node to see all configuration options
       // locale path can be configired from within ./config/api.js
@@ -10,6 +10,10 @@ exports['default'] = {
         // 'es': 'en'
       },
 
+      // configure i18n to allow for object-style key lookup
+      objectNotation: true,
+
+      // should actionhero append any missing translations to the locale file?
       updateFiles: true,
 
       // this will configure logging and error messages in the log(s)
@@ -23,10 +27,10 @@ exports['default'] = {
   }
 }
 
-exports.staging = {
-  i18n: function () {
+exports.test = {
+  i18n: (api) => {
     return {
-      updateFiles: false
+      updateFiles: true
     }
   }
 }

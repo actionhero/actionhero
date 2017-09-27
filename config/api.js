@@ -3,7 +3,7 @@
 const path = require('path')
 
 exports['default'] = {
-  general: function (api) {
+  general: (api) => {
     const packageJSON = require(api.projectRoot + path.sep + 'package.json')
 
     return {
@@ -14,8 +14,6 @@ exports['default'] = {
       //  id: 'myActionHeroServer',
       // A unique token to your application that servers will use to authenticate to each other
       serverToken: 'change-me',
-      // The welcome message seen by TCP and webSocket clients upon connection
-      welcomeMessage: 'Hello! Welcome to the actionhero api',
       // the redis prefix for actionhero's cache objects
       cachePrefix: 'actionhero:cache:',
       // the redis prefix for actionhero's cache/lock objects
@@ -44,6 +42,8 @@ exports['default'] = {
       channel: 'actionhero',
       // How long to wait for an RPC call before considering it a failure
       rpcTimeout: 5000,
+      // should CLI methods and help include internal ActionHero CLI methods?
+      cliIncludeInternal: true,
       // configuration for your actionhero project structure
       paths: {
         'action': [path.join(__dirname, '/../actions')],
@@ -52,6 +52,7 @@ exports['default'] = {
         'pid': [path.join(__dirname, '/../pids')],
         'log': [path.join(__dirname, '/../log')],
         'server': [path.join(__dirname, '/../servers')],
+        'cli': [path.join(__dirname, '/../bin')],
         'initializer': [path.join(__dirname, '/../initializers')],
         'plugin': [path.join(__dirname, '/../node_modules')],
         'locale': [path.join(__dirname, '/../locales')]
@@ -66,24 +67,30 @@ exports['default'] = {
 }
 
 exports.test = {
-  general: function (api) {
+  general: (api) => {
     return {
-      id: 'test-server',
+      id: 'test-server-' + process.pid,
+      serverToken: 'serverToken-' + process.pid,
       developmentMode: true,
       startingChatRooms: {
         'defaultRoom': {},
         'otherRoom': {}
       },
       paths: {
-        'locale': [require('os').tmpdir() + require('path').sep + 'locale']
-      }
+        'locale': [
+          // require('os').tmpdir() + require('path').sep + 'locales',
+          path.join(__dirname, '/../locales')
+        ]
+      },
+      rpcTimeout: 3000
     }
   }
 }
 
 exports.production = {
-  general: function (api) {
+  general: (api) => {
     return {
+      fileRequestLogLevel: 'debug',
       developmentMode: false
     }
   }

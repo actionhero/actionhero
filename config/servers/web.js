@@ -4,7 +4,7 @@ const os = require('os')
 
 exports['default'] = {
   servers: {
-    web: function (api) {
+    web: (api) => {
       return {
         enabled: true,
         // HTTP or HTTPS?
@@ -46,6 +46,8 @@ exports['default'] = {
         // Client will revalidate the fingerprint at latest after flatFileCacheDuration and reload it if the etag (and therfore the file) changed
         // or continue to use the cached file if it's still valid
         enableEtag: true,
+        // should we save the un-parsed HTTP POST/PUT payload to connection.rawConnection.params.rawBody?
+        saveRawBody: false,
         // How many times should we try to boot the server?
         // This might happen if the port is in use by another process or the socketfile is claimed
         bootAttempts: 1,
@@ -90,7 +92,7 @@ exports['default'] = {
 
 exports.production = {
   servers: {
-    web: function (api) {
+    web: (api) => {
       return {
         padding: null,
         metadataOptions: {
@@ -104,10 +106,10 @@ exports.production = {
 
 exports.test = {
   servers: {
-    web: function (api) {
+    web: (api) => {
       return {
         secure: false,
-        port: 18080,
+        port: process.env.PORT || 1000 + (process.pid % 64535),
         matchExtensionMime: true,
         metadataOptions: {
           serverInformation: true,

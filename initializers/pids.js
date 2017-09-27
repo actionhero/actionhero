@@ -2,21 +2,35 @@
 
 const fs = require('fs')
 const cluster = require('cluster')
+const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
-module.exports = {
-  startPriority: 1,
-  loadPriority: 50,
-  initialize: function (api, next) {
+/**
+ * Pid and Pidfile.
+ *
+ * @namespace api.pids
+ * @property {Number} pid - The process ID for this process.
+ * @property {string} path - The folder in which to save the pidfile (from `api.config.general.paths.pid`).
+ * @property {string} title - The name of the pidfile.  Built from the `api.id`.
+ * @extends ActionHero.Initializer
+ */
+module.exports = class Pids extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'pids'
+    this.loadPriority = 50
+    this.startPriority = 1
+  }
+
+  initialize () {
     api.pids = {}
     api.pids.pid = process.pid
     api.pids.path = api.config.general.paths.pid[0] // it would be silly to have more than one pid
 
     api.pids.sanitizeId = function () {
-      let pidfile = api.id
+      let pidfile = String(api.id).trim()
       pidfile = pidfile.replace(new RegExp(':', 'g'), '-')
       pidfile = pidfile.replace(new RegExp(' ', 'g'), '_')
-      pidfile = pidfile.replace(new RegExp('\r', 'g'), '') // eslint-disable-line
-      pidfile = pidfile.replace(new RegExp('\n', 'g'), '') // eslint-disable-line 
 
       return pidfile
     }
@@ -29,24 +43,21 @@ module.exports = {
 
     try { fs.mkdirSync(api.pids.path) } catch (e) {};
 
-    api.pids.writePidFile = function () {
+    api.pids.writePidFile = () => {
       fs.writeFileSync(api.pids.path + '/' + api.pids.title, api.pids.pid.toString(), 'ascii')
     }
 
-    api.pids.clearPidFile = function () {
+    api.pids.clearPidFile = () => {
       try {
         fs.unlinkSync(api.pids.path + '/' + api.pids.title)
-      } catch (e) {
-        api.log('Unable to remove pidfile', 'error', e)
+      } catch (error) {
+        api.log('Unable to remove pidfile', 'error', error)
       }
     }
+  }
 
-    next()
-  },
-
-  start: function (api, next) {
+  start () {
     api.pids.writePidFile()
-    api.log(['pid: %s', process.pid], 'notice')
-    next()
+    api.log(`pid: ${process.pid}`, 'notice')
   }
 }

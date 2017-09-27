@@ -4,7 +4,7 @@ const fs = require('fs')
 const cluster = require('cluster')
 
 exports['default'] = {
-  logger: function (api) {
+  logger: (api) => {
     let logger = {transports: []}
 
     // console logger
@@ -41,9 +41,6 @@ exports['default'] = {
     // the maximum length of param to log (we will truncate)
     logger.maxLogStringLength = 100
 
-    // should system logs (api.log) be localized?
-    logger.localizeLogMessages = false
-
     // you can optionally set custom log levels
     // logger.levels = {good: 0, bad: 1};
 
@@ -55,7 +52,7 @@ exports['default'] = {
 }
 
 exports.test = {
-  logger: function (api) {
+  logger: (api) => {
     return {
       transports: null
     }

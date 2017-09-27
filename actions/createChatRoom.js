@@ -1,17 +1,20 @@
 'use strict'
+const ActionHero = require('./../index.js')
 
-exports.createChatRoom = {
-  name: 'createChatRoom',
-  description: 'I will create a chatroom with the given name',
-
-  outputExample: {},
-
-  inputs: {
-    name: { required: true }
-  },
-
-  run: function (api, data, next) {
-    api.chatRoom.add(data.params.name, next)
+module.exports = class CreateChatRoom extends ActionHero.Action {
+  constructor () {
+    super()
+    this.name = 'createChatRoom'
+    this.description = 'I will create a chatroom with the given name'
+    this.inputs = {
+      name: {
+        required: true
+      }
+    }
   }
 
+  async run ({params, response}) {
+    const {chatRoom} = ActionHero.api
+    response.didCreate = await chatRoom.add(params.name)
+  }
 }

@@ -1,10 +1,26 @@
 'use strict'
 
-module.exports = {
-  loadPriority: 999,
-  initialize: function (api, next) {
+const ActionHero = require('./../index.js')
+const api = ActionHero.api
+
+/**
+ * Documentation of Actions.
+ *
+ * @namespace api.documentation
+ * @property {Object} documentation - A collection of all documentable actions.
+ * @extends ActionHero.Initializer
+ */
+module.exports = class Documentation extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'documentation'
+    this.loadPriority = 999
+  }
+
+  initialize () {
     api.documentation = {
       documentation: {},
+
       build: () => {
         let action
         for (let i in api.actions.actions) {
@@ -26,6 +42,5 @@ module.exports = {
     }
 
     api.documentation.build()
-    next()
   }
 }

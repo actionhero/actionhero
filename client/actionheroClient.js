@@ -259,4 +259,5 @@ ActionheroClient.prototype.disconnect = function () {
 }
 
 // depricated lowercase name
-var actionheroClient = ActionheroClient
+var actionheroClient = ActionheroClient;
+actionheroClient;

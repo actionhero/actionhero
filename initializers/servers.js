@@ -1,104 +1,86 @@
 'use strict'
 
 const path = require('path')
-const async = require('async')
+const ActionHero = require('./../index.js')
+const api = ActionHero.api
 
-module.exports = {
-  startPriority: 900,
-  stopPriority: 100,
-  loadPriority: 599,
-  initialize: function (api, next) {
-    api.servers = {}
-    api.servers.servers = {}
+module.exports = class Servers extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'servers'
+    this.loadPriority = 599
+    this.startPriority = 900
+    this.stopPriority = 100
+  }
 
-    // Load the servers
+  async initialize () {
+    api.servers = {
+      servers: {}
+    }
 
     let serverFolders = [
-      path.resolve(path.join(__dirname, '/../servers'))
+      path.resolve(path.join(__dirname, '..', 'servers'))
     ]
 
     api.config.general.paths.server.forEach((p) => {
       p = path.resolve(p)
-      if (serverFolders.indexOf(p) < 0) {
-        serverFolders.push(p)
-      }
+      if (serverFolders.indexOf(p) < 0) { serverFolders.push(p) }
     })
 
-    let jobs = []
-
-    serverFolders.forEach((p) => {
-      api.utils.recursiveDirectoryGlob(p).forEach((f) => {
-        let parts = f.split(/[\/\\]+/)
-        let serverName = parts[(parts.length - 1)].split('.')[0]
-        if (api.config.servers[serverName] && api.config.servers[serverName].enabled === true) {
-          let init = require(f).initialize
-          let options = api.config.servers[serverName]
-          jobs.push((done) => {
-            init(api, options, (serverObject) => {
-              api.servers.servers[serverName] = serverObject
-              api.log(['Initialized server: %s', serverName], 'debug')
-              return done()
-            })
-          })
+    for (let i in serverFolders) {
+      let p = serverFolders[i]
+      let files = api.utils.recursiveDirectoryGlob(p)
+      for (let j in files) {
+        let filename = files[j]
+        let ServerClass = require(filename)
+        let server = new ServerClass()
+        server.config = api.config.servers[server.type] // shorthand access
+        if (server.config && server.config.enabled === true) {
+          await server.initialize()
+          api.servers.servers[server.type] = server
+          api.log(`Initialized server: ${server.type}`, 'debug')
         }
-        api.watchFileAndAct(f, () => {
-          api.log(['*** Rebooting due to server (%s) change ***', serverName], 'info')
+
+        api.watchFileAndAct(filename, () => {
+          api.log(`*** Rebooting due to server (${server.type}) change ***`, 'info')
           api.commands.restart()
         })
-      })
-    })
+      }
+    }
+  }
 
-    async.series(jobs, next)
-  },
-
-  start: function (api, next) {
-    let jobs = []
-    Object.keys(api.servers.servers).forEach((serverName) => {
+  async start () {
+    const serverNames = Object.keys(api.servers.servers)
+    for (let i in serverNames) {
+      let serverName = serverNames[i]
       let server = api.servers.servers[serverName]
-      if (server && server.options.enabled === true) {
+      if (server && server.config.enabled === true) {
         let message = ''
-        let messageArgs = []
-        message += 'Starting server: `%s`'
-        messageArgs.push(serverName)
+        message += `Starting server: \`${serverName}\``
         if (api.config.servers[serverName].bindIP) {
-          message += ' @ %s'
-          messageArgs.push(api.config.servers[serverName].bindIP)
+          message += ` @ ${api.config.servers[serverName].bindIP}`
         }
         if (api.config.servers[serverName].port) {
-          message += ':%s'
-          messageArgs.push(api.config.servers[serverName].port)
+          message += `:${api.config.servers[serverName].port}`
         }
-
-        jobs.push((done) => {
-          api.log([message].concat(messageArgs), 'notice')
-          server.start((error) => {
-            if (error) { return done(error) }
-            api.log(['Server started: %s', serverName], 'debug')
-            return done()
-          })
-        })
+        api.log(message, 'notice')
+        await server.start()
+        api.log(`Server started: ${serverName}`, 'debug')
       }
-    })
+    }
+  }
 
-    async.series(jobs, next)
-  },
-
-  stop: function (api, next) {
-    let jobs = []
-    Object.keys(api.servers.servers).forEach((serverName) => {
+  async stop () {
+    const serverNames = Object.keys(api.servers.servers)
+    for (let i in serverNames) {
+      let serverName = serverNames[i]
       let server = api.servers.servers[serverName]
-      if ((server && server.options.enabled === true) || !server) {
-        jobs.push((done) => {
-          api.log(['Stopping server: %s', serverName], 'notice')
-          server.stop((error) => {
-            if (error) { return done(error) }
-            api.log(['Server stopped: %s', serverName], 'debug')
-            return done()
-          })
-        })
+      if ((server && server.config.enabled === true) || !server) {
+        api.log(`Stopping server: ${serverName}`, 'notice')
+        await server.stop()
+        server.removeAllListeners()
+        api.log(`Server stopped: ${serverName}`, 'debug')
       }
-    })
-
-    async.series(jobs, next)
+    }
   }
 }

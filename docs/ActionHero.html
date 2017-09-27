@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>ActionHero - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="ActionHero.html">ActionHero</a></li><li><a href="ActionHero.Action.html">Action</a><ul class='methods'><li data-type='method'><a href="ActionHero.Action.html#.run">run</a></li></ul></li><li><a href="ActionHero.CLI.html">CLI</a><ul class='methods'><li data-type='method'><a href="ActionHero.CLI.html#.run">run</a></li></ul></li><li><a href="ActionHero.Connection.html">Connection</a><ul class='methods'><li data-type='method'><a href="ActionHero.Connection.html#.destroy">destroy</a></li><li data-type='method'><a href="ActionHero.Connection.html#.localize">localize</a></li></ul></li><li><a href="ActionHero.Initializer.html">Initializer</a><ul class='methods'><li data-type='method'><a href="ActionHero.Initializer.html#.initialize">initialize</a></li><li data-type='method'><a href="ActionHero.Initializer.html#.start">start</a></li><li data-type='method'><a href="ActionHero.Initializer.html#.stop">stop</a></li></ul></li><li><a href="ActionHero.Server.html">Server</a><ul class='methods'><li data-type='method'><a href="ActionHero.Server.html#.buildConnection">buildConnection</a></li><li data-type='method'><a href="ActionHero.Server.html#.connections">connections</a></li><li data-type='method'><a href="ActionHero.Server.html#.initialize">initialize</a></li><li data-type='method'><a href="ActionHero.Server.html#.log">log</a></li><li data-type='method'><a href="ActionHero.Server.html#.processAction">processAction</a></li><li data-type='method'><a href="ActionHero.Server.html#.processFile">processFile</a></li><li data-type='method'><a href="ActionHero.Server.html#.sendFile">sendFile</a></li><li data-type='method'><a href="ActionHero.Server.html#.sendMessage">sendMessage</a></li><li data-type='method'><a href="ActionHero.Server.html#.start">start</a></li><li data-type='method'><a href="ActionHero.Server.html#.stop">stop</a></li></ul></li><li><a href="ActionHero.Task.html">Task</a><ul class='methods'><li data-type='method'><a href="ActionHero.Task.html#.run">run</a></li></ul></li></ul><h3>Events</h3><ul><li><a href="ActionHero.Server.html#event:actionComplete">actionComplete</a></li><li><a href="ActionHero.Server.html#event:connection">connection</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a><ul class='methods'><li data-type='method'><a href="api.html#.log">log</a></li></ul></li><li><a href="api.actions.html">actions</a><ul class='methods'><li data-type='method'><a href="api.actions.html#.addMiddleware">addMiddleware</a></li></ul></li><li><a href="api.cache.html">cache</a><ul class='methods'><li data-type='method'><a href="api.cache.html#.clear">clear</a></li><li data-type='method'><a href="api.cache.html#.destroy">destroy</a></li><li data-type='method'><a href="api.cache.html#.dumpRead">dumpRead</a></li><li data-type='method'><a href="api.cache.html#.dumpWrite">dumpWrite</a></li><li data-type='method'><a href="api.cache.html#.keys">keys</a></li><li data-type='method'><a href="api.cache.html#.listLength">listLength</a></li><li data-type='method'><a href="api.cache.html#.load">load</a></li><li data-type='method'><a href="api.cache.html#.lock">lock</a></li><li data-type='method'><a href="api.cache.html#.locks">locks</a></li><li data-type='method'><a href="api.cache.html#.pop">pop</a></li><li data-type='method'><a href="api.cache.html#.push">push</a></li><li data-type='method'><a href="api.cache.html#.save">save</a></li><li data-type='method'><a href="api.cache.html#.size">size</a></li><li data-type='method'><a href="api.cache.html#.unlock">unlock</a></li></ul></li><li><a href="api.chatRoom.html">chatRoom</a><ul class='methods'><li data-type='method'><a href="api.chatRoom.html#.add">add</a></li><li data-type='method'><a href="api.chatRoom.html#.addMember">addMember</a></li><li data-type='method'><a href="api.chatRoom.html#.addMiddleware">addMiddleware</a></li><li data-type='method'><a href="api.chatRoom.html#.broadcast">broadcast</a></li><li data-type='method'><a href="api.chatRoom.html#.destroy">destroy</a></li><li data-type='method'><a href="api.chatRoom.html#.exists">exists</a></li><li data-type='method'><a href="api.chatRoom.html#.generateMemberDetails">generateMemberDetails</a></li><li data-type='method'><a href="api.chatRoom.html#.list">list</a></li><li data-type='method'><a href="api.chatRoom.html#.removeMember">removeMember</a></li><li data-type='method'><a href="api.chatRoom.html#.roomStatus">roomStatus</a></li><li data-type='method'><a href="api.chatRoom.html#.sanitizeMemberDetails">sanitizeMemberDetails</a></li></ul></li><li><a href="api.connections.html">connections</a><ul class='methods'><li data-type='method'><a href="api.connections.html#.addMiddleware">addMiddleware</a></li></ul></li><li><a href="api.documentation.html">documentation</a></li><li><a href="api.i18n.html">i18n</a><ul class='methods'><li data-type='method'><a href="api.i18n.html#.localize">localize</a></li></ul></li><li><a href="api.pids.html">pids</a></li><li><a href="api.redis.html">redis</a><ul class='methods'><li data-type='method'><a href="api.redis.html#.doCluster">doCluster</a></li></ul></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-actions.html">actions</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">ActionHero</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        ActionHero
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+
+    <h4 class="name" id="ActionHero"><span class="type-signature"></span>new ActionHero<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line15">line 15</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>The ActionHero module.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="ActionHero.Action.html">Action</a></dt>
+            <dd></dd>
+        
+            <dt><a href="ActionHero.CLI.html">CLI</a></dt>
+            <dd></dd>
+        
+            <dt><a href="ActionHero.Connection.html">Connection</a></dt>
+            <dd></dd>
+        
+            <dt><a href="ActionHero.Initializer.html">Initializer</a></dt>
+            <dd></dd>
+        
+            <dt><a href="ActionHero.Server.html">Server</a></dt>
+            <dd></dd>
+        
+            <dt><a href="ActionHero.Task.html">Task</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+
+        
+                
+
+    
+
+    <h4 class="name" id="~ActionCallback"><span class="type-signature"></span>ActionCallback<span class="signature">(data)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="initializers_actions.js.html">initializers/actions.js</a>, <a href="initializers_actions.js.html#line6">line 6</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="ActionHero.html#~ActionMiddleware">ActionHero~ActionMiddleware</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>This callback is displayed as part of the Requester class.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The data object.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="~ActionMiddleware">ActionMiddleware</h4>
+
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="initializers_actions.js.html">initializers/actions.js</a>, <a href="initializers_actions.js.html#line13">line 13</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="api.actions.html#.addMiddleware">api.actions.addMiddleware</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Unique name for the middleware.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>global</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Is this middleware applied to all actions?</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>priority</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Module load order. Defaults to <code>api.config.general.defaultMiddlewarePriority</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>preProcessor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="ActionHero.html#~ActionCallback">ActionHero~ActionCallback</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Called berore the action runs.  Has access to all params, before sanitizartion.  Can modify the data object for use in actions.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>postProcessor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="ActionHero.html#~ActionCallback">ActionHero~ActionCallback</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Called after the action runs.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<div class="description">
+    <p>Middleware definition for Actions</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var middleware = {
+  name: 'userId checker',
+  global: false,
+  priority: 1000,
+  preProcessor: function(data, next){
+    if(!data.params.userId){
+      next(new Error('All actions require a userId') );
+    }else{
+      next();
+    }
+  },
+  postProcessor: function(data, next){
+    if(data.thing.stuff == false){
+      data.toRender = false;
+    }
+    next(error);
+  }
+}
+
+api.actions.addMiddleware(middleware);</code></pre>
+
+
+
+            
+                
+<h4 class="name" id="~ChatMiddleware">ChatMiddleware</h4>
+
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="initializers_chatRoom.js.html">initializers/chatRoom.js</a>, <a href="initializers_chatRoom.js.html#line23">line 23</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="api.chatRoom.html#.addMiddleware">api.chatRoom.addMiddleware</a></li>
+        
+            <li><a href="ActionHero.html#~ChatRoomCallback">ActionHero~ChatRoomCallback</a></li>
+        
+            <li><a href="ActionHero.html#~ChatSayCallback">ActionHero~ChatSayCallback</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Unique name for the middleware.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>priority</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Module load order. Defaults to <code>api.config.general.defaultMiddlewarePriority</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>join</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="ActionHero.html#~ChatRoomCallback">ActionHero~ChatRoomCallback</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Called when a connection joins a room.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>leave</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="ActionHero.html#~ChatRoomCallback">ActionHero~ChatRoomCallback</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Called when a connection leaves a room.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>onSayReceive</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="ActionHero.html#~ChatSayCallback">ActionHero~ChatSayCallback</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Called when a connection says a message to a room.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>say</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="ActionHero.html#~ChatSayCallback">ActionHero~ChatSayCallback</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Called when a connection is about to recieve a say message.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<div class="description">
+    <p>Middleware definition for processing chat events.  Can be of the</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var chatMiddleware = {
+  name: 'chat middleware',
+  priority: 1000,
+  join: (connection, room) => {
+    // announce all connections entering a room
+    api.chatRoom.broadcast({}, room, 'I have joined the room: ' + connection.id, callback)
+  },
+  leave:(connection, room, callback) => {
+    // announce all connections leaving a room
+    api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, callback)
+  },
+  // Will be executed once per client connection before delivering the message.
+  say: (connection, room, messagePayload) => {
+    // do stuff
+    api.log(messagePayload)
+  },
+  // Will be executed only once, when the message is sent to the server.
+  onSayReceive: (connection, room, messagePayload) => {
+    // do stuff
+    api.log(messagePayload)
+  }
+}
+
+api.chatRoom.addMiddleware(chatMiddleware)</code></pre>
+
+
+
+            
+                
+
+    
+
+    <h4 class="name" id="~ChatRoomCallback"><span class="type-signature"></span>ChatRoomCallback<span class="signature">(connection, room)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="initializers_chatRoom.js.html">initializers/chatRoom.js</a>, <a href="initializers_chatRoom.js.html#line15">line 15</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="ActionHero.html#~ChatMiddleware">ActionHero~ChatMiddleware</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>This callback is displayed as part of the Requester class.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>connection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The connection being created/destroyed.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>room</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The room being chatted within.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+                
+
+    
+
+    <h4 class="name" id="~ChatSayCallback"><span class="type-signature"></span>ChatSayCallback<span class="signature">(connection, room, messagePayload)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="initializers_chatRoom.js.html">initializers/chatRoom.js</a>, <a href="initializers_chatRoom.js.html#line6">line 6</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="ActionHero.html#~ChatMiddleware">ActionHero~ChatMiddleware</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>This callback is displayed as part of the Requester class.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>connection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The connection being created/destroyed.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>room</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The room being chatted within.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>messagePayload</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The message &amp; metadata.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+                
+
+    
+
+    <h4 class="name" id="~ConnectionCallback"><span class="type-signature"></span>ConnectionCallback<span class="signature">(connection)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="initializers_connections.js.html">initializers/connections.js</a>, <a href="initializers_connections.js.html#line6">line 6</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="ActionHero.html#~ConnectionMiddleware">ActionHero~ConnectionMiddleware</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>This callback is displayed as part of the Requester class.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>connection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The connection being created/destroyed.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+                
+<h4 class="name" id="~ConnectionMiddleware">ConnectionMiddleware</h4>
+
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="initializers_connections.js.html">initializers/connections.js</a>, <a href="initializers_connections.js.html#line13">line 13</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="api.connections.html#.addMiddleware">api.connections.addMiddleware</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Unique name for the middleware.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>priority</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Module load order. Defaults to <code>api.config.general.defaultMiddlewarePriority</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>create</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="ActionHero.html#~ConnectionCallback">ActionHero~ConnectionCallback</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Called for each new connection when it is created.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>destroy</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="ActionHero.html#~ConnectionCallback">ActionHero~ConnectionCallback</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Called for each connection before it is destroyed.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<div class="description">
+    <p>Middleware definition for processing connection events</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>var connectionMiddleware = {
+  name: 'connection middleware',
+  priority: 1000,
+  create: (connection) => {
+    // do stuff
+  },
+  destroy:(connection) => {
+    // do stuff
+  }
+}
+
+api.connections.addMiddleware(connectionMiddleware)</code></pre>
+
+
+
+            
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Learn more about ActionHero @ <a href="https://www.actionherojs.com">www.actionherojs.com</a>
+    <br />
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> using the <a href="https://github.com/actionhero/docdash-actionhero-theme">docdash-actionhero-theme</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
