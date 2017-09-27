@@ -3,6 +3,57 @@
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
+/**
+ * This callback is displayed as part of the Requester class.
+ * @callback ActionHero~ActionCallback
+ * @param {Object} data - The data object.
+ * @see ActionHero~ActionMiddleware
+ */
+
+/**
+ * Middleware definition for Actions
+ *
+ * @typedef {Object} ActionHero~ActionMiddleware
+ * @property {string} name - Unique name for the middleware.
+ * @property {Boolean} global - Is this middleware applied to all actions?
+ * @property {Number} priority - Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`.
+ * @property {ActionHero~ActionCallback} preProcessor - Called berore the action runs.  Has access to all params, before sanitizartion.  Can modify the data object for use in actions.
+ * @property {ActionHero~ActionCallback} postProcessor - Called after the action runs.
+ * @see api.actions.addMiddleware
+ * @example
+var middleware = {
+  name: 'userId checker',
+  global: false,
+  priority: 1000,
+  preProcessor: function(data, next){
+    if(!data.params.userId){
+      next(new Error('All actions require a userId') );
+    }else{
+      next();
+    }
+  },
+  postProcessor: function(data, next){
+    if(data.thing.stuff == false){
+      data.toRender = false;
+    }
+    next(error);
+  }
+}
+
+api.actions.addMiddleware(middleware);
+ */
+
+/**
+ * Server connection handling.
+ *
+ * @namespace api.actions
+ * @property {Object} actions - Dictionary of available connections, orginized by version.
+ * @property {Object} versions - Dictionary of available action versions.
+ * @property {Object} middleware - Dictionary of loaded middleware modules.
+ * @property {Array} globalMiddleware - Array of global middleware modules.
+ * @extends ActionHero.Initializer
+ */
+
 module.exports = class Actions extends ActionHero.Initializer {
   constructor () {
     super()
@@ -18,6 +69,13 @@ module.exports = class Actions extends ActionHero.Initializer {
       globalMiddleware: []
     }
 
+    /**
+     * Add a middleware component avaialable to pre or post-process actions.
+     *
+     * @param {object} data The middleware definition to add.
+     * @memberOf api.actions
+     * @see ActionHero~ActionMiddleware
+     */
     api.actions.addMiddleware = (data) => {
       if (!data.name) { throw new Error('middleware.name is required') }
       if (!data.priority) { data.priority = api.config.general.defaultMiddlewarePriority }

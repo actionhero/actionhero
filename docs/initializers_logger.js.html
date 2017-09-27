@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Task - Documentation</title>
+    <title>initializers/logger.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -28,443 +28,78 @@
 
 <div id="main">
     
-    <h1 class="page-title">Task</h1>
-    
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        <h2>
-            <span class="ancestors"><a href="ActionHero.html">ActionHero</a>.</span>
-        
-        Task
-        </h2>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-
-    
-
-    <h4 class="name" id="Task"><span class="type-signature"></span>new Task<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_task.js.html">classes/task.js</a>, <a href="classes_task.js.html#line2">line 2</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-tutorial">Tutorials:</dt>
-    <dd class="tag-tutorial">
-        <ul>
-            <li><em class="disabled">Tutorial: tasks</em></li>
-        </ul>
-    </dd>
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The name of the Task.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>description</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The description of the Task (default this.name).</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>frequency</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>How often to run this Task, in ms.  0 is non-recurring. (default: 0).</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>middleware</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The Middleware specific to this Task (default: []).  Middleware is descibed by the string names of the middleware.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>queue</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The default queue to run this Task on (default: 'default').</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<div class="description">
-    <p>Create a new ActionHero Task. The required properties of an task. These can be defined statically (this.name) or as methods which return a value.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>'use strict'
-const ActionHero = require('actionhero')
-
-module.exports = class SayHello extends ActionHero.Task {
- constructor () {
-   super()
-   this.name = 'sayHello'
-   this.description = 'I say Hello every minute'
-   this.frequency = (60 * 1000)
- }
-
- async run (data) {
-   ActionHero.api.log('Hello!')
- }
-}</code></pre>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    <h4 class="name" id=".run"><span class="type-signature">(async, static) </span>run<span class="signature">(data)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_task.js.html">classes/task.js</a>, <a href="classes_task.js.html#line39">line 39</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description">
-    <p>The main &quot;do something&quot; method for this task.  It can be <code>async</code>.  Anything returned from this metod will be logged.  If error is thrown in this method, it will be logged &amp; caught.  Using middleware, you can decide to re-run the task on failure.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>data</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The data about this instance of the task, specifically params.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <h1 class="page-title">initializers/logger.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
+
+const winston = require('winston')
+const ActionHero = require('./../index.js')
+const api = ActionHero.api
+
+module.exports = class Logger extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'logger'
+    this.loadPriority = 100
+  }
+
+  initialize () {
+    let transports = []
+    let i
+
+    for (i in api.config.logger.transports) {
+      let t = api.config.logger.transports[i]
+      if (typeof t === 'function') {
+        transports.push(t(api, winston))
+      } else {
+        transports.push(t)
+      }
+    }
+
+    api.logger = new (winston.Logger)({transports: transports})
+
+    if (api.config.logger.levels) {
+      api.logger.setLevels(api.config.logger.levels)
+    } else {
+      api.logger.setLevels(winston.config.syslog.levels)
+    }
+
+    if (api.config.logger.colors) {
+      winston.addColors(api.config.logger.colors)
+    }
+
+    /**
+     * Log a message, with optional metadata.  The message can be logged to a number of locations (stdio, files, etc) as configured via config/logger.js
+     *
+     * @memberof api
+     * @param  {string} message  The message to log.
+     * @param  {string} severity (optional) What log-level should this message be logged at. Default: 'info'.
+     * @param  {Object} data     (optional) Any object you wish to append to this message.
+     */
+    api.log = (message, severity, data) => {
+      if (severity === undefined || severity === null || api.logger.levels[severity] === undefined) { severity = 'info' }
+      let args = [severity, message]
+      if (data !== null &amp;&amp; data !== undefined) { args.push(data) }
+      api.logger.log.apply(api.logger, args)
+    }
+
+    let logLevels = []
+    for (i in api.logger.levels) { logLevels.push(i) }
+
+    api.log('Logger loaded.  Possible levels include:', 'debug', logLevels)
+  }
+}
+</code></pre>
+        </article>
+    </section>
 
 
 

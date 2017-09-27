@@ -3,6 +3,13 @@
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
+/**
+ * Documentation of Actions.
+ *
+ * @namespace api.documentation
+ * @property {Object} documentation - A collection of all documentable actions.
+ * @extends ActionHero.Initializer
+ */
 module.exports = class Documentation extends ActionHero.Initializer {
   constructor () {
     super()

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Task - Documentation</title>
+    <title>actions - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -28,7 +28,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Task</h1>
+    <h1 class="page-title">actions</h1>
     
 
     
@@ -41,9 +41,9 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="ActionHero.html">ActionHero</a>.</span>
+            <span class="ancestors"><a href="api.html">api</a>.</span>
         
-        Task
+        actions
         </h2>
         
     
@@ -54,21 +54,12 @@
     
         
 
-    
-
-    <h4 class="name" id="Task"><span class="type-signature"></span>new Task<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
 <dl class="details">
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_task.js.html">classes/task.js</a>, <a href="classes_task.js.html#line2">line 2</a>
+        <a href="initializers_actions.js.html">initializers/actions.js</a>, <a href="initializers_actions.js.html#line46">line 46</a>
     </li></ul></dd>
     
 
@@ -96,13 +87,6 @@
 
     
 
-    
-    <dt class="tag-tutorial">Tutorials:</dt>
-    <dd class="tag-tutorial">
-        <ul>
-            <li><em class="disabled">Tutorial: tasks</em></li>
-        </ul>
-    </dd>
     
 
     
@@ -138,13 +122,13 @@
 
         <tr>
             
-                <td class="name"><code>name</code></td>
+                <td class="name"><code>actions</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">Object</span>
 
 
             
@@ -154,20 +138,20 @@
 
             
 
-            <td class="description last"><p>The name of the Task.</p></td>
+            <td class="description last"><p>Dictionary of available connections, orginized by version.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>description</code></td>
+                <td class="name"><code>versions</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">Object</span>
 
 
             
@@ -177,30 +161,7 @@
 
             
 
-            <td class="description last"><p>The description of the Task (default this.name).</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>frequency</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>How often to run this Task, in ms.  0 is non-recurring. (default: 0).</p></td>
+            <td class="description last"><p>Dictionary of available action versions.</p></td>
         </tr>
 
     
@@ -208,6 +169,29 @@
         <tr>
             
                 <td class="name"><code>middleware</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Dictionary of loaded middleware modules.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>globalMiddleware</code></td>
             
 
             <td class="type">
@@ -223,30 +207,7 @@
 
             
 
-            <td class="description last"><p>The Middleware specific to this Task (default: []).  Middleware is descibed by the string names of the middleware.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>queue</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The default queue to run this Task on (default: 'default').</p></td>
+            <td class="description last"><p>Array of global middleware modules.</p></td>
         </tr>
 
     
@@ -257,56 +218,24 @@
 
 
 
+        
+            <div class="description"><p>Server connection handling.</p></div>
+        
 
-<div class="description">
-    <p>Create a new ActionHero Task. The required properties of an task. These can be defined statically (this.name) or as methods which return a value.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>'use strict'
-const ActionHero = require('actionhero')
-
-module.exports = class SayHello extends ActionHero.Task {
- constructor () {
-   super()
-   this.name = 'sayHello'
-   this.description = 'I say Hello every minute'
-   this.frequency = (60 * 1000)
- }
-
- async run (data) {
-   ActionHero.api.log('Hello!')
- }
-}</code></pre>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        
     
     </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="ActionHero.Initializer.html">ActionHero.Initializer</a></li>
+    </ul>
+
 
     
 
@@ -328,7 +257,7 @@ module.exports = class SayHello extends ActionHero.Task {
 
     
 
-    <h4 class="name" id=".run"><span class="type-signature">(async, static) </span>run<span class="signature">(data)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".addMiddleware"><span class="type-signature">(static) </span>addMiddleware<span class="signature">(data)</span><span class="type-signature"></span></h4>
 
     
 
@@ -340,7 +269,7 @@ module.exports = class SayHello extends ActionHero.Task {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_task.js.html">classes/task.js</a>, <a href="classes_task.js.html#line39">line 39</a>
+        <a href="initializers_actions.js.html">initializers/actions.js</a>, <a href="initializers_actions.js.html#line79">line 79</a>
     </li></ul></dd>
     
 
@@ -371,6 +300,13 @@ module.exports = class SayHello extends ActionHero.Task {
     
 
     
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="ActionHero.html#~ActionMiddleware">ActionHero~ActionMiddleware</a></li>
+        </ul>
+    </dd>
+    
 
     
 </dl>
@@ -380,7 +316,7 @@ module.exports = class SayHello extends ActionHero.Task {
 
 
 <div class="description">
-    <p>The main &quot;do something&quot; method for this task.  It can be <code>async</code>.  Anything returned from this metod will be logged.  If error is thrown in this method, it will be logged &amp; caught.  Using middleware, you can decide to re-run the task on failure.</p>
+    <p>Add a middleware component avaialable to pre or post-process actions.</p>
 </div>
 
 
@@ -424,7 +360,7 @@ module.exports = class SayHello extends ActionHero.Task {
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">object</span>
 
 
             
@@ -434,7 +370,7 @@ module.exports = class SayHello extends ActionHero.Task {
 
             
 
-            <td class="description last"><p>The data about this instance of the task, specifically params.</p></td>
+            <td class="description last"><p>The middleware definition to add.</p></td>
         </tr>
 
     

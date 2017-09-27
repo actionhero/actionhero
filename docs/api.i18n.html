@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Task - Documentation</title>
+    <title>i18n - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -28,7 +28,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Task</h1>
+    <h1 class="page-title">i18n</h1>
     
 
     
@@ -41,9 +41,9 @@
 <header>
     
         <h2>
-            <span class="ancestors"><a href="ActionHero.html">ActionHero</a>.</span>
+            <span class="ancestors"><a href="api.html">api</a>.</span>
         
-        Task
+        i18n
         </h2>
         
     
@@ -54,21 +54,12 @@
     
         
 
-    
-
-    <h4 class="name" id="Task"><span class="type-signature"></span>new Task<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
 <dl class="details">
 
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_task.js.html">classes/task.js</a>, <a href="classes_task.js.html#line2">line 2</a>
+        <a href="initializers_i18n.js.html">initializers/i18n.js</a>, <a href="initializers_i18n.js.html#line8">line 8</a>
     </li></ul></dd>
     
 
@@ -97,13 +88,6 @@
     
 
     
-    <dt class="tag-tutorial">Tutorials:</dt>
-    <dd class="tag-tutorial">
-        <ul>
-            <li><em class="disabled">Tutorial: tasks</em></li>
-        </ul>
-    </dd>
-    
 
     
 
@@ -112,201 +96,25 @@
 
 
 
-    <h5 class="subsection-title">Properties:</h5>
 
-    
-
-<table class="props">
-    <thead>
-    <tr>
         
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
+            <div class="description"><p>Translations.</p></div>
         
 
         
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The name of the Task.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>description</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The description of the Task (default this.name).</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>frequency</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>How often to run this Task, in ms.  0 is non-recurring. (default: 0).</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>middleware</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The Middleware specific to this Task (default: []).  Middleware is descibed by the string names of the middleware.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>queue</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The default queue to run this Task on (default: 'default').</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<div class="description">
-    <p>Create a new ActionHero Task. The required properties of an task. These can be defined statically (this.name) or as methods which return a value.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>'use strict'
-const ActionHero = require('actionhero')
-
-module.exports = class SayHello extends ActionHero.Task {
- constructor () {
-   super()
-   this.name = 'sayHello'
-   this.description = 'I say Hello every minute'
-   this.frequency = (60 * 1000)
- }
-
- async run (data) {
-   ActionHero.api.log('Hello!')
- }
-}</code></pre>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     
     </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="ActionHero.Initializer.html">ActionHero.Initializer</a></li>
+    </ul>
+
 
     
 
@@ -328,7 +136,7 @@ module.exports = class SayHello extends ActionHero.Task {
 
     
 
-    <h4 class="name" id=".run"><span class="type-signature">(async, static) </span>run<span class="signature">(data)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".localize"><span class="type-signature">(static) </span>localize<span class="signature">(message, options)</span><span class="type-signature"> &rarr; {string}</span></h4>
 
     
 
@@ -340,7 +148,7 @@ module.exports = class SayHello extends ActionHero.Task {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_task.js.html">classes/task.js</a>, <a href="classes_task.js.html#line39">line 39</a>
+        <a href="initializers_i18n.js.html">initializers/i18n.js</a>, <a href="initializers_i18n.js.html#line52">line 52</a>
     </li></ul></dd>
     
 
@@ -380,7 +188,7 @@ module.exports = class SayHello extends ActionHero.Task {
 
 
 <div class="description">
-    <p>The main &quot;do something&quot; method for this task.  It can be <code>async</code>.  Anything returned from this metod will be logged.  If error is thrown in this method, it will be logged &amp; caught.  Using middleware, you can decide to re-run the task on failure.</p>
+    <p>Return a translated string.</p>
 </div>
 
 
@@ -418,7 +226,30 @@ module.exports = class SayHello extends ActionHero.Task {
 
         <tr>
             
-                <td class="name"><code>data</code></td>
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The string to translate</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
             
 
             <td class="type">
@@ -434,7 +265,7 @@ module.exports = class SayHello extends ActionHero.Task {
 
             
 
-            <td class="description last"><p>The data about this instance of the task, specifically params.</p></td>
+            <td class="description last"><p>(optional)</p></td>
         </tr>
 
     
@@ -454,6 +285,28 @@ module.exports = class SayHello extends ActionHero.Task {
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Translated string</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
         

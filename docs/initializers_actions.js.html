@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Task - Documentation</title>
+    <title>initializers/actions.js - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -28,443 +28,157 @@
 
 <div id="main">
     
-    <h1 class="page-title">Task</h1>
-    
-
-    
-
-
-
-
-<section>
-
-<header>
-    
-        <h2>
-            <span class="ancestors"><a href="ActionHero.html">ActionHero</a>.</span>
-        
-        Task
-        </h2>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-
-    
-
-    <h4 class="name" id="Task"><span class="type-signature"></span>new Task<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_task.js.html">classes/task.js</a>, <a href="classes_task.js.html#line2">line 2</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-tutorial">Tutorials:</dt>
-    <dd class="tag-tutorial">
-        <ul>
-            <li><em class="disabled">Tutorial: tasks</em></li>
-        </ul>
-    </dd>
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>name</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The name of the Task.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>description</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The description of the Task (default this.name).</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>frequency</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>How often to run this Task, in ms.  0 is non-recurring. (default: 0).</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>middleware</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The Middleware specific to this Task (default: []).  Middleware is descibed by the string names of the middleware.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>queue</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The default queue to run this Task on (default: 'default').</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<div class="description">
-    <p>Create a new ActionHero Task. The required properties of an task. These can be defined statically (this.name) or as methods which return a value.</p>
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>'use strict'
-const ActionHero = require('actionhero')
-
-module.exports = class SayHello extends ActionHero.Task {
- constructor () {
-   super()
-   this.name = 'sayHello'
-   this.description = 'I say Hello every minute'
-   this.frequency = (60 * 1000)
- }
-
- async run (data) {
-   ActionHero.api.log('Hello!')
- }
-}</code></pre>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-        <h3 class="subsection-title">Methods</h3>
-
-        
-            
-
-    
-
-    <h4 class="name" id=".run"><span class="type-signature">(async, static) </span>run<span class="signature">(data)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_task.js.html">classes/task.js</a>, <a href="classes_task.js.html#line39">line 39</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description">
-    <p>The main &quot;do something&quot; method for this task.  It can be <code>async</code>.  Anything returned from this metod will be logged.  If error is thrown in this method, it will be logged &amp; caught.  Using middleware, you can decide to re-run the task on failure.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>data</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The data about this instance of the task, specifically params.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-    
-
-    
-
-    
-</article>
-
-</section>
+    <h1 class="page-title">initializers/actions.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
+
+const ActionHero = require('./../index.js')
+const api = ActionHero.api
+
+/**
+ * This callback is displayed as part of the Requester class.
+ * @callback ActionHero~ActionCallback
+ * @param {Object} data - The data object.
+ * @see ActionHero~ActionMiddleware
+ */
+
+/**
+ * Middleware definition for Actions
+ *
+ * @typedef {Object} ActionHero~ActionMiddleware
+ * @property {string} name - Unique name for the middleware.
+ * @property {Boolean} global - Is this middleware applied to all actions?
+ * @property {Number} priority - Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`.
+ * @property {ActionHero~ActionCallback} preProcessor - Called berore the action runs.  Has access to all params, before sanitizartion.  Can modify the data object for use in actions.
+ * @property {ActionHero~ActionCallback} postProcessor - Called after the action runs.
+ * @see api.actions.addMiddleware
+ * @example
+var middleware = {
+  name: 'userId checker',
+  global: false,
+  priority: 1000,
+  preProcessor: function(data, next){
+    if(!data.params.userId){
+      next(new Error('All actions require a userId') );
+    }else{
+      next();
+    }
+  },
+  postProcessor: function(data, next){
+    if(data.thing.stuff == false){
+      data.toRender = false;
+    }
+    next(error);
+  }
+}
+
+api.actions.addMiddleware(middleware);
+ */
+
+/**
+ * Server connection handling.
+ *
+ * @namespace api.actions
+ * @property {Object} actions - Dictionary of available connections, orginized by version.
+ * @property {Object} versions - Dictionary of available action versions.
+ * @property {Object} middleware - Dictionary of loaded middleware modules.
+ * @property {Array} globalMiddleware - Array of global middleware modules.
+ * @extends ActionHero.Initializer
+ */
+
+module.exports = class Actions extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'actions'
+    this.loadPriority = 410
+  }
+
+  async initialize () {
+    api.actions = {
+      actions: {},
+      versions: {},
+      middleware: {},
+      globalMiddleware: []
+    }
+
+    /**
+     * Add a middleware component avaialable to pre or post-process actions.
+     *
+     * @param {object} data The middleware definition to add.
+     * @memberOf api.actions
+     * @see ActionHero~ActionMiddleware
+     */
+    api.actions.addMiddleware = (data) => {
+      if (!data.name) { throw new Error('middleware.name is required') }
+      if (!data.priority) { data.priority = api.config.general.defaultMiddlewarePriority }
+      data.priority = Number(data.priority)
+      api.actions.middleware[data.name] = data
+      if (data.global === true) {
+        api.actions.globalMiddleware.push(data.name)
+        api.utils.sortGlobalMiddleware(api.actions.globalMiddleware, api.actions.middleware)
+      }
+    }
+
+    api.actions.loadFile = async (fullFilePath, reload) => {
+      if (reload === null) { reload = false }
+
+      const loadMessage = (action) => {
+        if (reload) {
+          api.log(`action reloaded: ${action.name} @ v${action.version}, ${fullFilePath}`, 'debug')
+        } else {
+          api.log(`action loaded: ${action.name} @ v${action.version}, ${fullFilePath}`, 'debug')
+        }
+      }
+
+      api.watchFileAndAct(fullFilePath, () => {
+        api.actions.loadFile(fullFilePath, true)
+        api.params.buildPostVariables()
+        api.routes.loadRoutes()
+      })
+
+      let action
+
+      try {
+        let collection = require(fullFilePath)
+        if (typeof collection === 'function') { collection = [collection] }
+        for (let i in collection) {
+          action = new collection[i]()
+          await action.validate(api)
+          if (!api.actions.actions[action.name]) { api.actions.actions[action.name] = {} }
+          if (!api.actions.versions[action.name]) { api.actions.versions[action.name] = [] }
+          api.actions.actions[action.name][action.version] = action
+          api.actions.versions[action.name].push(action.version)
+          api.actions.versions[action.name].sort()
+          loadMessage(action)
+        }
+      } catch (error) {
+        try {
+          api.exceptionHandlers.loader(fullFilePath, error)
+          delete api.actions.actions[action.name][action.version]
+        } catch (_error) {
+          throw error
+        }
+      }
+    }
+
+    for (let i in api.config.general.paths.action) {
+      let path = api.config.general.paths.action[i]
+      let files = api.utils.recursiveDirectoryGlob(path)
+      for (let j in files) { await api.actions.loadFile(files[j]) }
+    }
+  }
+}
+</code></pre>
+        </article>
+    </section>
 
 
 

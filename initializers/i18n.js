@@ -5,6 +5,12 @@ const path = require('path')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
+/**
+ * Translations.
+ *
+ * @namespace api.i18n
+ * @extends ActionHero.Initializer
+ */
 module.exports = class I18N extends ActionHero.Initializer {
   constructor () {
     super()
@@ -35,6 +41,14 @@ module.exports = class I18N extends ActionHero.Initializer {
         api.i18n.setLocale(connection, locale)
       },
 
+      /**
+       * Return a translated string.
+       *
+       * @memberof api.i18n
+       * @param  {string} message The string to translate
+       * @param  {Object} options (optional)
+       * @return {string}         Translated string
+       */
       localize: (message, options) => {
         if (!Array.isArray(message)) { message = [message] }
         if (!options) { options = api.i18n }

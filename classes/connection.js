@@ -97,7 +97,7 @@ module.exports = class Connection {
   }
 
   /**
-   * Localize a key for this connection's locale.  Keys usually look like `messages.errors.notFound`, and are defined in your locales directory.
+   * Localize a key for this connection's locale.  Keys usually look like `messages.errors.notFound`, and are defined in your locales directory.  Strings can be interploated as well, connection.localize('the count was {{count}}', {count: 4})
    *
    * @function localize
    * @memberof ActionHero.Connection

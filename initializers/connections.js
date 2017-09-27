@@ -15,9 +15,9 @@ const api = ActionHero.api
  *
  * @typedef {Object} ActionHero~ConnectionMiddleware
  * @property {string} name - Unique name for the middleware.
- * @property {Number} [priority] - Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`.
- * @property {ActionHero~ConnectionCallback} [create] - Called for each new connection when it is created.
- * @property {ActionHero~ConnectionCallback} [destroy] - Called for each connection before it is destroyed.
+ * @property {Number} priority - Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`.
+ * @property {ActionHero~ConnectionCallback} create - Called for each new connection when it is created.
+ * @property {ActionHero~ConnectionCallback} destroy - Called for each connection before it is destroyed.
  * @see api.connections.addMiddleware
  * @example
  var connectionMiddleware = {

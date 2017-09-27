@@ -25,11 +25,11 @@ const api = ActionHero.api
  *
  * @typedef {Object} ActionHero~ChatMiddleware
  * @property {string} name - Unique name for the middleware.
- * @property {Number} [priority] - Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`.
- * @property {ActionHero~ChatRoomCallback} [join] - Called when a connection joins a room.
- * @property {ActionHero~ChatRoomCallback} [leave] - Called when a connection leaves a room.
- * @property {ActionHero~ChatSayCallback} [onSayReceive] - Called when a connection says a message to a room.
- * @property {ActionHero~ChatSayCallback} [say] - Called when a connection is about to recieve a say message.
+ * @property {Number} priority - Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`.
+ * @property {ActionHero~ChatRoomCallback} join - Called when a connection joins a room.
+ * @property {ActionHero~ChatRoomCallback} leave - Called when a connection leaves a room.
+ * @property {ActionHero~ChatSayCallback} onSayReceive - Called when a connection says a message to a room.
+ * @property {ActionHero~ChatSayCallback} say - Called when a connection is about to recieve a say message.
  * @see api.chatRoom.addMiddleware
  * @see ActionHero~ChatRoomCallback
  * @see ActionHero~ChatSayCallback

@@ -36,6 +36,14 @@ module.exports = class Logger extends ActionHero.Initializer {
       winston.addColors(api.config.logger.colors)
     }
 
+    /**
+     * Log a message, with optional metadata.  The message can be logged to a number of locations (stdio, files, etc) as configured via config/logger.js
+     *
+     * @memberof api
+     * @param  {string} message  The message to log.
+     * @param  {string} severity (optional) What log-level should this message be logged at. Default: 'info'.
+     * @param  {Object} data     (optional) Any object you wish to append to this message.
+     */
     api.log = (message, severity, data) => {
       if (severity === undefined || severity === null || api.logger.levels[severity] === undefined) { severity = 'info' }
       let args = [severity, message]

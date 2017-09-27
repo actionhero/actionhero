@@ -4,6 +4,16 @@ const uuid = require('uuid')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
+/**
+ * Redis helpers and connections.
+ *
+ * @namespace api.redis
+ * @property {Object} clients - Holds the redis clients.  Contains 3 redis connections: 'client', 'subscriber' and 'tasks'.  Configured via `api.config.redis`.
+ * @property {Object} subscriptionHandlers - Callbacks for redis pub/sub
+ * @property {Object} rpcCallbacks - RPC callbacks for responses to other clients
+ * @property {Object} status - Redis connection statuses
+ * @extends ActionHero.Initializer
+ */
 module.exports = class Redis extends ActionHero.Initializer {
   constructor () {
     super()
@@ -56,6 +66,16 @@ module.exports = class Redis extends ActionHero.Initializer {
       }
     }
 
+    /**
+     * Invoke a command on all servers in this cluster.
+     *
+     * @async
+     * @param  {string}  method         The method to call on the remote server.
+     * @param  {Array}   args           The arguments to pass to `method`
+     * @param  {string}  connectionId   (optional) Should this method only apply to a server which `connectionId` is connected to?
+     * @param  {Boolean}  waitForRespons (optional) Should we await a response from a remote server in the cluster?
+     * @return {Promise}                The return value from the remote server.
+     */
     api.redis.doCluster = async (method, args, connectionId, waitForRespons) => {
       if (waitForRespons === undefined || waitForRespons === null) { waitForRespons = false }
       const requestId = uuid.v4()

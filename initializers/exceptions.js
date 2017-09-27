@@ -19,7 +19,7 @@ module.exports = class Exceptions extends ActionHero.Initializer {
     api.exceptionHandlers = {}
     api.exceptionHandlers.reporters = []
 
-    const consoleReporter = function (error, type, name, objects, severity) {
+    const consoleReporter = (error, type, name, objects, severity) => {
       let extraMessages = []
 
       if (type === 'loader') {
@@ -68,19 +68,19 @@ module.exports = class Exceptions extends ActionHero.Initializer {
 
     api.exceptionHandlers.reporters.push(consoleReporter)
 
-    api.exceptionHandlers.report = function (error, type, name, objects, severity) {
+    api.exceptionHandlers.report = (error, type, name, objects, severity) => {
       if (!severity) { severity = 'error' }
       for (let i in api.exceptionHandlers.reporters) {
         api.exceptionHandlers.reporters[i](error, type, name, objects, severity)
       }
     }
 
-    api.exceptionHandlers.loader = function (fullFilePath, error) {
+    api.exceptionHandlers.loader = (fullFilePath, error) => {
       let name = 'loader:' + fullFilePath
       api.exceptionHandlers.report(error, 'loader', name, {fullFilePath: fullFilePath}, 'alert')
     }
 
-    api.exceptionHandlers.action = function (error, data, next) {
+    api.exceptionHandlers.action = (error, data, next) => {
       let simpleName
       try {
         simpleName = data.action
@@ -93,7 +93,7 @@ module.exports = class Exceptions extends ActionHero.Initializer {
       if (typeof next === 'function') { next() }
     }
 
-    api.exceptionHandlers.task = function (error, queue, task, workerId) {
+    api.exceptionHandlers.task = (error, queue, task, workerId) => {
       let simpleName
       try {
         simpleName = task['class']
