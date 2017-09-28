@@ -41,6 +41,7 @@
             <pre class="prettyprint source linenums"><code>'use strict'
 
 const fs = require('fs')
+const {promisify} = require('util')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
@@ -370,7 +371,7 @@ class Cache extends ActionHero.Initializer {
           return false
         }
 
-        await new Promise((resolve) => { setTimeout(resolve, api.cache.lockRetry) })
+        await promisify(setTimeout)(api.cache.lockRetry)
         return api.cache.checkLock(key, retry, startTime)
       }
     }

@@ -7,9 +7,12 @@ chai.use(dirtyChai)
 
 const uuid = require('uuid')
 const path = require('path')
+const {promisify} = require('util')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
+
+const sleep = async (timeout) => { await promisify(setTimeout)(timeout) }
 
 const net = require('net')
 let client
@@ -32,7 +35,7 @@ const makeSocketRequest = async (thisClient, message, delimiter) => {
   thisClient.on('data', onData)
   thisClient.write(message + delimiter)
 
-  await new Promise((resolve) => { setTimeout(resolve, 100) })
+  await sleep(100)
   thisClient.removeListener('data', onData)
 
   let lastLine = lines[(lines.length - 1)]
@@ -46,7 +49,7 @@ const connectClients = async () => {
   client2 = net.connect(api.config.servers.socket.port, () => { client2.setEncoding('utf8') })
   client3 = net.connect(api.config.servers.socket.port, () => { client3.setEncoding('utf8') })
 
-  await new Promise((resolve) => { setTimeout(resolve, 1000) })
+  await sleep(1000)
 }
 
 describe('Server: Socket', () => {
@@ -257,7 +260,7 @@ describe('Server: Socket', () => {
       await makeSocketRequest(client, 'roomAdd defaultRoom')
       await makeSocketRequest(client2, 'roomAdd defaultRoom')
       await makeSocketRequest(client3, 'roomAdd defaultRoom')
-      await new Promise((resolve) => { setTimeout(resolve, 250) })
+      await sleep(250)
     })
 
     afterEach(async () => {
@@ -266,7 +269,7 @@ describe('Server: Socket', () => {
         await makeSocketRequest(client2, 'roomLeave ' + room)
         await makeSocketRequest(client3, 'roomLeave ' + room)
       })
-      await new Promise((resolve) => { setTimeout(resolve, 250) })
+      await sleep(250)
     })
 
     it('clients are in the default room', async () => {
@@ -414,7 +417,7 @@ describe('Server: Socket', () => {
         api.connections.connections[id].destroy()
       }
 
-      await new Promise((resolve) => { setTimeout(resolve, 100) })
+      await sleep(100)
 
       expect(client.readable).to.equal(false)
       expect(client.writable).to.equal(false)

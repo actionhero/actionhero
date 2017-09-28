@@ -6,9 +6,12 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const path = require('path')
+const {promisify} = require('util')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
+
+const sleep = async (timeout) => { await promisify(setTimeout)(timeout) }
 
 describe('Utils', () => {
   before(async () => { api = await actionhero.start() })
@@ -24,7 +27,7 @@ describe('Utils', () => {
   describe('utils.asyncWaterfall', () => {
     it('works with no args', async () => {
       let sleepyFunc = async () => {
-        await new Promise((resolve) => { setTimeout(resolve, 100) })
+        await sleep(100)
         return (new Date()).getTime()
       }
 
@@ -39,7 +42,7 @@ describe('Utils', () => {
 
     it('works with args', async () => {
       let sleepyFunc = async (response) => {
-        await new Promise((resolve) => { setTimeout(resolve, 100) })
+        await sleep(100)
         return response
       }
 

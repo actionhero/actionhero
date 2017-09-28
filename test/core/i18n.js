@@ -7,6 +7,7 @@ chai.use(dirtyChai)
 
 const fs = require('fs')
 const path = require('path')
+const {promisify} = require('util')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
@@ -29,9 +30,7 @@ const spanish = {
   }
 }
 
-const sleep = async (timeout) => {
-  await new Promise((resolve) => setTimeout(resolve, timeout))
-}
+const sleep = async (timeout) => { await promisify(setTimeout)(timeout) }
 
 fs.writeFileSync(path.join(__dirname, '/../../locales/test-env-es.json'), JSON.stringify(spanish, null, 2))
 
