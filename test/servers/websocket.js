@@ -121,6 +121,15 @@ describe('Server: Web Socket', () => {
       expect(response.error).to.equal('key is a required parameter for this action')
     })
 
+    it('properly handles duplicate room commands at the same time', async () => {
+      awaitRoom(clientA, 'roomAdd', 'defaultRoom')
+      awaitRoom(clientA, 'roomAdd', 'defaultRoom')
+
+      await sleep(500)
+
+      expect(clientA.rooms).to.deep.equal(['defaultRoom'])
+    })
+
     it('properly responds with messageCount', async () => {
       let aTime
       let bTime

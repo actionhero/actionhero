@@ -348,17 +348,24 @@ class ChatRoom extends ActionHero.Initializer {
         throw new Error(await api.config.errors.connectionAlreadyInRoom(connection, room))
       }
 
-      let found = await api.chatRoom.exists(room)
-      if (!found) {
-        throw new Error(await api.config.errors.connectionRoomNotExist(room))
+      if (connection.rooms.indexOf(room) < 0) {
+        let found = await api.chatRoom.exists(room)
+        if (!found) {
+          throw new Error(await api.config.errors.connectionRoomNotExist(room))
+        }
       }
 
-      let response = await api.chatRoom.runMiddleware(connection, room, 'join')
-      if (response instanceof Error) { throw response }
+      if (connection.rooms.indexOf(room) < 0) {
+        let response = await api.chatRoom.runMiddleware(connection, room, 'join')
+        if (response instanceof Error) { throw response }
+      }
 
-      let memberDetails = api.chatRoom.generateMemberDetails(connection)
-      await api.redis.clients.client.hset(api.chatRoom.keys.members + room, connection.id, JSON.stringify(memberDetails))
-      connection.rooms.push(room)
+      if (connection.rooms.indexOf(room) < 0) {
+        let memberDetails = api.chatRoom.generateMemberDetails(connection)
+        connection.rooms.push(room)
+        await api.redis.clients.client.hset(api.chatRoom.keys.members + room, connection.id, JSON.stringify(memberDetails))
+      }
+
       return true
     }
 
@@ -382,17 +389,24 @@ class ChatRoom extends ActionHero.Initializer {
         throw new Error(await api.config.errors.connectionNotInRoom(connection, room))
       }
 
-      let found = await api.chatRoom.exists(room)
-      if (!found) {
-        throw new Error(await api.config.errors.connectionRoomNotExist(room))
+      if (connection.rooms.indexOf(room) >= 0) {
+        let found = await api.chatRoom.exists(room)
+        if (!found) {
+          throw new Error(await api.config.errors.connectionRoomNotExist(room))
+        }
       }
 
-      let response = await api.chatRoom.runMiddleware(connection, room, 'leave')
-      if (response instanceof Error) { throw response }
+      if (connection.rooms.indexOf(room) >= 0) {
+        let response = await api.chatRoom.runMiddleware(connection, room, 'leave')
+        if (response instanceof Error) { throw response }
+      }
 
-      await api.redis.clients.client.hdel(api.chatRoom.keys.members + room, connection.id)
-      let index = connection.rooms.indexOf(room)
-      if (index > -1) { connection.rooms.splice(index, 1) }
+      if (connection.rooms.indexOf(room) >= 0) {
+        let index = connection.rooms.indexOf(room)
+        connection.rooms.splice(index, 1)
+        await api.redis.clients.client.hdel(api.chatRoom.keys.members + room, connection.id)
+      }
+
       return true
     }
 
