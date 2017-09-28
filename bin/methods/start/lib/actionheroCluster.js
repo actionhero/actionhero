@@ -3,6 +3,7 @@
 const fs = require('fs')
 const path = require('path')
 const os = require('os')
+const {promisify} = require('util')
 const cluster = require('cluster')
 const readline = require('readline')
 const winston = require('winston')
@@ -81,12 +82,7 @@ module.exports = class ActionHeroCluster {
     if (stats.isDirectory() || stats.isSymbolicLink()) {
       return true
     } else {
-      await new Promise((resolve, reject) => {
-        fs.mkdir(p, (error) => {
-          if (error) { return reject(error) }
-          resolve()
-        })
-      })
+      await promisify(fs.mkdir)(p)
     }
   }
 
@@ -128,13 +124,11 @@ module.exports = class ActionHeroCluster {
     process.on('SIGINT', async () => {
       this.log('Signal: SIGINT', 'info')
       await this.stop()
-      process.exit()
     })
 
     process.on('SIGTERM', async () => {
       this.log('Signal: SIGTERM', 'info')
       await this.stop()
-      process.exit()
     })
 
     process.on('SIGUSR2', async () => {
@@ -200,16 +194,19 @@ module.exports = class ActionHeroCluster {
     if (this.workers.length === 0) {
       this.log('all workers stopped', 'notice')
       await this.clearPidFile()
-    } else {
-      this.log(this.workers.length + ' workers running, waiting on stop', 'info')
-      setTimeout(async () => {
-        await this.stop()
-      }, this.options.stopTimeout)
+      await promisify(setTimeout)(100)
+      process.exit()
     }
 
     if (this.options.expectedWorkers > 0) {
       this.options.expectedWorkers = 0
       await this.work()
+    }
+
+    if (this.workers.length > 0) {
+      this.log(this.workers.length + ' workers running, waiting on stop', 'info')
+      await promisify(setTimeout)(this.options.stopTimeout)
+      this.stop()
     }
   }
 
@@ -267,7 +264,7 @@ module.exports = class ActionHeroCluster {
     } else {
       if (stateCounts.started === this.workers.length) {
         this.log('cluster equilibrium state reached with ' + this.workers.length + ' workers', 'notice')
-      } else if (!stateCounts.started && this.workers.length === 0) {
+      } else if (!stateCounts.started && this.workers.length === 0 && this.options.expectedWorkers > 0) {
         this.log('0 workers in this cluster', 'warning')
       }
     }

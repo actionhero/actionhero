@@ -23,7 +23,6 @@ let connectClient = async (transportOptions) => {
   let clientSocket = new S('http://localhost:' + api.config.servers.web.port, {transport: transportOptions})
 
   let client = new ActionheroClient({}, clientSocket) // eslint-disable-line
-  // await new Promise((resolve) => { setTimeout(resolve, 100) })
   let connectResponse = await new Promise((resolve, reject) => {
     client.connect((error, connectResponse) => {
       if (error) { return reject(error) }

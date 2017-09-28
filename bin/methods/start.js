@@ -73,7 +73,6 @@ module.exports = class ActionsList extends ActionHero.CLI {
     }, this.shutdownTimeout)
 
     await this.stopServer()
-    await new Promise((resolve) => { setTimeout(resolve, 10) })
     process.exit()
   }
 

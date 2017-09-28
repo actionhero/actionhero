@@ -226,7 +226,6 @@ module.exports = class Process {
         delete api.shuttingDown
         // reset initializers to prevent duplicate check on restart
         this.initializers = {}
-        await new Promise((resolve) => process.nextTick(resolve))
       })
 
       try {

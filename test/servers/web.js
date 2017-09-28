@@ -9,10 +9,13 @@ const request = require('request-promise-native')
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
+const {promisify} = require('util')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
 let url
+
+const sleep = async (timeout) => { await promisify(setTimeout)(timeout) }
 
 const toJson = async (string) => {
   try {
@@ -104,17 +107,17 @@ describe('Server: Web', () => {
       expect(Object.keys(api.connections.connections)).to.have.length(0)
       request.get(url + '/api/sleepTest').then(toJson) // don't await
 
-      await new Promise((resolve) => { setTimeout(resolve, 100) })
+      await sleep(100)
       expect(Object.keys(api.connections.connections)).to.have.length(1)
 
-      await new Promise((resolve) => { setTimeout(resolve, 1000) })
+      await sleep(1000)
       expect(Object.keys(api.connections.connections)).to.have.length(0)
     })
 
     it('works for files', async () => {
       expect(Object.keys(api.connections.connections)).to.have.length(0)
       await request.get(url + '/simple.html')
-      await new Promise((resolve) => { setTimeout(resolve, 100) })
+      await sleep(100)
       expect(Object.keys(api.connections.connections)).to.have.length(0)
     })
 
@@ -122,7 +125,7 @@ describe('Server: Web', () => {
       expect(Object.keys(api.connections.connections)).to.have.length(0)
       let body = await request.get(url + '/api/customRender').then(toJson)
       expect(body).to.exist()
-      await new Promise((resolve) => { setTimeout(resolve, 100) })
+      await sleep(100)
       expect(Object.keys(api.connections.connections)).to.have.length(0)
     })
   })
