@@ -118,6 +118,32 @@ describe('Server: Web Socket', () => {
       expect(response.error).to.equal('key is a required parameter for this action')
     })
 
+    it('properly responds with messageCount', async () => {
+      let aTime
+      let bTime
+      let startingMessageCount = clientA.messageCount
+      awaitRoom(clientA, 'roomAdd', 'defaultRoom') // fast
+      let responseA = awaitAction(clientA, 'sleepTest') // slow
+      awaitRoom(clientA, 'roomAdd', 'defaultRoom') // fast
+      let responseB = awaitAction(clientA, 'randomNumber') // fast
+
+      responseA.then((data) => {
+        responseA = data
+        aTime = new Date()
+      })
+
+      responseB.then((data) => {
+        responseB = data
+        bTime = new Date()
+      })
+
+      await new Promise((resolve) => { setTimeout(resolve, 2001) })
+
+      expect(responseA.messageCount).to.equal(startingMessageCount + 2)
+      expect(responseB.messageCount).to.equal(startingMessageCount + 4)
+      expect(aTime.getTime()).to.be.above(bTime.getTime())
+    })
+
     it('can run actions properly without params', async () => {
       let response = await awaitAction(clientA, 'randomNumber')
       expect(response.error).to.not.exist()
