@@ -36,6 +36,16 @@
 
 ***
 
+## ActionHero v18
+
+ActionHero v18 is the `async/await` Node.js framework you have been waiting for!
+
+ActionHero version 18 (master branch) is currently in BETA!  You can use it today by `npm install actionhero@next`.  We are still working on the docs and updating the examples, but please help us by testing it out!  
+
+Release notes: https://github.com/actionhero/actionhero/releases/tag/18.0.0-beta.1
+
+---
+
 ## Who is the ActionHero?
 ActionHero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs for HTTP, WebSockets, and more.  Clients connected to an actionhero server can [**consume the api**](https://docs.actionherojs.com/tutorial-actions.html), [**consume static content**](https://docs.actionherojs.com/tutorial-file_server.html), and [**communicate with each other**](https://docs.actionherojs.com/tutorial-chat.html).  ActionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.  ActionHero provides a simple Async/Await API for managing every type of connection and background task.
 
