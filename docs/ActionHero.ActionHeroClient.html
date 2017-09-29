@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Server - Documentation</title>
+    <title>ActionHeroClient - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -28,7 +28,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">Server</h1>
+    <h1 class="page-title">ActionHeroClient</h1>
     
 
     
@@ -43,7 +43,7 @@
         <h2>
             <span class="ancestors"><a href="ActionHero.html">ActionHero</a>.</span>
         
-        Server
+        ActionHeroClient
         </h2>
         
     
@@ -56,7 +56,7 @@
 
     
 
-    <h4 class="name" id="Server"><span class="type-signature"></span>new Server<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="ActionHeroClient"><span class="type-signature"></span>new ActionHeroClient<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
@@ -68,7 +68,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_server.js.html">classes/server.js</a>, <a href="classes_server.js.html#line6">line 6</a>
+        <a href="client_actionheroClient.jsdoc.html">client/actionheroClient.jsdoc</a>, <a href="client_actionheroClient.jsdoc.html#line1">line 1</a>
     </li></ul></dd>
     
 
@@ -100,7 +100,7 @@
     <dt class="tag-tutorial">Tutorials:</dt>
     <dd class="tag-tutorial">
         <ul>
-            <li><a href="tutorial-servers.html">servers</a></li>
+            <li><em class="disabled">Tutorial: websocket</em></li>
         </ul>
     </dd>
     
@@ -112,200 +112,14 @@
 
 
 
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>type</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The name &amp; type of the server.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>verbs</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>What connection verbs can connections of this type use?</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>config</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Shorthand for <code>api.config.servers[this.type]</code></p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>canChat</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Can connections of this server use the chat system?</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>logConnections</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Should we log every new connection?</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>logExits</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Should we log when a connection disconnects/exits?</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>sendWelcomeMessage</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Should every new connection of this server type recieve the wecome message (defiend in locales, <code>actionhero.welcomeMessage</code>)</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
 
 
 <div class="description">
-    <p>Create a new ActionHero Server. The required properties of an server. These can be defined statically (this.name) or as methods which return a value.</p>
+    <p>Create a new Websocket ActionHero Client. This is for use in the browser.
+We use the Primus library to abstract our websocket connections, and to allow you to create connections that gracefully fall back to long-polling and other methods to support older browsers if needed.
+There are clients for other languages/client types as well, but this is to be the prototypical example.
+Note that this class is not written using ES6 convestions so that it will function properly in the browser.
+Defaults will be built from the options you set in <code>api.config.servers.websocket</code></p>
 </div>
 
 
@@ -318,56 +132,25 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>'use strict'
-const ActionHero = require('actionhero')
+    <pre class="prettyprint"><code>// &lt;script type="text/javascript" src="/public/javascript/actionheroClient.min.js">&lt;/script>
 
-module.exports = class MyServer extends ActionHero.Server {
-  constructor () {
-    super()
-    this.type = '%%name%%'
+var client = new ActionheroClient();
 
-    this.attributes = {
-      canChat: false,
-      logConnections: true,
-      logExits: true,
-      sendWelcomeMessage: false,
-      verbs: []
-    }
-    // this.config will be set to equal api.config.servers[this.type]
-  }
+client.on('connected',    function(){ console.log('connected!') })
+client.on('disconnected', function(){ console.log('disconnected :(') })
+client.on('error',        function(error){ console.log('error', error.stack) })
+client.on('reconnect',    function(){ console.log('reconnect') })
+client.on('reconnecting', function(){ console.log('reconnecting') })
 
-  initialize () {
-    this.on('connection', (conection) => {
+client.on('welcome',      function(message){ alert(message); })
+client.on('say',          function(message){ alert(message); })
 
-    })
-
-    this.on('actionComplete', (data) => {
-
-    })
-  }
-
-  start () {
-    // this.buildConnection (data)
-    // this.processAction (connection)
-    // this.processFile (connection)
-  }
-
-  stop () {
-
-  }
-
-  sendMessage (connection, message, messageCount) {
-
-  }
-
-  sendFile (connection, error, fileStream, mime, length, lastModified) {
-
-  }
-
-  goodbye (connection) {
-
-  }
-}</code></pre>
+client.connect(function(error, details){
+  if(error){ return console.warn(error) }
+  client.action('createChatRoom', {name: 'defaultRoom'}, function(){
+    client.roomAdd("defaultRoom");
+  });
+});</code></pre>
 
 
 
@@ -409,7 +192,7 @@ module.exports = class MyServer extends ActionHero.Server {
 
     
 
-    <h4 class="name" id=".buildConnection"><span class="type-signature">(static) </span>buildConnection<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id=".action"><span class="type-signature">(static) </span>action<span class="signature">(action, params, callback)</span><span class="type-signature"></span></h4>
 
     
 
@@ -421,7 +204,7 @@ module.exports = class MyServer extends ActionHero.Server {
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_server.js.html">classes/server.js</a>, <a href="classes_server.js.html#line180">line 180</a>
+        <a href="client_actionheroClient.jsdoc.html">client/actionheroClient.jsdoc</a>, <a href="client_actionheroClient.jsdoc.html#line52">line 52</a>
     </li></ul></dd>
     
 
@@ -461,7 +244,7 @@ module.exports = class MyServer extends ActionHero.Server {
 
 
 <div class="description">
-    <p>Build a the ActionHero.Connection from the raw parts provided by the server.</p>
+    <p>Call an action from this client.  As a note, if you are not connected yet (via <code>client.connect()</code>), the action will still be attempted, over XHR/JSONp.  That means that you can use this same client libarary for simple AJAX clients if you wish.</p>
 </div>
 
 
@@ -474,307 +257,21 @@ module.exports = class MyServer extends ActionHero.Server {
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>// from the web server
+    <pre class="prettyprint"><code>client.on('error', function(error) { alert(error) })
 
-this.buildConnection({
-  rawConnection: {
-    req: req,
-    res: res,
-    params: {},
-    method: method,
-    cookies: cookies,
-    responseHeaders: responseHeaders,
-    responseHttpCode: responseHttpCode,
-    parsedURL: parsedURL
-  },
-  id: fingerprint + '-' + uuid.v4(),
-  fingerprint: fingerprint,
-  remoteAddress: remoteIP,
-  remotePort: remotePort
+// no params
+client.action('cacheTest', function (data) {
+  if (data.error) { alert(data.error) }
+})
+
+// with params
+client.action('cacheTest', {key: 'key', value: 'value'}, function (data) {
+  if (data.error) { alert(data.error) }
 })</code></pre>
 
 
 
 
-
-
-
-
-<h5>Fires:</h5>
-<ul>
-    <li><a href="ActionHero.Server.html#event:connection">ActionHero.Server#event:connection</a></li>
-</ul>
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id=".connections"><span class="type-signature">(static) </span>connections<span class="signature">()</span><span class="type-signature"> &rarr; {Array}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_server.js.html">classes/server.js</a>, <a href="classes_server.js.html#line287">line 287</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description">
-    <p>Enumerate the connections for this server type on this server.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>An array of ActionHero.Connection objects</p>
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Array</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-        
-            
-
-    
-
-    <h4 class="name" id=".initialize"><span class="type-signature">(async, static) </span>initialize<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_server.js.html">classes/server.js</a>, <a href="classes_server.js.html#line109">line 109</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description">
-    <p>Method run as part of the <code>initialize</code> lifecycle of your server.  Ususally configures the server.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id=".log"><span class="type-signature">(static) </span>log<span class="signature">(message, severity, data)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_server.js.html">classes/server.js</a>, <a href="classes_server.js.html#line305">line 305</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description">
-    <p>Log a message from this server type.  A wrapper around api.log with a server prefix.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
     <h5>Parameters:</h5>
     
 
@@ -800,7 +297,7 @@ this.buildConnection({
 
         <tr>
             
-                <td class="name"><code>message</code></td>
+                <td class="name"><code>action</code></td>
             
 
             <td class="type">
@@ -816,37 +313,14 @@ this.buildConnection({
 
             
 
-            <td class="description last"><p>The message to log.</p></td>
+            <td class="description last"><p>The name of the action to run.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>severity</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The severity of the message, ie: 'debug', 'info', 'warning', etc (default 'info').</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>data</code></td>
+                <td class="name"><code>params</code></td>
             
 
             <td class="type">
@@ -862,7 +336,30 @@ this.buildConnection({
 
             
 
-            <td class="description last"><p>Any metadata to add to the log message.</p></td>
+            <td class="description last"><p>(optional) (default: {}).  Any params to pass to the action.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Will reurn (<code>data</code>) (no error!).  The client will emit <code>error</code> if there is a connection error, otherwise any errors from the action will be contained within <code>data.error</code>.</p></td>
         </tr>
 
     
@@ -889,7 +386,7 @@ this.buildConnection({
 
     
 
-    <h4 class="name" id=".processAction"><span class="type-signature">(async, static) </span>processAction<span class="signature">(connection)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+    <h4 class="name" id=".configure"><span class="type-signature">(static) </span>configure<span class="signature">(callback)</span><span class="type-signature"></span></h4>
 
     
 
@@ -901,917 +398,7 @@ this.buildConnection({
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_server.js.html">classes/server.js</a>, <a href="classes_server.js.html#line250">line 250</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description">
-    <p>When a connection has called an Action command, and all properties are set.  Connection should have <code>params.action</code> set at least.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>connection</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The Connection.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<h5>Fires:</h5>
-<ul>
-    <li><a href="ActionHero.Server.html#event:actionComplete">ActionHero.Server#event:actionComplete</a></li>
-</ul>
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-        
-            
-
-    
-
-    <h4 class="name" id=".processFile"><span class="type-signature">(async, static) </span>processFile<span class="signature">(connection)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_server.js.html">classes/server.js</a>, <a href="classes_server.js.html#line266">line 266</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description">
-    <p>When a connection has called an File command, and all properties are set.  Connection should have <code>params.file</code> set at least.  Will eventuall call ActionHero.Server#sendFile.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>connection</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The Connection.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-        
-            
-
-    
-
-    <h4 class="name" id=".sendFile"><span class="type-signature">(async, static) </span>sendFile<span class="signature">(connection, error, fileStream, mime, length, lastModified)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_server.js.html">classes/server.js</a>, <a href="classes_server.js.html#line140">line 140</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description">
-    <p>Must be defined explaining how to send a file to an induvidual connection.  Might be a noop for some connection types.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>connection</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The connection in question.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>error</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Error</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>If there was any errror finding or reading this file.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>fileStream</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>A stream from the file reader which can be piped to the connection.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>mime</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The mime type of the files</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>length</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Number</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The length in bytes of the file.  Useful for setting headers.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>lastModified</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Date</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The timestamp when the file was last modifeid on disk.  Useful for headers.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id=".sendMessage"><span class="type-signature">(async, static) </span>sendMessage<span class="signature">(connection, message, messageCount)</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_server.js.html">classes/server.js</a>, <a href="classes_server.js.html#line130">line 130</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description">
-    <p>Must be defined explaining how to send a message to an induvidual connection.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>connection</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The connection in question.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>message</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The message to send.  May be an Object, Array, or String.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>messageCount</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>A count of which message this is to be sent to the client.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id=".start"><span class="type-signature">(async, static) </span>start<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_server.js.html">classes/server.js</a>, <a href="classes_server.js.html#line116">line 116</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description">
-    <p>Method run as part of the <code>start</code> lifecycle of your server.  Ususally boots the server (listens on port, etc).</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    <h4 class="name" id=".stop"><span class="type-signature">(async, static) </span>stop<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_server.js.html">classes/server.js</a>, <a href="classes_server.js.html#line123">line 123</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description">
-    <p>Method run as part of the <code>stop</code> lifecycle of your server.  Ususally configures the server (disconnects from port, etc).</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-    
-
-    
-
-    
-        <h3 class="subsection-title">Events</h3>
-
-        
-            
-
-    
-
-    <h4 class="name" id="event:actionComplete">actionComplete</h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_server.js.html">classes/server.js</a>, <a href="classes_server.js.html#line99">line 99</a>
+        <a href="client_actionheroClient.jsdoc.html">client/actionheroClient.jsdoc</a>, <a href="client_actionheroClient.jsdoc.html#line43">line 43</a>
     </li></ul></dd>
     
 
@@ -1845,7 +432,7 @@ this.buildConnection({
     <dt class="tag-see">See:</dt>
     <dd class="tag-see">
         <ul>
-            <li><a href="ActionHero.Action.html">ActionHero.Action</a></li>
+            <li><a href="ActionHero.ActionHeroClient.html#.detailsView">ActionHero.ActionHeroClient.detailsView</a></li>
         </ul>
     </dd>
     
@@ -1855,11 +442,26 @@ this.buildConnection({
 
 
 
-    <h5 class="subsection-title">Properties:</h5>
 
+
+<div class="description">
+    <p>Will set <code>this.state</code>, <code>this.rooms</code>, <code>this.fingerprint</code>, and <code>this.id</code>.  You should only need this method if you are having connection errors.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
     
 
-<table class="props">
+<table class="params">
     <thead>
     <tr>
         
@@ -1881,13 +483,13 @@ this.buildConnection({
 
         <tr>
             
-                <td class="name"><code>data</code></td>
+                <td class="name"><code>callback</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">function</span>
 
 
             
@@ -1897,40 +499,12 @@ this.buildConnection({
 
             
 
-            <td class="description last"><p>The same data from the Action.  Includes the connection, response, etc.</p></td>
+            <td class="description last"><p>Will reurn (<code>error</code>, <code>details</code>), where details is the same as calling <code>client.detailsView()</code>.</p></td>
         </tr>
 
     
     </tbody>
 </table>
-
-
-
-
-
-
-<div class="description">
-    <p>Event called when a an action is complete for a connection created by this server.  You may want to send a response to the client as a response to this event.</p>
-</div>
-
-
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">object</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
 
 
 
@@ -1952,7 +526,7 @@ this.buildConnection({
 
     
 
-    <h4 class="name" id="event:connection">connection</h4>
+    <h4 class="name" id=".connect"><span class="type-signature">(static) </span>connect<span class="signature">(callback)</span><span class="type-signature"></span></h4>
 
     
 
@@ -1964,7 +538,149 @@ this.buildConnection({
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="classes_server.js.html">classes/server.js</a>, <a href="classes_server.js.html#line91">line 91</a>
+        <a href="client_actionheroClient.jsdoc.html">client/actionheroClient.jsdoc</a>, <a href="client_actionheroClient.jsdoc.html#line34">line 34</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="ActionHero.ActionHeroClient.html#.detailsView">ActionHero.ActionHeroClient.detailsView</a></li>
+        
+            <li><a href="ActionHero.ActionHeroClient.html#.disconnect">ActionHero.ActionHeroClient.disconnect</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Connect to the ActionHero server.  Will emit <code>welcome</code> when connected, and return the callback.  Will aslo set <code>this.state</code>, <code>this.rooms</code>, <code>this.fingerprint</code>, and <code>this.id</code>.  Clients will automatically try to reconect, unless prevented with <code>client.disconnect()</code></p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>When the connection is connected, will reurn (<code>error</code>, <code>details</code>), where details is the same as calling <code>client.detailsView()</code>.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".detailsView"><span class="type-signature">(static) </span>detailsView<span class="signature">(callback)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="client_actionheroClient.jsdoc.html">client/actionheroClient.jsdoc</a>, <a href="client_actionheroClient.jsdoc.html#line102">line 102</a>
     </li></ul></dd>
     
 
@@ -2004,27 +720,66 @@ this.buildConnection({
 
 
 <div class="description">
-    <p>Event called when a formal new connection is created for this server type.  This is a resposne to calling ActionHero.Server#buildConnection</p>
+    <p>View the server's details about this connection.</p>
 </div>
 
 
 
 
 
-    <h5>Type:</h5>
-    <ul>
-        <li>
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
             
-<span class="param-type">object</span>
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
 
 
-        </li>
-    </ul>
+            
+            </td>
 
+            
 
+            
 
+            <td class="description last"><p>Will reurn (<code>data</code>), where data contains the connections details (fingerprint, connection time, etc)</p></td>
+        </tr>
 
-
+    
+    </tbody>
+</table>
 
 
 
@@ -2042,6 +797,1133 @@ this.buildConnection({
 
 
         
+            
+
+    
+
+    <h4 class="name" id=".disconnect"><span class="type-signature">(static) </span>disconnect<span class="signature">(callback)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="client_actionheroClient.jsdoc.html">client/actionheroClient.jsdoc</a>, <a href="client_actionheroClient.jsdoc.html#line116">line 116</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="ActionHero.ActionHeroClient.html#.connect">ActionHero.ActionHeroClient.connect</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Close the client connection.  Will prevent any re-connects from attempting.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".documentation"><span class="type-signature">(static) </span>documentation<span class="signature">(callback)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="client_actionheroClient.jsdoc.html">client/actionheroClient.jsdoc</a>, <a href="client_actionheroClient.jsdoc.html#line109">line 109</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>View details of this server's actions.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Will reurn (<code>data</code>), where data conatins the results of <code>api.documentation.documentation</code>, details of all documented actions on the server.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".file"><span class="type-signature">(static) </span>file<span class="signature">(file, callback)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="client_actionheroClient.jsdoc.html">client/actionheroClient.jsdoc</a>, <a href="client_actionheroClient.jsdoc.html#line83">line 83</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Request a public file from the server.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>client.file('/public/simple.html', function(data) {
+  data = {
+    content: "&lt;h1>ActionHero&lt;/h1> I am a flat file being served to you via the API from ./public/simple.html&lt;br />",
+    context: "response",
+    error: null,
+    length: 101,
+    messageCount: 3,
+    mime: "text/html"
+  }
+})</code></pre>
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>file</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The file requeted.  The file should look like a the path from a browser, ie: <code>/public/name/of/file.jpg</code></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Will reurn (<code>data</code>), where the file's contents and medadata will be included.  Likley a large payload.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".roomAdd"><span class="type-signature">(static) </span>roomAdd<span class="signature">(room, callback)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="client_actionheroClient.jsdoc.html">client/actionheroClient.jsdoc</a>, <a href="client_actionheroClient.jsdoc.html#line134">line 134</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="ActionHero.ActionHeroClient.html#.roomLeave">ActionHero.ActionHeroClient.roomLeave</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Join an existing chat room.  You may not be able to join this room (based on connection properties or other configuration on the server, so check for <code>data.error</code>).  Once in the room, you will recive all say messages from the room as events.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>room</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The room to join.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Will reurn (<code>data</code>), where data contains errors and success.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".roomLeave"><span class="type-signature">(static) </span>roomLeave<span class="signature">(room, callback)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="client_actionheroClient.jsdoc.html">client/actionheroClient.jsdoc</a>, <a href="client_actionheroClient.jsdoc.html#line143">line 143</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li>ActionHero.ActionHeroClient.roomAddd</li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>LEave a chat room you are already a member of.  You may not be able to leave this room (based on connection properties or other configuration on the server, so check for <code>data.error</code>)</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>room</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The room to leave.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Will reurn (<code>data</code>), where data contains errors and success.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".roomView"><span class="type-signature">(static) </span>roomView<span class="signature">(room, callback)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="client_actionheroClient.jsdoc.html">client/actionheroClient.jsdoc</a>, <a href="client_actionheroClient.jsdoc.html#line124">line 124</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="ActionHero.ActionHeroClient.html#.roomAdd">ActionHero.ActionHeroClient.roomAdd</a></li>
+        
+            <li><a href="ActionHero.ActionHeroClient.html#.roomLeave">ActionHero.ActionHeroClient.roomLeave</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>View the other members of a room.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>room</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The room to inspect.  Client must be a member of room already via <code>client.roomAdd()</code></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Will reurn (<code>data</code>), where data contains a list of other members in the room.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".say"><span class="type-signature">(static) </span>say<span class="signature">(room, message, callback)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="client_actionheroClient.jsdoc.html">client/actionheroClient.jsdoc</a>, <a href="client_actionheroClient.jsdoc.html#line73">line 73</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="ActionHero.ActionHeroClient.html#.roomAdd">ActionHero.ActionHeroClient.roomAdd</a></li>
+        </ul>
+    </dd>
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Say a message to a chatRoom the connection is a member of.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>room</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The room to chat in.  Client must be a member of room already via <code>client.roomAdd()</code></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>message</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The message to send.  Can be a string, Object, or Array.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Will reurn (<code>data</code>), where <code>data.OK</code> will exist.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
     
 </article>
 

@@ -4,6 +4,7 @@
       "index.js",
       "initializers",
       "classes",
+      "client/actionheroClient.jsdoc",
       "bin",
       "config"
     ],
