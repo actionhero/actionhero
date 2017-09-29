@@ -13,27 +13,34 @@ In general, `initialize()` methods should create prototypes and new objects, and
 ```js
 // initializers/stuffInit.js
 
-module.exports = {
-  loadPriority:  1000,
-  startPriority: 1000,
-  stopPriority:  1000,
-  initialize: function(api, next){
-    api.myObject = {};
+const {ActionHero, api} = require('actionhero')
 
-    next();
-  },
-  start: function(api, next){
-    // connect to server
-    next();
-  },
-  stop: function(api, next){
-    // disconnect from server
-    next();
+module.exports = class StuffInit extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'StuffInit'
+    this.loadPriority = 1000
+    this.startPriority = 1000
+    this.stopPriority = 1000
+  }
+
+  async initialize () {
+    api.StuffInit = {}
+    api.StuffInit.startStuff = async () => {}
+    api.StuffInit.stopStuff = async () => {}
+  }
+
+  async start () {
+    await api.StuffInit.startStuff()
+  }
+
+  async stop () {
+    await api.StuffInit.stopStuff()
   }
 }
 ```
 
-To use a custom initializer, create a `initializers` directory in your project. Export an object with at least one of `start`, `stop` or `initialize` and specify your priorities.
+To use a custom initializer, create a `initializers` directory in your project. Export a class that extends `ActionHero.Initializer` and implements at least one of `start`, `stop` or `initialize` and specify your priorities.
 
 You can generate a file of this type with `actionhero generate initializer --name=stuffInit`
 

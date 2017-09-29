@@ -15,18 +15,16 @@ Keep in mind that many clients/server can access a cached value simultaneously, 
 
 ## RPC
 
-```js
-// This will ask all nodes connected to the cluster if they have connection #\`abc123\` and if they do, run \`connection.set('auth', true)\` on it
-api.connections.apply('abc123', 'set', ['auth', true], function(error){
-  // do stuff
-});
-```
-
-In version 9.0.0, ActionHero introduced Remote Procedure Calls, or RPC for short. You can call an RPC method to be executed on all nodes in your cluster or just a node which holds a specific connection. You can call RPC methods with the `api.redis.doCluster` method. If you provide the optional callback, you will get the first response back (or a timeout error). RPC calls are invoked with `api.redis.doCluster(method, args, connectionId, callback)`.
+In version 9.0.0, ActionHero introduced Remote Procedure Calls, or RPC for short. You can call an RPC method to be executed on all nodes in your cluster or just a node which holds a specific connection. You can call RPC methods with the `api.redis.doCluster` method. If you provide the optional callback, you will get the first response back (or a timeout error). RPC calls are invoked with `api.redis.doCluster(method, args, connectionId, waitForResponse)`.
 
 For example, if you wanted all nodes to log a message, you would do: `api.redis.doCluster('api.log', ["hello from " + api.id]);`
 
 If you wanted the node which holds connection `abc123` to change their `authorized` status (perhaps because your room authentication relies on this), you would do:
+
+```js
+// This will ask all nodes connected to the cluster if they have connection #\`abc123\` and if they do, run \`connection.set('auth', true)\` on it
+await api.connections.apply('abc123', 'set', ['auth', true]);
+```
 
 The RPC system is used heavily by Chat.
 
@@ -42,11 +40,10 @@ Some special RPC tools have been added so that you can interact with connections
 
 ActionHero has exposed `api.connections.apply` which can be used to retrieve data about and modify a connection on any node.
 
-### `api.connections.apply(connectionId, method, args, callback)`
+### `api.connections.apply(connectionId, method, args)`
 
 *   connectionId is required
-*   if `method` and `args` can be ignored if you just want to retrieve information about a connection, IE: `api.connections.apply(connectionId, callback)`
-*   `callback` is of the form `{'function(error, connectionDetails)'}`
+*   Both `method` and `args` can be ignored if you just want to retrieve information about a connection, IE: `const connectionDetails = await api.connections.apply(connectionId)`
 
 ## PubSub
 
