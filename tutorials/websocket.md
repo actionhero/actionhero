@@ -1,6 +1,6 @@
 ## Overview
 
-ActionHero uses [Primus](https://github.com/primus/primus) for web sockets. The Primus project allows you to choose from many websocket backends, including `ws`, `engine.io`, `socket.io`, and more. Within ActionHero, web sockets are bound to the web server (either http or https).
+ActionHero uses [Primus](https://github.com/primus/primus) for web socket connections. The Primus project allows you to choose from many websocket backends, including `ws`, `engine.io`, `socket.io`, and more. Within ActionHero, web sockets are bound to the web server (either http or https).
 
 ActionHero will generate the client-side javascript needed for you (based on the actionheroClient library, primus, and the underlying ws transport). This file is regenerated each time you boot the application.
 
@@ -56,111 +56,7 @@ If you want to communicate with a websocket client outside of an action, you can
 
 ## Client Methods
 
-Methods which an ActionHero Client instance provider are:
-
-### `client.connect(callback)`
-
-*   `callback` will contain (error, details)
-*   details here is the same as the `detailsView` method
-
-### `client.action(action, params, callback)`
-
-*   `action` is a string, like "login"
-*   `params` is an object
-*   `callback` will be passed `response` (and you can inspect `response.error`)
-
-### `client.say(room, message, callback)`
-
-*   `message` is a string
-*   may contain an `error`
-*   note that you have to first join a room with `roomAdd` to chat within it of recieve events
-
-### `client.detailsView(callback)`
-
-*   `callback` will be passed `error`, `response`
-*   the first response from detailsView will also always be saved to `client.details` for later inspection
-*   may contain an `error`
-
-### `client.roomView(room, callback)`
-
-*   will return metadata about the room
-*   may contain an `error`
-
-### `client.roomAdd(room, callback)`
-
-*   `room` is a string
-*   may contain an `error`
-
-### `client.roomLeave(room, callback)`
-
-*   `room` is a string
-*   may contain an `error`
-
-### `client.file(callback)`
-
-*   see below for details
-
-### `client.disconnect()`
-
-*   instantly sever the connection to the server
-
-The contents of the `file` callback look like:
-
-```js
-{
-  content: "<h1>ActionHero</h1>\nI am a flat file being served to you via the API from ./public/simple.html<br />",
-  context: "response",
-  error: null,
-  length: 101,
-  messageCount: 3,
-  mime: "text/html"
-}
-```
-
-## Client Events
-
-### `{`client.on(‘connected', callback)`}`
-
-*   no event data
-
-### `{`client.on(‘disconnected', callback)`}`
-
-*   no event data
-
-### `{`client.on(‘error', (error) => { console.log(‘error', error.stack) })`}`
-
-*   this is fired when a general error is encountered (outside of an action or verb)
-*   this may fire when a general server error occurs
-
-### `{`client.on(‘reconnect', () => { console.log(‘reconnect') })`}`
-
-*   fired when client has reconnected
-*   this will indicate that details, connection.id and other server-generated settings may have changed
-
-### `{`client.on(‘reconnecting', callback })`}`
-
-*   client is attempting to reconnect to server
-
-### `{`client.on(‘message', (message) => { console.log(message) })`}`
-
-*   this is VERY noisy, and is fired on all messages from the server, regardless of context or callback
-
-### `{`client.on(‘alert', (message) => { alert(message) })`}`
-
-*   fired when message recieved from the server's context is specifically `alert`
-
-### `{`client.on(‘api', (message) => { alert(message) })`}`
-
-*   fired when message recieved from the server's context is unknown or from the server
-
-### `{`client.on(‘welcome', (message) => { console.log(message); })`}`
-
-*   server's welcome message
-
-### `{`client.on(‘say', (message) => { console.log(message); })`}`
-
-*   fired on all say messages from other clients in all rooms
-*   message.room can be inspected
+The clent API can be viewed here: [WebSocket Client API](https://docs.actionherojs.com/ActionHero.ActionHeroClient.html)
 
 ## Linking WebSockets to Web Clients
 

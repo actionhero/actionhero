@@ -19,8 +19,9 @@ client.on('error',        function(error){ console.log('error', error.stack) })
 client.on('reconnect',    function(){ console.log('reconnect') })
 client.on('reconnecting', function(){ console.log('reconnecting') })
 
-client.on('welcome',      function(message){ alert(message); })
-client.on('say',          function(message){ alert(message); })
+client.on('welcome',      function(message){ alert(message); }) // server welcome message
+client.on('say',          function(message){ alert(message); }) // say messages from rooms client is in
+client.on('message',      function(message){ alert(message); }) // all messages (noisy)
 
 client.connect(function(error, details){
   if(error){ return console.warn(error) }
