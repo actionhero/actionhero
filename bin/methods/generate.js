@@ -41,8 +41,14 @@ module.exports = class ActionsList extends ActionHero.CLI {
     }
 
     for (let name in oldFileMap) {
-      documents[name] = fs.readFileSync(path.join(__dirname, '/../../', oldFileMap[name])).toString()
-      documents[name] = documents[name].replace('require(\'./../index.js\')', 'require(\'actionhero\')')
+      let localPath = oldFileMap[name]
+      let source = path.join(__dirname, '/../../', localPath)
+      let extension = (localPath.split('.'))[1]
+      documents[name] = fs.readFileSync(source)
+      if (extension === 'js' || extension === 'json') {
+        documents[name] = documents[name].toString()
+        documents[name] = documents[name].replace('require(\'./../index.js\')', 'require(\'actionhero\')')
+      }
     }
 
     const AHversionNumber = JSON.parse(documents.packageJson).version
