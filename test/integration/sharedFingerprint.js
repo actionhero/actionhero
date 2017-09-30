@@ -16,13 +16,13 @@ let fingerprint
 let url
 
 let connectClient = async (transportOptions) => {
-  // get actionheroClient in scope
-  const ActionheroClient = eval(api.servers.servers.websocket.compileActionheroClientJS()) // eslint-disable-line
+  // get ActionheroWebsocketClient in scope
+  const ActionheroWebsocketClient = eval(api.servers.servers.websocket.compileActionheroWebsocketClientJS()) // eslint-disable-line
 
   let S = _Primus.createSocket()
   let clientSocket = new S('http://localhost:' + api.config.servers.web.port, {transport: transportOptions})
 
-  let client = new ActionheroClient({}, clientSocket) // eslint-disable-line
+  let client = new ActionheroWebsocketClient({}, clientSocket) // eslint-disable-line
   let connectResponse = await new Promise((resolve, reject) => {
     client.connect((error, connectResponse) => {
       if (error) { return reject(error) }

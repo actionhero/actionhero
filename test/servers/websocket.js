@@ -20,8 +20,8 @@ let clientC
 let url
 
 const connectClients = async () => {
-  // get actionheroClient in scope
-  const ActionheroClient = eval(api.servers.servers.websocket.compileActionheroClientJS()) // eslint-disable-line
+  // get ActionheroWebsocketClient in scope
+  const ActionheroWebsocketClient = eval(api.servers.servers.websocket.compileActionheroWebsocketClientJS()) // eslint-disable-line
 
   let S = api.servers.servers.websocket.server.Socket
   url = 'http://localhost:' + api.config.servers.web.port
@@ -29,9 +29,9 @@ const connectClients = async () => {
   let clientBsocket = new S(url)
   let clientCsocket = new S(url)
 
-  clientA = new ActionheroClient({}, clientAsocket) // eslint-disable-line
-  clientB = new ActionheroClient({}, clientBsocket) // eslint-disable-line
-  clientC = new ActionheroClient({}, clientCsocket) // eslint-disable-line
+  clientA = new ActionheroWebsocketClient({}, clientAsocket) // eslint-disable-line
+  clientB = new ActionheroWebsocketClient({}, clientBsocket) // eslint-disable-line
+  clientC = new ActionheroWebsocketClient({}, clientCsocket) // eslint-disable-line
 
   await sleep(100)
 }

@@ -548,13 +548,13 @@ exports.action = {
 
  ## Client Library
 
- Although the `actionheroClient` client-side library is mostly for websockets, it can now be used to make http actions when not connected (and websocket clients will fall back to http actions when disconnected)
+ Although the `ActionheroWebsocketClient` client-side library is mostly for websockets, it can now be used to make http actions when not connected (and websocket clients will fall back to http actions when disconnected)
 
 ```html
-<script src="/public/javascript/actionheroClient.js"></script>
+<script src="/public/javascript/ActionheroWebsocketClient.js"></script>
 
 <script>
-  var client = new ActionheroClient();
+  var client = new ActionheroWebsocketClient();
   client.action('cacheTest', {key: 'k', value: 'v'}, function(error, data){
      // do stuff
   });

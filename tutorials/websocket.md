@@ -2,17 +2,17 @@
 
 ActionHero uses [Primus](https://github.com/primus/primus) for web socket connections. The Primus project allows you to choose from many websocket backends, including `ws`, `engine.io`, `socket.io`, and more. Within ActionHero, web sockets are bound to the web server (either http or https).
 
-ActionHero will generate the client-side javascript needed for you (based on the actionheroClient library, primus, and the underlying ws transport). This file is regenerated each time you boot the application.
+ActionHero will generate the client-side javascript needed for you (based on the ActionheroWebsocketClient library, primus, and the underlying ws transport). This file is regenerated each time you boot the application.
 
 ## Connection Details
 
 ```html
 // In the Browser...
-<script src="/public/javascript/actionheroClient.js"></script>
+<script src="/public/javascript/ActionheroWebsocketClient.js"></script>
 
 <script>
 
-  client = new ActionheroClient;
+  client = new ActionheroWebsocketClient;
 
   client.on('connected',    function(){ console.log('connected!') })
   client.on('disconnected', function(){ console.log('disconnected :(') })
@@ -56,7 +56,7 @@ If you want to communicate with a websocket client outside of an action, you can
 
 ## Client Methods
 
-The clent API can be viewed here: [WebSocket Client API](https://docs.actionherojs.com/ActionHero.ActionHeroClient.html)
+The clent API can be viewed here: [WebSocket Client API](https://docs.actionherojs.com/ActionHero.ActionheroWebsocketClient.html)
 
 ## Linking WebSockets to Web Clients
 
@@ -80,7 +80,7 @@ exports['default'] = {
         // the name of the client-side JS file to render.  Both \`.js\` and \`.min.js\` versions will be created
         // do not include the file exension
         // set to \`undefined\` to not render the client-side JS on boot
-        clientJsName: 'actionheroClient',
+        clientJsName: 'ActionheroWebsocketClient',
         // should the server signal clients to not reconnect when the server is shutdown/reboot
         destroyClientsOnShutdown: false,
 
