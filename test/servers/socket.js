@@ -282,6 +282,11 @@ describe('Server: Socket', () => {
       expect(response.data.membersCount).to.equal(3)
     })
 
+    it('clients see an appropriate error when viewing rooms they are not in', async () => {
+      let response = await makeSocketRequest(client, 'roomView notARoom')
+      expect(response.status).to.match(/connection not in this room/)
+    })
+
     it('rooms can be changed', async () => {
       await makeSocketRequest(client, 'roomAdd otherRoom')
       let response = await makeSocketRequest(client, 'roomLeave defaultRoom')

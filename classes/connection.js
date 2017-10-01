@@ -238,7 +238,6 @@ module.exports = class Connection {
         }
 
         let error = new Error(await api.config.errors.connectionNotInRoom(this, room))
-        error.verb = verb
         throw error
       }
 
@@ -267,11 +266,11 @@ module.exports = class Connection {
       }
 
       let error = new Error(await api.config.errors.verbNotFound(this, verb))
-      error.verb = verb
+      error.verbNotFound = true
       throw error
     } else {
       let error = new Error(await api.config.errors.verbNotAllowed(this, verb))
-      error.verb = verb
+      error.verbNotFound = true
       throw error
     }
   }

@@ -186,7 +186,7 @@ module.exports = class SocketServer extends ActionHero.Server {
       let data = await connection.verbs(verb, words)
       this.sendMessage(connection, {status: 'OK', context: 'response', data: data})
     } catch (error) {
-      if (error.verb) {
+      if (error.verbNotFound) {
         // check for and attempt to check single-use params
         try {
           let requestHash = JSON.parse(line)
