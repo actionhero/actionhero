@@ -236,6 +236,7 @@ Support fakeredis is dropped.  In fact, the maintainer has stoped supporting it.
 * All dependent packages have been updated to their latest versions.
 * A related change to Node Resque https://github.com/taskrabbit/node-resque/pull/212 is part of this update.
 A related change to Browser Fingerprint https://github.com/actionhero/browser_fingerprint/releases/tag/v1.0.1 is part of this update.
+* `ActionheroClient` (the included client library for browser websocket clients) as been named a more clear `ActionheroWebsocketClient` to avoid ambiguity.  The node sever-sever package has been renamed `actionhero-node-client` to help clear up any confusion.
 
 ## Thank you.
 
