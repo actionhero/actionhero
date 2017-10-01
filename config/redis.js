@@ -18,7 +18,8 @@ exports['default'] = {
 
     function retryStrategy (times) {
       if (times === 1) {
-        api.log('Unable to connect to Redis - please check your Redis config!', 'error')
+        const error = 'Unable to connect to Redis - please check your Redis config!'
+        if (process.env.NODE_ENV === 'test') { console.error(error) } else { api.log(error, 'error') }
         return 5000
       }
       return Math.min(times * 50, maxBackoff)
