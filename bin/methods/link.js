@@ -49,8 +49,17 @@ module.exports = class ActionsList extends ActionHero.CLI {
       let pluginSubSection = path.normalize(pluginRootRelative + path.sep + c[1])
 
       if (api.utils.dirExists(pluginSubSection)) {
-        console.log(api.utils.createDirSafely(localLinkDirectory))
-        console.log(api.utils.createLinkfileSafely(localLinkLocation, c[1], pluginSubSection))
+        try {
+          console.log(api.utils.createDirSafely(localLinkDirectory))
+        } catch (error) {
+          // fine..
+        }
+
+        try {
+          console.log(api.utils.createLinkfileSafely(localLinkLocation, c[1], pluginSubSection))
+        } catch (error) {
+          console.log(`skipping ${localLinkLocation}`)
+        }
       }
     })
 
@@ -69,7 +78,10 @@ module.exports = class ActionsList extends ActionHero.CLI {
             if (process.env.ACTIONHERO_CONFIG) {
               localConfigFile = process.env.ACTIONHERO_CONFIG + path.sep + prepend + fileParts[(fileParts.length - 1)]
             }
-            console.log(api.utils.createFileSafely(path.normalize(localConfigFile), content, overwriteConfig))
+
+            try {
+              console.log(api.utils.createFileSafely(path.normalize(localConfigFile), content, overwriteConfig))
+            } catch (error) { console.log(`skipping plugin config file ${path.normalize(localConfigFile)}`) }
           }
         })
       }
