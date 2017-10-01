@@ -27,7 +27,7 @@
   },
   "standard": {
     "ignore": [
-      "public/javascript/actionheroClient.*"
+      "public/javascript/ActionheroWebsocketClient.*"
     ],
     "globals": [
       "describe",

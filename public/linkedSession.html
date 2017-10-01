@@ -1,6 +1,6 @@
 <html>
   <head>
-    <script src="/public/javascript/actionheroClient.min.js"></script>
+    <script src="/public/javascript/ActionheroWebsocketClient.min.js"></script>
     <script type="text/javascript">
 
       //////////
@@ -17,7 +17,7 @@
           console.log("Web sessionId: "    + data.requesterInformation.id);
           console.log("Web fingerprint: "  + data.requesterInformation.fingerprint);
           // start the websocket client
-          client = new ActionheroClient;
+          client = new ActionheroWebsocketClient;
           client.connect(function(error, details){
             console.log("WebSocket cleintId: " + client.id);
             console.log("WebSocket fingerprint: " + client.fingerprint);
@@ -45,7 +45,7 @@
       }
 
       var actionWeb = function(params, callback){
-        // dupliace of actionheroClient.actionWeb, but listed here for simplicity
+        // dupliace of ActionheroWebsocketClient.actionWeb, but listed here for simplicity
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function(){
           if(xmlhttp.readyState == 4){

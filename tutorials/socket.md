@@ -136,8 +136,8 @@ The default method of using actions for TCP clients is to use the methods above 
 ## Client Suggestions
 
 ```js
-var actionheroClient = require("actionhero-client");
-var client = new actionheroClient();
+var ActionheroWebsocketClient = require("actionhero-client");
+var client = new ActionheroWebsocketClient();
 
 client.on("say", function(msgBlock){
   console.log(" > SAY: " + msgBlock.message + " | from: " + msgBlock.from);
@@ -176,7 +176,7 @@ client.connect({
 
   // join a chat room and talk
   client.roomAdd("defaultRoom", function(error){
-    client.say("defaultRoom", "Hello from the actionheroClient");
+    client.say("defaultRoom", "Hello from the ActionheroWebsocketClient");
     client.roomLeave("defaultRoom");
   });
 
