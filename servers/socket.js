@@ -182,33 +182,32 @@ module.exports = class SocketServer extends ActionHero.Server {
       return this.processFile(connection)
     }
 
-    try {
-      let data = await connection.verbs(verb, words)
-      this.sendMessage(connection, {status: 'OK', context: 'response', data: data})
-    } catch (error) {
-      if (error.verbNotFound) {
-        // check for and attempt to check single-use params
-        try {
-          let requestHash = JSON.parse(line)
-          if (requestHash.params !== undefined) {
-            connection.params = {}
-            for (let v in requestHash.params) {
-              connection.params[v] = requestHash.params[v]
-            }
-          }
-          if (requestHash.action) {
-            connection.params.action = requestHash.action
-          }
-        } catch (e) {
-          connection.params.action = verb
-        }
-        connection.error = null
-        connection.response = {}
-        return this.processAction(connection)
-      } else {
-        return this.sendMessage(connection, {status: error.toString().replace(/^Error:\s/, ''), context: 'response'})
+    if (this.attributes.verbs.indexOf(verb) >= 0) {
+      try {
+        let data = await connection.verbs(verb, words)
+        return this.sendMessage(connection, {status: 'OK', context: 'response', data: data})
+      } catch (error) {
+        return this.sendMessage(connection, {error: error, context: 'response'})
       }
     }
+
+    try {
+      let requestHash = JSON.parse(line)
+      if (requestHash.params !== undefined) {
+        connection.params = {}
+        for (let v in requestHash.params) {
+          connection.params[v] = requestHash.params[v]
+        }
+      }
+      if (requestHash.action) {
+        connection.params.action = requestHash.action
+      }
+    } catch (e) {
+      connection.params.action = verb
+    }
+    connection.error = null
+    connection.response = {}
+    return this.processAction(connection)
   }
 
   checkBreakChars (chunk) {

@@ -284,7 +284,7 @@ describe('Server: Socket', () => {
 
     it('clients see an appropriate error when viewing rooms they are not in', async () => {
       let response = await makeSocketRequest(client, 'roomView notARoom')
-      expect(response.status).to.match(/connection not in this room/)
+      expect(response.error).to.match(/connection not in this room/)
     })
 
     it('rooms can be changed', async () => {
