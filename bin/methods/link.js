@@ -5,7 +5,7 @@ const fs = require('fs')
 const ActionHero = require('./../../index.js')
 const api = ActionHero.api
 
-module.exports = class ActionsList extends ActionHero.CLI {
+module.exports = class Link extends ActionHero.CLI {
   constructor () {
     super()
     this.name = 'link'

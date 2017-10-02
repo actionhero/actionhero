@@ -3,7 +3,7 @@
 const ActionHero = require('./../../index.js')
 const api = ActionHero.api
 
-module.exports = class ActionsList extends ActionHero.CLI {
+module.exports = class Help extends ActionHero.CLI {
   constructor () {
     super()
     this.name = 'help'
@@ -30,9 +30,7 @@ module.exports = class ActionsList extends ActionHero.CLI {
           if (methods[req.name]) { throw new Error(`${req.name} is already defined`) }
           methods[req.name] = req
         }
-      } catch (e) {
-        //
-      }
+      } catch (e) { }
     })
 
     let methodNames = Object.keys(methods).sort()

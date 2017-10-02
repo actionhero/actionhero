@@ -1,6 +1,9 @@
 ## Overview
 
-As of ActionHero version `v8.0.0`, you can create and include plugins for you ActionHero project. Plugins are collections of `tasks`, `actions`, `servers`, and `initializers` that are collected as a module. You can install plugins via NPM or keep them in a local path.
+You can create and include plugins for you ActionHero project. Plugins are collections of `tasks`, `actions`, `servers`, and `initializers` that are collected as a module. You can install plugins via NPM or keep them in a local path.  This enables a few features:
+
+* Sharing and re-using common code
+* Composing your application via namespaced plugins
 
 Plugins are loaded after all local ActionHero project files, but initializers follow the same priority scheme as all other initializers.
 
@@ -18,7 +21,7 @@ Plugins are loaded after all local ActionHero project files, but initializers fo
 | - package.json
 ```
 
-To create a plugin, create a project with the following structure:
+To create a plugin, create a project with the above structure via `actionhero generate plugin`.  Note that `actionhero` should be a `peerDependnacy` within your plugin. 
 
 This structure will allow elements to be loaded into ActionHero (we search `/actions` for actions, `/tasks` for tasks, etc)
 
