@@ -7,7 +7,7 @@
     <link rel="icon" href="/public/favicon.ico">
     <title>ActionHero.js</title>
 
-    <script src="/public/javascript/actionheroClient.min.js"></script>
+    <script src="/public/javascript/ActionheroWebsocketClient.min.js"></script>
   </head>
 
   <body>
@@ -111,7 +111,7 @@
         }
       }
 
-      var client = new ActionheroClient();
+      var client = new ActionheroWebsocketClient();
       client.action('showDocumentation', function(data){
         if(data.error){ window.alert(data.error); }
         populateDocumentation(data)

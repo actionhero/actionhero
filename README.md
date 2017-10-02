@@ -36,6 +36,16 @@
 
 ***
 
+## ActionHero v18
+
+ActionHero v18 is the `async/await` Node.js framework you have been waiting for!
+
+ActionHero version 18 (master branch) is currently in BETA!  You can use it today by `npm install actionhero@next`.  We are still working on the docs and updating the examples, but please help us by testing it out!  
+
+Release notes: https://github.com/actionhero/actionhero/releases/tag/18.0.0-beta.1
+
+---
+
 ## Who is the ActionHero?
 ActionHero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs for HTTP, WebSockets, and more.  Clients connected to an actionhero server can [**consume the api**](https://docs.actionherojs.com/tutorial-actions.html), [**consume static content**](https://docs.actionherojs.com/tutorial-file_server.html), and [**communicate with each other**](https://docs.actionherojs.com/tutorial-chat.html).  ActionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.  ActionHero provides a simple Async/Await API for managing every type of connection and background task.
 
@@ -61,23 +71,50 @@ Or deploy a free API server now:
 
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/actionhero/actionhero)
 
-## Want more?
+## Learn More
 
-- [Getting Started](https://www.actionherojs.com/get-started)
-- [Read the documentation](http://docs.actionherojs.com/)
+- [Getting Started @ www.actionherojs.com](https://www.actionherojs.com/get-started)
+  - ActionHero's marketing site can be found @ [https://github.com/actionhero/www.actionherojs.com/](https://github.com/actionhero/www.actionherojs.com/).  If you want to contribute to this site, visit the [related project](https://github.com/actionhero/www.actionherojs.com)
+- [Read the documentation @ docs.actionherojs.com](http://docs.actionherojs.com/)
+  - Starting with ActionHero version 18, the documentation for each version is included in this repository (and the NPM package) in the `/docs` folder.  The current version of this documentation is also automatically deployed to https://docs.actionherojs.com.
 - [Find community-based resources](https://github.com/l0oky/awesome-actionhero)
 - [Interact with the Community & View the Release History](https://www.actionherojs.com/community)
 - [Server Client](https://github.com/actionhero/actionhero-client)
+
+## In-depth Tutorials
+
+### Core Components
+- [Actions](https://docs.actionherojs.com/tutorial-actions.html)
+- [Tasks](https://docs.actionherojs.com/tutorial-tasks.html)
+- [Middleware](https://docs.actionherojs.com/tutorial-middleware.html)
+- [Initializers](https://docs.actionherojs.com/tutorial-initializers.html)
+- [CLI Commands](https://docs.actionherojs.com/tutorial-cli.html)
+- [Configuration](https://docs.actionherojs.com/tutorial-config.html)
+- [ActionHero Cluster](https://docs.actionherojs.com/tutorial-actionhero-cluster.html)
+- [Chat & Realtime Communication](https://docs.actionherojs.com/tutorial-chat.html)
+- [File Server](https://docs.actionherojs.com/tutorial-file-server.html)
+- [Logging](https://docs.actionherojs.com/tutorial-logging.html)
+- [Plugins](https://docs.actionherojs.com/tutorial-plugins.html)
+- [Servers](https://docs.actionherojs.com/tutorial-servers.html)
+- [Localization & Translation](https://docs.actionherojs.com/tutorial-localization.html)
+
+### Server Types
+- [Web Server & Routes](https://docs.actionherojs.com/tutorial-web.html)
+- [Socket Server](https://docs.actionherojs.com/tutorial-socket.html)
+- [WebSocket Server](https://docs.actionherojs.com/tutorial-websocket.html)
+
+### Testing, Deployment, and Operations
+- [Running ActionHero](https://docs.actionherojs.com/tutorial-running-actionhero.html)
+- [Development Mode & REPL](https://docs.actionherojs.com/tutorial-development-mode.html)
+- [Testing & SpecHelper](https://docs.actionherojs.com/tutorial-testing.html)
+- [Production Notes](https://docs.actionherojs.com/tutorial-production-notes.html)
+- [Upgrade Path](https://docs.actionherojs.com/tutorial-upgrade-path.html)
 
 ## Sample Projects
 - [Simple](https://github.com/actionhero/actionhero-tutorial)
 - [Elaborate (Angular, Sequelize)](https://github.com/actionhero/actionhero-angular-bootstrap-cors-csrf)
 - [Client Use: React](https://github.com/actionhero/actionhero-react-next-chat)
 - [Client Use: React Native](https://github.com/actionhero/actionhero-react-native)
-
-## Documentation
-- Starting with ActionHero version 18, the documentation for each version is included in this repository (and the NPM package) in the `/docs` folder.  The current version of this documenation is also automatically deployed to https://docs.actionherojs.com.
-- ActionHero's marketing site can be found @ [https://github.com/actionhero/www.actionherojs.com/](https://github.com/actionhero/www.actionherojs.com/).  If you want to contribute to this site, visit the [related project](https://github.com/actionhero/www.actionherojs.com)
 
 ## Who?
 

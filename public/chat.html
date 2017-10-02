@@ -7,13 +7,13 @@
     <link rel="icon" href="/public/favicon.ico">
     <title>actionhero.js</title>
 
-    <script type="text/javascript" src="/public/javascript/actionheroClient.min.js"></script>
+    <script type="text/javascript" src="/public/javascript/ActionheroWebsocketClient.min.js"></script>
 
     <script type="text/javascript">
 
     var client;
     var boot = function(){
-      client = new ActionheroClient;
+      client = new ActionheroWebsocketClient;
 
       client.on('connected',    function(){ console.log('connected!') })
       client.on('disconnected', function(){ console.log('disconnected :(') })

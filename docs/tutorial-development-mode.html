@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Tutorial: development-mode - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <div id="nav-logo-container">
+        <a href="index.html">
+            <img id="nav-logo" src="https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png" />
+        </a>
+    </div>
+    <h3>Classes</h3><ul><li><a href="ActionHero.html">ActionHero</a></li><li><a href="ActionHero.Action.html">Action</a></li><li><a href="ActionHero.ActionheroWebsocketClient.html">ActionheroWebsocketClient</a></li><li><a href="ActionHero.CLI.html">CLI</a></li><li><a href="ActionHero.Connection.html">Connection</a></li><li><a href="ActionHero.Initializer.html">Initializer</a></li><li><a href="ActionHero.Server.html">Server</a></li><li><a href="ActionHero.Task.html">Task</a></li><li><a href="api.specHelper.Connection.html">Connection</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="api.actions.html">actions</a></li><li><a href="api.cache.html">cache</a></li><li><a href="api.chatRoom.html">chatRoom</a></li><li><a href="api.config.html">config</a></li><li><a href="api.connections.html">connections</a></li><li><a href="api.documentation.html">documentation</a></li><li><a href="api.exceptions.html">exceptions</a></li><li><a href="api.i18n.html">i18n</a></li><li><a href="api.id.html">id</a></li><li><a href="api.params.html">params</a></li><li><a href="api.pids.html">pids</a></li><li><a href="api.redis.html">redis</a></li><li><a href="api.resque.html">resque</a></li><li><a href="api.routes.html">routes</a></li><li><a href="api.servers.html">servers</a></li><li><a href="api.specHelper.html">specHelper</a></li><li><a href="api.staticFile.html">staticFile</a></li><li><a href="api.tasks.html">tasks</a></li><li><a href="api.utils.html">utils</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-actionhero-cluster.html">actionhero-cluster</a></li><li><a href="tutorial-actions.html">actions</a></li><li><a href="tutorial-chat.html">chat</a></li><li><a href="tutorial-cli.html">cli</a></li><li><a href="tutorial-config.html">config</a></li><li><a href="tutorial-development-mode.html">development-mode</a></li><li><a href="tutorial-file-server.html">file-server</a></li><li><a href="tutorial-initializers.html">initializers</a></li><li><a href="tutorial-localization.html">localization</a></li><li><a href="tutorial-logging.html">logging</a></li><li><a href="tutorial-middleware.html">middleware</a></li><li><a href="tutorial-plugins.html">plugins</a></li><li><a href="tutorial-production-notes.html">production-notes</a></li><li><a href="tutorial-running-actionhero.html">running-actionhero</a></li><li><a href="tutorial-servers.html">servers</a></li><li><a href="tutorial-socket.html">socket</a></li><li><a href="tutorial-tasks.html">tasks</a></li><li><a href="tutorial-testing.html">testing</a></li><li><a href="tutorial-upgrade-path.html">upgrade-path</a></li><li><a href="tutorial-web.html">web</a></li><li><a href="tutorial-websocket.html">websocket</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Tutorial: development-mode</h1>
+    
+
+    <section>
+
+<header>
+    
+</header>
+
+<article>
+    <h2>Overview</h2><p><strong>Warning: Don't use this in production!</strong></p>
+<p>To enable development mode simply set <code>developmentMode: true</code> in your <code>config/api.js</code>.</p>
+<p>ActionHero's development mode is a little different than tools like <a href="https://github.com/remy/nodemon">nodemon</a> in that it tries hard not to restart the server process. Changes to routes, tasks, and actions can simply replace those in memory when they are updated on disk. Other changes, like changes to <code>api.config</code> or initializers are more severe, and will restart the whole application (much like nodemon).</p>
+<p>Note that <code>api.config.general.developmentMode</code> is different from <code>NODE_ENV</code>, which by default is &quot;development&quot; (and is logged out when ActionHero boots). <code>NODE_ENV</code> is used to determine which config settings to use, and has no effect on developmentMode.</p>
+<h2>Effects of Development Mode</h2><p>Development mode, when enabled, will poll for changes in your actions, tasks and initializers, and reload them on the fly.</p>
+<p>Changes to Actions and Tasks will override the existing version in memory. Changes to an initializer or config will reboot your server automatically.</p>
+<ul>
+<li>Development Mode uses <code>fs.watchFile()</code> and may not work on all OSs / file systems.</li>
+<li>New files won't be loaded in, only existing files when the app was booted will be monitored</li>
+<li>As deleting a file might crash your application, we will not attempt to re-load deleted files</li>
+<li>If you have changed the <code>task.frequency</code> of a periodic task, you will continue to use the old value until the task fires at least once after the change</li>
+<li>Changing <code>api.config</code>, initializers, or servers, will attempt to do a &quot;full&quot; reboot the server rather than just reload that component.</li>
+</ul>
+<h2>Watching Custom Files</h2><pre class="prettyprint source lang-js"><code>api.watchFileAndAct(path_to_file, function(){
+  api.log('rebooting due to config change: ' + path_to_file, 'info');
+  api.commands.restart();
+});</code></pre><p>You can use ActionHero's <code>api.watchFileAndAct()</code> method to watch additional files your application may have:</p>
+<h2>Debugging</h2><h3>Old debugger</h3><p>You can use the awesome <a href="https://github.com/dannycoates/node-inspector">node-inspector</a> project to help you debug your ActionHero application within the familiar Chrome Browser's developer tools.</p>
+<p>Be sure to run ActionHero with node's <code>--debug</code> flag, ie: <code>node ./node_modules/.bin/actionhero --debug start</code></p>
+<pre class="prettyprint source lang-js"><code>// in package.json
+&quot;dependencies&quot;: {
+  &quot;actionhero&quot;: &quot;x&quot;,
+  &quot;node-inspector&quot;: &quot;x&quot;
+},</code></pre><p>Start up node-inspector (both node-inspector and ActionHero have the same default port, so you will need to change one of them) <code>./node_modules/.bin/node-inspector --web-port=1234</code></p>
+<p>That's it! Now you can visit <code>{</code>http://0.0.0.0:1234/debug?port=5858<code>}</code> and start debugging. Remember that the way node-debugger works has you first set a breakpoint in the file view, and then you can use the console to inspect various objects. IE: I put a breakpoint in the default <code>status</code> action in the <code>run</code> method:</p>
+<h3>New debugger</h3><p>New versions of node.js have built-in inspector capabilities.</p>
+<p>Run ActionHero with node's <code>--inspect</code> flag, ie: <code>node ./node_modules/.bin/actionhero --inspect start</code></p>
+<p>More info about new <a href="https://nodejs.org/en/docs/inspector">node inspector</a></p>
+<h2>REPL</h2><pre class="prettyprint source lang-bash"><code>actionhero console
+
+Running &quot;console&quot; task
+2015-11-14 17:48:01 - notice: *** starting actionhero ***
+2015-11-14 17:48:01 - warning: running with fakeredis
+2015-11-14 17:48:01 - info: actionhero member 10.0.1.15 has joined the cluster
+2015-11-14 17:48:01 - notice: pid: 38464
+2015-11-14 17:48:01 - notice: server ID: 10.0.1.15
+2015-11-14 17:48:01 - info: ensuring the existence of the chatRoom: defaultRoom
+2015-11-14 17:48:01 - info: ensuring the existence of the chatRoom: anotherRoom
+2015-11-14 17:48:01 - notice: environment: development
+2015-11-14 17:48:01 - notice: *** Server Started @ 2015-11-14 17:48:01 ***
+[ AH::development ] > api.id
+‘10.0.1.15'
+
+[ AH::development ] > Object.keys(api.actions.actions)
+[ ‘cacheTest',
+‘randomNumber',
+‘showDocumentation',
+‘sleepTest',
+‘status' ]</code></pre><p>ActionHero now has a REPL (<code>v9.0.0+</code>)! This means you can spin up a new instance of ActionHero and manually call all the methods on the <code>api</code> namespace. This combined with the new RPC tools make this a powerful debugging and development tool. Running <code>ActionHero console</code> will load up a version of action hero in your terminal where you have access to the <code>api</code> object. This version of the server will <code>boot</code>, <code>initialize</code>, and <code>start</code>, but will skip booting any <code>servers</code>.</p>
+<p>The REPL will:</p>
+<ul>
+<li>source <code>NODE_ENV</code> properly to load the config</li>
+<li>will connect to redis and load any user-defined initializers</li>
+<li>will load any plugins</li>
+<li>will <strong>not</strong> boot any servers</li>
+</ul>
+<p>If you are familiar with rails, this is very similar to <code>rails console</code></p>
+<p><img src="https://cloud.githubusercontent.com/assets/303226/2953485/4db6cbe2-da5b-11e3-96de-26fe4931d9af.png" alt=""></p>
+</article>
+
+</section>
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Learn more about ActionHero @ <a href="https://www.actionherojs.com">www.actionherojs.com</a>
+    <br />
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> using the <a href="https://github.com/actionhero/docdash-actionhero-theme">docdash-actionhero-theme</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

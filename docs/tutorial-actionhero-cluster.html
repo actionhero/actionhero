@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Tutorial: actionhero-cluster - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <div id="nav-logo-container">
+        <a href="index.html">
+            <img id="nav-logo" src="https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png" />
+        </a>
+    </div>
+    <h3>Classes</h3><ul><li><a href="ActionHero.html">ActionHero</a></li><li><a href="ActionHero.Action.html">Action</a></li><li><a href="ActionHero.ActionheroWebsocketClient.html">ActionheroWebsocketClient</a></li><li><a href="ActionHero.CLI.html">CLI</a></li><li><a href="ActionHero.Connection.html">Connection</a></li><li><a href="ActionHero.Initializer.html">Initializer</a></li><li><a href="ActionHero.Server.html">Server</a></li><li><a href="ActionHero.Task.html">Task</a></li><li><a href="api.specHelper.Connection.html">Connection</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="api.actions.html">actions</a></li><li><a href="api.cache.html">cache</a></li><li><a href="api.chatRoom.html">chatRoom</a></li><li><a href="api.config.html">config</a></li><li><a href="api.connections.html">connections</a></li><li><a href="api.documentation.html">documentation</a></li><li><a href="api.exceptions.html">exceptions</a></li><li><a href="api.i18n.html">i18n</a></li><li><a href="api.id.html">id</a></li><li><a href="api.params.html">params</a></li><li><a href="api.pids.html">pids</a></li><li><a href="api.redis.html">redis</a></li><li><a href="api.resque.html">resque</a></li><li><a href="api.routes.html">routes</a></li><li><a href="api.servers.html">servers</a></li><li><a href="api.specHelper.html">specHelper</a></li><li><a href="api.staticFile.html">staticFile</a></li><li><a href="api.tasks.html">tasks</a></li><li><a href="api.utils.html">utils</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-actionhero-cluster.html">actionhero-cluster</a></li><li><a href="tutorial-actions.html">actions</a></li><li><a href="tutorial-chat.html">chat</a></li><li><a href="tutorial-cli.html">cli</a></li><li><a href="tutorial-config.html">config</a></li><li><a href="tutorial-development-mode.html">development-mode</a></li><li><a href="tutorial-file-server.html">file-server</a></li><li><a href="tutorial-initializers.html">initializers</a></li><li><a href="tutorial-localization.html">localization</a></li><li><a href="tutorial-logging.html">logging</a></li><li><a href="tutorial-middleware.html">middleware</a></li><li><a href="tutorial-plugins.html">plugins</a></li><li><a href="tutorial-production-notes.html">production-notes</a></li><li><a href="tutorial-running-actionhero.html">running-actionhero</a></li><li><a href="tutorial-servers.html">servers</a></li><li><a href="tutorial-socket.html">socket</a></li><li><a href="tutorial-tasks.html">tasks</a></li><li><a href="tutorial-testing.html">testing</a></li><li><a href="tutorial-upgrade-path.html">upgrade-path</a></li><li><a href="tutorial-web.html">web</a></li><li><a href="tutorial-websocket.html">websocket</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Tutorial: actionhero-cluster</h1>
+    
+
+    <section>
+
+<header>
+    
+</header>
+
+<article>
+    <h2>Overview</h2><p><strong><em>AKA: Running ActionHero in a Cluster</em></strong></p>
+<p>ActionHero can be run either as a solitary server or as part of a cluster. The goal of these cluster helpers is to allow you to create a group of servers which will share state and each be able to handle requests and run tasks. You can add or remove nodes from the cluster without fear of data loss or task duplication. You can also run many instances of ActionHero on the same server using node.js cluster methods (<code>ActionHero start cluster</code>), which you <a href="/docs/deployment/#production-notes">can learn more about here</a>.</p>
+<p>Cluster instances are named sequentially, starting with actionhero-worker-1, and can be retrieved from 'api.id'. Logs and PID's, as well as other instance-specific information follow this pattern as well.</p>
+<h2>Cache</h2><p>Using a <a href="http://redis.io">redis</a> backend, ActionHero nodes share memory objects (using the <code>api.cache methods</code>) and have a common queue for tasks. This means that all peers will have access to all data stored in the cache. The task system also becomes a common queue which all peers will work on draining. There should be no changes required to deploy your application in a cluster.</p>
+<p>Keep in mind that many clients/server can access a cached value simultaneously, so build your actions carefully not to have conflicting state. You can <a href="/docs/core/#cache-overview">learn more about the cache methods here</a>. You can also <a href="/docs/deployment/production">review recommendations about Production Redis configurations</a>.</p>
+<h2>RPC</h2><p>In version 9.0.0, ActionHero introduced Remote Procedure Calls, or RPC for short. You can call an RPC method to be executed on all nodes in your cluster or just a node which holds a specific connection. You can call RPC methods with the <code>api.redis.doCluster</code> method. If you provide the optional callback, you will get the first response back (or a timeout error). RPC calls are invoked with <code>api.redis.doCluster(method, args, connectionId, waitForResponse)</code>.</p>
+<p>For example, if you wanted all nodes to log a message, you would do: <code>api.redis.doCluster('api.log', [&quot;hello from &quot; + api.id]);</code></p>
+<p>If you wanted the node which holds connection <code>abc123</code> to change their <code>authorized</code> status (perhaps because your room authentication relies on this), you would do:</p>
+<pre class="prettyprint source lang-js"><code>// This will ask all nodes connected to the cluster if they have connection #\`abc123\` and if they do, run \`connection.set('auth', true)\` on it
+await api.connections.apply('abc123', 'set', ['auth', true]);</code></pre><p>The RPC system is used heavily by Chat.</p>
+<p>Two options have been added to the <code>config/redis.js</code> config file to support this: <code>api.config.general.channel</code> ( Which channel to use on redis pub/sub for RPC communication ) and <code>api.config.general.rpcTimeout</code> ( How long to wait for an RPC call before considering it a failure )</p>
+<p><strong>WARNING</strong></p>
+<p>RPC calls are authenticated against <code>api.config.serverToken</code> and communication happens over redis pub/sub. BE CAREFUL, as you can call <em>any</em> method within the API namespace on an ActionHero server, including shutdown() and read <em>any</em> data on that node.</p>
+<h2>Connections</h2><p>Some special RPC tools have been added so that you can interact with connections across multiple nodes. Specifically the chat sub-system needs to be able to boot and move connections into rooms, regardless of which node they are connected to.</p>
+<p>ActionHero has exposed <code>api.connections.apply</code> which can be used to retrieve data about and modify a connection on any node.</p>
+<h3><code>api.connections.apply(connectionId, method, args)</code></h3><ul>
+<li>connectionId is required</li>
+<li>Both <code>method</code> and <code>args</code> can be ignored if you just want to retrieve information about a connection, IE: <code>const connectionDetails = await api.connections.apply(connectionId)</code></li>
+</ul>
+<h2>PubSub</h2><pre class="prettyprint source lang-js"><code>// To subscribe to messages, add a callback for your \`messageType\`, IE:
+api.redis.subscriptionHandlers['myMessageType'] = function(message){
+  // do stuff
+}
+
+// send a message
+var payload = {
+  messageType: 'myMessageType',
+  serverId: api.id,
+  serverToken: api.config.general.serverToken,
+  message: 'hello!',
+}
+api.redis.publish(payload)</code></pre><p>ActionHero also uses redis to allow for pub/sub communication between nodes.</p>
+<p>You can broadcast and receive messages from other peers in the cluster:</p>
+<h3><code>api.redis.publish(payload)</code></h3><ul>
+<li>payload must contain:<ul>
+<li><code>messageType</code> : the name of your payload type,</li>
+<li><code>serverId</code> : <code>api.id</code>,</li>
+<li><code>serverToken</code> : <code>api.config.general.serverToken</code>,</li>
+</ul>
+</li>
+</ul>
+</article>
+
+</section>
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Learn more about ActionHero @ <a href="https://www.actionherojs.com">www.actionherojs.com</a>
+    <br />
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> using the <a href="https://github.com/actionhero/docdash-actionhero-theme">docdash-actionhero-theme</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

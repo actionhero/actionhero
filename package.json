@@ -2,7 +2,7 @@
   "author": "Evan Tahler <evantahler@gmail.com>",
   "name": "actionhero",
   "description": "actionhero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks",
-  "version": "17.1.0",
+  "version": "18.0.0-beta.2",
   "homepage": "http://www.actionherojs.com",
   "license": "Apache-2.0",
   "repository": {
@@ -39,7 +39,7 @@
     "ioredis": "^3.1.4",
     "is-running": "^2.0.1",
     "mime": "^2.0.3",
-    "node-resque": "^5.0.0",
+    "node-resque": "^5.0.1",
     "optimist": "^0.6.1",
     "primus": "^7.1.0",
     "qs": "^6.5.1",
@@ -51,11 +51,11 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "cross-env": "^5.0.5",
-    "docdash-actionhero": "0.0.1",
     "dirty-chai": "^2.0.0",
+    "docdash-actionhero": "0.0.3",
     "jsdoc": "^3.5.5",
     "mocha": "^3.5.3",
-    "request": "^2.82.0",
+    "request": "^2.83.0",
     "request-promise-native": "^1.0.5",
     "standard": "^10.0.3"
   },

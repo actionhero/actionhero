@@ -1,0 +1,151 @@
+/**
+ * Create a new Websocket ActionHero Client. This is for use in the browser.
+ * We use the Primus library to abstract our websocket connections, and to allow you to create connections that gracefully fall back to long-polling and other methods to support older browsers if needed.
+ * There are clients for other languages/client types as well, but this is to be the prototypical example.
+ * Note that this class is not written using ES6 convestions so that it will function properly in the browser.
+ * Defaults will be built from the options you set in `api.config.servers.websocket`
+ *
+ * @class ActionHero.ActionheroWebsocketClient
+ *
+ * @tutorial websocket
+ * @example
+// <script type="text/javascript" src="/public/javascript/ActionheroWebsocketClient.min.js"></script>
+
+var client = new ActionheroWebsocketClient();
+
+client.on('connected',    function(){ console.log('connected!') })
+client.on('disconnected', function(){ console.log('disconnected :(') })
+client.on('error',        function(error){ console.log('error', error.stack) })
+client.on('reconnect',    function(){ console.log('reconnect') })
+client.on('reconnecting', function(){ console.log('reconnecting') })
+
+client.on('welcome',      function(message){ alert(message); }) // server welcome message
+client.on('say',          function(message){ alert(message); }) // say messages from rooms client is in
+client.on('message',      function(message){ alert(message); }) // all messages (noisy)
+
+client.connect(function(error, details){
+  if(error){ return console.warn(error) }
+  client.action('createChatRoom', {name: 'defaultRoom'}, function(){
+    client.roomAdd("defaultRoom");
+  });
+});
+ */
+
+
+/**
+ * @function connect
+ * @memberof ActionHero.ActionheroWebsocketClient
+ * @param  {Function}  callback When the connection is connected, will reurn (`error`, `details`), where details is the same as calling `client.detailsView()`.
+ * @description Connect to the ActionHero server.  Will emit `welcome` when connected, and return the callback.  Will aslo set `this.state`, `this.rooms`, `this.fingerprint`, and `this.id`.  Clients will automatically try to reconect, unless prevented with `client.disconnect()`
+ * @see ActionHero.ActionheroWebsocketClient.detailsView
+ * @see ActionHero.ActionheroWebsocketClient.disconnect
+ */
+
+/**
+ * @function configure
+ * @memberof ActionHero.ActionheroWebsocketClient
+ * @param  {Function}  callback Will reurn (`error`, `details`), where details is the same as calling `client.detailsView()`.
+ * @description Will set `this.state`, `this.rooms`, `this.fingerprint`, and `this.id`.  You should only need this method if you are having connection errors.
+ * @see ActionHero.ActionheroWebsocketClient.detailsView
+ */
+
+
+/**
+ * @function action
+ * @memberof ActionHero.ActionheroWebsocketClient
+ * @param  {string}    action   The name of the action to run.
+ * @param  {Object}    params   (optional) (default: {}).  Any params to pass to the action.
+ * @param  {Function}  callback Will reurn (`data`) (no error!).  The client will emit `error` if there is a connection error, otherwise any errors from the action will be contained within `data.error`.
+ * @description Call an action from this client.  As a note, if you are not connected yet (via `client.connect()`), the action will still be attempted, over XHR/JSONp.  That means that you can use this same client libarary for simple AJAX clients if you wish.
+ * @example
+client.on('error', function(error) { alert(error) })
+
+// no params
+client.action('cacheTest', function (data) {
+  if (data.error) { alert(data.error) }
+})
+
+// with params
+client.action('cacheTest', {key: 'key', value: 'value'}, function (data) {
+  if (data.error) { alert(data.error) }
+})
+ */
+
+/**
+ * @function say
+ * @memberof ActionHero.ActionheroWebsocketClient
+ * @param  {string}         room     The room to chat in.  Client must be a member of room already via `client.roomAdd()`
+ * @param  {Object|string}  message  The message to send.  Can be a string, Object, or Array.
+ * @param  {Function}       callback Will reurn (`data`), where `data.OK` will exist.
+ * @description Say a message to a chatRoom the connection is a member of.
+ * @see ActionHero.ActionheroWebsocketClient.roomAdd
+ */
+
+/**
+ * @function file
+ * @memberof ActionHero.ActionheroWebsocketClient
+ * @param  {string}         file     The file requeted.  The file should look like a the path from a browser, ie: `/public/name/of/file.jpg`
+ * @param  {Function}       callback Will reurn (`data`), where the file's contents and medadata will be included.  Likley a large payload.
+ * @description Request a public file from the server.
+ * @example
+client.file('/public/simple.html', function(data) {
+  data = {
+    content: "<h1>ActionHero</h1> I am a flat file being served to you via the API from ./public/simple.html<br />",
+    context: "response",
+    error: null,
+    length: 101,
+    messageCount: 3,
+    mime: "text/html"
+  }
+})
+ */
+
+/**
+ * @function detailsView
+ * @memberof ActionHero.ActionheroWebsocketClient
+ * @param  {Function}       callback Will reurn (`data`), where data contains the connections details (fingerprint, connection time, etc)
+ * @description View the server's details about this connection.
+ */
+
+/**
+ * @function documentation
+ * @memberof ActionHero.ActionheroWebsocketClient
+ * @param  {Function}       callback Will reurn (`data`), where data conatins the results of `api.documentation.documentation`, details of all documented actions on the server.
+ * @description View details of this server's actions.
+ */
+
+/**
+ * @function disconnect
+ * @memberof ActionHero.ActionheroWebsocketClient
+ * @param  {Function}       callback
+ * @description Close the client connection.  Will prevent any re-connects from attempting.
+ * @see ActionHero.ActionheroWebsocketClient.connect
+ */
+
+/**
+ * @function roomView
+ * @memberof ActionHero.ActionheroWebsocketClient
+ * @param  {string}         room     The room to inspect.  Client must be a member of room already via `client.roomAdd()`
+ * @param  {Function}       callback Will reurn (`data`), where data contains a list of other members in the room.
+ * @description View the other members of a room.
+ * @see ActionHero.ActionheroWebsocketClient.roomAdd
+ * @see ActionHero.ActionheroWebsocketClient.roomLeave
+ */
+
+/**
+ * @function roomAdd
+ * @memberof ActionHero.ActionheroWebsocketClient
+ * @param  {string}         room     The room to join.
+ * @param  {Function}       callback Will reurn (`data`), where data contains errors and success.
+ * @description Join an existing chat room.  You may not be able to join this room (based on connection properties or other configuration on the server, so check for `data.error`).  Once in the room, you will recive all say messages from the room as events.
+ * @see ActionHero.ActionheroWebsocketClient.roomLeave
+ */
+
+/**
+ * @function roomLeave
+ * @memberof ActionHero.ActionheroWebsocketClient
+ * @param  {string}         room     The room to leave.
+ * @param  {Function}       callback Will reurn (`data`), where data contains errors and success.
+ * @description LEave a chat room you are already a member of.  You may not be able to leave this room (based on connection properties or other configuration on the server, so check for `data.error`)
+ * @see ActionHero.ActionheroWebsocketClient.roomAddd
+ */

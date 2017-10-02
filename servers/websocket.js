@@ -108,8 +108,8 @@ module.exports = class WebSocketServer extends ActionHero.Server {
     connection.rawConnection.end()
   }
 
-  compileActionheroClientJS () {
-    let ahClientSource = fs.readFileSync(path.join(__dirname, '/../client/actionheroClient.js')).toString()
+  compileActionheroWebsocketClientJS () {
+    let ahClientSource = fs.readFileSync(path.join(__dirname, '/../client/ActionheroWebsocketClient.js')).toString()
     let url = this.config.clientUrl
     ahClientSource = ahClientSource.replace(/%%URL%%/g, url)
     let defaults = {}
@@ -125,14 +125,14 @@ module.exports = class WebSocketServer extends ActionHero.Server {
   renderClientJS (minimize) {
     if (!minimize) { minimize = false }
     let libSource = api.servers.servers.websocket.server.library()
-    let ahClientSource = this.compileActionheroClientJS()
+    let ahClientSource = this.compileActionheroWebsocketClientJS()
     ahClientSource =
       ';;;\r\n' +
       '(function(exports){ \r\n' +
       ahClientSource +
       '\r\n' +
-      'exports.ActionheroClient = ActionheroClient; \r\n' +
-      'exports.actionheroClient = actionheroClient; \r\n' +
+      'exports.ActionheroWebsocketClient = ActionheroWebsocketClient; \r\n' +
+      'exports.ActionheroWebsocketClient = ActionheroWebsocketClient; \r\n' +
       '})(typeof exports === \'undefined\' ? window : exports);'
 
     if (minimize) {

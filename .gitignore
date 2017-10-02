@@ -7,8 +7,8 @@ cache/*
 coverage/*
 node_modules/*
 locales/test-env-*
-public/javascript/actionheroClient.js
-public/javascript/actionheroClient.min.js
+public/javascript/ActionheroWebsocketClient.js
+public/javascript/ActionheroWebsocketClient.min.js
 
 #JSDoc
 docs/out

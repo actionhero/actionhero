@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Tutorial: testing - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <div id="nav-logo-container">
+        <a href="index.html">
+            <img id="nav-logo" src="https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png" />
+        </a>
+    </div>
+    <h3>Classes</h3><ul><li><a href="ActionHero.html">ActionHero</a></li><li><a href="ActionHero.Action.html">Action</a></li><li><a href="ActionHero.ActionheroWebsocketClient.html">ActionheroWebsocketClient</a></li><li><a href="ActionHero.CLI.html">CLI</a></li><li><a href="ActionHero.Connection.html">Connection</a></li><li><a href="ActionHero.Initializer.html">Initializer</a></li><li><a href="ActionHero.Server.html">Server</a></li><li><a href="ActionHero.Task.html">Task</a></li><li><a href="api.specHelper.Connection.html">Connection</a></li></ul><h3>Namespaces</h3><ul><li><a href="api.html">api</a></li><li><a href="api.actions.html">actions</a></li><li><a href="api.cache.html">cache</a></li><li><a href="api.chatRoom.html">chatRoom</a></li><li><a href="api.config.html">config</a></li><li><a href="api.connections.html">connections</a></li><li><a href="api.documentation.html">documentation</a></li><li><a href="api.exceptions.html">exceptions</a></li><li><a href="api.i18n.html">i18n</a></li><li><a href="api.id.html">id</a></li><li><a href="api.params.html">params</a></li><li><a href="api.pids.html">pids</a></li><li><a href="api.redis.html">redis</a></li><li><a href="api.resque.html">resque</a></li><li><a href="api.routes.html">routes</a></li><li><a href="api.servers.html">servers</a></li><li><a href="api.specHelper.html">specHelper</a></li><li><a href="api.staticFile.html">staticFile</a></li><li><a href="api.tasks.html">tasks</a></li><li><a href="api.utils.html">utils</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-actionhero-cluster.html">actionhero-cluster</a></li><li><a href="tutorial-actions.html">actions</a></li><li><a href="tutorial-chat.html">chat</a></li><li><a href="tutorial-cli.html">cli</a></li><li><a href="tutorial-config.html">config</a></li><li><a href="tutorial-development-mode.html">development-mode</a></li><li><a href="tutorial-file-server.html">file-server</a></li><li><a href="tutorial-initializers.html">initializers</a></li><li><a href="tutorial-localization.html">localization</a></li><li><a href="tutorial-logging.html">logging</a></li><li><a href="tutorial-middleware.html">middleware</a></li><li><a href="tutorial-plugins.html">plugins</a></li><li><a href="tutorial-production-notes.html">production-notes</a></li><li><a href="tutorial-running-actionhero.html">running-actionhero</a></li><li><a href="tutorial-servers.html">servers</a></li><li><a href="tutorial-socket.html">socket</a></li><li><a href="tutorial-tasks.html">tasks</a></li><li><a href="tutorial-testing.html">testing</a></li><li><a href="tutorial-upgrade-path.html">upgrade-path</a></li><li><a href="tutorial-web.html">web</a></li><li><a href="tutorial-websocket.html">websocket</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Tutorial: testing</h1>
+    
+
+    <section>
+
+<header>
+    
+</header>
+
+<article>
+    <h2>Overview</h2><p>ActionHero provides test helpers so that you may try your actions and tasks within a headless environment. We do this by including a <code>specHelper</code> initializer which creates a server, <code>testServer</code> when running within the test environment. Via the <code>testServer</code>, you can easily call actions or tasks without making a real request.</p>
+<p>We have chosen <a href="http://mochajs.org/">mocha</a> as our test framework and <a href="http://chaijs.com/">chai</a> as our assertion tool which are included as dependencies within all new projects (<a href="/docs/get-started">generated</a> with <code>./node_modules/.bin/actionhero generate</code>). We also use <code>cross-env</code> to set NODE_ENV in a way that works for all operating systems, including Windows. You do not need to use these testing tools, but an example will be provided which makes use of them.</p>
+<p>You also don't need to use these test helpers, and you may want to make a real http or websocket request to test something specific. If this is the case, you can <a href="https://github.com/actionhero/actionhero/tree/master/test/servers">check out how ActionHero tests its own servers</a> for examples.</p>
+<h2>Getting Started</h2><pre class="prettyprint source lang-js"><code>// package.json from a new actionhero project with \`mocha\` and \`chai\` included
+{
+  &quot;author&quot;      : &quot;YOU &lt;YOU@example.com>&quot;,
+  &quot;name&quot;        : &quot;my_actionhero_project&quot;,
+  &quot;description&quot; : &quot;my actionhero project&quot;,
+  &quot;version&quot;     : &quot;0.0.1&quot;,
+  &quot;engines&quot;     : {
+    &quot;node&quot;: &quot;>=0.10.0&quot;
+  },
+  &quot;dependencies&quot; : {
+    &quot;actionhero&quot; : &quot;12.3.0&quot;,
+    &quot;ws&quot;         : &quot;latest&quot;
+  },
+  &quot;devDependencies&quot; : {
+    &quot;cross-env&quot;: &quot;latest&quot;,
+    &quot;mocha&quot;  : &quot;latest&quot;,
+    &quot;chai&quot; : &quot;latest&quot;
+  },
+  &quot;scripts&quot; : {
+    &quot;help&quot;         : &quot;actionhero help&quot;,
+    &quot;start&quot;        : &quot;actionhero start&quot;,
+    &quot;actionhero&quot;   : &quot;actionhero&quot;,
+    &quot;start cluster&quot;: &quot;actionhero start cluster&quot;,
+    &quot;test&quot;         : &quot;cross-env NODE_ENV=test mocha&quot;
+  }
+}</code></pre><p>To run a mocha test suite, you invoke the mocha binary, <code>./node_modules/.bin/mocha</code>. This will tell mocha to look in your <code>./test</code> folder and run any tests that it can find. There are ways to change the test folder location, only run specific tests, change the reporting format and more which you can learn about on <a href="http://mochajs.org/">Mocha's website</a>. We asume that you have <code>mocha</code> (and <code>chai</code>) installed to your project by listing it in your <code>package.json</code>. If you used <code>ActionHero generate</code> to create your project, this should already be configured for your.</p>
+<p>The majority of the time, you'll be testing actions and other methods you have written, so you'll need to &quot;run&quot; an actionhero server as part of your test suite. Many times you'll want to have ActionHero behave in a slightly unique way while testing (perhaps connect to a special database, don't log, etc). To do this, you can change the behavior of the config files for the <code>test</code> environment. Here is how we tell ActionHero <a href="https://github.com/actionhero/actionhero/blob/master/config/logger.js#L48-L54">not to write any logs when testing</a>. Note thest test-specific configuration overrides the defaults. To ensure that ActionHero boots with the <code>test</code> environment loaded, the test command you run should explicitly do this, AKA: <code>NODE_ENV=test ./node_modules/.bin/mocha</code>. You can log this in as the <a href="https://github.com/actionhero/actionhero/blob/master/package.json#L63"><code>test</code> script in your <code>package.json</code></a> so you can simplify the running of tests with just <code>npm test</code>.</p>
+<p>ActionHero comes with a <code>specHelper</code> to make it easier to test tasks and actions. This specHelper is a special <a href="/docs/core/#servers">server</a> which can check things without needing to make an HTTP, websocket, etc request. If you need to check the true behavior of a server (perhaps how the router works for an HTTP request), you should make a real HTTP request in your test suite, using something like the <a href="https://github.com/request/request">request</a> library (<a href="https://github.com/actionhero/actionhero/blob/master/test/servers/web.js#L178-L184">example</a>).</p>
+<h2>Example Test</h2><pre class="prettyprint source lang-js"><code>'use strict'
+
+let path = require('path')
+var expect = require('chai').expect
+var ActionheroPrototype = require(path.join(__dirname, '/../../actionhero.js'))
+var actionhero = new ActionheroPrototype()
+var api
+
+describe('Action: RandomNumber', () => {
+  before((done) => {
+    actionhero.start((error, a) => {
+      expect(error).to.be.null()
+      api = a
+      done()
+    })
+  })
+
+  after((done) => {
+    actionhero.stop(() => {
+      done()
+    })
+  })
+
+  var firstNumber = null
+  it('generates random numbers', (done) => {
+    api.specHelper.runAction('randomNumber', (response) => {
+      expect(response.randomNumber).to.be.at.least(0)
+      expect(response.randomNumber).to.be.at.most(1)
+      firstNumber = response.randomNumber
+      done()
+    })
+  })
+
+  it('is unique / random', (done) => {
+    api.specHelper.runAction('randomNumber', (response) => {
+      expect(response.randomNumber).to.be.at.least(0)
+      expect(response.randomNumber).to.be.at.most(1)
+      expect(response.randomNumber).not.to.equal(firstNumber)
+      done()
+    })
+  })
+})</code></pre><p>Say you had an action that was supposed to respond with a <code>randomNumber</code>, and you wanted to write a test for it.</p>
+<p>More details on the specHelper methods are below.</p>
+<p>If you want to see fuller example of how to create an integration test within ActionHero, please <a href="https://github.com/actionhero/actionhero-tutorial#testing">check out the tutorial</a></p>
+<h2>Test Methods</h2><h3><code>new api.specHelper.connection()</code></h3><ul>
+<li>generate a new connection object for the <code>testServer</code></li>
+<li>this connection can run actions, chat, etc.</li>
+<li><code>connection.messages</code> will contain all messages the connection has been sent (welcome messages, action responses, say messages, etc)</li>
+</ul>
+<h3><code>api.specHelper.runAction(actionName, input, callback)</code></h3><ul>
+<li>use this method to run an action</li>
+<li><code>input</code> can be either a <code>api.specHelper.connection</code> object, or simply a hash of params, IE: <code>{</code>{key: 'value'}<code>}</code></li>
+<li>the callback returns <code>message</code> and <code>connection</code>.</li>
+<li>example use:</li>
+</ul>
+<pre class="prettyprint source lang-js"><code>api.specHelper.runAction('cacheTest', {key: 'key', value: 'value'}, function(message, connection){
+// message is the normal API response;
+// connection is a new connection object
+})</code></pre><h3><code>api.specHelper.getStaticFile(file, callback)</code></h3><ul>
+<li>request a file in <code>/public</code> from the server</li>
+<li>the callback returns <code>message</code> and <code>connection</code> where <code>message</code> is a hash:</li>
+</ul>
+<pre class="prettyprint source lang-js"><code>var message = {
+error    : error,    // null if everything is OK
+content  : (string), // string representation of the file's body
+mime     : mime,     // file mime
+length   : length    // bytes
+}</code></pre><h3><code>api.specHelper.runTask(taskName, params, callback)</code></h3><ul>
+<li>callback may or may not return anything depending on your task's makeup</li>
+</ul>
+<pre class="prettyprint source lang-js"><code>api.specHelper.runTask('sendEmailTask', {message: 'hello' to: 'evan@test.com'}, function(response){
+// test it!
+// remember that the task really will be run, so be sure that the test environment is set properly
+})</code></pre><h2>Notes</h2><p>Be sure to run your tests in the <code>test</code> environment, setting the shell's env with <code>NODE_ENV=test</code>. You can alternatively set this explicitly in your tests with <code>process.env.NODE_ENV = 'test'</code></p>
+<p>If you do not want the <code>specHelper</code> actions to include metadata (<code>data.response.serverInformation</code>, <code>data.response.requesterInformation</code>, and <code>data.response.messageCount</code>) from the server, you can configure <code>api.specHelper.returnMetadata = false</code> in your tests.</p>
+</article>
+
+</section>
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Learn more about ActionHero @ <a href="https://www.actionherojs.com">www.actionherojs.com</a>
+    <br />
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> using the <a href="https://github.com/actionhero/docdash-actionhero-theme">docdash-actionhero-theme</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

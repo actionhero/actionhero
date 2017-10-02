@@ -6,9 +6,12 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const path = require('path')
+const {promisify} = require('util')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
+
+const sleep = async (timeout) => { await promisify(setTimeout)(timeout) }
 
 let taskOutput = []
 let queue = 'testQueue'
@@ -60,7 +63,7 @@ describe('Core: Tasks', () => {
       }
 
       async run (params) {
-        await new Promise((resolve) => { setTimeout(resolve, 5000) })
+        await sleep(5000)
         taskOutput.push('slowTask')
         return 'slowTask'
       }
@@ -378,7 +381,7 @@ describe('Core: Tasks', () => {
       await api.tasks.enqueue('slowTask', {a: 1})
       api.resque.multiWorker.start()
 
-      await new Promise((resolve) => { setTimeout(resolve, 2000) })
+      await sleep(2000)
 
       let details = await api.tasks.details()
 
@@ -400,7 +403,7 @@ describe('Core: Tasks', () => {
       api.config.tasks.queues = ['*']
       api.resque.multiWorker.start()
 
-      await new Promise((resolve) => { setTimeout(resolve, 500) })
+      await sleep(500)
 
       expect(taskOutput[0]).to.equal('first')
       await api.resque.multiWorker.stop()
@@ -414,7 +417,7 @@ describe('Core: Tasks', () => {
       await api.resque.startScheduler()
       await api.resque.multiWorker.start()
 
-      await new Promise((resolve) => { setTimeout(resolve, 1500) })
+      await sleep(1500)
       expect(taskOutput[0]).to.equal('delayed')
       await api.resque.multiWorker.stop()
       await api.resque.stopScheduler()
@@ -428,7 +431,7 @@ describe('Core: Tasks', () => {
       await api.resque.startScheduler()
       await api.resque.multiWorker.start()
 
-      await new Promise((resolve) => { setTimeout(resolve, 1500) })
+      await sleep(1500)
       expect(taskOutput[0]).to.equal('periodicTask')
       expect(taskOutput[1]).to.equal('periodicTask')
       expect(taskOutput[2]).to.equal('periodicTask')

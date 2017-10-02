@@ -50,8 +50,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: #000;
-  font-weight: 400;
+  color: #2F5266;
+  font-weight: 600;
   margin: 0;
 }
 
@@ -64,7 +64,7 @@ h1 {
 h1.page-title {
   font-size: 48px;
   margin: 1em 30px;
-  text-transform: uppercase;
+  /*text-transform: uppercase;*/
 }
 
 h2 {
@@ -160,12 +160,22 @@ section {
 
 nav {
   float: left;
+  padding-left: 10px;
   display: block;
   width: 250px;
-  background: #fff;
+  background: #FBF9E4;
   overflow: auto;
   position: fixed;
   height: 100%;
+}
+
+#nav-logo-container {
+  text-align: left;
+}
+
+#nav-logo {
+  width: 25%;
+  padding-top: 20px;
 }
 
 nav h3 {

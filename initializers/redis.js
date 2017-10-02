@@ -76,11 +76,11 @@ module.exports = class Redis extends ActionHero.Initializer {
      * @param  {string}  method         The method to call on the remote server.
      * @param  {Array}   args           The arguments to pass to `method`
      * @param  {string}  connectionId   (optional) Should this method only apply to a server which `connectionId` is connected to?
-     * @param  {Boolean}  waitForRespons (optional) Should we await a response from a remote server in the cluster?
+     * @param  {Boolean}  waitForResponse (optional) Should we await a response from a remote server in the cluster?
      * @return {Promise}                The return value from the remote server.
      */
-    api.redis.doCluster = async (method, args, connectionId, waitForRespons) => {
-      if (waitForRespons === undefined || waitForRespons === null) { waitForRespons = false }
+    api.redis.doCluster = async (method, args, connectionId, waitForResponse) => {
+      if (waitForResponse === undefined || waitForResponse === null) { waitForResponse = false }
       const requestId = uuid.v4()
       const payload = {
         messageType: 'do',
@@ -94,7 +94,7 @@ module.exports = class Redis extends ActionHero.Initializer {
 
       await api.redis.publish(payload)
 
-      if (waitForRespons) {
+      if (waitForResponse) {
         let response = await new Promise((resolve, reject) => {
           let timer = setTimeout(() => reject(new Error('RPC Timeout')), api.config.general.rpcTimeout)
           api.redis.rpcCallbacks[requestId] = {timer, resolve, reject}

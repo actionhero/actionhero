@@ -6,9 +6,12 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const path = require('path')
+const {promisify} = require('util')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
+
+const sleep = async (timeout) => { await promisify(setTimeout)(timeout) }
 
 let clientA
 let clientB
@@ -17,8 +20,8 @@ let clientC
 let url
 
 const connectClients = async () => {
-  // get actionheroClient in scope
-  const ActionheroClient = eval(api.servers.servers.websocket.compileActionheroClientJS()) // eslint-disable-line
+  // get ActionheroWebsocketClient in scope
+  const ActionheroWebsocketClient = eval(api.servers.servers.websocket.compileActionheroWebsocketClientJS()) // eslint-disable-line
 
   let S = api.servers.servers.websocket.server.Socket
   url = 'http://localhost:' + api.config.servers.web.port
@@ -26,11 +29,11 @@ const connectClients = async () => {
   let clientBsocket = new S(url)
   let clientCsocket = new S(url)
 
-  clientA = new ActionheroClient({}, clientAsocket) // eslint-disable-line
-  clientB = new ActionheroClient({}, clientBsocket) // eslint-disable-line
-  clientC = new ActionheroClient({}, clientCsocket) // eslint-disable-line
+  clientA = new ActionheroWebsocketClient({}, clientAsocket) // eslint-disable-line
+  clientB = new ActionheroWebsocketClient({}, clientBsocket) // eslint-disable-line
+  clientC = new ActionheroWebsocketClient({}, clientCsocket) // eslint-disable-line
 
-  await new Promise((resolve) => { setTimeout(resolve, 100) })
+  await sleep(100)
 }
 
 const awaitMethod = async (client, method, returnsError) => {
@@ -118,6 +121,41 @@ describe('Server: Web Socket', () => {
       expect(response.error).to.equal('key is a required parameter for this action')
     })
 
+    it('properly handles duplicate room commands at the same time', async () => {
+      awaitRoom(clientA, 'roomAdd', 'defaultRoom')
+      awaitRoom(clientA, 'roomAdd', 'defaultRoom')
+
+      await sleep(500)
+
+      expect(clientA.rooms).to.deep.equal(['defaultRoom'])
+    })
+
+    it('properly responds with messageCount', async () => {
+      let aTime
+      let bTime
+      let startingMessageCount = clientA.messageCount
+      awaitRoom(clientA, 'roomAdd', 'defaultRoom') // fast
+      let responseA = awaitAction(clientA, 'sleepTest') // slow
+      awaitRoom(clientA, 'roomAdd', 'defaultRoom') // fast
+      let responseB = awaitAction(clientA, 'randomNumber') // fast
+
+      responseA.then((data) => {
+        responseA = data
+        aTime = new Date()
+      })
+
+      responseB.then((data) => {
+        responseB = data
+        bTime = new Date()
+      })
+
+      await sleep(2001)
+
+      expect(responseA.messageCount).to.equal(startingMessageCount + 2)
+      expect(responseB.messageCount).to.equal(startingMessageCount + 4)
+      expect(aTime.getTime()).to.be.above(bTime.getTime())
+    })
+
     it('can run actions properly without params', async () => {
       let response = await awaitAction(clientA, 'randomNumber')
       expect(response.error).to.not.exist()
@@ -147,7 +185,7 @@ describe('Server: Web Socket', () => {
       clientA.action('sleepTest', {sleepDuration: 500}, (response) => { responses.push(response) })
       clientA.action('sleepTest', {sleepDuration: 600}, (response) => { responses.push(response) })
 
-      await new Promise((resolve) => { setTimeout(resolve, 1000) })
+      await sleep(1000)
 
       expect(responses).to.have.length(6)
       for (let i in responses) {
@@ -204,7 +242,7 @@ describe('Server: Web Socket', () => {
         await awaitRoom(clientB, 'roomAdd', 'defaultRoom')
         await awaitRoom(clientC, 'roomAdd', 'defaultRoom')
         // timeout to skip welcome messages as clients join rooms
-        await new Promise((resolve) => { setTimeout(resolve, 100) })
+        await sleep(100)
       })
 
       afterEach(async () => {
@@ -318,7 +356,7 @@ describe('Server: Web Socket', () => {
           clientC.on('say', listener)
 
           clientB.say('otherRoom', 'you should not hear this')
-          await new Promise((resolve) => { setTimeout(resolve, 1000) })
+          await sleep(1000)
           clientC.removeListener('say', listener)
           resolve()
         })
@@ -371,7 +409,7 @@ describe('Server: Web Socket', () => {
           clientC.on('say', listenerC)
           clientB.say('defaultRoom', 'Test Message')
 
-          await new Promise((resolve) => { setTimeout(resolve, 1000) })
+          await sleep(1000)
 
           expect(messagesReceived).to.equal(3)
         })
@@ -383,7 +421,7 @@ describe('Server: Web Socket', () => {
             say: async (connection, room, messagePayload) => {
               if (firstSayCall) {
                 firstSayCall = false
-                await new Promise((resolve) => { setTimeout(resolve, 200) })
+                await sleep(200)
               }
             }
           })
@@ -409,7 +447,7 @@ describe('Server: Web Socket', () => {
           clientC.on('say', listenerC)
           clientB.say('defaultRoom', 'Test Message')
 
-          await new Promise((resolve) => { setTimeout(resolve, 1000) })
+          await sleep(1000)
 
           expect(messagesReceived).to.equal(7)
         })
@@ -447,7 +485,7 @@ describe('Server: Web Socket', () => {
           clientC.on('say', listenerC)
           clientB.say('defaultRoom', 'Test Message')
 
-          await new Promise((resolve) => { setTimeout(resolve, 1000) })
+          await sleep(1000)
 
           expect(messagesReceived).to.equal(3)
         })
@@ -560,7 +598,7 @@ describe('Server: Web Socket', () => {
         clientA.connect()
         clientB.connect()
         clientC.connect()
-        await new Promise((resolve) => { setTimeout(resolve, 500) })
+        await sleep(500)
       })
 
       it('client can disconnect', async () => {
@@ -570,7 +608,7 @@ describe('Server: Web Socket', () => {
         clientB.disconnect()
         clientC.disconnect()
 
-        await new Promise((resolve) => { setTimeout(resolve, 500) })
+        await sleep(500)
 
         expect(api.servers.servers.websocket.connections().length).to.equal(0)
       })
@@ -590,7 +628,7 @@ describe('Server: Web Socket', () => {
           throw new Error('should not get response')
         })
 
-        await new Promise((resolve) => { setTimeout(resolve, 500) })
+        await sleep(500)
       })
     })
   })
