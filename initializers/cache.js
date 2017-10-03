@@ -25,6 +25,8 @@ class Cache extends ActionHero.Initializer {
   }
 
   initialize () {
+    if (api.config.redis.enabled === false) { return }
+
     const redis = api.redis.clients.client
 
     api.cache = {

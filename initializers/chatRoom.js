@@ -79,6 +79,8 @@ class ChatRoom extends ActionHero.Initializer {
   }
 
   initialize () {
+    if (api.config.redis.enabled === false) { return }
+
     api.chatRoom = {
       middleware: {},
       globalMiddleware: [],
@@ -440,6 +442,8 @@ class ChatRoom extends ActionHero.Initializer {
   }
 
   async start () {
+    if (api.config.redis.enabled === false) { return }
+
     api.redis.subscriptionHandlers.chat = (message) => {
       if (api.chatRoom) { api.chatRoom.incomingMessage(message) }
     }
