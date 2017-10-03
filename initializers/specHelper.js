@@ -65,11 +65,12 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
       sendFile (connection, error, fileStream, mime, length) {
         let content = ''
         let response = {
-          error: error,
           content: null,
           mime: mime,
           length: length
         }
+
+        if (error) { response.error = error }
 
         try {
           if (!error) {
@@ -199,7 +200,6 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
         connection.actionCallbacks[(connection.messageCount)] = resolve
       })
 
-      if (!response.error) { delete response.error }
       return response
     }
 
