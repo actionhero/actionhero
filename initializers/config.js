@@ -48,7 +48,7 @@ module.exports = class Config extends ActionHero.Initializer {
       api.watchedFiles.forEach(({file: watchedFile}) => { if (watchedFile === file) { found = true } })
 
       if (api.config.general.developmentMode === true && found === false) {
-        const watcher = fs.watch(file, (eventType) => {
+        const watcher = fs.watch(file, {persistent: false}, (eventType) => {
           if (
             api.running === true &&
             api.config.general.developmentMode === true &&
