@@ -45,6 +45,8 @@
         <article>
             <pre class="prettyprint source linenums"><code>'use strict'
 
+const glob = require('glob')
+const path = require('path')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
@@ -175,9 +177,17 @@ module.exports = class Actions extends ActionHero.Initializer {
     }
 
     for (let i in api.config.general.paths.action) {
-      let path = api.config.general.paths.action[i]
-      let files = api.utils.recursiveDirectoryGlob(path)
+      let p = api.config.general.paths.action[i]
+      let files = glob.sync(path.join(p, '**', '*.js'))
       for (let j in files) { await api.actions.loadFile(files[j]) }
+    }
+
+    for (let pluginName in api.config.plugins) {
+      if (api.config.plugins[pluginName].actions !== false) {
+        let pluginPath = api.config.plugins[pluginName].path
+        let files = glob.sync(path.join(pluginPath, 'actions', '**', '*.js'))
+        for (let j in files) { await api.actions.loadFile(files[j]) }
+      }
     }
   }
 }

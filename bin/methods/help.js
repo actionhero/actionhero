@@ -1,5 +1,7 @@
 'use strict'
 
+const glob = require('glob')
+const path = require('path')
 const ActionHero = require('./../../index.js')
 const api = ActionHero.api
 
@@ -14,13 +16,8 @@ module.exports = class Help extends ActionHero.CLI {
     let files = []
     let methods = {}
 
-    api.utils.recursiveDirectoryGlob(api.actionheroRoot + '/bin/methods').forEach(function (f) {
-      files.push(f)
-    })
-
-    api.utils.recursiveDirectoryGlob(api.projectRoot + '/bin').forEach(function (f) {
-      files.push(f)
-    })
+    glob.sync(path.join(api.actionheroRoot, 'bin', 'methods', '**', '*.js')).forEach((f) => { files.push(f) })
+    glob.sync(path.join(api.projectRoot + 'bin', '**', '*.js')).forEach((f) => { files.push(f) })
 
     files.forEach((f) => {
       try {

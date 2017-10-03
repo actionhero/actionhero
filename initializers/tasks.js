@@ -1,6 +1,8 @@
 'use strict'
 
 const NodeResque = require('node-resque')
+const glob = require('glob')
+const path = require('path')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
@@ -540,10 +542,19 @@ module.exports = class Tasks extends ActionHero.Initializer {
 
     api.tasks.loadTasks = (reload) => {
       api.config.general.paths.task.forEach((p) => {
-        api.utils.recursiveDirectoryGlob(p).forEach((f) => {
+        glob.sync(path.join(p, '**', '*.js')).forEach((f) => {
           api.tasks.loadFile(f, reload)
         })
       })
+
+      for (let pluginName in api.config.plugins) {
+        if (api.config.plugins[pluginName].tasks !== false) {
+          let pluginPath = api.config.plugins[pluginName].path
+          glob.sync(path.join(pluginPath, 'tasks', '**', '*.js')).forEach((f) => {
+            api.tasks.loadFile(f, reload)
+          })
+        }
+      }
     }
 
     api.tasks.addMiddleware = (middleware) => {

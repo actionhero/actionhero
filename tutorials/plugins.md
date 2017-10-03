@@ -15,13 +15,13 @@ Plugins are loaded after all local ActionHero project files, but initializers fo
 | - tasks
 | - servers
 | - initializers
-| - scripts
 | - config
+| - public
 |
 | - package.json
 ```
 
-To create a plugin, create a project with the above structure via `actionhero generate plugin`.  Note that `actionhero` should be a `peerDependnacy` within your plugin. 
+To create a plugin, create a project with the above structure via `actionhero generate plugin`.  Note that `actionhero` should be a `peerDependnacy` within your plugin.
 
 This structure will allow elements to be loaded into ActionHero (we search `/actions` for actions, `/tasks` for tasks, etc)
 

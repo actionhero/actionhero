@@ -43,17 +43,21 @@
 </header>
 
 <article>
-    <h2>Overview</h2><p>As of ActionHero version <code>v8.0.0</code>, you can create and include plugins for you ActionHero project. Plugins are collections of <code>tasks</code>, <code>actions</code>, <code>servers</code>, and <code>initializers</code> that are collected as a module. You can install plugins via NPM or keep them in a local path.</p>
+    <h2>Overview</h2><p>You can create and include plugins for you ActionHero project. Plugins are collections of <code>tasks</code>, <code>actions</code>, <code>servers</code>, and <code>initializers</code> that are collected as a module. You can install plugins via NPM or keep them in a local path.  This enables a few features:</p>
+<ul>
+<li>Sharing and re-using common code</li>
+<li>Composing your application via namespaced plugins</li>
+</ul>
 <p>Plugins are loaded after all local ActionHero project files, but initializers follow the same priority scheme as all other initializers.</p>
 <h2>Creating</h2><pre class="prettyprint source lang-bash"><code>/
 | - actions
 | - tasks
 | - servers
 | - initializers
-| - scripts
 | - config
+| - public
 |
-| - package.json</code></pre><p>To create a plugin, create a project with the following structure:</p>
+| - package.json</code></pre><p>To create a plugin, create a project with the above structure via <code>actionhero generate plugin</code>.  Note that <code>actionhero</code> should be a <code>peerDependnacy</code> within your plugin.</p>
 <p>This structure will allow elements to be loaded into ActionHero (we search <code>/actions</code> for actions, <code>/tasks</code> for tasks, etc)</p>
 <p>When developing your plugin locally, you can load it into an existing ActionHero project to test it out.</p>
 <p>First, add the path your plugin is in to <code>api.config.general.paths.plugin</code>. If your ActionHero app is in <code>/var/ah/actionhero</code> and your plugin is in <code>/var/ah/my_plugin</code>, add <code>/var/ah</code> to <code>api.config.general.paths.plugin</code></p>

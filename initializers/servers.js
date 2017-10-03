@@ -1,6 +1,7 @@
 'use strict'
 
 const path = require('path')
+const glob = require('glob')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
@@ -36,7 +37,15 @@ module.exports = class Servers extends ActionHero.Initializer {
 
     for (let i in serverFolders) {
       let p = serverFolders[i]
-      let files = api.utils.recursiveDirectoryGlob(p)
+      let files = glob.sync(path.join(p, '**', '*.js'))
+
+      for (let pluginName in api.config.plugins) {
+        if (api.config.plugins[pluginName].servers !== false) {
+          let pluginPath = api.config.plugins[pluginName].path
+          files = files.concat(glob.sync(path.join(pluginPath, 'servers', '**', '*.js')))
+        }
+      }
+
       for (let j in files) {
         let filename = files[j]
         let ServerClass = require(filename)

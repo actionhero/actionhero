@@ -1,6 +1,7 @@
 'use strict'
 
 const path = require('path')
+const glob = require('glob')
 const packageJson = require(path.join(__dirname, '..', 'package.json'))
 let api
 
@@ -72,12 +73,18 @@ module.exports = class Process {
     })
 
     api.config.general.paths.initializer.forEach((startPath) => {
-      customInitializers = customInitializers.concat(api.utils.recursiveDirectoryGlob(startPath))
+      customInitializers = customInitializers.concat(glob.sync(path.join(startPath, '**', '*.js')))
     })
+
+    // load initializers from plugins
+    for (let pluginName in api.config.plugins) {
+      let pluginPath = api.config.plugins[pluginName].path
+      customInitializers.concat(glob.sync(path.join(pluginPath, 'initializers', '**', '*.js')))
+    }
 
     // load all other initializers
     let initializerFiles = api.utils.arrayUniqueify(
-      api.utils.recursiveDirectoryGlob(path.join(__dirname, '..', 'initializers')).sort().concat(customInitializers.sort())
+      glob.sync(path.join(__dirname, '..', 'initializers', '**', '*.js')).sort().concat(customInitializers.sort())
     )
 
     initializerFiles.forEach((f) => {

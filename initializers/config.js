@@ -2,6 +2,7 @@
 
 const fs = require('fs')
 const path = require('path')
+const glob = require('glob')
 const argv = require('optimist').argv
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
@@ -120,7 +121,7 @@ module.exports = class Config extends ActionHero.Initializer {
     }
 
     api.loadConfigDirectory = (configPath, watch) => {
-      const configFiles = api.utils.recursiveDirectoryGlob(configPath)
+      const configFiles = glob.sync(path.join(configPath, '**', '*.js'))
 
       let loadRetries = 0
       let loadErrors = {}

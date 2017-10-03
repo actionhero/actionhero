@@ -26,7 +26,9 @@ module.exports = class GeneratePlugin extends ActionHero.CLI {
       'actions',
       'tasks',
       'initializers',
-      'servers'
+      'servers',
+      'config',
+      'public'
     ].forEach((type) => {
       try {
         let message = api.utils.createDirSafely(path.join(process.cwd(), type), template)
