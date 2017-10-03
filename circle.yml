@@ -1,7 +1,6 @@
 ---
 machine:
   environment:
-    FAKEREDIS: false
     maxMemoryAlloted: 500
   services:
     - redis
