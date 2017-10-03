@@ -12,6 +12,7 @@ rm -rf docs
 mkdir docs
 npm run docs
 touch ./out/.nojekyll
+cp circle.yml docs/circle.yml
 echo 'docs.actionherojs.com' >> docs/CNAME
 
 ## make a directory to put the gh-pages branch
