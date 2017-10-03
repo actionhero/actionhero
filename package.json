@@ -42,7 +42,6 @@
     "mime": "^2.0.3",
     "node-resque": "^5.0.2",
     "optimist": "^0.6.1",
-    "parent-require": "^1.0.0",
     "primus": "^7.1.0",
     "qs": "^6.5.1",
     "uglify-js": "^3.1.3",
