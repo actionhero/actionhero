@@ -74,7 +74,14 @@ module.exports = class Connections extends ActionHero.Initializer {
       ],
 
       /**
-       * @private
+       * Find a connection on any server in the cluster and call a method on it.
+       *
+       * @async
+       * @param {String} connectionId The connection's ID
+       * @param {String} method the name of the method to call
+       * @param {Array} args the arguments to pass to method
+       * @return {Promise<Object>} The return value from the remote server (if any)
+       * @memberOf api.connections
        */
       apply: async (connectionId, method, args) => {
         return api.redis.doCluster('api.connections.applyResponder', [connectionId, method, args], connectionId, true)
