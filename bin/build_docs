@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-cd "$(dirname "$0")"
-cd ..
-
-rm -rf docs
-mkdir docs
-echo 'docs.actionherojs.com' >> docs/CNAME
-
-./node_modules/.bin/jsdoc -c jsdoc-conf.json

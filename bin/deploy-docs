@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+cd "$(dirname "$0")"
+cd ..
+
+## git config
+REMOTE=$(git config remote.origin.url)
+git config --global user.email "admin@actionherojs.com"
+git config --global user.name "CircleCI for ActionHero"
+
+## Build the project into the "docs" directory
+rm -rf docs
+mkdir docs
+npm run docs
+touch ./out/.nojekyll
+echo 'docs.actionherojs.com' >> docs/CNAME
+
+## make a directory to put the gh-pages branch
+mkdir gh-pages-branch
+cd gh-pages-branch
+git init
+git remote add --fetch origin "$REMOTE"
+
+## switch into the the gh-pages branch
+if git rev-parse --verify origin/gh-pages > /dev/null 2>&1
+then
+    git checkout gh-pages
+    git rm -rf .
+else
+    git checkout --orphan gh-pages
+fi
+
+## copy over the built site to our new git folder
+cp -a ../docs/. .
+
+## push it
+git add -A
+git commit --allow-empty -m "deploy docs site @ $(date)"
+git push --force origin gh-pages
+cd ..
+
+## clean up
+rm -rf gh-pages-branch
+echo "Depolyment Complete"
