@@ -54,7 +54,7 @@
     "dirty-chai": "^2.0.0",
     "docdash-actionhero": "0.0.3",
     "jsdoc": "^3.5.5",
-    "mocha": "^3.5.3",
+    "mocha": "^4.0.0",
     "request": "^2.83.0",
     "request-promise-native": "^1.0.5",
     "standard": "^10.0.3"
