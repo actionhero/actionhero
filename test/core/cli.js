@@ -106,6 +106,7 @@ describe('Core: CLI', () => {
         'config/api.js',
         'config/errors.js',
         'config/i18n.js',
+        'config/plugins.js',
         'config/logger.js',
         'config/redis.js',
         'config/routes.js',
