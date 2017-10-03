@@ -231,10 +231,17 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
         queues: api.config.tasks.queues || ['default']
       }, api.tasks.jobs)
 
-      await worker.connect()
-      let result = await worker.performInline(taskName, params)
-      await worker.end()
-      return result
+      try {
+        await worker.connect()
+        let result = await worker.performInline(taskName, params)
+        await worker.end()
+        return result
+      } catch (error) {
+        try {
+          worker.end()
+        } catch (error) {}
+        throw error
+      }
     }
   }
 
