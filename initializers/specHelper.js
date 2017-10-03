@@ -199,6 +199,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
         connection.actionCallbacks[(connection.messageCount)] = resolve
       })
 
+      if (!response.error) { delete response.error }
       return response
     }
 

@@ -1,9 +1,9 @@
 ## Overview
 
-You can create and include plugins for you ActionHero project. Plugins are collections of `tasks`, `actions`, `servers`, and `initializers` that are collected as a module. You can install plugins via NPM or keep them in a local path.  This enables a few features:
+You can create and include plugins for you ActionHero project. Plugins are collections of `tasks`, `actions`, `servers`, `initializers`, and `public` static assets that are collected as a module. You can install plugins via NPM or keep them in a local path.  This enables a few useful features:
 
 * Sharing and re-using common code
-* Composing your application via namespaced plugins
+* Composing your application via namespaced plugins for simpler SOA development.
 
 Plugins are loaded after all local ActionHero project files, but initializers follow the same priority scheme as all other initializers.
 
@@ -21,28 +21,43 @@ Plugins are loaded after all local ActionHero project files, but initializers fo
 | - package.json
 ```
 
-To create a plugin, create a project with the above structure via `actionhero generate plugin`.  Note that `actionhero` should be a `peerDependnacy` within your plugin.
+To create a plugin, create a project with the above structure via `actionhero generate plugin`.  Note that `actionhero` should be a `peerDependnacy` within your plugin, with the proper version.
 
 This structure will allow elements to be loaded into ActionHero (we search `/actions` for actions, `/tasks` for tasks, etc)
 
 When developing your plugin locally, you can load it into an existing ActionHero project to test it out.
 
-First, add the path your plugin is in to `api.config.general.paths.plugin`. If your ActionHero app is in `/var/ah/actionhero` and your plugin is in `/var/ah/my_plugin`, add `/var/ah` to `api.config.general.paths.plugin`
+To include your plugin in an actionHero project, add it to `config/plugins.js`
+
+```js
+// If you want to use plugins in your application, include them here:
+return {
+  'myPlugin': { path: __dirname + '/../node_modules/myPlugin' }
+}
+
+// You can also toggle on or off sections of a plugin to include (default true for all sections):
+return {
+  'myPlugin': {
+    path: __dirname + '/../node_modules/myPlugin',
+    actions: true,
+    tasks: true,
+    initializers: true,
+    servers: true,
+    public: true
+  }
+}
+```
 
 **Please use the npm naming convention `ah-(name)-plugin` when uploading your plugin to npm**
 
 ## Methods
 
-When creating plugins, you may find yourself wanting to do things which could normally be accomplished easily with a "top level" ActionHero project, but might be difficult from within the `node_modules` folder. Here are some helpers:
+When creating plugins, you may find yourself wanting to do things which could normally be accomplished easily with a "top level" ActionHero project, but might be difficult from within a plugin. Here are some helpers:
 
 ### Routes:
 
-*   `api.routes.registerRoute(method, path, action, apiVersion, matchTrailingPathParts)`
+* `api.routes.registerRoute(method, path, action, apiVersion, matchTrailingPathParts)`
     *   Add a route to the system.
-
-## Examples
-
-[You can view a sample plugin here](https://github.com/actionhero/ah-sample-plugin)
 
 ## Published
 

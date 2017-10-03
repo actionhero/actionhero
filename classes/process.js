@@ -48,8 +48,8 @@ module.exports = class Process {
     let loadInitializerRankings = {}
     let startInitializerRankings = {}
     let stopInitializerRankings = {}
-    let customInitializers = []
     let duplicatedInitializers = []
+    let initializerFiles = []
 
     this.loadInitializers = []
     this.startInitializers = []
@@ -72,20 +72,23 @@ module.exports = class Process {
       }
     })
 
+    // load initializers from core
+    initializerFiles = initializerFiles.concat(glob.sync(path.join(__dirname, '..', 'initializers', '**', '*.js')))
+
+    // load initializers from project
     api.config.general.paths.initializer.forEach((startPath) => {
-      customInitializers = customInitializers.concat(glob.sync(path.join(startPath, '**', '*.js')))
+      initializerFiles = initializerFiles.concat(glob.sync(path.join(startPath, '**', '*.js')))
     })
 
     // load initializers from plugins
     for (let pluginName in api.config.plugins) {
-      let pluginPath = api.config.plugins[pluginName].path
-      customInitializers.concat(glob.sync(path.join(pluginPath, 'initializers', '**', '*.js')))
+      if (api.config.plugins[pluginName] !== false) {
+        let pluginPath = api.config.plugins[pluginName].path
+        initializerFiles = initializerFiles.concat(glob.sync(path.join(pluginPath, 'initializers', '**', '*.js')))
+      }
     }
 
-    // load all other initializers
-    let initializerFiles = api.utils.arrayUniqueify(
-      glob.sync(path.join(__dirname, '..', 'initializers', '**', '*.js')).sort().concat(customInitializers.sort())
-    )
+    initializerFiles = api.utils.arrayUniqueify(initializerFiles)
 
     initializerFiles.forEach((f) => {
       let file = path.normalize(f)

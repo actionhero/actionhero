@@ -51,10 +51,10 @@ exports['default'] = {
   }
 }
 
-// exports.test = {
-//   logger: (api) => {
-//     return {
-//       transports: null
-//     }
-//   }
-// }
+exports.test = {
+  logger: (api) => {
+    return {
+      transports: null
+    }
+  }
+}

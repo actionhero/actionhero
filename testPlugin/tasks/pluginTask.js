@@ -1,5 +1,4 @@
-'use strict'
-const ActionHero = require('./../index.js')
+const ActionHero = require('./../../index.js')
 
 module.exports = class PlutingTask extends ActionHero.Task {
   constructor () {

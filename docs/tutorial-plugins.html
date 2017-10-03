@@ -43,10 +43,10 @@
 </header>
 
 <article>
-    <h2>Overview</h2><p>You can create and include plugins for you ActionHero project. Plugins are collections of <code>tasks</code>, <code>actions</code>, <code>servers</code>, and <code>initializers</code> that are collected as a module. You can install plugins via NPM or keep them in a local path.  This enables a few features:</p>
+    <h2>Overview</h2><p>You can create and include plugins for you ActionHero project. Plugins are collections of <code>tasks</code>, <code>actions</code>, <code>servers</code>, <code>initializers</code>, and <code>public</code> static assets that are collected as a module. You can install plugins via NPM or keep them in a local path.  This enables a few useful features:</p>
 <ul>
 <li>Sharing and re-using common code</li>
-<li>Composing your application via namespaced plugins</li>
+<li>Composing your application via namespaced plugins for simpler SOA development.</li>
 </ul>
 <p>Plugins are loaded after all local ActionHero project files, but initializers follow the same priority scheme as all other initializers.</p>
 <h2>Creating</h2><pre class="prettyprint source lang-bash"><code>/
@@ -57,19 +57,33 @@
 | - config
 | - public
 |
-| - package.json</code></pre><p>To create a plugin, create a project with the above structure via <code>actionhero generate plugin</code>.  Note that <code>actionhero</code> should be a <code>peerDependnacy</code> within your plugin.</p>
+| - package.json</code></pre><p>To create a plugin, create a project with the above structure via <code>actionhero generate plugin</code>.  Note that <code>actionhero</code> should be a <code>peerDependnacy</code> within your plugin, with the proper version.</p>
 <p>This structure will allow elements to be loaded into ActionHero (we search <code>/actions</code> for actions, <code>/tasks</code> for tasks, etc)</p>
 <p>When developing your plugin locally, you can load it into an existing ActionHero project to test it out.</p>
-<p>First, add the path your plugin is in to <code>api.config.general.paths.plugin</code>. If your ActionHero app is in <code>/var/ah/actionhero</code> and your plugin is in <code>/var/ah/my_plugin</code>, add <code>/var/ah</code> to <code>api.config.general.paths.plugin</code></p>
-<p><strong>Please use the npm naming convention <code>ah-(name)-plugin</code> when uploading your plugin to npm</strong></p>
-<h2>Methods</h2><p>When creating plugins, you may find yourself wanting to do things which could normally be accomplished easily with a &quot;top level&quot; ActionHero project, but might be difficult from within the <code>node_modules</code> folder. Here are some helpers:</p>
+<p>To include your plugin in an actionHero project, add it to <code>config/plugins.js</code></p>
+<pre class="prettyprint source lang-js"><code>// If you want to use plugins in your application, include them here:
+return {
+  'myPlugin': { path: __dirname + '/../node_modules/myPlugin' }
+}
+
+// You can also toggle on or off sections of a plugin to include (default true for all sections):
+return {
+  'myPlugin': {
+    path: __dirname + '/../node_modules/myPlugin',
+    actions: true,
+    tasks: true,
+    initializers: true,
+    servers: true,
+    public: true
+  }
+}</code></pre><p><strong>Please use the npm naming convention <code>ah-(name)-plugin</code> when uploading your plugin to npm</strong></p>
+<h2>Methods</h2><p>When creating plugins, you may find yourself wanting to do things which could normally be accomplished easily with a &quot;top level&quot; ActionHero project, but might be difficult from within a plugin. Here are some helpers:</p>
 <h3>Routes:</h3><ul>
 <li><code>api.routes.registerRoute(method, path, action, apiVersion, matchTrailingPathParts)</code><ul>
 <li>Add a route to the system.</li>
 </ul>
 </li>
 </ul>
-<h2>Examples</h2><p><a href="https://github.com/actionhero/ah-sample-plugin">You can view a sample plugin here</a></p>
 <h2>Published</h2><p>You can view a list of plugins maintained by <a href="https://github.com/l0oky">@l0oky</a> via <a href="https://github.com/l0oky/awesome-actionhero"><img src="https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg" alt="Awesome"></a></p>
 </article>
 
