@@ -19,10 +19,9 @@ module.exports = class Action {
    *
    * @tutorial actions
    * @example
-'use strict'
-const ActionHero = require('actionhero')
+const {Action} = require('actionhero')
 
-module.exports = class RandomNumber extends ActionHero.Action {
+module.exports = class RandomNumber extends Action {
  constructor () {
    super()
    this.name = 'randomNumber'
@@ -30,8 +29,8 @@ module.exports = class RandomNumber extends ActionHero.Action {
    this.outputExample = {randomNumber: 0.1234}
  }
 
- async run (data) {
-   data.response.randomNumber = Math.random()
+ async run ({response}) {
+   response.randomNumber = Math.random()
  }
 }
    */
