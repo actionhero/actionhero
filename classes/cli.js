@@ -11,10 +11,9 @@ module.exports = class CLI {
    *
    * @tutorial cli
    * @example
-'use strict'
-const ActionHero = require('actionhero')
+const {CLI, api} = require('actionhero')
 
-module.exports = class MyCLICommand extends ActionHero.CLI {
+module.exports = class MyCLICommand extends CLI {
   constructor () {
     super()
     this.name = 'backup redis'
@@ -26,7 +25,6 @@ module.exports = class MyCLICommand extends ActionHero.CLI {
   }
 
   async run ({params}) {
-    const api = ActionHero.api
     return api.cache.dumpWrite(params.file)
   }
 }

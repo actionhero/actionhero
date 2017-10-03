@@ -26,37 +26,31 @@ const api = ActionHero.api
  * @property {ActionHero~TaskCallback} postEnqueue - Called after a task using this middleware is enqueud.
  * @see api.actions.addMiddleware
  * @example
-api.taskTimer = {
-  middleware: {
-    name: 'timer',
-    global: true,
-    priority: 90,
-    preProcessor: function(next){
-      var worker = this.worker;
-      worker.start = process.hrtime();
-      next();
-    },
-    postProcessor: function(next){
-      var worker = this.worker;
-      var elapsed = process.hrtime(worker.start);
-      var seconds = elapsed[0];
-      var millis = elapsed[1] / 1000000;
-      api.log(worker.job.class + ' done in ' + seconds + ' s and ' + millis + ' ms.', 'info');
-      next();
-    },
-    preEnqueue: function(next){
-      var params = this.args[0];
-      //Validate params
-      next(null, true); //callback is in form cb(error, toRun)
-    },
-    postEnqueue: function(next){
-      api.log("Task successfully enqueued!");
-      next();
-    }
+const middleware = {
+  name: 'timer',
+  global: true,
+  priority: 90,
+  preProcessor: async () => {
+    const worker = this.worker
+    worker.startTime = process.hrtime()
+  },
+  postProcessor: async () => {
+    const worker = this.worker
+    const elapsed = process.hrtime(worker.startTime)
+    const seconds = elapsed[0]
+    const millis = elapsed[1] / 1000000
+    api.log(worker.job.class + ' done in ' + seconds + ' s and ' + millis + ' ms.', 'info')
+  },
+  preEnqueue: async () => {
+    const arg = this.args[0]
+    return (arg === 'ok') // returing `false` will prevent the task from enqueing
+  },
+  postEnqueue: async () => {
+    api.log("Task successfully enqueued!")
   }
-};
+}
 
-api.tasks.addMiddleware(api.taskTimer.middleware);
+api.tasks.addMiddleware(middleware)
  */
 
 /**

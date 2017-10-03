@@ -13,9 +13,9 @@ module.exports = class Task {
    * @tutorial tasks
    * @example
 'use strict'
-const ActionHero = require('actionhero')
+const {Task, api} = require('actionhero')
 
-module.exports = class SayHello extends ActionHero.Task {
+module.exports = class SayHello extends Task {
  constructor () {
    super()
    this.name = 'sayHello'
@@ -24,7 +24,7 @@ module.exports = class SayHello extends ActionHero.Task {
  }
 
  async run (data) {
-   ActionHero.api.log('Hello!')
+   api.log('Hello!')
  }
 }
    */
