@@ -1,4 +1,4 @@
-const ActionHero = require('./../../index.js')
+const ActionHero = require('./../../../index.js')
 
 module.exports = class PluginAction extends ActionHero.Action {
   constructor () {

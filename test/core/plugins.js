@@ -17,7 +17,7 @@ describe('Core: Plugins', () => {
     before(async () => {
       configChanges = {
         plugins: {
-          'testPlugin': { path: path.join(__dirname, '..', '..', 'testPlugin') }
+          'testPlugin': { path: path.join(__dirname, '..', 'testPlugin') }
         }
       }
 
@@ -55,7 +55,7 @@ describe('Core: Plugins', () => {
       configChanges = {
         plugins: {
           'testPlugin': {
-            path: path.join(__dirname, '..', '..', 'testPlugin'),
+            path: path.join(__dirname, '..', 'testPlugin'),
             actions: false,
             tasks: false,
             servers: false,
