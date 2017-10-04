@@ -37,6 +37,22 @@ module.exports = class Redis extends ActionHero.Initializer {
       subscribed: false
     }
 
+    /**
+     * Publish a message to all other ActionHero nodes in the clsuter.  Will be autneticated against `api.config.serverToken`
+     *
+     * @async
+     * @param  {Object}  payload The message to send.  Must include `serverToken`
+     * @return {Promise}
+     * @example
+let payload = {
+  messageType: 'myMessageType',
+  serverId: api.id,
+  serverToken: api.config.general.serverToken,
+  message: 'hello!'
+}
+
+await api.redis.publish(payload)
+     */
     api.redis.publish = async (payload) => {
       const channel = api.config.general.channel
       return api.redis.clients.client.publish(channel, JSON.stringify(payload))

@@ -18,10 +18,9 @@ module.exports = class Server extends EventEmitter {
    *
    * @tutorial servers
    * @example
-'use strict'
-const ActionHero = require('actionhero')
+const {Server, api} = require('actionhero')
 
-module.exports = class MyServer extends ActionHero.Server {
+module.exports = class MyServer extends Server {
   constructor () {
     super()
     this.type = '%%name%%'

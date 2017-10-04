@@ -27,18 +27,13 @@ var middleware = {
   name: 'userId checker',
   global: false,
   priority: 1000,
-  preProcessor: function(data, next){
+  preProcessor: async (data) => {
     if(!data.params.userId){
-      next(new Error('All actions require a userId') );
-    }else{
-      next();
+      throw new Error('All actions require a userId')
     }
   },
-  postProcessor: function(data, next){
-    if(data.thing.stuff == false){
-      data.toRender = false;
-    }
-    next(error);
+  postProcessor: async (data) => {
+    if(data.thing.stuff == false){ data.toRender = false }
   }
 }
 
