@@ -99,7 +99,7 @@ module.exports = class Tasks extends ActionHero.Initializer {
         task = new TaskClass()
         task.validate()
 
-        if (api.actions.tasks[task.name]) {
+        if (api.tasks.tasks[task.name]) {
           api.log(`an existing task with the same name \`${task.name}\` will be overridden by the file ${fullFilePath}`, 'warning')
         }
 
