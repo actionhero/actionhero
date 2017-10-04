@@ -119,10 +119,10 @@ describe('Server: Web Socket', () => {
   })
 
   it('properly responds with messageCount', (done) => {
-    let verbResponse = false
-    let actionResponse = false
-    let verbMsgCount = false
-    let actionMsgCount = false
+    var verbResponse = false
+    var actionResponse = false
+    var verbMsgCount = false
+    var actionMsgCount = false
     clientA.roomAdd('defaultRoom', (response) => {
       verbResponse = true
       verbMsgCount = response.messageCount
