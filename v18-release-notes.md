@@ -133,7 +133,7 @@ The ActionHero Core Team had to make a hard decision with this release.  This ma
 
 However, to continue to support ActionHero users on v17, we will break with our other policy of only supporting "master".  We've cut a v17 branch, and will continue to accept patches and updates to it until March of 2018. We will also port any security fixes from master back to v17.  We know that upgrading to v18 (and perhaps a new version of Node.JS) will be the most difficult ActionHero migration to date, but I assure you it will be worth it!
 
-I've also discussed these thoughts on the first ["Always bet on Node podcast"](https://twitter.com/dshaw/status/909565638443708417) with @dshaw and @mikeal.
+I've also discussed these thoughts on the first ["Always bet on Node podcast"](https://twitter.com/dshaw/status/909565638443708417) with @dshaw and @mikeal and in [this]() blog post (forthcoming).
 
 ## API changes and Documentation: [docs.actionherojs.com](https://docs.actionherojs.com)
 
@@ -231,9 +231,70 @@ Every method which used to supply the `api` object as an argument no longer does
 
 Support fakeredis is dropped.  In fact, the maintainer has stoped supporting it.  `ioredis` is now a required dependent package.  That said, if you don't need any of the redis features (cache, chat, pub/sub, tasks), you can disable them all with `api.config.redis.enabled = false` configuration option, and you can still boot an ActionHero server without redis.
 
+### How to require plugins has changed
+
+#### Remove `actionhero link` (and `actionhero unlink`) in favor of `config/plugins.js`
+ Using linkfiles was brittle.  It didn't work with namespaced NPM packages, and struggled on windows computers.  We are returning to using a configuration file to define plugins which your application will load.  
+
+```js
+// config/plugins.js
+
+// If you want to use plugins in your application, include them here:
+return {
+  'myPlugin': { path: __dirname + '/../node_modules/myPlugin' }
+}
+
+// You can also toggle on or off sections of a plugin to include (default true for all sections):
+return {
+  'myPlugin': {
+    path: __dirname + '/../node_modules/myPlugin',
+    actions: true,
+    tasks: true,
+    initializers: true,
+    servers: true,
+    public: true
+  }
+}
+```
+
+This also makes testing plugins much easier, as you can boot up an ActionHero server from within your plugin (if `actionhero` is a devDependancy) with the following:
+
+```js
+const path = require('path')
+const ActionHero = require('actionhero')
+const actionhero = new ActionHero.Process()
+let api
+
+describe('My Plugin', () => {
+  before(async () => {
+    let configChanges = {
+      plugins: {
+        'testPlugin': { path: path.join(__dirname, '..') }
+      }
+    }
+
+    process.env.PROJECT_ROOT = path.join(__dirname, '..', 'node_modules', 'actionhero')
+    api = await actionhero.start({configChanges})
+  })
+
+  after(async () => { await actionhero.stop() })
+
+  it('does stuff', async () => {
+    //...
+  })
+})
+```
+
+#### Add `actionhero generate plugin`
+A helper which you can use in an empty directory which will create a template plugin project
+
+#### Remove `api.utils.recursiveDirectoryGlob` in favor of the nom `glob` package.
+We can use the standard package now that we no longer need to traverse custom ActionHero link files
+
 ## Other notes
 
 * All dependent packages have been updated to their latest versions.
+* ActionHero will no longer throw an error and exit if you override a core (or existing) initializer, action, task, etc.  We now log an error and allow it.
 * A related change to Node Resque https://github.com/taskrabbit/node-resque/pull/212 is part of this update.
 A related change to Browser Fingerprint https://github.com/actionhero/browser_fingerprint/releases/tag/v1.0.1 is part of this update.
 * `ActionheroClient` (the included client library for browser websocket clients) as been named a more clear `ActionheroWebsocketClient` to avoid ambiguity.  The node sever-sever package has been renamed `actionhero-node-client` to help clear up any confusion.
