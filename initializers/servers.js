@@ -53,6 +53,11 @@ module.exports = class Servers extends ActionHero.Initializer {
         server.config = api.config.servers[server.type] // shorthand access
         if (server.config && server.config.enabled === true) {
           await server.initialize()
+
+          if (api.servers.servers[server.type]) {
+            api.log(`an existing server with the same type \`${server.type}\` will be overridden by the file ${filename}`, 'warning')
+          }
+
           api.servers.servers[server.type] = server
           api.log(`Initialized server: ${server.type}`, 'debug')
         }

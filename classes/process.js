@@ -48,7 +48,6 @@ module.exports = class Process {
     let loadInitializerRankings = {}
     let startInitializerRankings = {}
     let stopInitializerRankings = {}
-    let duplicatedInitializers = []
     let initializerFiles = []
 
     this.loadInitializers = []
@@ -106,7 +105,8 @@ module.exports = class Process {
         file !== path.resolve(__dirname, '..', 'initializers', 'utils.js') &&
         file !== path.resolve(__dirname, '..', 'initializers', 'config.js')
       ) {
-        return duplicatedInitializers.push(file)
+        let warningMessage = `an existing intializer with the same name \`${initializer.name}\` will be overridden by the file ${file}`
+        if (api.log) { api.log(warningMessage, 'warning') } else { console.warn(warningMessage) }
       } else {
         initializer.validate()
         this.initializers[initializer.name] = initializer
@@ -182,12 +182,6 @@ module.exports = class Process {
     }
 
     api.initialized = true
-
-    if (duplicatedInitializers.length > 0) {
-      duplicatedInitializers.forEach(initializer => api.log(`Initializer ${initializer} already exists!`, 'error'))
-      await api.commands.stop()
-      return process.exit(1)
-    }
 
     return api
   }
