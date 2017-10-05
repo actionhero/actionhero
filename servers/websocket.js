@@ -220,6 +220,7 @@ const initialize = function (api, options, next) {
     const verb = data.event
     delete data.event
     connection.messageCount++
+    const messageCount = connection.messageCount
     connection.params = {}
     if (verb === 'action') {
       for (let v in data.params) {
@@ -244,10 +245,10 @@ const initialize = function (api, options, next) {
       connection.verbs(verb, words, (error, data) => {
         if (!error) {
           message = {status: 'OK', context: 'response', data: data}
-          server.sendMessage(connection, message)
+          server.sendMessage(connection, message, messageCount)
         } else {
           message = {status: error, context: 'response', data: data}
-          server.sendMessage(connection, message)
+          server.sendMessage(connection, message, messageCount)
         }
       })
     }
