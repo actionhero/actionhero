@@ -29,7 +29,7 @@ const ActionHeroCluster = require(path.join(__dirname, 'lib', 'actionheroCluster
 const ActionHero = require('./../../../index.js')
 const api = ActionHero.api
 
-module.exports = class ActionsList extends ActionHero.CLI {
+module.exports = class StartCluster extends ActionHero.CLI {
   constructor () {
     super()
     this.name = 'start cluster'

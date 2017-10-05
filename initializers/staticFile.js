@@ -172,25 +172,14 @@ module.exports = class StaticFile extends ActionHero.Initializer {
       })
     }
 
-    // source the .linked paths from plugins
-    if (api.config.general.paths !== undefined) {
-      api.config.general.paths['public'].forEach((p) => {
-        let pluginPath = p + path.sep + 'plugins'
-        if (fs.existsSync(pluginPath)) {
-          fs.readdirSync(pluginPath).forEach(function (file) {
-            let parts = file.split('.')
-            let name = parts[0]
-            if (parts[(parts.length - 1)] === 'link' && fs.readFileSync(pluginPath + path.sep + file).toString() === 'public') {
-              api.config.general.paths.plugin.forEach(function (potentialPluginPath) {
-                potentialPluginPath = path.normalize(potentialPluginPath + path.sep + name + path.sep + 'public')
-                if (fs.existsSync(potentialPluginPath) && api.staticFile.searchLoactions.indexOf(potentialPluginPath) < 0) {
-                  api.staticFile.searchLoactions.push(potentialPluginPath)
-                }
-              })
-            }
-          })
+    // source the public directories from plugins
+    for (let pluginName in api.config.plugins) {
+      if (api.config.plugins[pluginName].public !== false) {
+        let pluginPublicPath = path.join(api.config.plugins[pluginName].path, 'public')
+        if (fs.existsSync(pluginPublicPath) && api.staticFile.searchLoactions.indexOf(pluginPublicPath) < 0) {
+          api.staticFile.searchLoactions.push(pluginPublicPath)
         }
-      })
+      }
     }
 
     api.log('static files will be served from these directories', 'debug', api.staticFile.searchLoactions)

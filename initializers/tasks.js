@@ -1,6 +1,8 @@
 'use strict'
 
 const NodeResque = require('node-resque')
+const glob = require('glob')
+const path = require('path')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
@@ -96,6 +98,11 @@ module.exports = class Tasks extends ActionHero.Initializer {
         const TaskClass = collection[i]
         task = new TaskClass()
         task.validate()
+
+        if (api.tasks.tasks[task.name]) {
+          api.log(`an existing task with the same name \`${task.name}\` will be overridden by the file ${fullFilePath}`, 'warning')
+        }
+
         api.tasks.tasks[task.name] = task
         api.tasks.jobs[task.name] = api.tasks.jobWrapper(task.name)
         api.log(`task ${(reload ? '(re)' : '')} loaded: ${task.name}, ${fullFilePath}`, 'debug')
@@ -534,10 +541,19 @@ module.exports = class Tasks extends ActionHero.Initializer {
 
     api.tasks.loadTasks = (reload) => {
       api.config.general.paths.task.forEach((p) => {
-        api.utils.recursiveDirectoryGlob(p).forEach((f) => {
+        glob.sync(path.join(p, '**', '*.js')).forEach((f) => {
           api.tasks.loadFile(f, reload)
         })
       })
+
+      for (let pluginName in api.config.plugins) {
+        if (api.config.plugins[pluginName].tasks !== false) {
+          let pluginPath = api.config.plugins[pluginName].path
+          glob.sync(path.join(pluginPath, 'tasks', '**', '*.js')).forEach((f) => {
+            api.tasks.loadFile(f, reload)
+          })
+        }
+      }
     }
 
     api.tasks.addMiddleware = (middleware) => {

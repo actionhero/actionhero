@@ -5,7 +5,7 @@ const path = require('path')
 const ActionHero = require('./../../index.js')
 const api = ActionHero.api
 
-module.exports = class ActionsList extends ActionHero.CLI {
+module.exports = class Generate extends ActionHero.CLI {
   constructor () {
     super()
     this.name = 'generate'
@@ -23,6 +23,7 @@ module.exports = class ActionsList extends ActionHero.CLI {
       configRedisJs: '/config/redis.js',
       configTasksJs: '/config/tasks.js',
       configErrorsJs: '/config/errors.js',
+      configPluginsJs: '/config/plugins.js',
       configI18nJs: '/config/i18n.js',
       configRoutesJs: '/config/routes.js',
       configSocketJs: '/config/servers/socket.js',
@@ -90,6 +91,7 @@ module.exports = class ActionsList extends ActionHero.CLI {
       '/config/redis.js': 'configRedisJs',
       '/config/tasks.js': 'configTasksJs',
       '/config/errors.js': 'configErrorsJs',
+      '/config/plugins.js': 'configPluginsJs',
       '/config/i18n.js': 'configI18nJs',
       '/config/routes.js': 'configRoutesJs',
       '/config/servers/socket.js': 'configSocketJs',

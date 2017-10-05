@@ -4,7 +4,7 @@ const path = require('path')
 const packageJSON = require(path.join(__dirname, '/../../package.json'))
 const ActionHero = require('./../../index.js')
 
-module.exports = class ActionsList extends ActionHero.CLI {
+module.exports = class Version extends ActionHero.CLI {
   constructor () {
     super()
     this.name = 'version'

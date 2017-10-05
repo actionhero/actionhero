@@ -1,5 +1,7 @@
 'use strict'
 
+const glob = require('glob')
+const path = require('path')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
@@ -109,6 +111,11 @@ module.exports = class Actions extends ActionHero.Initializer {
           await action.validate(api)
           if (!api.actions.actions[action.name]) { api.actions.actions[action.name] = {} }
           if (!api.actions.versions[action.name]) { api.actions.versions[action.name] = [] }
+
+          if (api.actions.actions[action.name][action.version]) {
+            api.log(`an existing action with the same name \`${action.name}\` will be overridden by the file ${fullFilePath}`, 'warning')
+          }
+
           api.actions.actions[action.name][action.version] = action
           api.actions.versions[action.name].push(action.version)
           api.actions.versions[action.name].sort()
@@ -125,9 +132,17 @@ module.exports = class Actions extends ActionHero.Initializer {
     }
 
     for (let i in api.config.general.paths.action) {
-      let path = api.config.general.paths.action[i]
-      let files = api.utils.recursiveDirectoryGlob(path)
+      let p = api.config.general.paths.action[i]
+      let files = glob.sync(path.join(p, '**', '*.js'))
       for (let j in files) { await api.actions.loadFile(files[j]) }
+    }
+
+    for (let pluginName in api.config.plugins) {
+      if (api.config.plugins[pluginName].actions !== false) {
+        let pluginPath = api.config.plugins[pluginName].path
+        let files = glob.sync(path.join(pluginPath, 'actions', '**', '*.js'))
+        for (let j in files) { await api.actions.loadFile(files[j]) }
+      }
     }
   }
 }
