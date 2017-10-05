@@ -52,6 +52,36 @@ return {
 
 **Please use the npm naming convention `ah-(name)-plugin` when uploading your plugin to npm**
 
+## Testing
+
+This new plugin structure also makes testing plugins much easier, as you can boot up an ActionHero server from within your plugin (if `actionhero` is a devDependancy) with the following:
+
+```js
+const path = require('path')
+process.env.PROJECT_ROOT = path.join(__dirname, '..', 'node_modules', 'actionhero')
+const ActionHero = require('actionhero')
+const actionhero = new ActionHero.Process()
+let api
+
+describe('My Plugin', () => {
+  before(async () => {
+    let configChanges = {
+      plugins: {
+        'testPlugin': { path: path.join(__dirname, '..') }
+      }
+    }
+
+    api = await actionhero.start({configChanges})
+  })
+
+  after(async () => { await actionhero.stop() })
+
+  it('does stuff', async () => {
+    //...
+  })
+})
+```
+
 ## Methods
 
 When creating plugins, you may find yourself wanting to do things which could normally be accomplished easily with a "top level" ActionHero project, but might be difficult from within a plugin. Here are some helpers:

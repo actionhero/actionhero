@@ -261,6 +261,7 @@ This also makes testing plugins much easier, as you can boot up an ActionHero se
 
 ```js
 const path = require('path')
+process.env.PROJECT_ROOT = path.join(__dirname, '..', 'node_modules', 'actionhero')
 const ActionHero = require('actionhero')
 const actionhero = new ActionHero.Process()
 let api
@@ -273,7 +274,6 @@ describe('My Plugin', () => {
       }
     }
 
-    process.env.PROJECT_ROOT = path.join(__dirname, '..', 'node_modules', 'actionhero')
     api = await actionhero.start({configChanges})
   })
 
