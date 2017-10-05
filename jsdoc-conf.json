@@ -25,7 +25,10 @@
   },
   "templates": {
     "default": {
-      "includeDate": false
+      "includeDate": false,
+      "staticFiles": {
+        "include": [ "./tutorials/images" ]
+      }
     }
   },
   "plugins": [

@@ -112,7 +112,7 @@ exports.routes = {
 };
 ```
 
-We go into more detail about routes when discussing the [web server](tutorial-web.html)
+We go into more detail about routes when discussing the [web server](tutorial-web-server.html)
 
 ## Options
 
@@ -353,4 +353,4 @@ You can [learn more about middleware here](tutorial-middleware.html).
 * `matchExtensionMimeType` is currently only used by the `web` server, and it indicates that if this action is successfully called by a client with `connection.extension` set, the headers of the response should be changed to match that file type.  This is useful when creating actions that download files.
 * ActionHero strives to keep the `data.connection` object uniform among various client types, and more importantly, present `data.params` in a homogeneous way to actions.  You can inspect `data.connection.type` to learn more about the connection.  The gory details of the connection (which vary on its type) are stored in `data.connection.rawConnection` which will contain the websocket, tcp connection, etc.  For web clients, `{`data.connection.rawConnection = {req: req, res: res}`}` for example.
 
-[You can learn more about handling HTTP verbs and file uploads here](tutorial-web.html) and [TCP Clients](tutorial-socket.html) and [Web-Socket Clients](tutorial-websocket.html).
+[You can learn more about handling HTTP verbs and file uploads here](tutorial-web-server.html) and [TCP Clients](tutorial-socket-server.html) and [Web-Socket Clients](tutorial-websocket-server.html).

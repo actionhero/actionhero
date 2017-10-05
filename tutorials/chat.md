@@ -27,7 +27,7 @@ Every connection object also has a `connection.sendMessage(message)` method whic
 
 ## Client Use
 
-The details of communicating within a chat room are up to each individual server (see [websocket](tutorial-websocket.html) or [socket](tutorial-socket.html)), but the same principals apply:
+The details of communicating within a chat room are up to each individual server (see [websocket](tutorial-websocket-server.html) or [socket](tutorial-socket-server.html)), but the same principals apply:
 
 *   Client will join a room (`client.roomAdd(room)`).
 *   Once in the room, clients can send messages (which are strings) to everyone else in the room via `say`, ie: `{`client.say('room', Hello World')`}`

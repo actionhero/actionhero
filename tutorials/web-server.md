@@ -1,5 +1,9 @@
 ## Overview
 
+The web server exposes actions and files over http or https. You can visit the API in a browser, Curl, etc. `{url}?action=actionName` or `{url}/api/{actionName}` is how you would access an action. For example, using the default ports in `/config/servers/web.js` you could reach the status action with both `http://127.0.0.1:8080/status` or `http://127.0.0.1:8080/?action=status`
+
+HTTP responses are always JSON and follow the following format:
+
 ```js
 {
   hello: "world",
@@ -18,13 +22,9 @@
 }
 ```
 
-The web server exposes actions and files over http or https. You can visit the API in a browser, Curl, etc. `{`{url}?action=actionName`}` or `{`{url}/api/{actionName}`}` is how you would access an action. For example, using the default ports in `/config/servers/web.js` you could reach the status action with both `http://127.0.0.1:8080/status` or `http://127.0.0.1:8080/?action=status`
+## Full HTTP Example
 
-HTTP responses are always JSON and follow the format above.
-
-## HTTP Example
-
-```bash
+```
 > curl 'localhost:8080/api/status' -v | python -mjson.tool
 * About to connect() to localhost port 8080 (#0)
 *   Trying 127.0.0.1...
@@ -59,40 +59,16 @@ HTTP responses are always JSON and follow the format above.
         "requestDuration": 1,
         "serverName": "actionhero API"
     },
-    "stats": {
-        "cache": {
-            "numberOfObjects": 0
-        },
+    "stats":
         "id": "10.0.1.12:8080:4443:5000",
-        "memoryConsumption": 8421200,
-        "peers": [
-            "10.0.1.12:8080:4443:5000"
-        ],
-        "queue": {
-            "queueLength": 0,
-            "sleepingTasks": []
-        },
-        "socketServer": {
-            "numberOfGlobalSocketRequests": 0,
-            "numberOfLocalActiveSocketClients": 0,
-            "numberOfLocalSocketRequests": 0
-        },
-        "uptimeSeconds": 34.163,
-        "webServer": {
-            "numberOfGlobalWebRequests": 5,
-            "numberOfLocalWebRequests": 3
-        },
-        "webSocketServer": {
-            "numberOfGlobalWebSocketRequests": 0,
-            "numberOfLocalActiveWebSocketClients": 0
-        }
+        "uptimeSeconds": 34.163
     }
 }
 ```
 
-*   You can provide the `?callback=myFunc` param to initiate a JSONp response which will wrap the returned JSON in your callback {`function`}. The mime type of the response will change from JSON to Javascript.
-*   If everything went OK with your request, no error attribute will be set on the response, otherwise, you should see either a string or hash error response within your action
-*   To build the response for "hello" above, the action would have set `{`connection.response.hello = 'world'`}`
+* You can provide the `?callback=myFunc` param to initiate a JSONp response which will wrap the returned JSON in your callback `function`. The mime type of the response will change from JSON to Javascript.
+* If everything went OK with your request, no error attribute will be set on the response, otherwise, you should see either a string or hash error response within your action
+* To build the response for "hello" above, the action would have set `data.response.hello = 'world'` in an action.
 
 ## Config Options
 
@@ -227,7 +203,7 @@ config.server.web.serverOptions: {
 }
 ```
 
-when inspecting `connection` in actions from web client, a few additional elements are added for convenience:
+when inspecting `data.connection` in actions or action middleware from web client, a few additional elements are added for convenience:
 
 *   `connection.rawConnection.responseHeaders`: array of headers which can be built up in the action. Headers will be made unique, and latest header will be used (except setting cookies)
 *   `connection.rawConnection.method`: A string, GET, POST, etc
@@ -238,7 +214,6 @@ when inspecting `connection` in actions from web client, a few additional elemen
 *   `connection.rawConnection.params.files` will contain un-filtered form data
 *   `connection.extension`. If are using a route to access an action, and the request path ends in a file extension (IE: `server.com/action/option.jpg`), the extension will be available. Depending on the server's options, this extension may also be used to modify the response mime-type by configuring `matchExtensionMimeType` within each action.
 
-Of course, the generic connection attributes (`connection.error`, `connection.params`, etc) will be present.
 
 ## Sending Files
 
@@ -254,15 +229,15 @@ There are helpers you can use in your actions to send files:
 
 *   `/public` and `/api` are routes which expose the directories of those types. These top level path can be configured in `/config/servers/web.js` with `api.config.servers.web.urlPathForActions` and `api.config.servers.web.urlPathForFiles`.
 *   the root of the web server "/" can be toggled to serve the content between /file or /api actions per your needs `api.config.servers.web.rootEndpointType`. The default is `api`.
-*   ActionHero will serve up flat files (html, images, etc) as well from your ./public folder. This is accomplished via the `file` route as described above. `{`http://{baseUrl}/public/{pathToFile}`}` is equivalent to `{`http://{baseUrl}?action=file&fileName={pathToFile}`}` and `{`http://{baseUrl}/file/{pathToFile}`}`.
+*   ActionHero will serve up flat files (html, images, etc) as well from your ./public folder. This is accomplished via the `file` route as described above. `http://{baseUrl}/public/{pathToFile}` is equivalent to `http://{baseUrl}?action=file&fileName={pathToFile}` and `http://{baseUrl}/file/{pathToFile}`.
 *   Errors will result in a 404 (file not found) with a message you can customize.
 *   Proper mime-type headers will be set when possible via the `mime` package.
 
-See the [file server](/docs/core/file-server) page for more documentation
+See the [file server](tutorial-file-server.html) page for more documentation
 
 ## Routes
 
-For web clients (http and https), you can define an optional RESTful mapping to help route requests to actions. If the client doesn't specify an action via a param, and the base route isn't a named action, the action will attempt to be discerned from this `config/routes.js` file.
+For web clients, you can define an optional RESTful mapping to help route requests to actions. If the client doesn't specify an action via a param, and the base route isn't a named action, the action will attempt to be discerned from this `config/routes.js` file.
 
 This variables in play here are:
 
@@ -431,7 +406,7 @@ Params provided by the user (GET, POST, etc for http and https servers, setParam
 ]
 ```
 
-Params are loaded in this order GET -> POST (normal) -> POST (multipart). This means that if you have `{`{url}?key=getValue`}` and you post a variable `key=postValue` as well, the `postValue` will be the one used. The only exception to this is if you use the URL method of defining your action. You can add arbitrary params to the whitelist by adding them to the `api.postVariables` array in your initializers.
+Params are loaded in this order GET -> POST (normal) -> POST (multipart). This means that if you have `{url}?key=getValue` and you post a variable `key=postValue` as well, the `postValue` will be the one used. The only exception to this is if you use the URL method of defining your action. You can add arbitrary params to the whitelist by adding them to the `api.postVariables` array in your initializers.
 
 File uploads from forms will also appear in `connection.params`, but will be an object with more information. That is, if you uploaded a file called "image", you would have `connection.params.image.path`, `connection.params.image.name` (original file name), and `connection.params.image.type` available to you.
 
@@ -439,7 +414,7 @@ A note on JSON payloads:
 
 You can post BODY json paylaods to actionHero in the form of a hash or array.
 
-**Hash**: `{`curl -X POST -d '{"key":"something", "value":{"a":1, "b":2}}' http://localhost:8080/api/cacheTest`}`. This will result in:
+**Hash**: `curl -X POST -d '{"key":"something", "value":{"a":1, "b":2}}' http://localhost:8080/api/cacheTest`. This will result in:
 
 ```js
 connection.params = {
@@ -451,7 +426,7 @@ connection.params = {
 }
 ```
 
-**Array**: `{`curl -X POST -d '[{"key":"something", "value":{"a":1, "b":2}}]' http://localhost:8080/api/cacheTest`}`. In this case, we set the array to the param key `payload`:
+**Array**: `curl -X POST -d '[{"key":"something", "value":{"a":1, "b":2}}]' http://localhost:8080/api/cacheTest`. In this case, we set the array to the param key `payload`:
 
 ```js
 connection.params = {

@@ -12,7 +12,7 @@ ActionHero will generate the client-side javascript needed for you (based on the
 
 <script>
 
-  client = new ActionheroWebsocketClient;
+  client = new ActionheroWebsocketClient();
 
   client.on('connected',    function(){ console.log('connected!') })
   client.on('disconnected', function(){ console.log('disconnected :(') })
@@ -44,7 +44,7 @@ ActionHero will generate the client-side javascript needed for you (based on the
 </script>
 ```
 
-`connection.type` for a webSocket client is "webSocket". This type will not change regardless of if the client has fallen back to another protocol.
+`connection.type` for a webSocket client is "websocket". This type will not change regardless of if the client has fallen back to another protocol.
 
 Data is always returned as JSON objects to the webSocket client.
 
@@ -52,17 +52,17 @@ An example web socket session might be the following:
 
 You can also inspect `client.state` (‘connected', ‘disconnected', etc). The websocket client will attempt to re-connect automatically.
 
-If you want to communicate with a websocket client outside of an action, you can call `connection.send(message)` on the server. In the client lib, the event message will be fired. So, `{`client.on('message, function(m){ ... })`}`. Be sure to add some descriptive content to the message you send from the sever (like perhaps `{`{"type": 'message type'}`}`) so you can route message types on the client.
+If you want to communicate with a websocket client outside of an action, you can call `connection.send(message)` on the server. In the client lib, the event message will be fired. So, client.on('message, function(m){ ... })`. Be sure to add some descriptive content to the message you send from the sever (like perhaps {"type": 'message type'}`) so you can route message types on the client.
 
 ## Client Methods
 
-The clent API can be viewed here: [WebSocket Client API](https://docs.actionherojs.com/ActionHero.ActionheroWebsocketClient.html)
+The clent API can be viewed here: [WebSocket Client API](ActionHero.ActionheroWebsocketClient.html)
 
 ## Linking WebSockets to Web Clients
 
 ActionHero provides `connection.fingerprint` where available to help you link websocket connections to related web connections. While every connection will always have a unique `connection.id`, we attempt to build `connection.fingerprint` by checking the headers the websocket connection began with. If the cookie defined by `api.config.servers.web.fingerprint.cookieKey` is present, we will store its value on the websocket connection.
 
-You can read more about using a value like `connection.fingerprint` in an [authentication middleware](/docs/core/middleware) or using it as a key for session information.
+You can read more about using a value like `connection.fingerprint` in an [authentication middleware](tutorial-middleware.html) or using it as a key for session information.
 
 ## Config Options
 

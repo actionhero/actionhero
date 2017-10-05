@@ -5,15 +5,18 @@ ActionHero uses the **[Winston logger](https://github.com/flatiron/winston)**. T
 ## Defaults
 
 ```js
+// config/logger.js
+
 config.logger = {
   transports: [
-    function(api){
+    (api) => {
       return new (winston.transports.Console)({
         colorize: true,
         level: "debug",
       });
     },
-    function(api){
+
+    (api) => {
       return new (winston.transports.File)({
         filename: './log/' + api.pids.title + '.log',
         level: "info",
@@ -48,27 +51,8 @@ Note that you can set a `level` which indicates which level (and those above it)
 *   6=alert
 *   7=emerg
 
-You can customize these via `api.config.logger.levels` and `api.config.logger.colors`. See [Winston's documenation for more information](https://github.com/winstonjs/winston#using-custom-logging-levels)
+You can customize these via `api.config.logger.levels` and `api.config.logger.colors`. See [Winston's documentation for more information](https://github.com/winstonjs/winston#using-custom-logging-levels)
 
 For example, if you set the logger's level to "notice", you would also see "crit" messages, but not "debug" messages.
 
-To invoke the logger from your code, use: `api.log(message, severity, metadata)`
-
-## Methods
-
-`api.logger.log` and `api.logger[severity]` also exist which allow you to call and modify the Winston instance directly.
-
-`api.log` will pass your message to all transports.
-
-### `api.log(message, severity, metadata)`
-
-```js
-// the most basic use.  Will assume 'info' as the severity
-api.log('hello');
-
-// custom severity
-api.log('OH NO!', 'warning');
-
-// custom severity with a metadata object
-api.log('OH NO, something went wrong', 'warning', { error: new Error('things are busted') });
-```
+To invoke the logger from your code, use: `api.log(message, severity, metadata)`.  Learn more [here](api.html#.log)
