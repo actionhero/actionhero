@@ -1,3 +1,5 @@
+![](documentation.svg)
+
 ## Overview
 
 A Telnet or TLS raw connection server.

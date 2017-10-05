@@ -1,5 +1,6 @@
-## Overview
+![](internet-of-things.svg)
 
+## Overview
 
 In ActionHero we have introduced a modular server system which allows you to create your own servers.  Servers should be thought of as any type of listener to remote connections, streams, or event your server.  
 

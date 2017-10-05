@@ -1,3 +1,5 @@
+![](ops-tools.svg)
+
 ## The ActionHero Binary
 
 The suggested method to run your ActionHero server is to use the included `./node_modules/.bin/actionhero` binary. Note that there is no `main.js` or specific start script your project needs. ActionHero handles this for you. Your ActionHero project simply needs to follow the proper directory conventions and it will be bootable.

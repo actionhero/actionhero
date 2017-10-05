@@ -1,3 +1,5 @@
+![](cluster-ready.svg)
+
 ## Overview
 
 **_AKA: Running ActionHero in a Cluster_**

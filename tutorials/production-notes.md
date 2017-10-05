@@ -1,3 +1,5 @@
+![](ops-tools.svg)
+
 ## Topology Example
 
 Here is a common ActionHero production topology:

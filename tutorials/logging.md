@@ -1,3 +1,5 @@
+![](ops-tools.svg)
+
 ## Overview
 
 ActionHero uses the **[Winston logger](https://github.com/flatiron/winston)**. This allows for better, more customizable logging.

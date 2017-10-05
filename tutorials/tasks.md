@@ -1,3 +1,5 @@
+![](built-in-tasks.svg)
+
 ## Overview
 
 Tasks are background jobs meant to be run separately from a client's request. They can be started by an action or by the server itself. With ActionHero, there is no need to run a separate daemon to process these jobs. ActionHero uses the [node-resque](https://github.com/taskrabbit/node-resque) package to store and process tasks in a way compatible with the [resque](https://github.com/resque/resque) ecosystem.

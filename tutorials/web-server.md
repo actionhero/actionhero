@@ -1,3 +1,5 @@
+![](documentation.svg)
+
 ## Overview
 
 The web server exposes actions and files over http or https. You can visit the API in a browser, Curl, etc. `{url}?action=actionName` or `{url}/api/{actionName}` is how you would access an action. For example, using the default ports in `/config/servers/web.js` you could reach the status action with both `http://127.0.0.1:8080/status` or `http://127.0.0.1:8080/?action=status`

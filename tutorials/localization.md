@@ -1,3 +1,5 @@
+![](localization.svg)
+
 ## Overview
 
 ActionHero uses the [i18n](https://github.com/mashpie/i18n-node) module to localize responses to clients.

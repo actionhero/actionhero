@@ -1,3 +1,5 @@
+![](video-game-servers.svg)
+
 ## Overview
 
 There are 2 ways to manage actionHero configuration: configuration files and overrides. In both cases, ActionHero starts by reading the config in `./config/`. [Here is what config files for a new ActionHero project look like](https://github.com/actionhero/actionhero/blob/master/config/).

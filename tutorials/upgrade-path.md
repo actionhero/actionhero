@@ -1,3 +1,5 @@
+![](documentation.svg)
+
 ## Overview
 
 Upgrading big ActionHero projects to a new major might require some effort. Every ActionHero version has it's own specific project files which you generate using `actionhero generate` command.

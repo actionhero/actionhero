@@ -1,3 +1,5 @@
+![](chat.svg)
+
 ## General
 
 ActionHero ships with a chat framework which may be used by all persistent connections (`socket` and `websocket`). There are methods to create and manage chat rooms and control the users in those rooms. Chat does not have to be for peer-to-peer communication, and is a metaphor used for many things, including the sharing of all realtime data between client and server, and client to client.  This can be used for games, syndication, etc.
@@ -19,7 +21,7 @@ There is no limit to the number of rooms which can be created, but keep in mind 
 
 ## Middleware
 
-There are 4 types of middleware you can install for the chat system: `say`, `onSayReceive`, `join`, and `leave`. You can learn more about [chat middleware in the middleware section of this site](tutorial-middleware.html).  Using middleware when messages are sent or when connections join rooms is how you build up authentication and more complex workflows. 
+There are 4 types of middleware you can install for the chat system: `say`, `onSayReceive`, `join`, and `leave`. You can learn more about [chat middleware in the middleware section of this site](tutorial-middleware.html).  Using middleware when messages are sent or when connections join rooms is how you build up authentication and more complex workflows.
 
 ## Specific Client Communication
 

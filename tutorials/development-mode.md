@@ -1,3 +1,5 @@
+![](ops-tools.svg)
+
 ## Overview
 
 **Warning: Don't use this in production!**

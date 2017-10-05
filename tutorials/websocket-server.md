@@ -1,3 +1,5 @@
+![](documentation.svg)
+
 ## Overview
 
 ActionHero uses [Primus](https://github.com/primus/primus) for web socket connections. The Primus project allows you to choose from many websocket backends, including `ws`, `engine.io`, `socket.io`, and more. Within ActionHero, web sockets are bound to the web server (either http or https).

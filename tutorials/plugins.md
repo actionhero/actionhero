@@ -1,3 +1,5 @@
+![](ops-tools.svg)
+
 ## Overview
 
 You can create and include plugins for you ActionHero project. Plugins are collections of `tasks`, `actions`, `servers`, `initializers`, and `public` static assets that are collected as a module. You can install plugins via NPM or keep them in a local path.  This enables a few useful features:

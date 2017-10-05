@@ -1,3 +1,5 @@
+![](file-server.svg)
+
 ## Overview
 
 ```bash

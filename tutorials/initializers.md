@@ -1,3 +1,5 @@
+![](internet-of-things.svg)
+
 ## Overview
 
 Initializers are the main way you expand your ActionHero server.  This is where you connect to databases, modify the global `api` object with new classes and helper methods, and set up your [middleware](tutorial-middleware.html).

@@ -1,3 +1,5 @@
+![](easy-to-use-actions.svg)
+
 ## Overview
 
 ```js

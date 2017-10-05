@@ -1,3 +1,5 @@
+![](api-first-development.svg)
+
 ## Overview
 
 There are 4 types of middleware in ActionHero:

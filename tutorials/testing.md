@@ -1,3 +1,5 @@
+![](flying-man.svg)
+
 ## Overview
 
 ActionHero provides test helpers so that you may try your actions and tasks within a headless environment. We do this by including a `specHelper` initializer which creates a server, `testServer` when running within the test environment. Via the `testServer`, you can easily call actions or tasks without making a real request.

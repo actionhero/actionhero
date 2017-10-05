@@ -1,3 +1,5 @@
+![](ops-tools.svg)
+
 ## Overview
 
 Allow actionhero developers to create new files in `./bin` which can be run via the CLI. These commands will have access to a the ActionHero `api` and CLI arguments object within a `run` method.
