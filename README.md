@@ -122,5 +122,5 @@ Or deploy a free API server now:
 * If you want to contribute to actionhero, contribute to the conversation on [github](https://github.com/actionhero/actionhero) and join us on [slack](https://slack.actionherojs.com)
 
 <div align="center">
-  <img src="https://raw.github.com/actionhero/actionhero/master/tutorials/images/dog.svg" alt="ActionHero Dog" />
+  <img src="https://raw.githubusercontent.com/actionhero/actionhero/master/tutorials/images/dog.svg" alt="ActionHero Logo" />
 </div>
