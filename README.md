@@ -120,7 +120,3 @@ Or deploy a free API server now:
 
 * The primary creator of the actionhero framework is [Evan Tahler](http://evantahler.com), but many others [have helped](https://github.com/actionhero/actionhero/graphs/contributors)
 * If you want to contribute to actionhero, contribute to the conversation on [github](https://github.com/actionhero/actionhero) and join us on [slack](https://slack.actionherojs.com)
-
-<div align="center">
-  <img src="https://raw.githubusercontent.com/actionhero/actionhero/master/tutorials/images/dog.svg" alt="ActionHero Logo" />
-</div>
