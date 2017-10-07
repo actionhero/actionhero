@@ -66,7 +66,7 @@ module.exports = class WebSocketServer extends ActionHero.Server {
       this.connections().forEach((connection) => { connection.destroy() })
     }
 
-    this.server.destroy()
+    if (this.server) { this.server.destroy() }
   }
 
   sendMessage (connection, message, messageCount) {
