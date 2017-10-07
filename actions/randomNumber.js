@@ -1,7 +1,7 @@
 'use strict'
-const ActionHero = require('./../index.js')
+const {Action} = require('./../index.js')
 
-module.exports = class RandomNumber extends ActionHero.Action {
+module.exports = class RandomNumber extends Action {
   constructor () {
     super()
     this.name = 'randomNumber'

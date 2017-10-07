@@ -40,9 +40,7 @@
 
 ActionHero v18 is the `async/await` Node.js framework you have been waiting for!
 
-ActionHero version 18 (master branch) is currently in BETA!  You can use it today by `npm install actionhero@next`.  We are still working on the docs and updating the examples, but please help us by testing it out!  
-
-Release notes: https://github.com/actionhero/actionhero/releases/tag/18.0.0-beta.3
+ActionHero version 18 has many *significant and breaking* changes from previous versions.  Please read the [Release notes](https://github.com/actionhero/actionhero/releases/tag/18.0.0) and [Upgrade Guide](https://docs.actionherojs.com/tutorial-upgrade-path.html)
 
 ---
 

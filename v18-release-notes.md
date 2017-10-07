@@ -107,7 +107,7 @@ module.exports = class CacheTest extends Action {
 
   stringValidator (s) {
     if (s.length < 3) {
-      return 'inputs should be at least 3 letters long'
+      throw new Error('inputs should be at least 3 letters long')
     } else {
       return true
     }
@@ -133,7 +133,7 @@ The ActionHero Core Team had to make a hard decision with this release.  This ma
 
 However, to continue to support ActionHero users on v17, we will break with our other policy of only supporting "master".  We've cut a v17 branch, and will continue to accept patches and updates to it until March of 2018. We will also port any security fixes from master back to v17.  We know that upgrading to v18 (and perhaps a new version of Node.JS) will be the most difficult ActionHero migration to date, but I assure you it will be worth it!
 
-I've also discussed these thoughts on the first ["Always bet on Node podcast"](https://twitter.com/dshaw/status/909565638443708417) with @dshaw and @mikeal and in [this]() blog post (forthcoming).
+I've also discussed these thoughts on the first ["Always bet on Node podcast"](https://twitter.com/dshaw/status/909565638443708417) with @dshaw and @mikeal and in [this blog post](https://blog.evantahler.com/actionhero-v18-async-await-d88d369ed7b7).
 
 ## API changes and Documentation: [docs.actionherojs.com](https://docs.actionherojs.com)
 
