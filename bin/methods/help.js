@@ -49,7 +49,9 @@ module.exports = class Help extends ActionHero.CLI {
 
     let methodNames = Object.keys(methods).sort()
 
-    console.log('ActionHero - A multi-transport node.js API Server with integrated cluster capabilities and delayed tasks\r\n')
+    console.log('ActionHero - The reusable, scalable, and quick node.js API server for stateless and stateful applications')
+    console.log('Learn more @ www.actionherojs.com')
+    console.log('')
     console.log('CLI Commands:\r\n')
     methodNames.forEach((methodName) => {
       console.log(`* ${methodName}`)
