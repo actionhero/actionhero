@@ -13,6 +13,7 @@ mkdir docs
 npm run docs
 touch ./out/.nojekyll
 cp circle.yml docs/circle.yml
+cp public/favicon.ico docs/favicon.ico
 echo 'docs.actionherojs.com' >> docs/CNAME
 
 ## make a directory to put the gh-pages branch
