@@ -52,7 +52,7 @@ describe('Core: Plugins', () => {
     })
 
     it('can load CLI command from a plugin', async () => {
-      let env = process.env
+      let env = Object.assign({}, process.env)
       env.configChanges = JSON.stringify(configChanges)
 
       let {stdout: helpResponse, stderr: error1} = await promisify(exec)('./bin/actionhero help', {env})
@@ -108,7 +108,7 @@ describe('Core: Plugins', () => {
     })
 
     it('will not load CLI command from an un-loaded plugin', async () => {
-      let env = process.env
+      let env = Object.assign({}, process.env)
       env.configChanges = JSON.stringify(configChanges)
 
       let {stdout: helpResponse, stderr: error1} = await promisify(exec)('./bin/actionhero help', {env})
