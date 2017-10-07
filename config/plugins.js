@@ -16,7 +16,8 @@ exports['default'] = {
         tasks: true,
         initializers: true,
         servers: true,
-        public: true
+        public: true,
+        cli: true
       }
     }
     */

@@ -137,7 +137,7 @@ If you installed ActionHero globally (`npm install actionhero -g`) you should ha
 
 If you installed ActionHero locally, you can add a reference to your path (OSX and Linux): `export PATH=$PATH:node_modules/.bin` to be able to use simpler commands, IE `actionhero start`. On windows this can be done by running `set PATH=%PATH%;%cd%\node_modules\.bin` at command prompt (not powershell).
 
-Newer versions of NPM (v4+) allow you to also use the `npx` command, ie: `npx actionhero start cluster --workers=2`
+Newer versions of NPM (v4+) allow you to also use the `npx` command, ie: `npx actionhero start cluster --workers=2`, which is a simple way to get to the ActionHero binary from the top-level of your project. 
 
 ## Environments and Config
 
@@ -148,6 +148,8 @@ The load order of configs is:
 * default values in `/config`
 * environment-specific values in `/config`
 * options passed in to boot with `actionhero.start({configChanges: configChanges})`
+
+You can `{configChanges: {}}` to a new ActionHero.Process' `start` or `initialize` methods.  This can be helpful when creating tests. When using CLI commands, you can also set `process.env.configChanges` or pass `--configChanges` on the command line. In these cases, `configChanges` should be stringified JSON.
 
 ```js
 // from ./config/namespace.js
@@ -186,7 +188,7 @@ const sleep = (time) => {
   })
 }
 
-const api = await actionhero.start()
+const api = await actionhero.start({configChanges})
 
 api.log(" >> Boot Successful!")
 await sleep()
