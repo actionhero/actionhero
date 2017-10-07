@@ -112,7 +112,7 @@ module.exports = class Actions extends ActionHero.Initializer {
           if (!api.actions.actions[action.name]) { api.actions.actions[action.name] = {} }
           if (!api.actions.versions[action.name]) { api.actions.versions[action.name] = [] }
 
-          if (api.actions.actions[action.name][action.version]) {
+          if (api.actions.actions[action.name][action.version] && !reload) {
             api.log(`an existing action with the same name \`${action.name}\` will be overridden by the file ${fullFilePath}`, 'warning')
           }
 
