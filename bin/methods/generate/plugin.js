@@ -28,6 +28,7 @@ module.exports = class GeneratePlugin extends ActionHero.CLI {
       'initializers',
       'servers',
       'config',
+      'bin',
       'public'
     ].forEach((type) => {
       try {

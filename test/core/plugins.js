@@ -6,6 +6,8 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const path = require('path')
+const {promisify} = require('util')
+const exec = require('child_process').exec
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
@@ -48,6 +50,19 @@ describe('Core: Plugins', () => {
       expect(file.content).to.equal('<h1>PLUGIN!<h1>\n')
       expect(file.mime).to.equal('text/html')
     })
+
+    it('can load CLI command from a plugin', async () => {
+      let env = Object.assign({}, process.env)
+      env.configChanges = JSON.stringify(configChanges)
+
+      let {stdout: helpResponse, stderr: error1} = await promisify(exec)('./bin/actionhero help', {env})
+      expect(error1).to.equal('')
+      expect(helpResponse).to.contain('hello')
+
+      let {stdout: helloResponse, stderr: error2} = await promisify(exec)('./bin/actionhero hello', {env})
+      expect(error2).to.equal('')
+      expect(helloResponse).to.contain('hello')
+    })
   })
 
   describe('with plugin sections ignored', () => {
@@ -60,7 +75,8 @@ describe('Core: Plugins', () => {
             tasks: false,
             servers: false,
             initializers: false,
-            public: false
+            public: false,
+            cli: false
           }
         }
       }
@@ -90,6 +106,22 @@ describe('Core: Plugins', () => {
       let file = await api.specHelper.getStaticFile('plugin.html')
       expect(file.error).to.match(/file is not found/)
     })
+
+    it('will not load CLI command from an un-loaded plugin', async () => {
+      let env = Object.assign({}, process.env)
+      env.configChanges = JSON.stringify(configChanges)
+
+      let {stdout: helpResponse, stderr: error1} = await promisify(exec)('./bin/actionhero help', {env})
+      expect(error1).to.equal('')
+      expect(helpResponse).to.not.contain('hello')
+
+      try {
+        await promisify(exec)('./bin/actionhero hello', {env})
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error).to.match(/`hello` is not a method I can perform/)
+      }
+    })
   })
 
   describe('without plugin', () => {
@@ -115,6 +147,19 @@ describe('Core: Plugins', () => {
     it('will not serve static files from an un-loaded plugin', async () => {
       let file = await api.specHelper.getStaticFile('plugin.html')
       expect(file.error).to.match(/file is not found/)
+    })
+
+    it('will not load CLI command from an un-loaded plugin', async () => {
+      let {stdout: helpResponse, stderr: error1} = await promisify(exec)('./bin/actionhero help')
+      expect(error1).to.equal('')
+      expect(helpResponse).to.not.contain('hello')
+
+      try {
+        await promisify(exec)('./bin/actionhero hello')
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error).to.match(/`hello` is not a method I can perform/)
+      }
     })
   })
 })

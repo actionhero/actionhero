@@ -5,8 +5,7 @@ const fs = require('fs')
 const path = require('path')
 const optimist = require('optimist')
 const spawn = require('child_process').spawn
-const ActionHero = require(path.join(__dirname, '..', 'index.js'))
-const api = ActionHero.api
+const {api, Process} = require(path.join(__dirname, '..', 'index.js'))
 const actionheroRoot = path.normalize(path.join(__dirname, '..'))
 let projectRoot
 
@@ -73,21 +72,38 @@ const handleGenerate = async () => {
 
 const handleMethod = async () => {
   try {
-    const actionHeroProcess = new ActionHero.Process()
-    await actionHeroProcess.initialize()
+    const actionHeroProcess = new Process()
+    let configChanges = {}
+
+    if (process.env.configChanges) { configChanges = JSON.parse(process.env.configChanges) }
+    if (optimist.argv.configChanges) { configChanges = JSON.parse(optimist.argv.configChanges) }
+
+    await actionHeroProcess.initialize({configChanges})
     if (!api.projectRoot) { api.projectRoot = projectRoot }
     if (!api.actionheroRoot) { api.actionheroRoot = actionheroRoot }
     api._context = actionHeroProcess
     let RunnerClass
 
     let p = path.join(__dirname, 'methods', commands.join(path.sep) + '.js')
-    if (fs.existsSync(p) && api.config.general.cliIncludeInternal === true) {
+    if (fs.existsSync(p) && api.config.general.cliIncludeInternal !== false) {
       RunnerClass = require(p)
-    } else {
-      api.config.general.paths.cli.forEach((cliPaths) => {
-        p = path.join(cliPaths, commands.join(path.sep) + '.js')
+    }
+
+    if (!RunnerClass) {
+      api.config.general.paths.cli.forEach((cliPath) => {
+        p = path.join(cliPath, commands.join(path.sep) + '.js')
         if (fs.existsSync(p)) { RunnerClass = require(p) }
       })
+    }
+
+    if (!RunnerClass) {
+      for (let pluginName in api.config.plugins) {
+        if (api.config.plugins[pluginName].cli !== false) {
+          let pluginPath = api.config.plugins[pluginName].path
+          p = path.join(pluginPath, 'bin', commands.join(path.sep) + '.js')
+          if (fs.existsSync(p)) { RunnerClass = require(p) }
+        }
+      }
     }
 
     if (!RunnerClass) {
@@ -95,9 +111,9 @@ const handleMethod = async () => {
       console.error('run `actionhero help` to learn more')
       setTimeout(process.exit, 500, 1)
     } else {
-      console.log('--------------------------------------')
+      console.log('₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋')
       console.log(`ACTIONHERO COMMAND >> ${commands.join(' ')}`)
-      console.log('--------------------------------------')
+      console.log('⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻')
 
       if (optimist.argv.daemon) {
         let newArgs = process.argv.splice(2)
@@ -113,7 +129,7 @@ const handleMethod = async () => {
         const runner = new RunnerClass()
         let params = formatParams(runner)
         let toStop = await runner.run({params: params})
-        if (toStop) {
+        if (toStop || toStop === null || toStop === undefined) {
           setTimeout(process.exit, 500, 0)
         }
       }

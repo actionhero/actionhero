@@ -19,6 +19,7 @@ Plugins are loaded after all local ActionHero project files, but initializers fo
 | - initializers
 | - config
 | - public
+| - cli
 |
 | - package.json
 ```
@@ -45,6 +46,7 @@ return {
     tasks: true,
     initializers: true,
     servers: true,
+    cli: true,
     public: true
   }
 }
