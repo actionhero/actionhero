@@ -14,7 +14,240 @@ ActionHero follows [semantic versioning](http://semver.org/). This means that a 
 
 **Full Release Notes: [GitHub](https://github.com/actionhero/actionhero/releases/tag/v18.0.0)**
 
-**TODO**
+**Breaking Changes and How to Overcome Them:**
+
+There are *many* changes to the APIs actionhero exposes.  You can read up on the new syntax on our [new documentation website, docs.actionherojs.com](https://docs.actionherojs.com)
+
+* **Node.js version**
+  * Node.js v8 and higher is now required.  You must update your projects.
+
+* **Actions**
+  * Actions are now ES6 classes, which extend `require('actionhero').Action`.
+  * The `run` method only has one argument now, `data`.  `api` can be required globally to your file.
+
+```js
+const {Action, api} = require('actionhero')
+
+module.exports = class MyAction extends Action {
+ constructor () {
+   super()
+   this.name = 'randomNumber'
+   this.description = 'I am an API method which will generate a random number'
+   this.outputExample = {randomNumber: 0.1234}
+ }
+
+ async run (data) {
+   data.response.randomNumber = Math.random()
+ }
+}
+```
+
+* **Tasks**
+  * Tasks are now ES6 classes, which extend `require('actionhero').Task`.
+  * The `run` method only has one argument now, `data`.  `api` can be required globally to your file.
+  
+```js
+const {api, Task} = require('actionhero')
+
+module.exports = class SendWelcomeMessage extends Task {
+  constructor () {
+    super()
+    this.name = 'SendWelcomeEmail'
+    this.description = 'I send the welcome email to new users'
+    this.frequency = 0
+    this.queue = 'high'
+    this.middleware = []
+  }
+
+  async run (data) {
+    await api.sendWelcomeEamail({address: data.email})
+    return true
+  }
+}
+```
+
+* **Initializers**
+  * Initializers are now ES6 classes, which extend `require('actionhero').Initializer`.
+  * The `initialize`, `start`, and `stop` methods now have no arguments.  `api` can be required globally to your file.
+
+```js
+const {ActionHero, api} = require('actionhero')
+
+module.exports = class StuffInit extends ActionHero.Initializer {
+  constructor () {
+    super()
+    this.name = 'StuffInit'
+    this.loadPriority = 1000
+    this.startPriority = 1000
+    this.stopPriority = 1000
+  }
+
+  async initialize () {
+    api.StuffInit = {}
+    api.StuffInit.doAThing = async () => {}
+    api.StuffInit.stopStuff = async () => {}
+    api.log('I initialized', 'debug', this.name)
+  }
+
+  async start () {
+    await api.StuffInit.startStuff()
+    api.log('I started', 'debug', this.name)
+  }
+
+  async stop () {
+    await api.StuffInit.stopStuff()
+    api.log('I stopped', 'debug', this.name)
+  }
+}
+```
+
+* **Servers**
+  * Servers are now ES6 classes, which extend `require('actionhero').Server`.
+  * The `initialize`, `start`, and `stop` methods now have no arguments.  `api` can be required globally to your file.
+
+```js
+const ActionHero = require('actionhero')
+
+module.exports = class MyServer extends ActionHero.Server {
+  constructor () {
+    super()
+    this.type = '%%name%%'
+
+    this.attributes = {
+      canChat: false,
+      logConnections: true,
+      logExits: true,
+      sendWelcomeMessage: false,
+      verbs: []
+    }
+    // this.config will be set to equal api.config.servers[this.type]
+  }
+
+  initialize () {
+    this.on('connection', (conection) => {
+
+    })
+
+    this.on('actionComplete', (data) => {
+
+    })
+  }
+
+  start () {
+    // this.buildConnection (data)
+    // this.processAction (connection)
+    // this.processFile (connection)
+  }
+
+  stop () {
+
+  }
+
+  sendMessage (connection, message, messageCount) {
+
+  }
+
+  sendFile (connection, error, fileStream, mime, length, lastModified) {
+
+  }
+
+  goodbye (connection) {
+
+  }
+}
+```
+
+* **CLI Commands**
+  * CLI Commands are now ES6 classes, which extend `require('actionhero').CLI`.
+  * The `run` method now has one argument, `data`.  `api` can be required globally to your file.
+
+```js
+const {api, CLI} = require('actionhero')
+
+module.exports = class RedisKeys extends CLI {
+  constructor () {
+    super()
+    this.name = 'redis keys'
+    this.description = 'I list all the keys in redis'
+    this.example = 'actionhero keys --prefix actionhero'
+  }
+
+  inputs () {
+    return {
+      prefix: {
+        requried: true,
+        default: 'actionhero',
+        note: 'the redis prefix for searching keys'
+      }
+    }
+  }
+
+  async run ({params}) => {
+    let keys = await api.redis.clients.client.keys(params.prefix)
+    api.log('Found ' + keys.length + 'keys:')
+    keys.forEach((k) => { api.log(k) })
+  }
+}
+```
+
+* **Cache**
+  * All methods which used to return a callback are now `async` methods which, when `await`ed, return a result and `throw` errors
+
+* **Tasks**
+  * All methods which used to return a callback are now `async` methods which, when `await`ed, return a result and `throw` errors
+
+* **Chat**
+  * All methods which used to return a callback are now `async` methods which, when `await`ed, return a result and `throw` errors
+
+* **SpecHelper**
+  * All methods which used to return a callback are now `async` methods which, when `await`ed, return a result and `throw` errors
+
+```js
+const chai = require('chai')
+const dirtyChai = require('dirty-chai')
+const expect = chai.expect
+chai.use(dirtyChai)
+
+const path = require('path')
+const ActionHero = require('actionhero')
+const actionhero = new ActionHero.Process()
+let api
+
+describe('Action: RandomNumber', () => {
+  before(async () => { api = await actionhero.start() })
+  after(async () => { await actionhero.stop() })
+
+  let firstNumber = null
+  it('generates random numbers', async () => {
+    let {randomNumber} = await api.specHelper.runAction('randomNumber')
+    expect(randomNumber).to.be.at.least(0)
+    expect(randomNumber).to.be.at.most(1)
+    firstNumber = randomNumber
+  })
+
+  it('is unique / random', async () => {
+    let {randomNumber} = await api.specHelper.runAction('randomNumber')
+    expect(randomNumber).to.be.at.least(0)
+    expect(randomNumber).to.be.at.most(1)
+    expect(randomNumber).not.to.equal(firstNumber)
+  })
+})
+```
+
+* **Utils**
+  * `api.utils.recursiveDirectoryGlob` has been removed in favor of the [glob package](https://github.com/isaacs/node-glob). Use this instead.
+  * All methods which used to return a callback are now `async` methods which, when `await`ed, return a result and `throw` errors
+
+* **Plugins**
+  * ActionHero no longer uses linkfiles to find plugins.  If you have any in a `plugins` directory in your actions, tasks, config, or public folders, delete them.
+  * Plugins now need to be defined explicitly in a new `./config/plugins.js` config file.  You should create one [per the example](https://github.com/actionhero/actionhero/blob/master/config/plugins.js)
+  * Removed `actionhero link` and `actionhero unlink` per the above.
+  * Added `actionhero generate plugin`, a helper which you can use in an empty directory which will create a template plugin project
+  * Testing plugins is now simpler.  [Read more about this on docs.actionherojs.com](https://docs.actionherojs.com/tutorial-plugins.html)
+
+* **Clients**
+  * `ActionheroClient` (the included client library for browser websocket clients) as been named a more clear `ActionheroWebsocketClient` to avoid ambiguity.  
+  * The node sever-sever package has been renamed `actionhero-node-client` to help clear up any confusion.
 
 ## Upgrading from v16 to v17
 
