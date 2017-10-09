@@ -18,9 +18,9 @@ Since every ActionHero implementation is unique, we do not ship with a "guess" a
 For example, I may have an initializer in my project like this:
 
 ```js
-const {Action} = require('actionhero')
+const {Initializer} = require('actionhero')
 
-module.exports = class DetermineConnectionLocale {
+module.exports = class DetermineConnectionLocale extends Initializer {
   constructor () {
     super()
     this.name = 'determineConnectionLocale'
