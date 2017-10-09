@@ -15,9 +15,9 @@ In general, `initialize()` methods should create prototypes and new objects, and
 ```js
 // initializers/stuffInit.js
 
-const {ActionHero, api} = require('actionhero')
+const {Initializer, api} = require('actionhero')
 
-module.exports = class StuffInit extends ActionHero.Initializer {
+module.exports = class StuffInit extends Initializer {
   constructor () {
     super()
     this.name = 'StuffInit'
