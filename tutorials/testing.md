@@ -55,7 +55,6 @@ const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
 
-const path = require('path')
 const ActionHero = require('actionhero')
 const actionhero = new ActionHero.Process()
 let api
