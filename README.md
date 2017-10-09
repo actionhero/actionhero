@@ -1,14 +1,12 @@
 # ActionHero
 
-## The reusable, scalable, and quick node.js API server for stateless and stateful applications
+*The reusable, scalable, and quick node.js API server for stateless and stateful applications*
 
 <div align="center">
   <img src="https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png" alt="ActionHero Logo" />
 </div>
 
-***
-
-<div align="center">
+<div align="center" class="topLinks">
 
 **[NPM](https://npmjs.org/package/actionhero) |
 [Web Site](https://www.actionherojs.com) |
@@ -19,9 +17,7 @@
 
 </div>
 
-***
-
-<div align="center">
+<div align="center" class="topBadges">
 
 [![NPM Version](https://img.shields.io/npm/v/actionhero.svg?style=flat-square)](https://www.npmjs.com/package/actionhero)
 [![Node Version](https://img.shields.io/node/v/actionhero.svg?style=flat-square)](https://npmjs.org/package/actionhero)
@@ -34,15 +30,11 @@
 
 </div>
 
-***
-
 ## ActionHero v18
 
 ActionHero v18 is the `async/await` Node.js framework you have been waiting for!
 
 ActionHero version 18 has many *significant and breaking* changes from previous versions.  Please read the [Release notes](https://github.com/actionhero/actionhero/releases/tag/v18.0.0) and [Upgrade Guide](https://docs.actionherojs.com/tutorial-upgrade-path.html)
-
----
 
 ## Who is the ActionHero?
 ActionHero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs for HTTP, WebSockets, and more.  Clients connected to an actionhero server can [**consume the api**](https://docs.actionherojs.com/tutorial-actions.html), [**consume static content**](https://docs.actionherojs.com/tutorial-file_server.html), and [**communicate with each other**](https://docs.actionherojs.com/tutorial-chat.html).  ActionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.  ActionHero provides a simple Async/Await API for managing every type of connection and background task.
