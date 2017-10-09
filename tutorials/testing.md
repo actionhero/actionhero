@@ -21,7 +21,7 @@ You also don't need to use these test helpers, and you may want to make a real h
     "node": ">=8.0.0"
   },
   "dependencies" : {
-    "actionhero" : "12.3.0",
+    "actionhero" : "^14.0.0",
     "ws"         : "latest"
   },
   "devDependencies" : {
