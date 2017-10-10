@@ -336,7 +336,7 @@ describe('Core: Tasks', () => {
           middleware: ['test-middleware'],
           run: function (params) {
             expect(params.test).to.equal(true)
-            let result = this.result
+            let result = this.worker.result
             result.run = true
             return result
           }
