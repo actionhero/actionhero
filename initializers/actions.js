@@ -15,6 +15,7 @@ const api = ActionHero.api
 /**
  * Middleware definition for Actions
  *
+ * @async
  * @typedef {Object} ActionHero~ActionMiddleware
  * @property {string} name - Unique name for the middleware.
  * @property {Boolean} global - Is this middleware applied to all actions?

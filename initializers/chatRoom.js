@@ -23,6 +23,7 @@ const api = ActionHero.api
 /**
  * Middleware definition for processing chat events.  Can be of the
  *
+ * @async
  * @typedef {Object} ActionHero~ChatMiddleware
  * @property {string} name - Unique name for the middleware.
  * @property {Number} priority - Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`.
