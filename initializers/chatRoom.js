@@ -16,6 +16,11 @@ module.exports = {
     api.chatRoom.middleware = {}
     api.chatRoom.globalMiddleware = []
 
+    /**
+     * Add a middleware component to connection handling.
+     *
+     * @param {object} data The middleware definition to add.
+     */
     api.chatRoom.addMiddleware = function (data) {
       if (!data.name) { throw new Error('middleware.name is required') }
       if (!data.priority) { data.priority = api.config.general.defaultMiddlewarePriority }
@@ -32,6 +37,14 @@ module.exports = {
       })
     }
 
+    /**
+     * Send a message to all members of a chat room.  This is used by the server.
+     *
+     * @param  {Object}  connection The connection sending the message.  If the message is coming from the sever, a proxy like `{rooms ['thisRoom'], id: 0}` would work.
+     * @param  {string}  room       The name of the room.
+     * @param  {Object|Array|Stting}  message    The message
+     * @param  {simpleCallback}  callback The callback that handles the response.
+     */
     api.chatRoom.broadcast = function (connection, room, message, callback) {
       if (!room || room.length === 0 || message === null || message.length === 0) {
         if (typeof callback === 'function') { process.nextTick(() => { callback(api.config.errors.connectionRoomAndMessage(connection)) }) }
@@ -74,6 +87,9 @@ module.exports = {
       }
     }
 
+    /**
+     * @private
+     */
     api.chatRoom.generateMessagePayload = function (message) {
       return {
         message: message.message,
@@ -84,6 +100,9 @@ module.exports = {
       }
     }
 
+    /**
+     * @private
+     */
     api.chatRoom.incomingMessage = function (message) {
       const messagePayload = api.chatRoom.generateMessagePayload(message)
       for (let i in api.connections.connections) {
@@ -91,6 +110,9 @@ module.exports = {
       }
     }
 
+    /**
+     * @private
+     */
     api.chatRoom.incomingMessagePerConnection = function (connection, messagePayload) {
       if (connection.canChat === true) {
         if (connection.rooms.indexOf(messagePayload.room) > -1) {
@@ -101,12 +123,31 @@ module.exports = {
       }
     }
 
+    /**
+     * List all chat rooms created
+     *
+     * @param {roomsCallback} callback The callback that handles the response.
+     */
     api.chatRoom.list = function (callback) {
       api.redis.clients.client.smembers(api.chatRoom.keys.rooms, (error, rooms) => {
         if (typeof callback === 'function') { callback(error, rooms) }
       })
     }
 
+    /**
+     * This callback is invoked with an error or an array of chatRoom names.
+     * @callback roomsCallback
+     * @param {Error} error An error or null.
+     * @param {Array<string>} rooms An array of chatRoom names.
+     */
+
+    /**
+     * Add a new chat room.  Throws an error if the room already exists.
+     *
+     * @param  {string}  room The name of the room
+     * @param {numberCallback} callback The callback that handles the response.
+     * @see api.chatRoom.destroy
+     */
     api.chatRoom.add = function (room, callback) {
       api.chatRoom.exists(room, function (error, found) {
         if (error) { return callback(error) }
@@ -120,6 +161,20 @@ module.exports = {
       })
     }
 
+    /**
+     * This callback is invoked with an error or a number.
+     * @callback numberCallback
+     * @param {Error} error An error or null.
+     * @param {number} number A number.
+     */
+
+    /**
+     * Remove an exsitng chat room.  All connections in the room will be removed.  Throws an error if the room does not exist.
+     *
+     * @param  {string}  room The name of the room
+     * @param {simpleCallback} callback The callback that handles the response.
+     * @see api.chatRoom.add
+     */
     api.chatRoom.destroy = function (room, callback) {
       api.chatRoom.exists(room, (error, found) => {
         if (error) { return callback(error) }
@@ -145,6 +200,18 @@ module.exports = {
       })
     }
 
+    /**
+     * This callback is invoked with an error or nothing.
+     * @callback simpleCallback
+     * @param {Error} error An error or null.
+     */
+
+    /**
+     * Check if a room exists.
+     *
+     * @param  {string}  room The name of the room
+     * @param {booleanCallback} The callback that handles the response.
+     */
     api.chatRoom.exists = function (room, callback) {
       api.redis.clients.client.sismember(api.chatRoom.keys.rooms, room, (error, bool) => {
         let found = false
@@ -155,6 +222,13 @@ module.exports = {
       })
     }
 
+    /**
+     * An overwritable method which configures what properties of connections in a room to return via `api.chatRoom.roomStatus`
+     *
+     * @param  {Object} memberData A connection
+     * @return {Object} sanitizedMemberDetails The resulting object
+     * @see api.chatRoom.roomStatus
+     */
     api.chatRoom.sanitizeMemberDetails = function (memberData) {
       return {
         id: memberData.id,
@@ -162,6 +236,13 @@ module.exports = {
       }
     }
 
+    /**
+     * Learn about the connections in the room
+     *
+     * @param  {string}  room The name of the room
+     * @return {Promise<Object>} Returns a hash of the form { room: room, members: cleanedMembers, membersCount: count }.  Members is an array of connections in the room sanitized via `api.chatRoom.sanitizeMemberDetails`
+     * @param {roomStatusCallback} callback The callback that handles the response.
+     */
     api.chatRoom.roomStatus = function (room, callback) {
       if (room) {
         api.chatRoom.exists(room, (error, found) => {
@@ -193,6 +274,22 @@ module.exports = {
       }
     }
 
+    /**
+     * This callback is invoked with an error or an object hash in the form:
+     * { room: room, members: cleanedMembers, membersCount: count }.
+     * Members is an array of connections in the room sanitized via `api.chatRoom.sanitizeMemberDetails`.
+     * @callback roomStatusCallback
+     * @param {Error} error An error or null.
+     * @param {object} roomStatus Object hash in the form: { room: room, members: cleanedMembers, membersCount: count }
+     */
+
+    /**
+     * An overwritable method which configures what properties of connections in a room are initially stored about a connection when added via `api.chatRoom.addMember`
+     *
+     * @param  {Object} connection A ActionHero.Connection
+     * @return {Object} sanitizedConnection The resulting object
+     * @see api.chatRoom.addMember
+     */
     api.chatRoom.generateMemberDetails = function (connection) {
       return {
         id: connection.id,
@@ -201,6 +298,14 @@ module.exports = {
       }
     }
 
+    /**
+     * Add a connection (via id) to a rooom.  Throws errors if the room does not exist, or the connection is already in the room.  Middleware errors also throw.
+     *
+     * @param  {string}  connectionId An existing connection's ID
+     * @param  {srting}  room         The name of the room.
+     * @param {booleanCallback}
+     * @see api.chatRoom.removeMember
+     */
     api.chatRoom.addMember = function (connectionId, room, callback) {
       if (api.connections.connections[connectionId]) {
         const connection = api.connections.connections[connectionId]
@@ -232,6 +337,15 @@ module.exports = {
       }
     }
 
+    /**
+     * Remote a connection (via id) from a rooom.  Throws errors if the room does not exist, or the connection is not in the room.  Middleware errors also throw.
+     *
+     * @param  {string}  connectionId  An existing connection's ID
+     * @param  {srting}  room          The name of the room.
+     * @param  {Boolean}  toWaitRemote Should this method wait until the remote ActionHero server (the one the connection is connected too) responds?
+     * @param {booleanCallback}
+     * @see api.chatRoom.addMember
+     */
     api.chatRoom.removeMember = function (connectionId, room, callback) {
       if (api.connections.connections[connectionId]) {
         const connection = api.connections.connections[connectionId]
@@ -263,6 +377,9 @@ module.exports = {
       }
     }
 
+    /**
+     * @private
+     */
     api.chatRoom.handleCallbacks = function (connection, room, direction, messagePayload, callback) {
       let jobs = []
       let newMessagePayload
