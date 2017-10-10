@@ -228,7 +228,9 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
      */
     api.specHelper.runFullTask = async (taskName, params) => {
       const worker = new NodeResque.Worker({
-        connection: api.redis.clients.tasks,
+        connection: {
+          redis: api.redis.clients.tasks
+        },
         queues: api.config.tasks.queues || ['default']
       }, api.tasks.jobs)
 
