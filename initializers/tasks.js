@@ -145,6 +145,7 @@ module.exports = class Tasks extends ActionHero.Initializer {
         pluginOptions: pluginOptions,
         perform: async function () {
           let combinedArgs = [].concat(Array.prototype.slice.call(arguments))
+          task.worker = this
           let response = await task.run.apply(task, combinedArgs)
           await api.tasks.enqueueRecurrentTask(taskName)
           return response
