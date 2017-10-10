@@ -23,7 +23,7 @@ There are *many* changes to the APIs actionhero exposes.  You can read up on the
 
 * **Actions**
   * Actions are now ES6 classes, which extend `require('actionhero').Action`.
-  * The `run` method only has one argument now, `data`.  `api` can be required globally to your file.
+  * The `run` method only has one argument now, `data` and becomes a `async` method.  `api` can be required globally to your file.
 
 ```js
 const {Action, api} = require('actionhero')
@@ -44,8 +44,8 @@ module.exports = class MyAction extends Action {
 
 * **Tasks**
   * Tasks are now ES6 classes, which extend `require('actionhero').Task`.
-  * The `run` method only has one argument now, `data`.  `api` can be required globally to your file.
-  
+  * The `run` method only has one argument now, `data` and becomes a `async` method.  `api` can be required globally to your file.
+
 ```js
 const {api, Task} = require('actionhero')
 
@@ -68,7 +68,7 @@ module.exports = class SendWelcomeMessage extends Task {
 
 * **Initializers**
   * Initializers are now ES6 classes, which extend `require('actionhero').Initializer`.
-  * The `initialize`, `start`, and `stop` methods now have no arguments.  `api` can be required globally to your file.
+  * The `initialize`, `start`, and `stop` methods now have no arguments and become a `async` methods.  `api` can be required globally to your file.
 
 ```js
 const {ActionHero, api} = require('actionhero')
@@ -103,7 +103,7 @@ module.exports = class StuffInit extends ActionHero.Initializer {
 
 * **Servers**
   * Servers are now ES6 classes, which extend `require('actionhero').Server`.
-  * The `initialize`, `start`, and `stop` methods now have no arguments.  `api` can be required globally to your file.
+  * The `initialize`, `start`, and `stop` methods now have no arguments and become a `async` methods.  `api` can be required globally to your file.
 
 ```js
 const ActionHero = require('actionhero')
@@ -159,7 +159,7 @@ module.exports = class MyServer extends ActionHero.Server {
 
 * **CLI Commands**
   * CLI Commands are now ES6 classes, which extend `require('actionhero').CLI`.
-  * The `run` method now has one argument, `data`.  `api` can be required globally to your file.
+  * The `run` method now has one argument, `data` and becomes a `async` method.  `api` can be required globally to your file.
 
 ```js
 const {api, CLI} = require('actionhero')
