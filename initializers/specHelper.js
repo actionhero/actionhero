@@ -221,6 +221,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
      * Use the specHelper to run a task.
      * Note: this will run a full Task worker, and will also include any middleware.  This is slower than api.specHelper.runTask.
      *
+     * @async
      * @param  {string}   taskName The name of the task.
      * @param  {Object}   params   Params to pass to the task
      * @return {Promise<Object>}   The return value from the task.

@@ -270,7 +270,6 @@ class ChatRoom extends ActionHero.Initializer {
     /**
      * An overwritable method which configures what properties of connections in a room to return via `api.chatRoom.roomStatus`
      *
-     * @async
      * @param  {Object} memberData A connection
      * @return {Object} sanitizedMemberDetails The resulting object
      * @see api.chatRoom.roomStatus
@@ -320,7 +319,6 @@ class ChatRoom extends ActionHero.Initializer {
     /**
      * An overwritable method which configures what properties of connections in a room are initially stored about a connection when added via `api.chatRoom.addMember`
      *
-     * @async
      * @param  {Object} connection A ActionHero.Connection
      * @return {Object} sanitizedConnection The resulting object
      * @see api.chatRoom.addMember
@@ -336,6 +334,7 @@ class ChatRoom extends ActionHero.Initializer {
     /**
      * Add a connection (via id) to a rooom.  Throws errors if the room does not exist, or the connection is already in the room.  Middleware errors also throw.
      *
+     * @async
      * @param  {string}  connectionId An existing connection's ID
      * @param  {srting}  room         The name of the room.
      * @return {Promise<Boolean>}
@@ -375,6 +374,7 @@ class ChatRoom extends ActionHero.Initializer {
     /**
      * Remote a connection (via id) from a rooom.  Throws errors if the room does not exist, or the connection is not in the room.  Middleware errors also throw.
      *
+     * @async
      * @param  {string}  connectionId  An existing connection's ID
      * @param  {srting}  room          The name of the room.
      * @param  {Boolean}  toWaitRemote Should this method wait until the remote ActionHero server (the one the connection is connected too) responds?

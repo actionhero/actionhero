@@ -173,6 +173,7 @@ module.exports = class Tasks extends ActionHero.Initializer {
      * Enqueue a task to be performed in the background, at a certain time in the future.
      * Will throw an error if redis cannot be reached.
      *
+     * @async
      * @param  {Number}  timestamp At what time the task is able to be run.  Does not gaurentee that the task will be run at this time. (in ms)
      * @param  {String}  taskName  The name of the task.
      * @param  {Object}  params    Params to pass to the task.
@@ -189,6 +190,7 @@ module.exports = class Tasks extends ActionHero.Initializer {
      * Enqueue a task to be performed in the background, at a certain number of ms from now.
      * Will throw an error if redis cannot be reached.
      *
+     * @async
      * @param  {Number}  time     How long from now should we wait until it is OK to run this task? (in ms)
      * @param  {String}  taskName The name of the task.
      * @param  {Object}  params   Params to pass to the task.
@@ -205,6 +207,7 @@ module.exports = class Tasks extends ActionHero.Initializer {
      * Delete a previously enqueued task, which hasn't been run yet, from a queue.
      * Will throw an error if redis cannot be reached.
      *
+     * @async
      * @param  {string}  q          Which queue/priority is the task stored on?
      * @param  {string}  taskName   The name of the job, likley to be the same name as a tak.
      * @param  {Object|Array} args  The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing.
@@ -217,9 +220,10 @@ module.exports = class Tasks extends ActionHero.Initializer {
     }
 
     /**
-     * Delete all previously enqueued tasks, which hasn't been run yet, from all possible delayed timestamps.
+     * Delete all previously enqueued tasks, which haven't been run yet, from all possible delayed timestamps.
      * Will throw an error if redis cannot be reached.
      *
+     * @async
      * @param  {string}  q          Which queue/priority is to run on?
      * @param  {string}  taskName   The name of the job, likley to be the same name as a tak.
      * @param  {Object|Array} args  The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing.
@@ -239,7 +243,7 @@ module.exports = class Tasks extends ActionHero.Initializer {
      * @param  {string}  taskName   The name of the job, likley to be the same name as a tak.
      * @param  {Object|Array} args  The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing.
      *                              It is best to read job properties first via `api.tasks.delayedAt` or similar method.
-     * @return {Promise<Arra>}    Returns an array of timestamps.
+     * @return {Promise<Array>}    Returns an array of timestamps.
      */
     api.tasks.scheduledAt = async (q, taskName, args) => {
       return api.resque.queue.scheduledAt(q, taskName, args)
@@ -288,7 +292,7 @@ module.exports = class Tasks extends ActionHero.Initializer {
      * Will throw an error if redis cannot be reached.
      *
      * @async
-     * @return {Promise|Object} Locks, orginzed by type.
+     * @return {Promise<Object>} Locks, orginzed by type.
      */
     api.tasks.locks = async () => {
       return api.resque.queue.locks()
@@ -440,7 +444,7 @@ module.exports = class Tasks extends ActionHero.Initializer {
      *
      * @async
      * @param  {Number}  age The age of workers you know to be over, in seconds.
-     * @return {Promise<ObjecT>} Details about workers which were removed.
+     * @return {Promise<Object>} Details about workers which were removed.
      */
     api.tasks.cleanOldWorkers = async (age) => {
       return api.resque.queue.cleanOldWorkers(age)
@@ -518,11 +522,11 @@ module.exports = class Tasks extends ActionHero.Initializer {
     }
 
     /**
-     * Reurn wholistic details about the whole task system, including failures, queues, and workers.
+     * Return wholistic details about the task system, including failures, queues, and workers.
      * Will throw an error if redis cannot be reached.
      *
      * @async
-     * @return {Promise} [description]
+     * @return {Promise<Object>} Details about the task system.
      */
     api.tasks.details = async () => {
       let details = {'queues': {}, 'workers': {}}
