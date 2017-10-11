@@ -282,6 +282,7 @@ let responses = await api.utils.asyncWaterfall(jobs)
     /**
      * Returns the averge delay between a tick of hte node.js event loop, as measured for N calls of `process.nextTick`
      *
+     * @async
      * @param  {Number}  itterations How many `process.nextTick` cycles of the event loop should we measure?
      * @return {Promise<Number>}  Returns the average evnent loop dealy measured in ms.
      */
