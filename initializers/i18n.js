@@ -26,6 +26,15 @@ module.exports = {
         let locale = method(connection)
         api.i18n.setLocale(connection, locale)
       },
+
+      /**
+       * Return a translated string.
+       *
+       * @memberof api.i18n
+       * @param  {string} message The string to translate
+       * @param  {Object} options (optional)
+       * @return {string}         Translated string
+       */
       localize: function (message, options) {
         if (!Array.isArray(message)) { message = [message] }
         if (!options) { options = api.i18n }

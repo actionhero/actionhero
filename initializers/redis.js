@@ -99,8 +99,15 @@ module.exports = {
       }
     }
 
-    // RPC
-
+    /**
+     * Invoke a command on all servers in this cluster.
+     *
+     * @param  {string}  method         The method to call on the remote server.
+     * @param  {Array}   args           The arguments to pass to `method`
+     * @param  {string}  connectionId   (optional) Should this method only apply to a server which `connectionId` is connected to?
+     * @param  {Boolean}  waitForResponse (optional) Should we await a response from a remote server in the cluster?
+     * @param  {valueCallback} callback The return value from the remote server.
+     */
     api.redis.doCluster = function (method, args, connectionId, callback) {
       const requestId = uuid.v4()
       const payload = {
@@ -126,6 +133,13 @@ module.exports = {
         }, api.config.general.rpcTimeout, requestId)
       }
     }
+
+    /**
+     * This callback is invoked with an error or a response from the remote server.
+     * @callback valueCallback
+     * @param {Error} error An error or null.
+     * @param {object} value The response value from the remote server.
+     */
 
     api.redis.respondCluster = function (requestId, response) {
       const payload = {

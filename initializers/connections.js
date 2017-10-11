@@ -28,6 +28,15 @@ module.exports = {
 
       connections: {},
 
+      /**
+       * Find a connection on any server in the cluster and call a method on it.
+       *
+       * @param {String} connectionId The connection's ID
+       * @param {String} method the name of the method to call
+       * @param {Array} args the arguments to pass to method
+       * @param {applyCallback} callback The callback that handles the response.
+       * @memberOf api.connections
+       */
       apply: function (connectionId, method, args, callback) {
         if (args === undefined && callback === undefined && typeof method === 'function') {
           callback = method; args = null; method = null
@@ -35,6 +44,16 @@ module.exports = {
         api.redis.doCluster('api.connections.applyCatch', [connectionId, method, args], connectionId, callback)
       },
 
+      /**
+       * This callback is invoked with an error or the return value from the remote server.
+       * @callback applyCallback
+       * @param {Error} error An error or null.
+       * @param {object} object The return value from the remote server.
+       */
+
+       /**
+       * @private
+       */
       applyCatch: function (connectionId, method, args, callback) {
         const connection = api.connections.connections[connectionId]
         if (method && args) {
@@ -51,6 +70,13 @@ module.exports = {
         }
       },
 
+      /**
+       * Add a middleware component to connection handling.
+       *
+       * @param {object} data The middleware definition to add.
+       * @memberOf api.connections
+       * @see ActionHero~ConnectionMiddleware
+       */
       addMiddleware: function (data) {
         if (!data.name) { throw new Error('middleware.name is required') }
         if (!data.priority) { data.priority = api.config.general.defaultMiddlewarePriority }
@@ -68,6 +94,9 @@ module.exports = {
       }
     }
 
+    /**
+    * @private
+    */
     const cleanConnection = function (connection) {
       let clean = {}
       for (let i in connection) {
@@ -145,6 +174,15 @@ module.exports = {
       api.i18n.invokeConnectionLocale(this)
     }
 
+    /**
+     * Localize a key for this connection's locale.  Keys usually look like `messages.errors.notFound`, and are defined in your locales directory.  Strings can be interploated as well, connection.localize('the count was {{count}}', {count: 4})
+     *
+     * @function localize
+     * @memberof ActionHero.Connection
+     * @param  {String} message The mesage key to be translated.
+     * @return {String}         The translated message.  If an appropraite translation cannot be found, the key will be returned.
+     * @see api.i18n
+     */
     api.Connection.prototype.localize = function (message) {
       // this.locale will be sourced automatically
       return api.i18n.localize(message, this)
@@ -154,6 +192,13 @@ module.exports = {
       return uuid.v4()
     }
 
+    /**
+     * Destroys the connection.  If the type/sever of the connection has a goodbye message, it will be sent.  The connection will be removed from all rooms.  The connection's socket will be closed when possible.
+     *
+     * @function destroy
+     * @memberof ActionHero.Connection
+     * @param {simpleCallback} callback The callback that handles the response.
+     */
     api.Connection.prototype.destroy = function (callback) {
       this.destroyed = true
 
@@ -183,10 +228,25 @@ module.exports = {
       if (typeof callback === 'function') { callback() }
     }
 
+    /**
+     * @private
+     * @function set
+     * @memberof ActionHero.Connection
+     */
     api.Connection.prototype.set = function (key, value) {
       this[key] = value
     }
 
+    /**
+     * Try to run a verb command for a connection
+     *
+     * @function verbs
+     * @memberof ActionHero.Connection
+     * @private
+     * @param  {String}  verb  The verb
+     * @param  {Array}   words All the arguments sent by the client
+     * @param {variableCallback} callback The callback that handles the response.
+     */
     api.Connection.prototype.verbs = function (verb, words, callback) {
       let key
       let value
@@ -275,6 +335,13 @@ module.exports = {
         if (typeof callback === 'function') { callback(new Error(api.config.errors.verbNotAllowed(this, verb)), null) }
       }
     }
+
+    /**
+     * This callback is invoked with an error or a response depending on the verb.
+     * @callback variableCallback
+     * @param {Error} error An error or null.
+     * @param {Any} response A response value.
+     */
 
     next()
   }
