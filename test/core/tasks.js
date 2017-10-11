@@ -281,7 +281,7 @@ describe('Core: Tasks', () => {
           queue: 'default',
           frequency: 0,
           middleware: ['test-middleware'],
-          run: (api, params) => {
+          run: (params, worker) => {
             throw new Error('Should never get here')
           }
         }
@@ -334,9 +334,9 @@ describe('Core: Tasks', () => {
           queue: 'default',
           frequency: 0,
           middleware: ['test-middleware'],
-          run: function (params) {
+          run: function (params, worker) {
             expect(params.test).to.equal(true)
-            let result = this.worker.result
+            let result = worker.result
             result.run = true
             return result
           }

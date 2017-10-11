@@ -23,7 +23,7 @@ module.exports = class SayHello extends Task {
    this.frequency = (60 * 1000)
  }
 
- async run (data) {
+ async run (data, worker) {
    api.log('Hello!')
  }
 }
@@ -40,12 +40,12 @@ module.exports = class SayHello extends Task {
    * The main "do something" method for this task.  It can be `async`.  Anything returned from this metod will be logged.
    * If error is thrown in this method, it will be logged & caught.  Using middleware, you can decide to re-run the task on failure.
    * `this` is a Task instance itself now.
-   * Instance of a node-resque worker can be accessed at this.worker within a Task's run method. This means you can inspect `this.worker.job` and set `this.worker.result` explicitly if your Task does not return a value.
    *
    * @function run
    * @async
    * @memberof ActionHero.Task
    * @param  {Object}  data The data about this instance of the task, specifically params.
+   * @param  {Object}  worker Instance of a node-resque worker. You can inspect `worker.job` and set `worker.result` explicitly if your Task does not return a value.
    */
 
   coreProperties () {
