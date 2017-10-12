@@ -137,7 +137,7 @@ If you installed ActionHero globally (`npm install actionhero -g`) you should ha
 
 If you installed ActionHero locally, you can add a reference to your path (OSX and Linux): `export PATH=$PATH:node_modules/.bin` to be able to use simpler commands, IE `actionhero start`. On windows this can be done by running `set PATH=%PATH%;%cd%\node_modules\.bin` at command prompt (not powershell).
 
-Newer versions of NPM (v4+) allow you to also use the `npx` command, ie: `npx actionhero start cluster --workers=2`, which is a simple way to get to the ActionHero binary from the top-level of your project. 
+Newer versions of NPM (v4+) allow you to also use the `npx` command, ie: `npx actionhero start cluster --workers=2`, which is a simple way to get to the ActionHero binary from the top-level of your project.
 
 ## Environments and Config
 
@@ -204,7 +204,7 @@ api.log(" >> Stopped!")
 process.exit()
 ```
 
-Feel free to look at the source of `./node_modules/actionhero/bin/include/start` to see how the main ActionHero server is implemented for more information.
+Feel free to look at the source of `./node_modules/actionhero/bin/methods/start` to see how the main ActionHero server is implemented for more information.
 
 You can programmatically control an ActionHero server with `actionhero.start(params)`, `actionhero.stop()` and `actionhero.restart()`
 
@@ -213,7 +213,7 @@ From within ActionHero itself (actions, initializers, etc), you can use `api.com
 ## Signals
 
 ```bash
-> ./node_modules/.bin/actionhero start cluster --workers=2
+> npx actionhero start cluster --workers=2
 info: actionhero >> start cluster
 notice:  - STARTING CLUSTER -
 notice: pid: 41382
