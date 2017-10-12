@@ -51,7 +51,7 @@ Currently actionhero supports the following out of the box...
 ```bash
 # mkdir new_project; cd new_project
 npm install actionhero
-./node_modules/.bin/actionhero generate
+npx actionhero generate
 npm start
 ```
 

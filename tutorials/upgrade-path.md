@@ -4,7 +4,7 @@
 
 Upgrading big ActionHero projects to a new major might require some effort. Every ActionHero version has it's own specific project files which you generate using `actionhero generate` command.
 
-One of the ways to upgrade your project is to generate a new project using the latest ActionHero framework (`npm install actionhero && ./node_modules/.bin/actionhero generate`). Using that as your starting point you can then carefully copy all your `configs`, `initializers`, `servers`, `tasks`, `actions`, and other custom code from your old project, making sure that you are at the same working state as before. It's a good practice to make tests for your actions (or any other component) before you plan to upgrade your ActionHero project.
+One of the ways to upgrade your project is to generate a new project using the latest ActionHero framework (`npm install actionhero && npx actionhero generate`). Using that as your starting point you can then carefully copy all your `configs`, `initializers`, `servers`, `tasks`, `actions`, and other custom code from your old project, making sure that you are at the same working state as before. It's a good practice to make tests for your actions (or any other component) before you plan to upgrade your ActionHero project.
 
 With good [test coverage](tutorial-testing.html) you can make sure that you have successfully upgraded your project.
 

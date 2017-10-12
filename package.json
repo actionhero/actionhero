@@ -81,7 +81,7 @@
     ]
   },
   "scripts": {
-    "postinstall": "echo 'To generate a new actionhero project, run \"node ./node_modules/.bin/actionhero generate\"'",
+    "postinstall": "echo 'To generate a new actionhero project, run \"npx actionhero generate\"'",
     "help": "node ./bin/actionhero help",
     "test": "cross-env NODE_ENV=test mocha",
     "pretest": "standard",
