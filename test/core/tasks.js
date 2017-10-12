@@ -171,6 +171,36 @@ describe('Core: Tasks', () => {
     expect(taskOutput[0]).to.equal('theWord')
   })
 
+  it('can call task methods inside the run', async () => {
+    class TaskWithMethod extends ActionHero.Task {
+      constructor () {
+        super()
+        this.name = 'taskWithMethod'
+        this.description = 'task with additional methods to execute in run'
+        this.queue = queue
+      }
+      async stepOne () {
+        await sleep(100)
+        taskOutput.push('one')
+      }
+      stepTwo () {
+        taskOutput.push('two')
+      }
+      async run () {
+        await this.stepOne()
+        this.stepTwo()
+        taskOutput.push('tree')
+      }
+    }
+    api.tasks.tasks.taskWithMethod = new TaskWithMethod()
+    api.tasks.jobs.taskWithMethod = api.tasks.jobWrapper('taskWithMethod')
+    await api.specHelper.runFullTask('taskWithMethod', {})
+    expect(taskOutput).to.have.lengthOf(3)
+    expect(taskOutput[0]).to.equal('one')
+    expect(taskOutput[1]).to.equal('two')
+    expect(taskOutput[2]).to.equal('tree')
+  })
+
   it('no delayed tasks should be scheduled', async () => {
     let timestamps = await api.resque.queue.scheduledAt(queue, 'periodicTask', {})
     expect(timestamps).to.have.length(0)
