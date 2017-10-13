@@ -118,6 +118,34 @@ describe('Server: Web Socket', () => {
     })
   })
 
+  it('properly responds with messageCount', (done) => {
+    var verbResponse = false
+    var actionResponse = false
+    var verbMsgCount = false
+    var actionMsgCount = false
+    clientA.roomAdd('defaultRoom', (response) => {
+      verbResponse = true
+      verbMsgCount = response.messageCount
+      if (actionResponse) {
+        expect(actionMsgCount).to.not.equal(verbMsgCount)
+        done()
+      }
+    })
+    clientA.action('sleepTest', {sleepDuration: 100}, (response) => {
+      actionResponse = true
+      actionMsgCount = response.messageCount
+      if (verbResponse) {
+        expect(verbMsgCount).to.not.equal(actionResponse)
+        done()
+      }
+    })
+    setTimeout(() => {
+      if (!actionResponse && !verbResponse) {
+        done('Not all responses received')
+      }
+    }, 2000)
+  })
+
   it('will limit how many simultaneous connections I can have', (done) => {
     var responses = []
     clientA.action('sleepTest', {sleepDuration: 100}, (response) => { responses.push(response) })
