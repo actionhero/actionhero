@@ -10,7 +10,7 @@ const api = ActionHero.api
  *
  * @namespace api.cache
  * @property {string} redisPrefix - The prefix for all redis keys (from `api.config.general.cachePrefix`).
- * @property {string} redisPrefix - The prefix for all redis locks (from `api.config.general.lockPrefix`).
+ * @property {string} lockPrefix - The prefix for all redis locks (from `api.config.general.lockPrefix`).
  * @property {Number} lockDuration - The default time a key will be locked for (from `api.config.general.lockDuration`).
  * @property {string} lockName - The name of the lock for this ActionHero instance (from `api.id`).
  * @property {Number} lockRetry - How long to wait before trying to get a lock again (100ms).
