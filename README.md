@@ -108,5 +108,5 @@ Or deploy a free API server now:
 
 ## Who?
 
-* The primary creator of the actionhero framework is [Evan Tahler](http://evantahler.com), but many others [have helped](https://github.com/actionhero/actionhero/graphs/contributors)
+* Many folks [have helped](https://github.com/actionhero/actionhero/graphs/contributors) to make ActionHero a reality.
 * If you want to contribute to actionhero, contribute to the conversation on [github](https://github.com/actionhero/actionhero) and join us on [slack](https://slack.actionherojs.com)
