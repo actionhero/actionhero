@@ -1,7 +1,9 @@
 {
   "source": {
     "include": [
-      "initializers"
+      "actionhero.js",
+      "initializers",
+      "config"
     ],
     "exclude": [
       "test",
