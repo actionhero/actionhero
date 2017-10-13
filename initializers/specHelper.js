@@ -116,6 +116,11 @@ module.exports = {
         next(server)
       }
 
+      /**
+       * A special connection usable in tests.  Create via `new api.specHelper.Connection()`
+       *
+       * @memberof api.specHelper
+       */
       api.specHelper.connection = function () {
         let id = uuid.v4()
         api.servers.servers.testServer.buildConnection({
@@ -130,8 +135,14 @@ module.exports = {
 
       api.specHelper.Connection = api.specHelper.connection
 
-      // create helpers to run an action
-      // data can be a params hash or a connection
+      /**
+       * Run an action via the specHelper server.
+       *
+       * @async
+       * @param  {string}  actionName The name of the action to run.
+       * @param  {Object}  input      You can provide either a pre-build connection `new api.specHelper.Connection()`, or just a Object with params for your action.
+       * @param  {nextCallback} callback The callback that handles the response.
+       */
       api.specHelper.runAction = function (actionName, input, next) {
         let connection
         if (typeof input === 'function' && !next) {
@@ -156,7 +167,20 @@ module.exports = {
         })
       }
 
-      // helpers to get files
+      /**
+       * This callback is invoked with the response from the action.
+       * @callback nextCallback
+       * @param {object} response The response from the action.
+       */
+
+      /**
+       * Mock a specHelper connection requesting a file from the server.
+       *
+       * @async
+       * @param  {string}  file The name & path of the file to request.
+       * @param  {fileCallback} callback The callback that handles the response.
+       * @return {Promise<Object>} The body contents and metadata of the file requested.  Conatins: mime, length, body, and more.
+       */
       api.specHelper.getStaticFile = function (file, next) {
         let connection = new api.specHelper.Connection()
         connection.params.file = file
@@ -169,11 +193,42 @@ module.exports = {
         api.servers.servers.testServer.processFile(connection)
       }
 
-      // create helpers to run a task
+      /**
+       * This callback is invoked with the body contents and metadata of the
+       * requested file. Conatins: mime, length, body, and more.
+       * @callback fileCallback
+       * @param {object} file The requested file.
+       */
+
+      /**
+       * Use the specHelper to run a task.
+       * Note: this only runs the task's `run()` method, and no middleware.  This is faster than api.specHelper.runFullTask.
+       *
+       * @param  {string}   taskName The name of the task.
+       * @param  {Object}   params   Params to pass to the task
+       * @param  {taskCallback} next  The callback that handles the response.
+       * @see api.specHelper.runFullTask
+       */
       api.specHelper.runTask = function (taskName, params, next) {
         api.tasks.tasks[taskName].run(api, params, next)
       }
 
+      /**
+       * This callback is invoked with an error or the return value from a task.
+       * @callback taskCallback
+       * @param {Error} error An error or null.
+       * @param {object} returnValue A return value from the task.
+       */
+
+      /**
+       * Use the specHelper to run a task.
+       * Note: this will run a full Task worker, and will also include any middleware.  This is slower than api.specHelper.runTask.
+       *
+       * @param  {string}   taskName The name of the task.
+       * @param  {Object}   params   Params to pass to the task
+       * @param  {taskCallback} next  The callback that handles the response.
+       * @see api.specHelper.runTask
+       */
       api.specHelper.runFullTask = function (taskName, params, next) {
         let options = {
           connection: api.redis.clients.tasks,

@@ -10,6 +10,13 @@ module.exports = {
     api.actions.middleware = {}
     api.actions.globalMiddleware = []
 
+    /**
+     * Add a middleware component avaialable to pre or post-process actions.
+     *
+     * @param {object} data The middleware definition to add.
+     * @memberOf api.actions
+     * @see ActionHero~ActionMiddleware
+     */
     api.actions.addMiddleware = function (data) {
       if (!data.name) { throw new Error('middleware.name is required') }
       if (!data.priority) { data.priority = api.config.general.defaultMiddlewarePriority }

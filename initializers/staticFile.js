@@ -22,6 +22,16 @@ module.exports = {
 
       // connection.params.file should be set
       // callback is of the form: callback(connection, error, fileStream, mime, length)
+
+      /**
+       * For a connection with `connecton.params.file` set, return a file if we can find it, or a not-found message.
+       * `searchLoactions` will be cheked in the following order: first paths in this project, then plugins.
+       * This can be used in Actions to return files to clients.  If done, set `data.toRender = false` within the action.
+       *
+       * @param  {Object}  connection An ActionHero.Connection
+       * @param  {Nmbber}  counter    (do not set) An internal couner to track which path we should check on (recursive)
+       * @param  {fileCallback} callback The callback that handles the response.
+       */
       get: function (connection, callback, counter) {
         if (!counter) { counter = 0 }
         if (!connection.params.file || !api.staticFile.searchPath(connection, counter)) {

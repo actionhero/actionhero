@@ -16,14 +16,36 @@ module.exports = {
 
     const redis = api.redis.clients.client
 
+    /**
+     * Returns all the keys in redis which are under this ActionHero namespace.  Potentially very slow.
+     *
+     * @param {keysCallback} callback - The callback that handles the response.
+     */
     api.cache.keys = function (callback) {
       redis.keys(api.cache.redisPrefix + '*', callback)
     }
 
+    /**
+     * This callback is invoked by calls to Redis to get a listing of keys.
+     * @callback keysCallback
+     * @param {Error} error - An error or null.
+     * @param {Array} keys - An array of keys.
+     */
+
+    /**
+     * Returns all the locks in redis which are under this ActionHero namespace.  Potentially slow.
+     *
+     * @param {keysCallback} callback - The callback that handles the response.
+     */
     api.cache.locks = function (callback) {
       redis.keys(api.cache.lockPrefix + '*', callback)
     }
 
+    /**
+     * Returns the number of keys in redis which are under this ActionHero namespace.  Potentially very slow.
+     *
+     * @param {lengthCallback} callback - The callback that handles the response.
+     */
     api.cache.size = function (callback) {
       api.cache.keys((error, keys) => {
         let length = 0
@@ -32,6 +54,18 @@ module.exports = {
       })
     }
 
+    /**
+     * This callback is invoked by calls to Redis to get a listing of keys.
+     * @callback lengthCallback
+     * @param {Error} error - An Error or null.
+     * @param {number} length - The number of keys in redis.
+     */
+
+    /**
+     * Removes all keys in redis which are under this ActionHero namespace.  Potentially very slow.
+     *
+     * @param {simpleCallback} - The callback that handles the response.
+     */
     api.cache.clear = function (callback) {
       api.cache.keys((error, keys) => {
         if (error && typeof callback === 'function') { return callback(error) }
@@ -46,6 +80,19 @@ module.exports = {
       })
     }
 
+    /**
+     * This callback is invoked with only an error or null.
+     * @callback simpleCallback
+     * @param {Error} error - An error or null.
+     */
+
+    /**
+     * Write the current concents of redis (only the keys in ActionHero's namespace) to a file.
+     *
+     * @param  {string}  file The file to save the cache to.
+     * @param  {lengthCallback}
+     * @see api.cache.dumpRead
+     */
     api.cache.dumpWrite = function (file, callback) {
       let data = {}
       api.cache.keys((error, keys) => {
@@ -72,6 +119,14 @@ module.exports = {
       })
     }
 
+    /**
+     * Load in contents for redis (and api.cache) saved to a file
+     * Warning! Any existing keys in redis (under this ActionHero namespace) will be removed.
+     *
+     * @param  {string}  file The file to load into the cache.
+     * @param  {lengthCallback}
+     * @see api.cache.dumpWrite
+     */
     api.cache.dumpRead = function (file, callback) {
       api.cache.clear((error) => {
         if (error) {
@@ -113,6 +168,15 @@ module.exports = {
       })
     }
 
+    /**
+     * Load an item from the cache.  Will throw an error if the item named by `key` cannot be found.
+     *
+     * @param  {string}  key     The name of the item to load from the cache.
+     * @param  {Object}  options  Options is an object with the propety `expireTimeMS`.  This can be used to re-set an expiry time on the cached object after reading it.
+     * @param  {cacheCallback} callback The callback that handles the response.
+     * @see api.cache.save
+     * @see api.cache.destroy
+     */
     api.cache.load = function (key, options, callback) {
       // optons: options.expireTimeMS, options.retry
       if (typeof options === 'function') {
@@ -163,6 +227,24 @@ module.exports = {
       })
     }
 
+    /**
+     * This callback is used invoked with the value of a cached object.
+     * @callback cacheCallback
+     * @param {Error} error An error or null.
+     * @param {Object} value The value of the cached object.
+     * @param {string} expireTimestam The time when the cached object will expire.
+     * @param {string} createdAt The time when the cached object was first created.
+     * @param {string} lastReadAt The time when the cached object was last read.
+     */
+
+    /**
+     * Delete an item in the cache.  Will throw an error if the item named by `key` is locked.
+     *
+     * @param  {string}  key The name of the item to destroy in the cache.
+     * @param  {booleanCallback} callback The callback that handles the response.
+     * @see api.cache.load
+     * @see api.cache.destroy
+     */
     api.cache.destroy = function (key, callback) {
       api.cache.checkLock(key, null, (error, lockOk) => {
         if (error || lockOk !== true) {
@@ -178,6 +260,23 @@ module.exports = {
       })
     }
 
+    /**
+     * This callback is invoked with an error and/or a boolean value.
+     * @callback booleanCallback
+     * @param {Error} error An error or null,
+     * @param {boolean} response An boolean value representing the success of the operation.
+     */
+
+    /**
+     * Save an item in the cache.  If an item is already in the cache with the same key, it will be overritten.  Throws an error if the object is already in the cache and is locked.
+     *
+     * @param  {string}  key          The name of the object to save.
+     * @param  {Object}  value        The object to save.  It can also be a Number, String, or Array.
+     * @param  {Number}  expireTimeMS (optional) Should the saved item expire after expireTimeMS?
+     * @param  {booleanCallback} callback The callback that handles the response.
+     * @see api.cache.load
+     * @see api.cache.destroy
+     */
     api.cache.save = function (key, value, expireTimeMS, callback) {
       if (typeof expireTimeMS === 'function' && typeof callback === 'undefined') {
         callback = expireTimeMS
@@ -215,6 +314,15 @@ module.exports = {
       })
     }
 
+    /**
+     * Push an item to a shared queue/list in redis.
+     *
+     * @param  {string}  key  Name of the shared queue/list.
+     * @param  {Object}  item The item The object to save.  It can also be a Number, String, or Array.
+     * @param {simpleCallback} - The callback that handles the response.
+     * @see api.cache.pop
+     * @see api.cache.listLength
+     */
     api.cache.push = function (key, item, callback) {
       let object = JSON.stringify({data: item})
       redis.rpush(api.cache.redisPrefix + key, object, (error) => {
@@ -222,6 +330,15 @@ module.exports = {
       })
     }
 
+    /**
+     * Pop (get) an item to a shared queue/list in redis.
+     *
+     * @param  {string}  key  The name of the shared queue/list.
+     * @param  {objectCallback} callback The callback that handles the response.
+     * @return {Promise<Object>}   The item The object which was saved.  It can also be a Number, String, or Array.
+     * @see api.cache.push
+     * @see api.cache.listLength
+     */
     api.cache.pop = function (key, callback) {
       redis.lpop(api.cache.redisPrefix + key, (error, object) => {
         if (error) { return callback(error) }
@@ -234,10 +351,32 @@ module.exports = {
       })
     }
 
+    /**
+     * This callback is invoked with an error and/or an object.
+     * @callback objectCallback
+     * @param {Error} error An error or null,
+     * @param {Object} object An Object.
+     */
+
+    /**
+     * Check how many items are stored in a shared queue/list in redis.
+     *
+     * @param  {string}  key  The name of the object to save.
+     * @param  {lengthCallback} callback The callback that will handle the response.
+     */
     api.cache.listLength = function (key, callback) {
       redis.llen(api.cache.redisPrefix + key, callback)
     }
 
+    /**
+     * Lock an item in redis (can be a list or a saved item) to this ActionHero process.
+     *
+     * @param  {string}  key          The name of the object to lock.
+     * @param  {string}  expireTimeMS How long to lock this item for.
+     * @param  {booleanCallback} callback The callback that will handle the response.
+     * @see api.cache.unlock
+     * @see api.cache.checkLock
+     */
     api.cache.lock = function (key, expireTimeMS, callback) {
       if (typeof expireTimeMS === 'function' && callback === null) {
         callback = expireTimeMS
@@ -269,6 +408,14 @@ module.exports = {
       })
     }
 
+    /**
+     * Unlock an item in redis (can be a list or a saved item) which was previously locked by this ActionHero process.
+     *
+     * @param  {string}  key The name of the object to unlock.
+     * @param  {booleanCallback} callback The callback that will handle the response.
+     * @see api.cache.lock
+     * @see api.cache.checkLock
+     */
     api.cache.unlock = function (key, callback) {
       api.cache.checkLock(key, null, (error, lockOk) => {
         if (error || lockOk !== true) {
@@ -283,6 +430,9 @@ module.exports = {
       })
     }
 
+    /**
+     * @private
+     */
     api.cache.checkLock = function (key, retry, callback, startTime) {
       if (startTime === null) { startTime = new Date().getTime() }
 

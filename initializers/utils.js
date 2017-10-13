@@ -12,8 +12,16 @@ module.exports = {
 
     api.utils.dotProp = dotProp
 
-    // //////////////////////////////////////////////////////////////////////////
-    // merge two hashes recursively
+    /**
+     * Recursivley merge 2 Objects together.  Will resolve functions if they are present, unless the parent Object has the propery `_toExpand = false`.
+     * ActionHero uses this internally to construct and resolve the config.
+     * Matching keys in B override A.
+     *
+     * @param  {Object} a   Object 1
+     * @param  {Object} b   Object 2
+     * @param  {Object} arg Arguments to pass to any functiosn which should be resolved.
+     * @return {Object}     A new Object, combining A and B
+     */
     api.utils.hashMerge = function (a, b, arg) {
       let c = {}
       let i
@@ -72,8 +80,12 @@ module.exports = {
       return (o.toString() === '[object Object]')
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // unique-ify an array
+    /**
+     * Return only the unique values in an Array.
+     *
+     * @param  {Array} arr Source Array.
+     * @return {Array}     Unique Array.
+     */
     api.utils.arrayUniqueify = function (arr) {
       let a = []
       for (let i = 0; i < arr.length; i++) {
@@ -135,6 +147,9 @@ module.exports = {
       return results.sort()
     }
 
+    /**
+     * @private
+     */
     api.utils.sourceRelativeLinkPath = function (linkfile, pluginPaths) {
       const type = fs.readFileSync(linkfile).toString()
       const pathParts = linkfile.split(path.sep)
@@ -166,8 +181,12 @@ module.exports = {
       }, {}))
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // attempt to collapse this object to an array; ie: {"0": "a", "1": "b"}
+    /**
+     * Collapsses an Object with numerical keys (like `arguments` in a function) to an Array
+     *
+     * @param  {Object} obj An Object with a depth of 1 and only Numerical keys
+     * @return {Array}      Array
+     */
     api.utils.collapseObjectToArray = function (obj) {
       try {
         const keys = Object.keys(obj)
@@ -187,8 +206,11 @@ module.exports = {
       }
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // get this servers external interface
+    /**
+     * Returns this server's external/public IP address
+     *
+     * @return {string} This server's external IP address.
+     */
     api.utils.getExternalIPAddress = function () {
       const os = require('os')
       const ifaces = os.networkInterfaces()
@@ -203,8 +225,12 @@ module.exports = {
       return ip
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // cookie parse from headers of http(s) requests
+    /**
+     * Transform the cookie headers of a node HTTP `req` Object into a hash.
+     *
+     * @param  {Object} req A node.js `req` Object
+     * @return {Object}     A Object with Cookies.
+     */
     api.utils.parseCookies = function (req) {
       let cookies = {}
       if (req.headers.cookie) {
@@ -216,9 +242,13 @@ module.exports = {
       return cookies
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // parse an IPv6 address
-    // https://github.com/actionhero/actionhero/issues/275 && https://github.com/nullivex
+    /**
+     * Parse an IPv6 address, returning both host and port.
+     *
+     * @param  {string} addr An IPv6 address.
+     * @return {Object}      An Object with {host, port}
+     * @see https://github.com/actionhero/actionhero/issues/275
+     */
     api.utils.parseIPv6URI = function (addr) {
       let host = '::1'
       let port = '80'
@@ -237,8 +267,12 @@ module.exports = {
       return {host: host, port: parseInt(port, 10)}
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // Check on how long the event loop is blocked for
+    /**
+     * Returns the averge delay in ms between a tick of hte node.js event loop, as measured for N calls of `process.nextTick`
+     *
+     * @param  {Number}  itterations How many `process.nextTick` cycles of the event loop should we measure?
+     * @param  {numberCallback}  callback The callback to handle the response.
+     */
     api.utils.eventLoopDelay = function (itterations, callback) {
       let intervalJobs = []
       let intervalTimes = []
@@ -267,8 +301,12 @@ module.exports = {
       })
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // Sort Global Middleware
+    /**
+     * Sorts an Array of Objects with a priority key
+     *
+     * @param  {Array} globalMiddlewareList The Array to sort.
+     * @param  {Array} middleware          A specific collection to sort against.
+     */
     api.utils.sortGlobalMiddleware = function (globalMiddlewareList, middleware) {
       globalMiddlewareList.sort((a, b) => {
         if (middleware[a].priority > middleware[b].priority) {
@@ -279,8 +317,12 @@ module.exports = {
       })
     }
 
-    // //////////////////////////////////////////////////////////////////////////
-    // File utils
+    /**
+     * Check if a directory exists.
+     *
+     * @param  {string} dir The directory to check.
+     * @return {Boolean}
+     */
     api.utils.dirExists = function (dir) {
       try {
         let stats = fs.lstatSync(dir)
@@ -288,6 +330,12 @@ module.exports = {
       } catch (e) { return false }
     }
 
+    /**
+     * Check if a file exists.
+     *
+     * @param  {string} file The file to check.
+     * @return {Boolean}
+     */
     api.utils.fileExists = function (file) {
       try {
         let stats = fs.lstatSync(file)
@@ -295,6 +343,13 @@ module.exports = {
       } catch (e) { return false }
     }
 
+    /**
+     * Create a directory, only if it doesn't exist yet.
+     * Throws an error if the directory already exists, or encounters a filesystem problem.
+     *
+     * @param  {string} dir The directory to create.
+     * @return {string} a message if the file was created to log.
+     */
     api.utils.createDirSafely = function (dir) {
       if (api.utils.dirExists(dir)) {
         api.log(` - directory '${path.normalize(dir)}' already exists, skipping`, 'alert')
@@ -304,6 +359,15 @@ module.exports = {
       }
     }
 
+    /**
+     * Create a file, only if it doesn't exist yet.
+     * Throws an error if the file already exists, or encounters a filesystem problem.
+     *
+     * @param  {string} file The file to create.
+     * @param  {string} data The new contents of the file.
+     * @param  {boolean} overwrite Should we overwrite an existing file?.
+     * @return {string} a message if the file was created to log.
+     */
     api.utils.createFileSafely = function (file, data, overwrite) {
       if (api.utils.fileExists(file) && !overwrite) {
         api.log(` - file '${path.normalize(file)}' already exists, skipping`, 'alert')
@@ -317,6 +381,15 @@ module.exports = {
       }
     }
 
+    /**
+     * Create an ActionHero LinkFile, only if it doesn't exist yet.
+     * Throws an error if the file already exists, or encounters a filesystem problem.
+     *
+     * @param  {string} filePath The path of the new LinkFile
+     * @param  {string} type What are we linking (actions, tasks, etc).
+     * @param  {string} refrence What we are refrencing via this link.
+     * @return {string} a message if the file was created to log.
+     */
     api.utils.createLinkfileSafely = function (filePath, type, refrence) {
       if (api.utils.fileExists(filePath)) {
         api.log(` - link file '${filePath}' already exists, skipping`, 'alert')
@@ -326,6 +399,15 @@ module.exports = {
       }
     }
 
+    /**
+     * Remove an ActionHero LinkFile, only if it exists.
+     * Throws an error if the file does not exist, or encounters a filesystem problem.
+     *
+     * @param  {string} filePath The path of the LinkFile
+     * @param  {string} type What are we linking (actions, tasks, etc).
+     * @param  {string} refrence What we are refrencing via this link.
+     * @return {string} a message if the file was created to log.
+     */
     api.utils.removeLinkfileSafely = function (filePath, type, refrence) {
       if (!api.utils.fileExists(filePath)) {
         api.log(` - link file '${filePath}' doesn't exist, skipping`, 'alert')
@@ -335,6 +417,14 @@ module.exports = {
       }
     }
 
+    /**
+     * Create a system symbolic link.
+     * Throws an error if it encounters a filesystem problem.
+     *
+     * @param  {string} destination
+     * @param  {string} source
+     * @return {string} a message if the symlionk was created to log.
+     */
     api.utils.createSymlinkSafely = function (destination, source) {
       if (api.utils.dirExists(destination)) {
         api.log(` - symbolic link '${destination}' already exists, skipping`, 'alert')
@@ -344,6 +434,14 @@ module.exports = {
       }
     }
 
+    /**
+     * Prepares acton params for logging.
+     * Hides any sensitieve data as defined by `api.config.general.filteredParams`
+     * Truncates long strings via `api.config.logger.maxLogStringLength`
+     *
+     * @param  {Object} actionParams Params to filter.
+     * @return {Object}        Filtered Params.
+     */
     api.utils.filterObjectForLogging = function (actionParams) {
       let filteredParams = {}
       for (let i in actionParams) {
