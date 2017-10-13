@@ -1,28 +1,51 @@
 #!/usr/bin/env bash
+
+set -ex
+
 cd "$(dirname "$0")"
 cd ..
 
+function build_branch() {
+  # $1 = name of git branch
+  # $2 = name of path on site
+  git checkout "$1"
+  rm -rf docs
+  mkdir docs
+  npm run docs
+  mv docs "./gh-pages-branch/$2"
+}
+
 ## git config
 REMOTE=$(git config remote.origin.url)
-git config --global user.email "admin@actionherojs.com"
-git config --global user.name "CircleCI for ActionHero"
+# git config --global user.email "admin@actionherojs.com"
+# git config --global user.name "CircleCI for ActionHero"
 
-## Build the project into the "docs" directory
+## build master in the root
+git checkout "master"
 rm -rf docs
+rm -rf gh-pages-branch
 mkdir docs
 npm run docs
-touch ./out/.nojekyll
-cp circle.yml docs/circle.yml
-cp public/favicon.ico docs/favicon.ico
-echo 'docs.actionherojs.com' >> docs/CNAME
+mv docs gh-pages-branch
+touch gh-pages-branch/.nojekyll
+cp circle.yml gh-pages-branch/circle.yml
+cp public/favicon.ico gh-pages-branch/favicon.ico
+echo 'docs.actionherojs.com' >> gh-pages-branch/CNAME
 
-## make a directory to put the gh-pages branch
-mkdir gh-pages-branch
 cd gh-pages-branch
 git init
 git remote add --fetch origin "$REMOTE"
+cd ..
+
+## Build other versions
+build_branch "v17" "v17"
+build_branch "master" "v18"
+
+## Build a version referance file for the site
+echo 'const DOCUMENTATION_VERSIONS = ["v18", "v17"]' >> gh-pages-branch/VERSIONS.js
 
 ## switch into the the gh-pages branch
+cd gh-pages-branch
 if git rev-parse --verify origin/gh-pages > /dev/null 2>&1
 then
     git checkout gh-pages
@@ -31,8 +54,7 @@ else
     git checkout --orphan gh-pages
 fi
 
-## copy over the built site to our new git folder
-cp -a ../docs/. .
+exit
 
 ## push it
 git add -A
