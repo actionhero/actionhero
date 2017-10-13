@@ -17,8 +17,7 @@ npm-debug.log
 .DS_Store
 
 # Site
-docs/_site
-docs/.sass-cache
+docs
 
 # Redis
 dump.rdb
