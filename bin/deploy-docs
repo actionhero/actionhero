@@ -8,7 +8,7 @@ cd ..
 function build_branch() {
   # $1 = name of git branch
   # $2 = name of path on site
-  git checkout "$1"
+  git checkout -f "$1"
   rm -rf docs
   mkdir docs
   npm run docs
@@ -17,8 +17,8 @@ function build_branch() {
 
 ## git config
 REMOTE=$(git config remote.origin.url)
-# git config --global user.email "admin@actionherojs.com"
-# git config --global user.name "CircleCI for ActionHero"
+git config --global user.email "admin@actionherojs.com"
+git config --global user.name "CircleCI for ActionHero"
 
 ## Configure a new direcotry to hold the site
 rm -rf gh-pages-branch
@@ -51,9 +51,7 @@ build_branch "v17" $(git tag --sort=committerdate | grep v17 | tail -n1)
 build_branch $(git tag --sort=committerdate | grep v18 | tail -n1) $(git tag --sort=committerdate | grep v18 | tail -n1)
 
 ## Build a version referance file for the site
-echo 'var DOCUMENTATION_VERSIONS = ["v18", "v17"]' >> gh-pages-branch/scripts/VERSIONS.js
-
-exit
+echo 'var DOCUMENTATION_VERSIONS = ["master", "v18", "v17"]' >> gh-pages-branch/scripts/VERSIONS.js
 
 ## push it
 cd gh-pages-branch

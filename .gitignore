@@ -12,6 +12,7 @@ public/javascript/ActionheroWebsocketClient.min.js
 
 #JSDoc
 docs
+gh-pages-branch
 
 # Node / NPM
 npm-debug.log
