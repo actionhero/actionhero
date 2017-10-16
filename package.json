@@ -27,8 +27,7 @@
     "tcp"
   ],
   "engines": {
-    "node": ">=8.0.0",
-    "npm": "5.3.x"
+    "node": ">=8.0.0"
   },
   "dependencies": {
     "browser_fingerprint": "^1.0.1",
