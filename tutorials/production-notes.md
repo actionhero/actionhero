@@ -153,6 +153,8 @@ You can add local references to your $PATH like so to use these local binaries:
 
 `export PATH=$PATH:node_modules/.bin`
 
+ActionHero is not designed to function when installed globally.  Do not install ActionHero globally, using `npm install -g`
+
 ## Nginx Example
 
 While ActionHero can be the font-line server your users hit, it's probably best to proxy ActionHero behind a load balancer, nginx, haproxy, etc. This will help you pool connections before hitting node, SSL terminate, serve static assets, etc.

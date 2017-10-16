@@ -133,11 +133,20 @@ Descriptions:
 
 ## Linking the ActionHero Binary
 
-If you installed ActionHero globally (`npm install actionhero -g`) you should have the `actionhero` binary available to you within your shell at all times. Otherwise, you can reference the binary from either `./node_modules/.bin/actionhero` or `npx actionhero`.
+ActionHero is not designed to function when installed globally.  Do not install ActionHero globally, using `npm install -g`.  Modern versions of NPM (v5+) allow you to also use the `npx` command, ie: `npx actionhero start cluster --workers=2`, which is a simple way to get to the ActionHero binary from the top-level of your project.  Otherwise defining `scripts` referencing actionhero in your `package.json` is the best way to run ActionHero:
 
-If you installed ActionHero locally, you can add a reference to your path (OSX and Linux): `export PATH=$PATH:node_modules/.bin` to be able to use simpler commands, IE `actionhero start`. On windows this can be done by running `set PATH=%PATH%;%cd%\node_modules\.bin` at command prompt (not powershell).
+```js
+{
+  "name": "my ActionHero project",
+  "scripts": {
+    "start" : "actionhero start",
+    "actionhero" : "actionhero",
+    "pretest": "standard",
+    "test" : "cross-env NODE_ENV=test mocha"
+  }
+}
 
-Newer versions of NPM (v4+) allow you to also use the `npx` command, ie: `npx actionhero start cluster --workers=2`, which is a simple way to get to the ActionHero binary from the top-level of your project.
+```
 
 ## Environments and Config
 
