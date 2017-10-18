@@ -140,7 +140,7 @@ ActionHero is not designed to function when installed globally.  Do not install 
   "name": "my ActionHero project",
   "scripts": {
     "start" : "actionhero start",
-    "actionhero" : "actionhero",
+    "help" : "actionhero help",
     "pretest": "standard",
     "test" : "cross-env NODE_ENV=test mocha"
   }
