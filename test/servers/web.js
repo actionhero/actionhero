@@ -339,14 +339,31 @@ describe('Server: Web', () => {
   })
 
   it('HTTP Verbs should work: Post with Form', async () => {
-    let body = await request.post(url + '/api/cacheTest', {form: {key: 'key', value: 'value'}}).then(toJson)
-    expect(body.cacheTestResults.saveResp).to.equal(true)
+    try {
+      await request.post(url + '/api/cacheTest', {form: {key: 'key'}})
+      throw new Error('should not get here')
+    } catch (error) {
+      expect(error.statusCode).to.equal(422)
+      expect(error.message).to.match(/value is a required parameter for this action/)
+    }
+
+    let successBody = await request.post(url + '/api/cacheTest', {form: {key: 'key', value: 'value'}}).then(toJson)
+    expect(successBody.cacheTestResults.saveResp).to.equal(true)
   })
 
   it('HTTP Verbs should work: Post with JSON Payload as body', async () => {
-    let bodyPayload = JSON.stringify({key: 'key', value: 'value'})
-    let body = await request.post(url + '/api/cacheTest', {'body': bodyPayload, 'headers': {'Content-type': 'application/json'}}).then(toJson)
-    expect(body.cacheTestResults.saveResp).to.equal(true)
+    let bodyPayload = JSON.stringify({key: 'key'})
+    try {
+      await request.post(url + '/api/cacheTest', {'body': bodyPayload, 'headers': {'Content-type': 'application/json'}})
+      throw new Error('should not get here')
+    } catch (error) {
+      expect(error.statusCode).to.equal(422)
+      expect(error.message).to.match(/value is a required parameter for this action/)
+    }
+
+    bodyPayload = JSON.stringify({key: 'key', value: 'value'})
+    let successBody = await request.post(url + '/api/cacheTest', {'body': bodyPayload, 'headers': {'Content-type': 'application/json'}}).then(toJson)
+    expect(successBody.cacheTestResults.saveResp).to.equal(true)
   })
 
   describe('connection.rawConnection.params', () => {
@@ -563,7 +580,7 @@ describe('Server: Web', () => {
     it('actions that do not exists should return 404', async () => {
       try {
         await request.post(url + '/api/aFakeAction')
-        throw new Error('should not ge here')
+        throw new Error('should not get here')
       } catch (error) {
         expect(error.statusCode).to.equal(404)
       }
@@ -572,7 +589,7 @@ describe('Server: Web', () => {
     it('missing params result in a 422', async () => {
       try {
         await request.post(url + '/api/statusTestAction')
-        throw new Error('should not ge here')
+        throw new Error('should not get here')
       } catch (error) {
         expect(error.statusCode).to.equal(422)
       }
@@ -581,7 +598,7 @@ describe('Server: Web', () => {
     it('status codes can be set for errors', async () => {
       try {
         await request.post(url + '/api/statusTestAction', {form: {key: 'bannana'}})
-        throw new Error('should not ge here')
+        throw new Error('should not get here')
       } catch (error) {
         expect(error.statusCode).to.equal(402)
         let body = await toJson(error.response.body)
@@ -626,7 +643,7 @@ describe('Server: Web', () => {
     it('404 pages', async () => {
       try {
         await request.get(url + '/public/notARealFile')
-        throw new Error('should not ge here')
+        throw new Error('should not get here')
       } catch (error) {
         expect(error.statusCode).to.equal(404)
         expect(error.body).not.to.match(/notARealFile/)
@@ -644,7 +661,7 @@ describe('Server: Web', () => {
 
       try {
         await request.get(options)
-        throw new Error('should not ge here')
+        throw new Error('should not get here')
       } catch (error) {
         expect(error.statusCode).to.equal(404)
         expect(error.response.body).to.equal('That file is not found')
@@ -654,7 +671,7 @@ describe('Server: Web', () => {
     it('should not see files outside of the public dir', async () => {
       try {
         await request.get(url + '/public/../config.json')
-        throw new Error('should not ge here')
+        throw new Error('should not get here')
       } catch (error) {
         expect(error.statusCode).to.equal(404)
         expect(error.response.body).to.equal('That file is not found')

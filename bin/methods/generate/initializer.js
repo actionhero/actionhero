@@ -5,7 +5,7 @@ const path = require('path')
 const ActionHero = require('./../../../index.js')
 const api = ActionHero.api
 
-module.exports = class GenerateAction extends ActionHero.CLI {
+module.exports = class GenerateInitializer extends ActionHero.CLI {
   constructor () {
     super()
     this.name = 'generate initializer'

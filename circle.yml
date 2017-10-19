@@ -1,7 +1,6 @@
 ---
 machine:
   environment:
-    FAKEREDIS: false
     maxMemoryAlloted: 500
   services:
     - redis
@@ -12,3 +11,14 @@ test:
   override:
     - "echo Node Version: `node --version` && npm test":
         parallel: true
+
+general:
+  branches:
+    ignore:
+      - gh-pages
+
+deployment:
+  production:
+    branch: master
+    commands:
+      - bin/deploy-docs

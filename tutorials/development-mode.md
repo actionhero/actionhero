@@ -1,12 +1,12 @@
+![](ops-tools.svg)
+
 ## Overview
 
 **Warning: Don't use this in production!**
 
 To enable development mode simply set `developmentMode: true` in your `config/api.js`.
 
-ActionHero's development mode is a little different than tools like [nodemon](https://github.com/remy/nodemon) in that it tries hard not to restart the server process. Changes to routes, tasks, and actions can simply replace those in memory when they are updated on disk. Other changes, like changes to `api.config` or initializers are more severe, and will restart the whole application (much like nodemon).
-
-Note that `api.config.general.developmentMode` is different from `NODE_ENV`, which by default is "development" (and is logged out when ActionHero boots). `NODE_ENV` is used to determine which config settings to use, and has no effect on developmentMode.
+ActionHero's development mode is a little different than tools like [nodemon](https://github.com/remy/nodemon) in that it tries hard not to restart the server process unless something drastic changes. Changes to routes, tasks, and actions can simply replace those already in memory when they are updated on disk. Other changes, like changes to `api.config` or initializers are more severe, and will restart the whole application.  Note that `api.config.general.developmentMode` is different from `NODE_ENV`, which by default is "development" (and is logged when ActionHero boots). `NODE_ENV` is used to determine which config settings to use, and has no effect on developmentMode.
 
 ## Effects of Development Mode
 
@@ -23,37 +23,17 @@ Changes to Actions and Tasks will override the existing version in memory. Chang
 ## Watching Custom Files
 
 ```js
-api.watchFileAndAct(path_to_file, function(){
-  api.log('rebooting due to config change: ' + path_to_file, 'info');
-  api.commands.restart();
+api.watchFileAndAct(path_to_file, () => {
+  api.log('rebooting due to config change: ' + path_to_file, 'info')
+  api.commands.restart()
 });
 ```
 
-You can use ActionHero's `api.watchFileAndAct()` method to watch additional files your application may have:
+You can use ActionHero's `api.watchFileAndAct()` method to watch additional files your application may have.  Use this to extend developmentMode when adding new types of files, like database models.
 
 ## Debugging
 
-### Old debugger
-
-You can use the awesome [node-inspector](https://github.com/dannycoates/node-inspector) project to help you debug your ActionHero application within the familiar Chrome Browser's developer tools.
-
-Be sure to run ActionHero with node's `--debug` flag, ie: `node ./node_modules/.bin/actionhero --debug start`
-
-```js
-// in package.json
-"dependencies": {
-  "actionhero": "x",
-  "node-inspector": "x"
-},
-```
-
-Start up node-inspector (both node-inspector and ActionHero have the same default port, so you will need to change one of them) `./node_modules/.bin/node-inspector --web-port=1234`
-
-That's it! Now you can visit `{`http://0.0.0.0:1234/debug?port=5858`}` and start debugging. Remember that the way node-debugger works has you first set a breakpoint in the file view, and then you can use the console to inspect various objects. IE: I put a breakpoint in the default `status` action in the `run` method:
-
-### New debugger
-
-New versions of node.js have built-in inspector capabilities.
+Modern versions of node.js have built-in inspector capabilities.
 
 Run ActionHero with node's `--inspect` flag, ie: `node ./node_modules/.bin/actionhero --inspect start`
 
@@ -85,7 +65,7 @@ Running "console" task
 ‘status' ]
 ```
 
-ActionHero now has a REPL (`v9.0.0+`)! This means you can spin up a new instance of ActionHero and manually call all the methods on the `api` namespace. This combined with the new RPC tools make this a powerful debugging and development tool. Running `ActionHero console` will load up a version of action hero in your terminal where you have access to the `api` object. This version of the server will `boot`, `initialize`, and `start`, but will skip booting any `servers`.
+ActionHero has a command-line interface called a REPL! This means you can spin up a new instance of ActionHero and manually call all the methods on the `api` namespace. This combined with the new RPC tools make this a powerful debugging and development tool. Running `actionhero console` will load up a version of ActionHero in your terminal where you have access to the `api` object. This version of the server will `boot`, `initialize`, and `start`, but will skip booting any `servers`.  You will be connected to any databases per your initializers.
 
 The REPL will:
 
@@ -95,5 +75,3 @@ The REPL will:
 *   will **not** boot any servers
 
 If you are familiar with rails, this is very similar to `rails console`
-
-![](https://cloud.githubusercontent.com/assets/303226/2953485/4db6cbe2-da5b-11e3-96de-26fe4931d9af.png)

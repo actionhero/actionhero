@@ -65,11 +65,12 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
       sendFile (connection, error, fileStream, mime, length) {
         let content = ''
         let response = {
-          error: error,
           content: null,
           mime: mime,
           length: length
         }
+
+        if (error) { response.error = error }
 
         try {
           if (!error) {
@@ -220,6 +221,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
      * Use the specHelper to run a task.
      * Note: this will run a full Task worker, and will also include any middleware.  This is slower than api.specHelper.runTask.
      *
+     * @async
      * @param  {string}   taskName The name of the task.
      * @param  {Object}   params   Params to pass to the task
      * @return {Promise<Object>}   The return value from the task.
@@ -227,14 +229,23 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
      */
     api.specHelper.runFullTask = async (taskName, params) => {
       const worker = new NodeResque.Worker({
-        connection: api.redis.clients.tasks,
+        connection: {
+          redis: api.redis.clients.tasks
+        },
         queues: api.config.tasks.queues || ['default']
       }, api.tasks.jobs)
 
-      await worker.connect()
-      let result = await worker.performInline(taskName, params)
-      await worker.end()
-      return result
+      try {
+        await worker.connect()
+        let result = await worker.performInline(taskName, params)
+        await worker.end()
+        return result
+      } catch (error) {
+        try {
+          worker.end()
+        } catch (error) {}
+        throw error
+      }
     }
   }
 

@@ -11,10 +11,9 @@ module.exports = class CLI {
    *
    * @tutorial cli
    * @example
-'use strict'
-const ActionHero = require('actionhero')
+const {CLI, api} = require('actionhero')
 
-module.exports = class MyCLICommand extends ActionHero.CLI {
+module.exports = class MyCLICommand extends CLI {
   constructor () {
     super()
     this.name = 'backup redis'
@@ -26,8 +25,8 @@ module.exports = class MyCLICommand extends ActionHero.CLI {
   }
 
   async run ({params}) {
-    const api = ActionHero.api
-    return api.cache.dumpWrite(params.file)
+    await api.cache.dumpWrite(params.file)
+    return true
   }
 }
    */
@@ -40,11 +39,14 @@ module.exports = class MyCLICommand extends ActionHero.CLI {
   }
 
   /**
+   * The main "do something" method for this CLI command.  It is an `async` method.
+   * If error is thrown in this method, it will be logged to STDERR, and the process will terminate with a non-0 exit code.
+   *
    * @function run
    * @async
    * @memberof ActionHero.CLI
    * @param  {Object}  data The data about this instance of the CLI run, specifically params.
-   * @description The main "do something" method for this CLI command.  It can be `async`.  If error is thrown in this method, it will be logged to STDERR, and the process will terminate with a non-0 exit code.
+   * @return {Promise<Boolean>} The return value of `run` is `toShutdown` (boolean).  If you return true, the CLI process will exit if when the method returns, false will keep running.
    */
 
   coreProperties () {

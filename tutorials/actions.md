@@ -1,12 +1,14 @@
+![](easy-to-use-actions.svg)
+
 ## Overview
 
 ```js
 // A simple Action
 
 'use strict'
-const ActionHero = require('actionhero')
+const {Action, api} = require('actionhero')
 
-module.exports = class MyAction extends ActionHero.Action {
+module.exports = class MyAction extends Action {
  constructor () {
    super()
    this.name = 'randomNumber'
@@ -14,7 +16,7 @@ module.exports = class MyAction extends ActionHero.Action {
    this.outputExample = {randomNumber: 0.1234}
  }
 
- async run (api, data) {
+ async run (data) {
    data.response.randomNumber = Math.random()
  }
 }
@@ -26,56 +28,62 @@ The goal of an action is to read `data.params` (which are the arguments a connec
 
 You can create you own actions by placing them in a `./actions/` folder at the root of your application.  You can use the generator with `actionhero generate action --name=myAction`
 
-You can also define more than one action per file if you would like, to share common methods and components (like input parsers).
+You can also define more than one action per file if you would like, and extend classes to share common methods and components (like input parsers).
 
 ```js
-// A Combound Action with Shared Inputs//
+// Compound Action with Shared Inputs//
+const {Action, api} = require('actionhero')
 
-var commonInputs = {
-  email: {
-    required: true,
-    validator: function(param){
-      if( email.indexOf('@') > 0 ){
-        return true;
-      }else{
-        return new Error('that is not a valid email address');
+class ValidatedAction extends Action {
+  constructor () {
+    super()
+    this.inputs = {
+      email: {
+        required: true,
+        validator: this.emailValidator
+      },
+      password: {
+        required: true,
+        validator: this.passwordValidator
       }
-    },
-  },
-  password: {
-    required: true,
-    validator: function(param){
-      if(param.length < 4){
-        return new Error('password should be at least 3 letters long');
-      }else{
-        return true;
-      }
-    },
-    formatter: function(param){
-      return String(param);
-    },
+    }
   }
-};
+
+  emailValidator (param) {
+    if (email.indexOf('@') < 0) {
+      throw new Error('that is not a valid email address')
+    }
+  }
+
+  passwordValidator (param) {
+    if (param.length < 4) {
+      throw new Error('password should be at least 3 letters long')
+    }
+  }
+}
 
 // the actions
-
-exports.userAdd = {
-  name: 'userAdd',
-  description: 'I add a user',
-  inputs: commonInputs,
-  run: function(api, data, next){
-    // your code here
-    next(error);
+exports.UserAdd = class UserAdd extends ValidatedAction {
+  constructor () {
+    super()
+    this.name = 'userAdd'
+    this.description = 'I add a user'
   }
-};
 
-exports.userDelete = {
-  name: 'userDelete',
-  description: 'I delete a user',
-  inputs: commonInputs,
-  run: function(api, data, next){
+  run (data) {
     // your code here
-    next(error);
+  }
+}
+
+exports.UserDelete = class UserDelete extends ValidatedAction {
+  constructor () {
+    super()
+    this.name = 'userDelete'
+    this.description = 'I delete a user'
+  }
+
+  run (data) {
+    // your code here
   }
 }
 ```
@@ -84,7 +92,7 @@ exports.userDelete = {
 
 ActionHero supports multiple versions of the same action.  This will allow you to support actions/routes of the same name with upgraded functionality.
 
-* actions optionally have the `action.version` attribute.
+* actions optionally have the `action.version` attribute, which defaults to `1`.
 * a reserved param, `apiVersion` is used to directly specify the version of an action a client may request.
 * if a client doesn't specify an `apiVersion`, they will be directed to the highest numerical version of that action.
 
@@ -106,54 +114,76 @@ exports.routes = {
 };
 ```
 
+We go into more detail about routes when discussing the [web server](tutorial-web-server.html)
+
 ## Options
 
 The complete set of options an action can have are:
 
 ```js
-exports.action = {
-  // the action's name (the \`exports\` key doesn't matter)
-  name: 'randomNumber',
-  // the description
-  description: 'I am an API method which will generate a random number',
-  // a hash of all the inputs this action will accept
-  // any inputs provided to the action not in this hash will be stripped
-  inputs: {
-    multiplier: {
-      required: false,
-      validator: function(param, connection, actionTemplate){ if(param < 0){
-        return 'must be > 0' }else{ return true; }
-      },
-      formatter: function(param, connection, actionTemplate){
-        return parseInt(param);
-      },
-      default:   function(param, connection, actionTemplate){
-        return 1;
-      },
+const {Action, api} = require('actionhero')
+
+class ValidatedAction extends Action {
+  constructor () {
+    super()
+
+    // (required) the action's name (the \`exports\` key doesn't matter)
+    this.name = 'randomNumber'
+
+    // (required) the description
+    this.description = 'I am an API method which will generate a random number'
+
+    // (required) a hash of all the inputs this action will accept
+    // any inputs provided to the action not in this hash will be stripped
+    this.inputs = {
+      multiplier: {
+        required: false,
+        validator: (param, connection, actionTemplate) => {
+          if (param < 0) { throw new Error('must be > 0') } else { return true }
+        },
+        formatter: (param, connection, actionTemplate) => {
+          return parseInt(param)
+        },
+        default: (param, connection, actionTemplate) => {
+          return 1
+        },
+      }
+    },
+
+    // any middlewares to apply before/after this action
+    // global middleware will be applied automatically
+    // default []
+    this.middleware = []
+
+    // an example response
+    // default: {}
+    this.outputExample = { randomNumber: 123 }
+
+    // you can choose to block certain servers from using this action
+    // default: []
+    this.blockedConnectionTypes = ['webSocket']
+
+    // how should this action be logged?
+    // default: 'info'
+    this.logLevel = 'warning'
+
+    // (HTTP only) if the route for this action includes an extension (like .jpg), should the response MIME be adjusted to match?
+    // default: true
+    this.matchExtensionMimeType = true
+
+    // should this action appear within \`api.documentation.documentation\`
+    // default: true
+    this.toDocument = true
+
+    // (required) the run method of the action
+    async run (data) {
+      data.response.randomNumber = Math.random() * data.params.multiplier;
     }
-  },
-  // any middlewares to apply before/after this action
-  // global middleware will be applied automatically
-  middleware: [],
-  // an example response
-  outputExample: { randomNumber: 123 },
-  // you can choose to block certain servers from using this action
-  blockedConnectionTypes: ['webSocket'],
-  // how should this action be logged?
-  logLevel: 'warning',
-  // (HTTP only) if the route for this action includes an extension (like .jpg), should the response MIME be adjusted to match?
-  matchExtensionMimeType: true,
-  // should this action appear within \`api.documentation.documentation\`
-  toDocument: true,
-
-  run: function(api, data, next){
-    var error = null;
-
-    data.response.randomNumber = Math.random() * data.params.multiplier;
-    next(error);
   }
 }
 ```
+
+Note that for many of these, you can define them as a scalar in the constructor or as a method which returns the proper response.
 
 ## Inputs
 
@@ -162,19 +192,21 @@ action.inputs = {
   // a simple input
   // defaults assume required = false
   minimalInput: {}
+
   // a complex input
   multiplier: {
     required: true,
-    validator: function(param, connection, actionTemplate){
-      if(param < 0){ return 'must be > 0'; }else{ return true; }
+    validator: (param, connection, actionTemplate) => {
+      if (param < 0) { throw new Error('must be > 0') } else { return true }
     },
-    formatter: function(param, connection, actionTemplate){
+    formatter: (param, connection, actionTemplate) => {
       return parseInt(param);
     },
-    default:   function(param, connection, actionTemplate){
+    default: (param, connection, actionTemplate) => {
       return 1;
     },
   },
+
   // a schema input
   schemaInput: {
     required: true,
@@ -183,10 +215,10 @@ action.inputs = {
       nestedInput: {
         required: true,
         default: 1,
-        validator: function(param, connection, actionTemplate){
-          if(param < 0){ return 'must be > 0'; }else{ return true; }
+        validator: (param, connection, actionTemplate) => {
+          if (param < 0) { throw new Error('must be > 0') } else { return true }
         },
-        formatter: function(param, connection, actionTemplate){
+        formatter: (param, connection, actionTemplate) => {
           return parseInt(param);
         },
       },
@@ -209,7 +241,7 @@ The properties of an input are:
   * Default: Parameter has no default value
 * `validator = function(param, connection, actionTemplate)`
   * should return true if validation passed
-  * should return an error message if validation fails which will be returned to the client
+  * should throw an error message if validation fails which will be returned to the client
   * Default: Parameter is always valid
 * `schema` (object)
   * optional nested inputs definition
@@ -234,12 +266,12 @@ Here's an example...
 ```js
 moneyInCents: {
   required:  true,
-  default:   function(p){ return 0; },
-  formatter: function(p){ return parseFloat(p); },
-  validator: function(p){
-    if(isNaN(parseFloat(p)){ return new Error('not a number'); }
-    if(p < 0){ return new Error('money cannot be negative'); }
-    else{ return true; }
+  default:   (p) => { return 0 },
+  formatter: (p) => { return parseFloat(p) },
+  validator: (p) => {
+    if(isNaN(parseFloat(p)){ throw new Error('not a number') }
+    if(p < 0){ throw new Error('money cannot be negative') }
+    else{ return true }
   }
 }
 ```
@@ -247,58 +279,20 @@ moneyInCents: {
 Formatters and Validators can also be named method names. For example, you might have an action like:
 
 ```js
-exports.cacheTest = {
-  name: 'cacheTest',
-  description: 'I will test the internal cache functions of the API',
-  outputExample: {},
-
-  inputs: {
-    key: {
-      required: true,
-      formatter: [
-         function(s){ return String(s); },
-         'api.formatter.uniqueKeyName' // <----------- HERE
-      ]
-    },
-    value: {
-      required: true,
-      formatter: function(s){ return String(s); },
-      validator: function(s){
-        if(s.length < 3){ return '\`value\` should be at least 3 letters long'; }
-        else{ return true; }
-      }
-    },
-  },
-
-  run: function(api, data, next){
-    // ...
+inputs: {
+  key: {
+    required: true,
+    formatter: 'api.formatter.uniqueKeyName'
   }
-};
+}
 ```
 
-You can define `api.formatter.uniqueKeyName` elsewhere in your project, like this initializer:
-
-```js
-module.exports = {
-  initialize: function(api, next){
-    api.formatter = {
-      uniqueKeyName: function(key){
-        return key + '-' + this.connection.id;
-      }
-    };
-
-    next();
-  },
-};
-```
+You can define `api.formatter.uniqueKeyName` elsewhere in your project.
 
 Example schema input:
 
 ```js
-exports.addUser = {
-  name: 'api/addUser',
-  description: 'I add user',
-
+inputs = {
   firstName: { required: true },
   lastName: { required: false },
   username: { required: true },
@@ -317,7 +311,6 @@ exports.addUser = {
       }
     }
   }
-  run: () => {},
 }
 ```
 
@@ -344,22 +337,22 @@ You can also modify properties of the connection by accessing `data.connection`,
 
 If you don't want your action to respond to the client, or you have already sent data to the client (perhaps you already rendered a file to them or sent an error HTTP header), you can set `data.toRender = false;`
 
-If you are certain that your action is only going to be handled by a web server, then a connivence function has been provided to you via `data.connection.setHeader()`. This function is a proxy to the <a href='https://nodejs.org/api/http.html#http_response_setheader_name_value'>Node HTTP Response setHeader</a> function and allows you to set response headers without having to drill into the `data.connection.rawConnection` object. Please be aware, the `data.connection.setHeader()` function will only be available if your action is being handled by a web server. Other server types will throw an exception. See <a href='/docs/core/servers#customizing-servers'>Servers: Customizing the Connection</a> for more details.</p>
+If you are certain that your action is only going to be handled by a web server, then a connivence function has been provided to you via `data.connection.setHeader()`. This function is a proxy to the <a href='https://nodejs.org/api/http.html#http_response_setheader_name_value'>Node HTTP Response setHeader</a> function and allows you to set response headers without having to drill into the `data.connection.rawConnection` object. Please be aware, the `data.connection.setHeader()` function will only be available if your action is being handled by a web server. Other server types will throw an exception. See [Servers: Customizing the Connection](tutorial-servers.html) for more details.
 
 ## Middleware
 
 You can create middlware which would apply to the connection both before and after an action.  Middleware can be either global (applied to all actions) or local, specified in each action via `action.middleware = []`.  Supply the `names` of any middleware you want to use.
 
-You can <a href='/docs/core/#middleware'>learn more about middleware here</a>.
+You can [learn more about middleware here](tutorial-middleware.html).
 
 ## Notes
 
-* Actions are asynchronous, and require in the API object, the `data` object, and the callback function.  Completing an action is as simple as calling `next(error)`.  If you have an error, be sure that it is a `new Error()` object, and not a string.
-* The metadata `outputExample` is used in reflexive and self-documenting actions in the API, available via the `documentation` verb (and /api/ showDocumenation action).
+* Actions' run method are async, and have `data` as their only argument.  Completing an action is as simple returning from the method.  
+* If you throw an error, be sure that it is a `new Error()` object, and not a string.  Thrown errors will automatically be sent to the client in `response.error`
+* The metadata `outputExample` is used in reflexive and self-documenting actions in the API, available via the `documentation` verb (and showDocumenation action).
 * You can limit how many actions a persistent client (websocket, tcp, etc) can have pending at once with `api.config.general.simultaneousActions`
-* `actions.inputs` are used for both documentation and for building the whitelist of allowed parameters the API will accept.  Client params not included in these whitelists will be ignored for security. If you wish to disable the whitelisting you can use the flag at `api.config.general.disableParamScrubbing`. Note that <a href='/docs/core/#middleware'>Middleware</a> preProcessors will always have access to all params pre-scrubbing.
+* `actions.inputs` are used for both documentation and for building the whitelist of allowed parameters the API will accept.  Client params not included in these whitelists will be ignored for security. If you wish to disable the whitelisting you can use the flag at `api.config.general.disableParamScrubbing`. Note that [Middleware](tutorial-middleware.html) preProcessors will always have access to all params pre-scrubbing.
 * `matchExtensionMimeType` is currently only used by the `web` server, and it indicates that if this action is successfully called by a client with `connection.extension` set, the headers of the response should be changed to match that file type.  This is useful when creating actions that download files.
-* ActionHero strives to keep the `data.connection` object uniform among various client types, and more importantly, present `data.params` in a homogeneous way.  You can inspect `data.connection.type` to learn more about the connection.  The gory details of the connection (which vary on its type) are stored in `data.connection.rawConnection` which will contain the websocket, tcp connection, etc.  For web clients, `{`data.connection.rawConnection = {req: req, res: res}`}` for example.
-  * You can learn more about some of the `rawConnection` options by learning how to <a href='/docs/core/#file-server-sending-files-from-actions'>send files from actions</a>.
+* ActionHero strives to keep the `data.connection` object uniform among various client types, and more importantly, present `data.params` in a homogeneous way to actions.  You can inspect `data.connection.type` to learn more about the connection.  The gory details of the connection (which vary on its type) are stored in `data.connection.rawConnection` which will contain the websocket, tcp connection, etc.  For web clients, `{`data.connection.rawConnection = {req: req, res: res}`}` for example.
 
-<a href='/docs/servers/web#sending-files'>You can learn more about handling HTTP verbs and file uploads here</a> and <a href='/docs/servers/socket'>TCP Clients</a> and <a href='/docs/servers/websocket'>Web-Socket Clients</a>
+[You can learn more about handling HTTP verbs and file uploads here](tutorial-web-server.html) and [TCP Clients](tutorial-socket-server.html) and [Web-Socket Clients](tutorial-websocket-server.html).

@@ -1,34 +1,36 @@
+![](ops-tools.svg)
+
 ## Overview
 
 Allow actionhero developers to create new files in `./bin` which can be run via the CLI. These commands will have access to a the ActionHero `api` and CLI arguments object within a `run` method.
 
-You can create namespaces for commands by using folders. For example, a file in `./bin/redis/keys` would be run via `./node_modules/.bin/actionhero redis keys --prefix actionhero`
+You can create namespaces for commands by using folders. For example, a file in `./bin/redis/keys` would be run via `npx actionhero redis keys`
 
 ```js
-// A CLI Command
+const {api, CLI} = require('actionhero')
 
-module.exports = {
-  name: 'redis keys',
-  description: 'I list all the keys in redis',
-  example: 'actionhero keys --prefix actionhero',
+module.exports = class RedisKeys extends CLI {
+  constructor () {
+    super()
+    this.name = 'redis keys'
+    this.description = 'I list all the keys in redis'
+    this.example = 'actionhero keys --prefix actionhero'
+  }
 
-  inputs: {
-    prefix: {
-      requried: true,
-      default: 'actionhero',
-      note: 'the redis prefix for searching keys'
+  inputs () {
+    return {
+      prefix: {
+        requried: true,
+        default: 'actionhero',
+        note: 'the redis prefix for searching keys'
+      }
     }
-  },
+  }
 
-  run: function (api, data, next) {
-    api.redis.clients.client.keys(data.params.prefix, (error, keys) => {
-      if (error) { throw error }
-
-      api.log('Found ' + keys.length + 'keys:')
-      keys.forEach((k) => { api.log(k) })
-
-      return next(null, true)
-    })
+  async run ({params}) => {
+    let keys = await api.redis.clients.client.keys(params.prefix)
+    api.log('Found ' + keys.length + 'keys:')
+    keys.forEach((k) => { api.log(k) })
   }
 }
 ```
@@ -47,7 +49,7 @@ Inputs for CLI commands have:
 *   default (string only)
 *   note
 
-These are sourced by `actionhero help`, and the example above would return:
+These are sourced automatically by `actionhero help`, and the example above would return:
 
 ```bash
 * redis keys

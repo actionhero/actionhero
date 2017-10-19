@@ -1,5 +1,7 @@
 'use strict'
 
+const glob = require('glob')
+const path = require('path')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
@@ -13,6 +15,7 @@ const api = ActionHero.api
 /**
  * Middleware definition for Actions
  *
+ * @async
  * @typedef {Object} ActionHero~ActionMiddleware
  * @property {string} name - Unique name for the middleware.
  * @property {Boolean} global - Is this middleware applied to all actions?
@@ -25,18 +28,13 @@ var middleware = {
   name: 'userId checker',
   global: false,
   priority: 1000,
-  preProcessor: function(data, next){
+  preProcessor: async (data) => {
     if(!data.params.userId){
-      next(new Error('All actions require a userId') );
-    }else{
-      next();
+      throw new Error('All actions require a userId')
     }
   },
-  postProcessor: function(data, next){
-    if(data.thing.stuff == false){
-      data.toRender = false;
-    }
-    next(error);
+  postProcessor: async (data) => {
+    if(data.thing.stuff == false){ data.toRender = false }
   }
 }
 
@@ -114,6 +112,11 @@ module.exports = class Actions extends ActionHero.Initializer {
           await action.validate(api)
           if (!api.actions.actions[action.name]) { api.actions.actions[action.name] = {} }
           if (!api.actions.versions[action.name]) { api.actions.versions[action.name] = [] }
+
+          if (api.actions.actions[action.name][action.version] && !reload) {
+            api.log(`an existing action with the same name \`${action.name}\` will be overridden by the file ${fullFilePath}`, 'warning')
+          }
+
           api.actions.actions[action.name][action.version] = action
           api.actions.versions[action.name].push(action.version)
           api.actions.versions[action.name].sort()
@@ -130,9 +133,17 @@ module.exports = class Actions extends ActionHero.Initializer {
     }
 
     for (let i in api.config.general.paths.action) {
-      let path = api.config.general.paths.action[i]
-      let files = api.utils.recursiveDirectoryGlob(path)
+      let p = api.config.general.paths.action[i]
+      let files = glob.sync(path.join(p, '**', '*.js'))
       for (let j in files) { await api.actions.loadFile(files[j]) }
+    }
+
+    for (let pluginName in api.config.plugins) {
+      if (api.config.plugins[pluginName].actions !== false) {
+        let pluginPath = api.config.plugins[pluginName].path
+        let files = glob.sync(path.join(pluginPath, 'actions', '**', '*.js'))
+        for (let j in files) { await api.actions.loadFile(files[j]) }
+      }
     }
   }
 }

@@ -13,9 +13,9 @@ module.exports = class Task {
    * @tutorial tasks
    * @example
 'use strict'
-const ActionHero = require('actionhero')
+const {Task, api} = require('actionhero')
 
-module.exports = class SayHello extends ActionHero.Task {
+module.exports = class SayHello extends Task {
  constructor () {
    super()
    this.name = 'sayHello'
@@ -23,8 +23,8 @@ module.exports = class SayHello extends ActionHero.Task {
    this.frequency = (60 * 1000)
  }
 
- async run (data) {
-   ActionHero.api.log('Hello!')
+ async run (data, worker) {
+   api.log('Hello!')
  }
 }
    */
@@ -37,11 +37,15 @@ module.exports = class SayHello extends ActionHero.Task {
   }
 
   /**
+   * The main "do something" method for this task.  It can be `async`.  Anything returned from this metod will be logged.
+   * If error is thrown in this method, it will be logged & caught.  Using middleware, you can decide to re-run the task on failure.
+   * `this` is a Task instance itself now.
+   *
    * @function run
    * @async
    * @memberof ActionHero.Task
    * @param  {Object}  data The data about this instance of the task, specifically params.
-   * @description The main "do something" method for this task.  It can be `async`.  Anything returned from this metod will be logged.  If error is thrown in this method, it will be logged & caught.  Using middleware, you can decide to re-run the task on failure.
+   * @param  {Object}  worker Instance of a node-resque worker. You can inspect `worker.job` and set `worker.result` explicitly if your Task does not return a value.
    */
 
   coreProperties () {

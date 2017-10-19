@@ -5,7 +5,7 @@ const {promisify} = require('util')
 const ActionHero = require('./../../index.js')
 const api = ActionHero.api
 
-module.exports = class ActionsList extends ActionHero.CLI {
+module.exports = class Console extends ActionHero.CLI {
   constructor () {
     super()
     this.name = 'console'

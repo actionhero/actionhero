@@ -1,6 +1,7 @@
 'use strict'
 
 const path = require('path')
+const glob = require('glob')
 const packageJson = require(path.join(__dirname, '..', 'package.json'))
 let api
 
@@ -47,8 +48,7 @@ module.exports = class Process {
     let loadInitializerRankings = {}
     let startInitializerRankings = {}
     let stopInitializerRankings = {}
-    let customInitializers = []
-    let duplicatedInitializers = []
+    let initializerFiles = []
 
     this.loadInitializers = []
     this.startInitializers = []
@@ -61,7 +61,14 @@ module.exports = class Process {
     ].forEach(async (file) => {
       delete require.cache[require.resolve(file)]
       const InitializerClass = require(file)
-      const initializer = new InitializerClass()
+      let initializer
+
+      try {
+        initializer = new InitializerClass()
+      } catch (error) {
+        this.fatalError(error, file)
+      }
+
       try {
         initializer.validate()
         await initializer.initialize(api)
@@ -71,14 +78,23 @@ module.exports = class Process {
       }
     })
 
+    // load initializers from core
+    initializerFiles = initializerFiles.concat(glob.sync(path.join(__dirname, '..', 'initializers', '**', '*.js')))
+
+    // load initializers from project
     api.config.general.paths.initializer.forEach((startPath) => {
-      customInitializers = customInitializers.concat(api.utils.recursiveDirectoryGlob(startPath))
+      initializerFiles = initializerFiles.concat(glob.sync(path.join(startPath, '**', '*.js')))
     })
 
-    // load all other initializers
-    let initializerFiles = api.utils.arrayUniqueify(
-      api.utils.recursiveDirectoryGlob(path.join(__dirname, '..', 'initializers')).sort().concat(customInitializers.sort())
-    )
+    // load initializers from plugins
+    for (let pluginName in api.config.plugins) {
+      if (api.config.plugins[pluginName] !== false) {
+        let pluginPath = api.config.plugins[pluginName].path
+        initializerFiles = initializerFiles.concat(glob.sync(path.join(pluginPath, 'initializers', '**', '*.js')))
+      }
+    }
+
+    initializerFiles = api.utils.arrayUniqueify(initializerFiles)
 
     initializerFiles.forEach((f) => {
       let file = path.normalize(f)
@@ -88,7 +104,13 @@ module.exports = class Process {
 
       delete require.cache[require.resolve(file)]
       const InitializerClass = require(file)
-      const initializer = new InitializerClass()
+      let initializer
+
+      try {
+        initializer = new InitializerClass()
+      } catch (error) {
+        this.fatalError(error, file)
+      }
 
       // check if initializer already exists (exclude utils and config)
       if (
@@ -96,7 +118,8 @@ module.exports = class Process {
         file !== path.resolve(__dirname, '..', 'initializers', 'utils.js') &&
         file !== path.resolve(__dirname, '..', 'initializers', 'config.js')
       ) {
-        return duplicatedInitializers.push(file)
+        let warningMessage = `an existing intializer with the same name \`${initializer.name}\` will be overridden by the file ${file}`
+        if (api.log) { api.log(warningMessage, 'warning') } else { console.warn(warningMessage) }
       } else {
         initializer.validate()
         this.initializers[initializer.name] = initializer
@@ -172,12 +195,6 @@ module.exports = class Process {
     }
 
     api.initialized = true
-
-    if (duplicatedInitializers.length > 0) {
-      duplicatedInitializers.forEach(initializer => api.log(`Initializer ${initializer} already exists!`, 'error'))
-      await api.commands.stop()
-      return process.exit(1)
-    }
 
     return api
   }

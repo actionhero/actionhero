@@ -195,7 +195,8 @@ module.exports = class Connection {
           key = parts[0]
           value = parts[1]
         }
-        if (api.config.general.disableParamScrubbing || api.params.postVariables.indexOf(key) > 0) {
+
+        if (api.config.general.disableParamScrubbing || api.params.postVariables.indexOf(key) >= 0) {
           this.params[key] = value
         }
         return

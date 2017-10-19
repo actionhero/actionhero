@@ -25,7 +25,7 @@ module.exports = class Resque extends ActionHero.Initializer {
   }
 
   initialize () {
-    if (api.config.redis === false) { return }
+    if (api.config.redis.enabled === false) { return }
 
     const resqueOverrides = api.config.tasks.resque_overrides
 

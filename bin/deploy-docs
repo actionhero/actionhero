@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+set -ex
+
+cd "$(dirname "$0")"
+cd ..
+
+function build_branch() {
+  # $1 = name of git branch
+  # $2 = name of path on site
+  git checkout -f "$1"
+  rm -rf docs
+  mkdir docs
+  npm run docs
+  mv docs "./gh-pages-branch/$2"
+}
+
+## git config
+REMOTE=$(git config remote.origin.url)
+git config --global user.email "admin@actionherojs.com"
+git config --global user.name "CircleCI for ActionHero"
+
+## Configure a new direcotry to hold the site
+rm -rf gh-pages-branch
+mkdir gh-pages-branch
+cd gh-pages-branch
+git init
+git remote add --fetch origin "$REMOTE"
+if git rev-parse --verify origin/gh-pages > /dev/null 2>&1
+then
+    git checkout gh-pages
+    git rm -rf .
+else
+    git checkout --orphan gh-pages
+fi
+cd ..
+
+## build master's docs
+git checkout "master"
+rm -rf docs
+mkdir docs
+npm run docs
+cp -a docs/. gh-pages-branch/
+touch gh-pages-branch/.nojekyll
+cp circle.yml gh-pages-branch/circle.yml
+cp public/favicon.ico gh-pages-branch/favicon.ico
+echo 'docs.actionherojs.com' >> gh-pages-branch/CNAME
+
+## Build other versions
+VERSION_V17=$(git tag --sort=committerdate | grep v17 | tail -n1)
+build_branch "v17" $VERSION_V17
+
+VERSION_V18=$(git tag --sort=committerdate | grep v18 | tail -n1)
+build_branch $VERSION_V18 $VERSION_V18
+
+## Build a version referance file for the site
+echo "var DOCUMENTATION_VERSIONS = ['master', '$VERSION_V18', '$VERSION_V17']" >> gh-pages-branch/scripts/VERSIONS.js
+
+## push it
+cd gh-pages-branch
+git add -A
+git commit --allow-empty -m "deploy docs site @ $(date)"
+git push --force origin gh-pages
+cd ..
+
+## clean up
+rm -rf gh-pages-branch
+echo "Depolyment Complete"

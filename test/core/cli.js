@@ -63,10 +63,10 @@ const sleep = async (timeout) => { await promisify(setTimeout)(timeout) }
 
 describe('Core: CLI', () => {
   if (process.platform === 'win32') {
-    console.log('*** CANNOT RUN BINARY TESTS ON WINDOWS.  Sorry. ***')
+    console.log('*** CANNOT RUN CLI TESTS ON WINDOWS.  Sorry. ***')
   } else {
     before(async () => {
-      if (process.env.SKIP_BINARY_TEST_SETUP === 'true') { return }
+      if (process.env.SKIP_CLI_TEST_SETUP === 'true') { return }
 
       let sourcePackage = path.normalize(path.join(__dirname, '/../../bin/templates/package.json'))
       AHPath = path.normalize(path.join(__dirname, '/../..'))
@@ -106,6 +106,7 @@ describe('Core: CLI', () => {
         'config/api.js',
         'config/errors.js',
         'config/i18n.js',
+        'config/plugins.js',
         'config/logger.js',
         'config/redis.js',
         'config/routes.js',
@@ -135,7 +136,7 @@ describe('Core: CLI', () => {
     it('can call the help command', async () => {
       let {stdout} = await doCommand(`${binary} help`)
       expect(stdout).to.match(/actionhero start cluster/)
-      expect(stdout).to.match(/Binary options:/)
+      expect(stdout).to.match(/The reusable, scalable, and quick node.js API server for stateless and stateful applications/)
       expect(stdout).to.match(/actionhero generate server/)
     })
 

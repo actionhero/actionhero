@@ -1,6 +1,15 @@
+![](ops-tools.svg)
+
 ## The ActionHero Binary
 
-```bash
+The suggested method to run your ActionHero server is to use the included `./node_modules/.bin/actionhero` binary. Note that there is no `main.js` or specific start script your project needs. ActionHero handles this for you. Your ActionHero project simply needs to follow the proper directory conventions and it will be bootable.
+
+The help for this binary is as follows:
+
+```
+--------------------------------------
+ACTIONHERO COMMAND >> help
+--------------------------------------
 ActionHero - A multi-transport node.js API Server with integrated cluster capabilities and delayed tasks
 
 Binary options:
@@ -11,14 +20,13 @@ Binary options:
 * generate action
 * generate cli
 * generate initializer
+* generate plugin
 * generate server
 * generate task
 * help
-* link
 * start
 * start cluster
 * task enqueue
-* unlink
 * version
 
 Descriptions:
@@ -62,6 +70,10 @@ Descriptions:
     [stopPriority]
       default: 1000
 
+* generate plugin
+  description: generate the structure of a new actionhero plugin in an empty directory
+  example: actionhero generate plugin
+
 * generate server
   description: generate a new server
   example: actionhero generate server --name=[name]
@@ -81,21 +93,14 @@ Descriptions:
 * help
   description: get actonhero CLI help; will display this document
 
-* link
-  description: link a plugin to this actionhero project
-  example: actionhero link --name=[pluginName] --overwriteConfig=[overwriteConfig]
-  inputs:
-    [name]
-    [overwriteConfig] (optional)
-
 * start
   description: start this ActionHero server
   example: actionhero start --config=[/path/to/config] --title=[processTitle] --daemon
   inputs:
     [config] (optional)
-      note: path to config.js, defaults to "process.cwd() + '/' + config.js". You can also use ENV[ACTIONHERO_CONFIG]
+      note: path to config.js, defaults to "process.cwd()" + '/' + config.js. You can also use ENV[ACTIONHERO_CONFIG]
     [title] (optional)
-      note: process title to use for ActionHeros ID, ps, log, and pidFile defaults. Must be unique for each member of the cluster. You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows
+      note: process title to use for ActionHero\'s ID, ps, log, and pidFile defaults. Must be unique for each member of the cluster. You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows
     [daemon] (optional)
       note: to fork and run as a new background process defaults to false
 
@@ -107,7 +112,7 @@ Descriptions:
       note: number of workers (defaults to # CPUs)
       default: 8
     [title] (optional)
-      note: worker title prefix (default 'actionhero-worker-') set \`--workerTitlePrefix=hostname\`, your app.id would be like \`your_host_name-#\`
+      note: worker title prefix (default 'actionhero-worker-') set `--workerTitlePrefix=hostname`, your app.id would be like your_host_name-#
     [workerTitlePrefix]
       default: actionhero-worker-
     [daemon] (optional)
@@ -122,33 +127,38 @@ Descriptions:
     [args] (optional)
     [params] (optional)
 
-* unlink
-  description: unlink a plugin from this actionhero project
-  example: actionhero unlink --name=[pluginName]
-  inputs:
-    [name]
-
 * version
   description: return the ActionHero version within this project
   ```
 
-The suggested method to run your ActionHero server is to use the included `./node_modules/.bin/actionhero` binary. Note that there is no `main.js` or specific start script your project needs. ActionHero handles this for you. Your ActionHero project simply needs to follow the proper directory conventions and it will be bootable.
-
 ## Linking the ActionHero Binary
 
-*   If you installed ActionHero globally (`npm install actionhero -g`) you should have the `actionhero` binary available to you within your shell at all times.
-*   Otherwise, you can reference the binary from either `./node_modules/.bin/actionhero` or `./node_modules/actionhero/bin/actionhero`.
-*   If you installed ActionHero locally, you can add a reference to your path (OSX and Linux): `export PATH=$PATH:node_modules/.bin` to be able to use simpler commands, IE `actionhero start`. On windows this can be done by running `set PATH=%PATH%;%cd%\node_modules\.bin` at command prompt (not powershell).
+ActionHero is not designed to function when installed globally.  Do not install ActionHero globally, using `npm install -g`.  Modern versions of NPM (v5+) allow you to also use the `npx` command, ie: `npx actionhero start cluster --workers=2`, which is a simple way to get to the ActionHero binary from the top-level of your project.  Otherwise defining `scripts` referencing actionhero in your `package.json` is the best way to run ActionHero:
+
+```js
+{
+  "name": "my ActionHero project",
+  "scripts": {
+    "start" : "actionhero start",
+    "help" : "actionhero help",
+    "pretest": "standard",
+    "test" : "cross-env NODE_ENV=test mocha"
+  }
+}
+
+```
 
 ## Environments and Config
 
-By default, ActionHero will use the settings found in the `exports.default` blocks in `/config/`. However, you can set environment-specfic overrides or changes. ActionHero inspects `process.env.NODE_ENV` to load up runtime configuration overrides from `{`exports.#{env}`}` blocks in your configuration files. This is the recommended way to have separate settings for staging and production.
+By default, ActionHero will use the settings found in the `exports.default` blocks in `/config/`. However, you can set environment-specific overrides or changes. ActionHero inspects `process.env.NODE_ENV` to load up runtime configuration overrides from `exports.#{env}` blocks in your configuration files. This is the recommended way to have separate settings for staging and production.
 
 The load order of configs is:
 
-*   default values in `/config`
-*   environment-specific values in `/config`
-*   options passed in to boot with `{`actionhero.start({configChanges: configChanges}, callback)`}`
+* default values in `/config`
+* environment-specific values in `/config`
+* options passed in to boot with `actionhero.start({configChanges: configChanges})`
+
+You can `{configChanges: {}}` to a new ActionHero.Process' `start` or `initialize` methods.  This can be helpful when creating tests. When using CLI commands, you can also set `process.env.configChanges` or pass `--configChanges` on the command line. In these cases, `configChanges` should be stringified JSON.
 
 ```js
 // from ./config/namespace.js
@@ -174,47 +184,45 @@ In the example above, we are defining `api.config.namespace.enabled` and `api.co
 
 ## Programatic Use of ActionHero
 
+While **NOT** encouraged, you can always instantiate an ActionHero process yourself. Perhaps you wish to combine ActionHero with an existing project. Here is how! Take note that using these methods will not work for a cluster process, and only a single instance will be started within your project.
+
 ```js
-var actionheroPrototype = require("actionhero");
-var actionhero = new actionheroPrototype();
+const {Process} = require("actionhero")
+const actionhero = new Process()
 
-var timer = 5000;
-actionhero.start(params, function(error, api){
+const sleep = (time) => {
+  if (!time) { time = 5000 }
+  return new Promise((resolve) => {
+    setTimeout(resolve, time)
+  })
+}
 
-  api.log(" >> Boot Successful!");
-  setTimeout(function(){
+const api = await actionhero.start({configChanges})
 
-    api.log(" >> restarting server...");
-    actionhero.restart(function(error, api){
+api.log(" >> Boot Successful!")
+await sleep()
 
-      api.log(" >> Restarted!");
-      setTimeout(function(){
+api.log(" >> restarting server...")
+await actionhero.restart()
+api.log(" >> Restarted!")
+await sleep()
 
-        api.log(" >> stopping server...");
-        actionhero.stop(function(error, api){
-
-          api.log(" >> Stopped!");
-          process.exit();
-
-        });
-      }, timer);
-    })
-  }, timer);
-});
+api.log(" >> stopping server...")
+await actionhero.stop()
+api.log(" >> Stopped!")
+process.exit()
 ```
 
-While **NOT** encouraged, you can always instantiate an ActionHero server yourself. Perhaps you wish to combine ActionHero with an existing project. Here is how! Take note that using these methods will not work for actionCluster, and only a single instance will be started within your project.
+Feel free to look at the source of `./node_modules/actionhero/bin/methods/start` to see how the main ActionHero server is implemented for more information.
 
-Feel free to look at the source of `./node_modules/actionhero/bin/include/start` to see how the main ActionHero server is implemented for more information.
+You can programmatically control an ActionHero server with `actionhero.start(params)`, `actionhero.stop()` and `actionhero.restart()`
 
-You can programmatically control an ActionHero server with `actionhero.start(params, callback)`, `actionhero.stop(callback)` and `actionhero.restart(callback)`
-
-From within ActionHero itself (actions, initilizers, etc), you can use `api.commands.start`, `api.commands.stop`, and `api.commands.restart` to control the server.
+From within ActionHero itself (actions, initializers, etc), you can use `api.commands.start`, `api.commands.stop`, and `api.commands.restart` to control the server.
 
 ## Signals
 
 ```bash
-> ./node_modules/.bin/actionhero start cluster --workers=2
+> npx actionhero start cluster --workers=2
 info: actionhero >> start cluster
 notice:  - STARTING CLUSTER -
 notice: pid: 41382

@@ -1,62 +1,66 @@
+![](internet-of-things.svg)
+
 ## Overview
 
+In ActionHero we have introduced a modular server system which allows you to create your own servers.  Servers should be thought of as any type of listener to remote connections, streams, or event your server.  
+
+In ActionHero, the goal of each server is to ingest a specific type of connection and transform each client into a generic `connection` object which can be operated on by the rest of ActionHero.  To help with this, all servers extend `ActionHero.Server` and fill in the required methods.
+
+To get started, you can use the `actionhero generate server --name=myServer`.  This will generate a template server which looks like the below.
+
+Like initializers, the `start()` and `stop()` methods will be called when the server is to boot up in ActionHero's lifecycle, but before any clients are permitted into the system.  Here is where you should actually initialize your server (IE: `https.createServer.listen`, etc).
+
 ```js
-var initialize = function(api, options, next){
+const ActionHero = require('actionhero')
 
-  //////////
-  // INIT //
-  //////////
+module.exports = class MyServer extends ActionHero.Server {
+  constructor () {
+    super()
+    this.type = '%%name%%'
 
-  var type = "test"
-  var attributes = {
-    canChat: true,
-    logConnections: true,
-    logExits: true,
-    sendWelcomeMessage: true,
-    verbs: [],
+    this.attributes = {
+      canChat: false,
+      logConnections: true,
+      logExits: true,
+      sendWelcomeMessage: false,
+      verbs: []
+    }
+    // this.config will be set to equal api.config.servers[this.type]
   }
 
-  var server = new api.GenericServer(type, options, attributes);
+  initialize () {
+    this.on('connection', (conection) => {
 
-  //////////////////////
-  // REQUIRED METHODS //
-  //////////////////////
+    })
 
-  server.start = function(next){}
+    this.on('actionComplete', (data) => {
 
-  server.stop = function(next){}
+    })
+  }
 
-  server.sendMessage = function(connection, message, messageCount){}
+  start () {
+    // this.buildConnection (data)
+    // this.processAction (connection)
+    // this.processFile (connection)
+  }
 
-  server.sendFile = function(connection, error, fileStream, mime, length){};
+  stop () {
 
-  server.goodbye = function(connection, reason){};
+  }
 
-  ////////////
-  // EVENTS //
-  ////////////
+  sendMessage (connection, message, messageCount) {
 
-  server.on("connection", function(connection){});
+  }
 
-  server.on('actionComplete', function(data){
-    completeResponse(data);
-  });
+  sendFile (connection, error, fileStream, mime, length, lastModified) {
 
-  /////////////
-  // HELPERS //
-  /////////////
+  }
 
-  next(server);
+  goodbye (connection) {
+
+  }
 }
-
-/////////////////////////////////////////////////////////////////////
-// exports
-exports.initialize = initialize;
 ```
-
-In ActionHero v6.0.0 and later, we have introduced a modular server system which allows you to create your own servers.  Servers should be thought of as any type of listener to clients, streams or your file system.  In ActionHero, the goal of each server is to ingest a specific type of connection and transform each client into a generic `connection` object which can be operated on by the rest of ActionHero.  To help with this, all servers extend `api.GenericServer` and fill in the required methods.
-To get started, you can use the `generateServer action` (name is required).  This will generate a template server which looks like the above.
-Like initializers, the `start()` and `stop()` methods will be called when the server is to boot up in ActionHero's lifecycle, but before any clients are permitted into the system.  Here is where you should actually initialize your server (IE: `https.createServer.listen`, etc).
 
 ## Designing Servers
 
@@ -75,20 +79,20 @@ server.buildConnection({
   },
   id: randomNumber(),
   remoteAddress: remoteIP,
-  remotePort: req.connection.remotePort}
-); // will emit "connection"
+  remotePort: req.connection.remotePort
+}) // will emit "connection"
 
 // Note that connections will have a \`rawConnection\` property.  This is where you should store the actual object(s) returned by your server so that you can use them to communicate back with the client.  Again, an example from the \`web\` server:
 
-server.sendMessage = function(connection, message){
-   cleanHeaders(connection);
-   var headers = connection.rawConnection.responseHeaders;
-   var responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
-   var stringResponse = String(message)
-   connection.rawConnection.res.writeHead(responseHttpCode, headers);
-   connection.rawConnection.res.end(stringResponse);
-   server.destroyConnection(connection);
- }
+server.sendMessage = (connection, message) => {
+  cleanHeaders(connection);
+  const headers = connection.rawConnection.responseHeaders;
+  const responseHttpCode = parseInt(connection.rawConnection.responseHttpCode);
+  const stringResponse = String(message)
+  connection.rawConnection.res.writeHead(responseHttpCode, headers);
+  connection.rawConnection.res.end(stringResponse);
+  server.destroyConnection(connection);
+}
  ```
 
 ## Options and Attributes
@@ -100,55 +104,70 @@ The required attributes are provided in a generated server.
 
 ```js
 allowedVerbs: [
-      "quit",
-      "exit",
-      "paramAdd",
-      "paramDelete",
-      "paramView",
-      "paramsView",
-      "paramsDelete",
-      "roomChange",
-      "roomView",
-      "listenToRoom",
-      "silenceRoom",
-      "detailsView",
-      "say"
-    ]
+  "quit",
+  "exit",
+  "paramAdd",
+  "paramDelete",
+  "paramView",
+  "paramsView",
+  "paramsDelete",
+  "roomChange",
+  "roomView",
+  "listenToRoom",
+  "silenceRoom",
+  "detailsView",
+  "say"
+]
 ```
 
 When an incoming message is detected, it is the server's job to build `connection.params`.  In the `web` server, this is accomplished by reading GET, POST, and form data.  For `websocket` clients, that information is expected to be emitted as part of the action's request.  For other clients, like `socket`, ActionHero provides helpers for long-lasting clients to operate on themselves.  These are called connection `verbs`.
+
 Clients use verbs to add params to themselves, update the chat room they are in, and more.   The list of verbs currently supported is listed above.
+
 Your server should be smart enough to tell when a client is trying to run an action, request a file, or use a verb.  One of the attributes of each server is `allowedVerbs`, which defines what verbs a client is allowed to preform.  A simplified example of how the `socket` server does this:
 
 ```js
-var parseRequest = function(connection, line){
-   var words = line.split(" ");
-   var verb = words.shift();
-   if(verb == "file"){
-     if (words.length > 0){
-       connection.params.file = words[0];
-     }
-     server.processFile(connection);
-   }else{
-     connection.verbs(verb, words, function(error, data){
-       if(error == null){
-         var message = {status: "OK", context: "response", data: data}
-         server.sendMessage(connection, message);
-       }else if(error === "verb not found or not allowed"){
-         connection.error = null;
-         connection.response = {};
-         server.processAction(connection);
-       }else{
-         var message = {status: error, context: "response", data: data}
-         server.sendMessage(connection, message);
-       }
-     });
-   }
- }
+async parseRequest (connection, line) {
+  let words = line.split(' ')
+  let verb = words.shift()
+
+  if (verb === 'file') {
+    if (words.length > 0) { connection.params.file = words[0] }
+    return this.processFile(connection)
+  }
+
+  if (this.attributes.verbs.indexOf(verb) >= 0) {
+    try {
+      let data = await connection.verbs(verb, words)
+      return this.sendMessage(connection, {status: 'OK', context: 'response', data: data})
+    } catch (error) {
+      return this.sendMessage(connection, {error: error, context: 'response'})
+    }
+  }
+
+  try {
+    let requestHash = JSON.parse(line)
+    if (requestHash.params !== undefined) {
+      connection.params = {}
+      for (let v in requestHash.params) {
+        connection.params[v] = requestHash.params[v]
+      }
+    }
+    if (requestHash.action) {
+      connection.params.action = requestHash.action
+    }
+  } catch (e) {
+    connection.params.action = verb
+  }
+  connection.error = null
+  connection.response = {}
+  return this.processAction(connection)
+}
 ```
+
 ## Chat
 
-The `attribute` "canChat" defines if clients of this server can chat.  If clients can chat, they should be allowed to use vebs like "roomChange" and "say".  They will also be sent messages in their room (and rooms they are listening too) automatically.
+The `attribute` "canChat" defines if clients of this server can chat.  If clients can chat, they should be allowed to use verbs like "roomChange" and "say".  They will also be sent messages in their room (and rooms they are listening too) automatically.
 
 ## Sending Responses
 
@@ -186,4 +205,5 @@ Servers can optionally implement the `server.sendFile = function(connection, err
 ```
 
 The `connection` object passed to a server can be customized on a per server basis through the use of the `server.connectionCustomMethods` hash. The hash can be populated with functions whose signature must match `function (connection, ...)`. Once populated, these functions are curried to always pass `connection` as the first argument and applied to the `data.connection` object passed to Actions, and can be accessed via `data.connection.functionName(...)` within the action or middleware.
+
 In this way, you can create custom methods on your connections.

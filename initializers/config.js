@@ -2,9 +2,12 @@
 
 const fs = require('fs')
 const path = require('path')
+const glob = require('glob')
 const argv = require('optimist').argv
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
+
+const RELOAD_DELAY = 2000
 
 /**
  * Countains ActionHero configuration.
@@ -36,7 +39,7 @@ module.exports = class Config extends ActionHero.Initializer {
 
     // reloading in development mode
 
-    api.watchedFiles = []
+    api.watchedFiles = api.watchedFiles || {}
     api.watchFileAndAct = (file, handler) => {
       file = path.normalize(file)
 
@@ -44,31 +47,32 @@ module.exports = class Config extends ActionHero.Initializer {
         throw new Error(file + ' does not exist, and cannot be watched')
       }
 
-      let found = false
-      api.watchedFiles.forEach(({file: watchedFile}) => { if (watchedFile === file) { found = true } })
-
-      if (api.config.general.developmentMode === true && found === false) {
-        const watcher = fs.watch(file, (eventType) => {
+      if (api.config.general.developmentMode === true && !api.watchedFiles[file]) {
+        const watcher = fs.watch(file, {persistent: false}, (eventType) => {
+          const stats = fs.statSync(file)
           if (
             api.running === true &&
             api.config.general.developmentMode === true &&
-            eventType === 'change'
+            eventType === 'change' &&
+            (stats.mtimeMs - api.watchedFiles[file].stats.mtimeMs) >= RELOAD_DELAY
           ) {
+            api.watchedFiles[file].stats = stats
             let cleanPath = file
             if (process.platform === 'win32') { cleanPath = file.replace(/\//g, '\\') }
             delete require.cache[require.resolve(cleanPath)]
+            setTimeout(() => { api.watchedFiles[file].blocked = false }, 1000)
             handler(file)
           }
         })
 
-        api.watchedFiles.push({file, watcher})
+        api.watchedFiles[file] = {watcher, stats: fs.statSync(file)}
       }
     }
 
     api.unWatchAllFiles = () => {
-      while (api.watchedFiles.length > 0) {
-        const {watcher} = api.watchedFiles.pop()
-        watcher.close()
+      for (let file in api.watchedFiles) {
+        api.watchedFiles[file].watcher.close()
+        delete api.watchedFiles[file]
       }
     }
 
@@ -120,7 +124,7 @@ module.exports = class Config extends ActionHero.Initializer {
     }
 
     api.loadConfigDirectory = (configPath, watch) => {
-      const configFiles = api.utils.recursiveDirectoryGlob(configPath)
+      const configFiles = glob.sync(path.join(configPath, '**', '*.js'))
 
       let loadRetries = 0
       let loadErrors = {}

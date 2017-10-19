@@ -1,4 +1,17 @@
+![](ops-tools.svg)
+
 ## Topology Example
+
+Here is a common ActionHero production topology:
+
+![AH Cluster](cluster.png)
+
+Notes:
+
+* It's best to separate the "workers" from the web "servers" into distinct processes.
+    * Be sure to modify the config files for each type of server accordingly (ie: turn of all servers for the workers, and turn of all workers on the servers).
+* To accomplish the above, you only need to make changes to your configuration files on each server. You will still be running the same same ActionHero project codebase. See the example:
+* Always have a replica of redis!
 
 ```js
 // Assume we use the flag \`process.env.ACTIONHERO_ROLE\` to denote the type of server
@@ -12,7 +25,7 @@ exports.production = {
     tasks: function(api){
 
         // default to config for 'server'
-        var config = {
+        let config = {
           scheduler: false,
           queues: ['*'],
           verbose: true,
@@ -52,31 +65,20 @@ exports.default = {
 };
 ```
 
-Here is a common ActionHero production topology:
-
-![AH Cluster](/static/images/cluster.png)
-
-Notes:
-
-*   It's best to seperate the "workers" from the web "servers"
-    *   be sure to modify the config files for each type of server accordingly (ie: turn of all servers for the workers, and turn of all workers on the servers)
-*   To accomplish the above, you only need to make changes to your configuration files on each server. You will still be running the same same ActionHero project codebase. See the example:
-*   Always have a replica of redis!
-
 ## Paths and Environments
 
 You can set a few environment variables to affect how ActionHero runs:
 
-*   `PROJECT_ROOT`: This is useful when deploying ActionHero applications on a server where symlinks will change under a running process. The cluster will look at your symlink `PROJECT_ROOT=/path/to/current_symlink` rather than the absolute path it was started from
-*   `ACTIONHERO_ROOT`: This can used to set the absolute path to the ActionHero binaries
-*   `ACTIONHERO_CONFIG`: This can be user to set the absolute path to the ActionHero config directory you wish to use. This is useful when you might have a variable configs per server
-*   `ACTIONHERO_TITLE`: The value of `api.id`, and the name for the pidfile in some boot configurations
+* `PROJECT_ROOT`: This is useful when deploying ActionHero applications on a server where symlinks will change under a running process. The cluster will look at your symlink `PROJECT_ROOT=/path/to/current_symlink` rather than the absolute path it was started from
+* `ACTIONHERO_ROOT`: This can used to set the absolute path to the ActionHero binaries
+* `ACTIONHERO_CONFIG`: This can be user to set the absolute path to the ActionHero config directory you wish to use. This is useful when you might have a variable configs per server
+* `ACTIONHERO_TITLE`: The value of `api.id`, and the name for the pidfile in some boot configurations
 
 ## Daemon
 
 When deploying ActionHero, you will probably have more than 1 process. You can use the cluster manager to keep an eye on the workers and manage them
 
-*   Start the cluster with 2 workers: `./node_modules/.bin/actionhero start cluster --workers=2`
+* Start the cluster with 2 workers: `actionhero start cluster --workers=2`
 
 When deploying new code, you can gracefully restart your workers by sending the `USR2` signal to the cluster manager to signal a reload to all workers. You don't need to start and stop the cluster-master. This allows for 0-downtime deployments.
 
@@ -88,21 +90,21 @@ When choosing the number of workers (`--workers=n`) for your ActionHero cluster,
 
 You never want more workers than you can run at a time, or else you will actually be slowing down the execution of all processes.
 
-Of course, not going in to swap memory is more important than utilizing all of your CPUs, so if you find yourself running out of ram, reduce the number of workers!
+Of course, not going in to swapping memory is more important than utilizing all of your CPUs, so if you find yourself running out of RAM, reduce the number of workers!
 
 ## Pidfiles
 
 ActionHero will write its pid to a pidfile in the normal unix way. The path for the pidfile is set in `config/api.js` with `config.general.paths.pid`.
 
-Individual ActionHero servers will name their pidfiles by `api.id`, which is determined by the logic [here](https://github.com/actionhero/actionhero/blob/master/initializers/pids.js) and [here](https://github.com/actionhero/actionhero/blob/master/initializers/id.js). For example, on my laptop with the IP address of `192.168.0.1`, running `npm start` would run one ActionHero server and generate a pidfile of `./pids/actionhero-192.168.0.1` in which would be a single line containg the process' pid.
+Individual ActionHero servers will name their pidfiles by `api.id`, which is determined by the logic [here](https://github.com/actionhero/actionhero/blob/master/initializers/pids.js) and [here](https://github.com/actionhero/actionhero/blob/master/initializers/id.js). For example, on my laptop with the IP address of `192.168.0.1`, running `npm start` would run one ActionHero server and generate a pidfile of `./pids/actionhero-192.168.0.1` in which would be a single line containing the process' pid.
 
 When running the cluster, the cluster process first writes his own pidfile to `process.cwd() + './pids/cluster_pidfile'`. Then, every worker the cluster master creates will have a pid like `actionhero-worker-1` in the location defined by `config/api.js`.
 
-To send a signal to the cluster master process to reboot all its workers (`USR2`), you can cat the pidfile (bash): `kill -s USR2 "cat /path/to/pids/cluster_pidfile"`
+To send a signal to the cluster master process to reboot all its workers (`USR2`), you can cat the pidfile (bash): `kill -s USR2 'cat /path/to/pids/cluster_pidfile'`
 
 ## Git-based Deployment
 
-If you want to setup a git-based deployment, the simplest steps would be something like =>
+If you want to setup a git-based 0-downtime deployment, the simplest steps would be something like =>
 
 ```bash
 #!/usr/bin/env bash
@@ -120,7 +122,7 @@ cd $DEPLOY_PATH && kill -s USR2 \`cat pids/cluster_pidfile\`
 
 When deploying to a Platform as a Service (PAAS) cluster (like [Heroku](https://heroku.com), [Flynn](https://flynn.io), and even some [Docker](https://www.docker.com) deployments), we can offer a few pieces of advice.
 
-If you are deploying a seperate WEB and WORKER process type, you can define them in a [`Procfile`](https://devcenter.heroku.com/articles/procfile) and make use of environment variable overrides in addition to those defined from the environemnt. You can modify your config files to use these options:
+If you are deploying a separate WEB and WORKER process type, you can define them in a [`Procfile`](https://devcenter.heroku.com/articles/procfile) and make use of environment variable overrides in addition to those defined from the environment. You can modify your config files to use these options:
 
 ```bash
 # ./Procfile
@@ -141,17 +143,26 @@ worker: SCHEDULER=true  \\
         ./node_modules/.bin/actionhero start
 ```
 
-Be sure **not** to use NPM in your `Procfile` defintions. In many deployment scenarios, NPM will not properly pass signals to the ActionHero process and it will be impossible to signal a graceful shutdown. Examples of this behavior can be found [here](https://github.com/flynn/flynn/issues/3601) and [here](https://github.com/npm/npm/issues/4603)
+Be sure **not** to use NPM in your `Procfile` definitions. In many deployment scenarios, NPM will not properly pass signals to the ActionHero process and it will be impossible to signal a graceful shutdown. Examples of this behavior can be found [here](https://github.com/flynn/flynn/issues/3601) and [here](https://github.com/npm/npm/issues/4603)
 
 ## Global Packages
 
-It's probably best to avoid installing any global packages. This way, you won't have to worry about conflicts, and your project can be kept up to date more easily. When using npm to install a local package the package's binaries are always copied into `./node_modules/.bin`.
+It is best to avoid installing any global packages. This way, you won't have to worry about conflicts, and your project can be kept up to date more easily. When using npm to install a local package the package's binaries are always copied into `./node_modules/.bin`.
 
 You can add local references to your $PATH like so to use these local binaries:
 
 `export PATH=$PATH:node_modules/.bin`
 
+ActionHero is not designed to function when installed globally.  Do not install ActionHero globally, using `npm install -g`
+
 ## Nginx Example
+
+While ActionHero can be the font-line server your users hit, it's probably best to proxy ActionHero behind a load balancer, nginx, haproxy, etc. This will help you pool connections before hitting node, SSL terminate, serve static assets, etc.
+
+Here is an example nginx config for interfacing with ActionHero, including using sockets (not http) and handing the websocket upgrade path.
+
+* Note the proxy-pass format to the socket: `{`proxy_pass http://unix:/path/to/socket`}`
+* Note some of the extra work you need to have for the websocket upgrade headers (the primus directive)
 
 ```js
 // From \`config/servers/web.js\`
@@ -246,18 +257,11 @@ http {
 }
 ```
 
-While ActionHero can be the font-line server your users hit, it's probably best to proxy ActionHero behind a load balancer, nginx, haproxy, etc. This will help you pool connections before hitting node, SSL terminate, serve static assets, etc.
-
-Here is an example nginx config for interfacing with ActionHero, including using sockets (not http) and handing the websocket upgrade path.
-
-*   Note the proxy-pass format to the socket: `{`proxy_pass http://unix:/path/to/socket`}`
-*   Note some of the extra work you need to have for the websocket upgrade headers (the primus directive)
-
 ## Redis High-Availability
 
 [Redis](http://redis.io/) is technically optional in ActionHero environments, but you will need it if you want to coordinates tasks across a cluster of workers, handle group chat mechanics between WebSocket clients, or do other cross-cluster operations. In those cases, you'll want your Redis setup to be reliable. There are 2 methods to achieving HA redis: Sentinels and Cluster. A simple architectural wireframe of how to deploy the various options is below The [`ioredis`](https://github.com/luin/ioredis) node package supports both of these connection schemes, and all you need to change is your connection options.
 
-![](/static/images/redis.png)
+![](redis.png)
 
 ### Sentinel Mode
 
@@ -313,27 +317,37 @@ As ActionHero is a framework, much of the work for keeping your application secu
 
 ### General Configuration
 
-*   Be sure to change `api.config.general.serverToken` to something unique for your application
-*   Turn off [developer mode](/docs/core/development-mode) in production.
-*   Use `api.config.general.filteredParams` to hide sensitive information from the logs. You probably don't want to log out `password`, `credit_card`, and other things of that nature.
+* Be sure to change `api.config.general.serverToken` to something unique for your application
+* Turn off [developer mode](tutoria.development-mode.html) in production.
+* Use `api.config.general.filteredParams` to hide sensitive information from the logs. You probably don't want to log out `password`, `credit_card`, and other things of that nature.
 
 ### Topology
 
-*   Run a cluster via `start cluster`. This will guarantee that you can reboot your application with 0 downtime and deploy new versions without interruption.
-    *   You can run 1 ActionHero instance per core (assuming the server is dedicated to ActionHero), and that is the default behavior of `start cluster`.
-    *   You don't need a tool like PM2 to manage ActionHero cluster process, but you can.
-    *   You can use an init script to `start cluster` at boot, or use a tool like [monit](https://mmonit.com/monit/) to do it for you.
-*   Never run tasks on the same ActionHero instances you run your servers on; never run your servers on the same ActionHero instances you run your tasks on
-    *   Yes, under most situations running servers + tasks on the same instance will work OK, but the load profiles (and often the types of packages required) vary in each deployment. Actions are designed to respond quickly and offload hard computations to tasks. Tasks are designed to work slower computations.
-    *   Do any CPU-intensive work in a task. If a client needs to see the result of a CPU-intensive operation, poll for it (or use web-sockets)
-*   Use a centralized logging tool like Splunk, ELK, SumoLogic, etc. ActionHero is _built for the cloud_, which means that it expects pids, application names, etc to change, and as such, will create many log files. Use a centralized tool to inspect the state of your application.
-    *   Log everything. You never know what you might want to check up on. {`ActionHero's`} logger has various levels you can use for this.
-*   Split out the redis instance you use for cache from the one you use for tasks. If your cache fills up, do you want task processing to fail?
-*   Your web request stack should look like: [Load Balancer] -> [App Server] -> [Nginx] -> [ActionHero]
-    *   This layout allows you to have control, back-pressure and throttling at many layers.
-    *   Configure Nginx to serve static files whenever possible to remove load from ActionHero, and leave it just to process actions
-*   Use a CDN. ActionHero will serve static files with the proper last-modified headers, so your CDN should respect this, and you should not need to worry about asset SHAs/Checksums.
-*   Use redis-cluster or redis-sentinel. The [`ioredis`](https://github.com/luin/ioredis) redis library has support for them by default. This allows you to have a High Availability redis configuration.
+Run a cluster via `start cluster`. This will guarantee that you can reboot your application with 0 downtime and deploy new versions without interruption.
+
+  * You can run 1 ActionHero instance per core (assuming the server is dedicated to ActionHero), and that is the default behavior of `start cluster`.
+  * You don't need a tool like PM2 to manage ActionHero cluster process, but you can use it if you like.
+  * You can use an init script to `start cluster` at boot, or use a tool like [monit](https://mmonit.com/monit/) to do it for you.
+
+Never run tasks on the same ActionHero instances you run your servers on; never run your servers on the same ActionHero instances you run your tasks on.
+
+  * Yes, under most situations running servers + tasks on the same instance will work OK, but the load profiles (and often the types of packages required) vary in each deployment. Actions are designed to respond quickly and offload hard computations to tasks. Tasks are designed to work slower computations.
+  * Do any CPU-intensive work in a task. If a client needs to see the result of a CPU-intensive operation, poll for it (or use web-sockets)
+
+Use a centralized logging tool like Splunk, ELK, SumoLogic, etc. ActionHero is /built for the cloud/, which means that it expects pids, application names, etc to change, and as such, will create many log files. Use a centralized tool to inspect the state of your application.
+
+  * Log everything. You never know what you might want to check up on. {`ActionHero's`} logger has various levels you can use for this.
+
+Split out the redis instance you use for cache from the one you use for tasks. If your cache fills up, do you want task processing to fail?
+
+Your web request stack should look like: [Load Balancer] -> [App Server] -> [Nginx] -> [ActionHero]
+
+  * This layout allows you to have control, back-pressure and throttling at many layers.
+  * Configure Nginx to serve static files whenever possible to remove load from ActionHero, and leave it just to process actions
+
+Use a CDN. ActionHero will serve static files with the proper last-modified headers, so your CDN should respect this, and you should not need to worry about asset SHAs/Checksums.
+
+Use redis-cluster or redis-sentinel. The [`ioredis`](https://github.com/luin/ioredis) redis library has support for them by default. This allows you to have a High Availability redis configuration.
 
 ### Crashing and Safety
 
@@ -366,22 +380,33 @@ As ActionHero is a framework, much of the work for keeping your application secu
 2016-04-11T18:51:45.827Z - notice: cluster equilibrium state reached with 1 workers
 ```
 
-*   Let the app crash rather than being defensive prematurely. ActionHero has a good logger, and if you are running within `start cluster` mode, your server will be restarted. It is very easy to hide uncaught errors, exceptions, or un-resolved promises, and doing so might leave your application in strange state.
-*   We removed domains from the project in v13 to follow this philosophy, and rely on a parent process (`start cluster`) to handle error logging. Domains are deprecated in node.js now for the same reasons we discuss here.
-    *   For example, if you timeout connections that are taking too long, what are you going to do about the database connection it was running? Will you roll it back? What about the other clients using the same connection pool? How can you be sure which connection in the mySQL pool was in use? Rather than handle all these edge cases… just let your app crash, log, and reboot.
-*   As noted above, centralized logging (Splunk et al) will be invaluable here. You can can also employ a tool like [BugSnag](https://bugsnag.com) to collect and correlate errors.
+Let the app crash rather than being defensive prematurely. ActionHero has a good logger, and if you are running within `start cluster` mode, your server will be restarted. It is very easy to hide uncaught errors, exceptions, or un-resolved promises, and doing so might leave your application in strange state.
+
+We removed domains from the project in v13 to follow this philosophy, and rely on a parent process (`start cluster`) to handle error logging. Domains are deprecated in node.js now for the same reasons we discuss here.
+
+  * For example, if you timeout connections that are taking too long, what are you going to do about the database connection it was running? Will you roll it back? What about the other clients using the same connection pool? How can you be sure which connection in the mySQL pool was in use? Rather than handle all these edge cases… just let your app crash, log, and reboot.
+
+As noted above, centralized logging (Splunk et al) will be invaluable here. You can can also employ a tool like [BugSnag](https://bugsnag.com) to collect and correlate errors.
 
 ### Actions
 
-*   Remember that all params which come in via the `web` and `socket` servers are `String`s. If you want to typeCast them (perhaps you always know that the param `user_id` will be an integer), you can do so in a middleware or within an action's [`params.formatter`](/docs/core/actions) step.
-*   Always remember to sanitize any input for SQL injection, etc. The best way to describe this is "never pass a query to your database which can be directly modified via user input"!
-*   Remember that you can restrict actions to specific server types. Perhaps only a web POST request should be able to login, and not a websocket client. You can control application flow this way.
-*   Crafting [authentication middleware is not that hard](https://github.com/actionhero/actionhero-angular-bootstrap-cors-csrf)
+
+Remember that all params which come in via the `web` and `socket` servers are `String`s. If you want to typeCast them (perhaps you always know that the param `user_id` will be an integer), you can do so in a middleware or within an action's [`params.formatter`](tutorial-actions.html) step.
+
+Always remember to sanitize any input for SQL injection, etc. The best way to describe this is "never pass a query to your database which can be directly modified via user input"!
+
+Remember that you can restrict actions to specific server types. Perhaps only a web POST request should be able to login, and not a websocket client. You can control application flow this way.
+
+Crafting [authentication middleware is not that hard](https://github.com/actionhero/actionhero-angular-bootstrap-cors-csrf)
 
 ### Tasks
 
-*   Tasks can be created from any part of ActionHero: Actions, Servers, Middleware, even other Tasks.
-*   You can chain tasks together to create workflows.
-*   ActionHero uses the [`multiWorker`](https://github.com/taskrabbit/node-resque#multi-worker) from node-resque. When configured properly, it will consume 100% of a CPU core, to work as many tasks at once as it can. This will also fluctuate depending on the CPU difficulty of the job. Plan accordingly.
-*   Create a way to view the state of your redis cluster. Are you running out of RAM? Are your Queues growing faster than they can be worked? Checking this information is the key to having a healthy ecosystem. [The methods for doing so](/docs/core/tasks) are available.
-*   Be extra-save within your actions, and do not allow an uncaught exception. This will cause the worker to crash and the job to be remain 'claimed' in redis, and never make it to the failed queue.
+Tasks can be created from any part of ActionHero: Actions, Servers, Middleware, even other Tasks.
+
+You can chain tasks together to create workflows.
+
+ActionHero uses the [`multiWorker`](https://github.com/taskrabbit/node-resque#multi-worker) from node-resque. When configured properly, it will consume 100% of a CPU core, to work as many tasks at once as it can. This will also fluctuate depending on the CPU difficulty of the job. Plan accordingly.
+
+Create a way to view the state of your redis cluster. Are you running out of RAM? Are your Queues growing faster than they can be worked? Checking this information is the key to having a healthy ecosystem. [The methods for doing so](tutorial-tasks.html) are available.
+
+Be extra-save within your actions, and do not allow an uncaught exception. This will cause the worker to crash and the job to be remain 'claimed' in redis, and never make it to the failed queue.

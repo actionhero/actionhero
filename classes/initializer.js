@@ -11,10 +11,9 @@ module.exports = class Initializer {
    *
    * @tutorial initializers
    * @example
-'use strict'
-const ActionHero = require('actionhero')
+const {Initializer, api} = require('actionhero')
 
-module.exports = class MyCLICommand extends ActionHero.Initializer {
+module.exports = class MyCLICommand extends Initializer {
   constructor () {
     super()
     this.name = 'connectToDatabase'
@@ -24,7 +23,7 @@ module.exports = class MyCLICommand extends ActionHero.Initializer {
   }
 
   async initialize () {
-    ActionHero.api.connectToDatabase = {}
+    api.connectToDatabase = {}
   }
 
   async start () {

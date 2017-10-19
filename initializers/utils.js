@@ -172,64 +172,6 @@ let responses = await api.utils.asyncWaterfall(jobs)
     }
 
     /**
-     * Get the names of all files in a directory which match an extension.
-     * Symlinks will be followed.
-     * ActionHero LinkFiles (created by `ActionHero Link...`) will be followed.
-     *
-     * @param  {string} dir              Starting Directory for the search
-     * @param  {string} extension        What file type are we looking for? (default: `.js`)
-     * @param  {Boolean} followLinkFiles Should we follow ActionHero LinkFiles? (deafult: true)
-     * @return {Array}                   An Array of filenames.
-     */
-    api.utils.recursiveDirectoryGlob = (dir, extension, followLinkFiles) => {
-      let results = []
-
-      if (!extension) { extension = '.js' }
-      if (!followLinkFiles) { followLinkFiles = true }
-
-      extension = extension.replace('.', '')
-
-      if (fs.existsSync(dir)) {
-        fs.readdirSync(dir).forEach((file) => {
-          let fullFilePath = path.join(dir, file)
-          if (file[0] !== '.') { // ignore 'system' files
-            let stats = fs.statSync(fullFilePath)
-            let child
-            if (stats.isDirectory()) {
-              child = api.utils.recursiveDirectoryGlob(fullFilePath, extension, followLinkFiles)
-              child.forEach((c) => { results.push(c) })
-            } else if (stats.isSymbolicLink()) {
-              let realPath = fs.readlinkSync(fullFilePath)
-              child = api.utils.recursiveDirectoryGlob(realPath, extension, followLinkFiles)
-              child.forEach((c) => { results.push(c) })
-            } else if (stats.isFile()) {
-              let fileParts = file.split('.')
-              let ext = fileParts[(fileParts.length - 1)]
-               // real file match
-              if (ext === extension) { results.push(fullFilePath) }
-               // linkfile traversal
-              if (ext === 'link' && followLinkFiles === true) {
-                let linkedPath = api.utils.sourceRelativeLinkPath(fullFilePath, api.config.general.paths.plugin)
-                if (linkedPath) {
-                  child = api.utils.recursiveDirectoryGlob(linkedPath, extension, followLinkFiles)
-                  child.forEach((c) => { results.push(c) })
-                } else {
-                  try {
-                    api.log(`cannot find linked refrence to \`${file}\``, 'warning')
-                  } catch (e) {
-                    throw new Error('cannot find linked refrence to ' + file)
-                  }
-                }
-              }
-            }
-          }
-        })
-      }
-
-      return results.sort()
-    }
-
-    /**
      * @private
      */
     api.utils.sourceRelativeLinkPath = (linkfile, pluginPaths) => {
@@ -340,6 +282,7 @@ let responses = await api.utils.asyncWaterfall(jobs)
     /**
      * Returns the averge delay between a tick of hte node.js event loop, as measured for N calls of `process.nextTick`
      *
+     * @async
      * @param  {Number}  itterations How many `process.nextTick` cycles of the event loop should we measure?
      * @return {Promise<Number>}  Returns the average evnent loop dealy measured in ms.
      */

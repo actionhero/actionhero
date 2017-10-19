@@ -1,14 +1,12 @@
 # ActionHero
 
-## The reusable, scalable, and quick node.js API server for stateless and stateful applications
+*The reusable, scalable, and quick node.js API server for stateless and stateful applications*
 
 <div align="center">
   <img src="https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png" alt="ActionHero Logo" />
 </div>
 
-***
-
-<div align="center">
+<div align="center" class="topLinks">
 
 **[NPM](https://npmjs.org/package/actionhero) |
 [Web Site](https://www.actionherojs.com) |
@@ -19,9 +17,7 @@
 
 </div>
 
-***
-
-<div align="center">
+<div align="center" class="topBadges">
 
 [![NPM Version](https://img.shields.io/npm/v/actionhero.svg?style=flat-square)](https://www.npmjs.com/package/actionhero)
 [![Node Version](https://img.shields.io/node/v/actionhero.svg?style=flat-square)](https://npmjs.org/package/actionhero)
@@ -34,25 +30,19 @@
 
 </div>
 
-***
-
 ## ActionHero v18
 
 ActionHero v18 is the `async/await` Node.js framework you have been waiting for!
 
-ActionHero version 18 (master branch) is currently in BETA!  You can use it today by `npm install actionhero@next`.  We are still working on the docs and updating the examples, but please help us by testing it out!  
-
-Release notes: https://github.com/actionhero/actionhero/releases/tag/18.0.0-beta.1
-
----
+ActionHero version 18 has many *significant and breaking* changes from previous versions.  Please read the [Release notes](https://github.com/actionhero/actionhero/releases/tag/v18.0.0) and [Upgrade Guide](https://docs.actionherojs.com/tutorial-upgrade-path.html)
 
 ## Who is the ActionHero?
 ActionHero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs for HTTP, WebSockets, and more.  Clients connected to an actionhero server can [**consume the api**](https://docs.actionherojs.com/tutorial-actions.html), [**consume static content**](https://docs.actionherojs.com/tutorial-file_server.html), and [**communicate with each other**](https://docs.actionherojs.com/tutorial-chat.html).  ActionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.  ActionHero provides a simple Async/Await API for managing every type of connection and background task.
 
 Currently actionhero supports the following out of the box...
 
-- [Web Clients](https://docs.actionherojs.com/tutorial-web.html): HTTP, HTTPS
-- [Socket Clients](https://docs.actionherojs.com/tutorial-socket.html): TCP (telnet), TLS
+- [Web Clients](https://docs.actionherojs.com/tutorial-web-server.html): HTTP, HTTPS
+- [Socket Clients](https://docs.actionherojs.com/tutorial-socket-server.html): TCP (telnet), TLS
 - [Web Socket Clients](https://docs.actionherojs.com/tutorial-web_socket.html): HTTP, HTTPS
 
 [... and you can also make your own servers and transports.](https://docs.actionherojs.com/ActionHero.Server.html)
@@ -61,7 +51,7 @@ Currently actionhero supports the following out of the box...
 ```bash
 # mkdir new_project; cd new_project
 npm install actionhero
-./node_modules/.bin/actionhero generate
+npx actionhero generate
 npm start
 ```
 
@@ -90,7 +80,7 @@ Or deploy a free API server now:
 - [Initializers](https://docs.actionherojs.com/tutorial-initializers.html)
 - [CLI Commands](https://docs.actionherojs.com/tutorial-cli.html)
 - [Configuration](https://docs.actionherojs.com/tutorial-config.html)
-- [ActionHero Cluster](https://docs.actionherojs.com/tutorial-actionhero-cluster.html)
+- [Cluster](https://docs.actionherojs.com/tutorial-cluster.html)
 - [Chat & Realtime Communication](https://docs.actionherojs.com/tutorial-chat.html)
 - [File Server](https://docs.actionherojs.com/tutorial-file-server.html)
 - [Logging](https://docs.actionherojs.com/tutorial-logging.html)
@@ -99,9 +89,9 @@ Or deploy a free API server now:
 - [Localization & Translation](https://docs.actionherojs.com/tutorial-localization.html)
 
 ### Server Types
-- [Web Server & Routes](https://docs.actionherojs.com/tutorial-web.html)
-- [Socket Server](https://docs.actionherojs.com/tutorial-socket.html)
-- [WebSocket Server](https://docs.actionherojs.com/tutorial-websocket.html)
+- [Web Server & Routes](https://docs.actionherojs.com/tutorial-web-server.html)
+- [Socket Server](https://docs.actionherojs.com/tutorial-socket-server.html)
+- [WebSocket Server](https://docs.actionherojs.com/tutorial-websocket-server.html)
 
 ### Testing, Deployment, and Operations
 - [Running ActionHero](https://docs.actionherojs.com/tutorial-running-actionhero.html)
@@ -118,5 +108,5 @@ Or deploy a free API server now:
 
 ## Who?
 
-* The primary creator of the actionhero framework is [Evan Tahler](http://evantahler.com), but many others [have helped](https://github.com/actionhero/actionhero/graphs/contributors)
+* Many folks [have helped](https://github.com/actionhero/actionhero/graphs/contributors) to make ActionHero a reality.
 * If you want to contribute to actionhero, contribute to the conversation on [github](https://github.com/actionhero/actionhero) and join us on [slack](https://slack.actionherojs.com)
