@@ -2,6 +2,12 @@
 
 const os = require('os')
 
+/**
+ * Handlers for when things go wrong.
+ *
+ * @namespace api.exceptions
+ */
+
 module.exports = {
   loadPriority: 130,
   initialize: function (api, next) {

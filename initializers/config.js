@@ -4,6 +4,12 @@ const fs = require('fs')
 const path = require('path')
 const argv = require('optimist').argv
 
+/**
+ * Countains ActionHero configuration.
+ *
+ * @namespace api.config
+ */
+
 module.exports = {
   loadPriority: 0,
   initialize: function (api, next) {

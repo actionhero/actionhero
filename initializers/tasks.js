@@ -2,6 +2,16 @@
 
 const async = require('async')
 
+/**
+ * Tools for enquing and inspecting the task sytem (delayed jobs).
+ *
+ * @namespace api.tasks
+ * @property {Object} tasks - The tasks defined on this server.
+ * @property {Object} jobs - The tasks defined on this server, converted into Node Resque jobs.
+ * @property {Object} middleware - Available Task Middleware.
+ * @property {Array} globalMiddleware - Array of global middleware modules.
+ */
+
 module.exports = {
   startPriority: 900,
   loadPriority: 699,

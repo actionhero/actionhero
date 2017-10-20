@@ -3,6 +3,19 @@
 const uuid = require('uuid')
 const async = require('async')
 
+/**
+ * Redis helpers and connections.
+ *
+ * @namespace api.redis
+ * @property {Object} clients - Holds the redis clients.  Contains 3 redis connections: 'client', 'subscriber' and 'tasks'.  Configured via `api.config.redis`.
+ * @property {Object} clients.client - The main redis connection.  Use this if you need direct access to redis.
+ * @property {Object} clients.subscriber - A Redis connection only listeneing for reids pub/sub events.
+ * @property {Object} clients.tasks - A Redis connection for use only in the task ssytem.
+ * @property {Object} subscriptionHandlers - Callbacks for redis pub/sub
+ * @property {Object} rpcCallbacks - RPC callbacks for responses to other clients
+ * @property {Object} status - Redis connection statuses
+ */
+
 module.exports = {
   startPriority: 101,
   stopPriority: 99999,

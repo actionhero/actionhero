@@ -3,6 +3,14 @@
 const uuid = require('uuid')
 const NR = require('node-resque')
 
+/**
+ * A speical "mock" server which enables you to test actions and tasks in a simple way.  Only availalbe in the TEST environment.
+ *
+ * @namespace api.specHelper
+ * @property {Boolean} enabled - Is the specHelper server enabled
+ * @property {Object} Server - The instnace of the SpecHelper server
+ */
+
 module.exports = {
   startPriority: 901,
   loadPriority: 900,

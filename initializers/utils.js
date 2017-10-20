@@ -5,6 +5,13 @@ const path = require('path')
 const async = require('async')
 const dotProp = require('dot-prop')
 
+/**
+ * Utilites for any ActionHero project.
+ *
+ * @namespace api.utils
+ * @property {Object} dotProp - The dotProp package.
+ */
+
 module.exports = {
   loadPriority: 0,
   initialize: function (api, next) {

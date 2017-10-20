@@ -4,6 +4,12 @@ const cluster = require('cluster')
 const path = require('path')
 const argv = require('optimist').argv
 
+/**
+ * I build this server's ID.
+ *
+ * @namespace api.id
+ */
+
 module.exports = {
   loadPriority: 10,
   startPriority: 2,

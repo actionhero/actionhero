@@ -1,5 +1,12 @@
 'use strict'
 
+/**
+ * Documentation of Actions.
+ *
+ * @namespace api.documentation
+ * @property {Object} documentation - A collection of all documentable actions.
+ */
+
 module.exports = {
   loadPriority: 999,
   initialize: function (api, next) {
