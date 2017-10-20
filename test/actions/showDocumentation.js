@@ -16,7 +16,7 @@ describe('Action: Show Documentation', () => {
 
   it('returns the correct parts', async () => {
     let {documentation, serverInformation} = await api.specHelper.runAction('showDocumentation')
-    expect(Object.keys(documentation).length).to.equal(6) // 6 actions
+    expect(Object.keys(documentation).length).to.equal(7) // 7 actions
     expect(serverInformation.serverName).to.equal('actionhero')
   })
 })
