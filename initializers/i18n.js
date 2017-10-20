@@ -3,6 +3,12 @@
 const i18n = require('i18n')
 const path = require('path')
 
+/**
+ * Translations.
+ *
+ * @namespace api.i18n
+ */
+
 module.exports = {
   loadPriority: 10,
   initialize: function (api, next) {

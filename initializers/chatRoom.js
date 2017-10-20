@@ -2,6 +2,16 @@
 
 const async = require('async')
 
+/**
+ * Chat & Realtime Communication Methods
+ *
+ * @namespace api.chatRoom
+ * @property {Object} middleware - Dictionary of loaded middleware modules.
+ * @property {Array} globalMiddleware - Array of global middleware modules.
+ * @property {string} messageChannel - The redis pub/sub channel for chat communication.
+ * @property {Object} keys - Stores the base keys for stats about the chat system (rooms & members).
+ */
+
 module.exports = {
   startPriority: 200,
   loadPriority: 520,

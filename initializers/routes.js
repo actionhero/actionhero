@@ -2,6 +2,14 @@
 
 const path = require('path')
 
+/**
+ * Countains routing options for web clients.  Can associate routes with actions or files.
+ *
+ * @namespace api.routes
+ * @property {Object} routes - This servers routes, defined.
+ * @property {Object} verbs - The HTTP verbs we can use, ['head', 'get', 'post', 'put', 'patch', 'delete'].
+ */
+
 module.exports = {
   loadPriority: 500,
   initialize: function (api, next) {

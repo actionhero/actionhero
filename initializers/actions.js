@@ -1,5 +1,15 @@
 'use strict'
 
+/**
+ * Server connection handling.
+ *
+ * @namespace api.actions
+ * @property {Object} actions - Dictionary of available connections, orginized by version.
+ * @property {Object} versions - Dictionary of available action versions.
+ * @property {Object} middleware - Dictionary of loaded middleware modules.
+ * @property {Array} globalMiddleware - Array of global middleware modules.
+ */
+
 module.exports = {
   loadPriority: 410,
   initialize: function (api, next) {

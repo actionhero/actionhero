@@ -3,6 +3,13 @@
 const path = require('path')
 const async = require('async')
 
+/**
+ * Manages the servers in this ActionHero instance.
+ *
+ * @namespace api.servers
+ * @property {Object} servers - The collection of servers active in thi ActionHero instance.
+ */
+
 module.exports = {
   startPriority: 900,
   stopPriority: 100,

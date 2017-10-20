@@ -3,6 +3,15 @@
 const fs = require('fs')
 const cluster = require('cluster')
 
+/**
+ * Pid and Pidfile.
+ *
+ * @namespace api.pids
+ * @property {Number} pid - The process ID for this process.
+ * @property {string} path - The folder in which to save the pidfile (from `api.config.general.paths.pid`).
+ * @property {string} title - The name of the pidfile.  Built from the `api.id`.
+ */
+
 module.exports = {
   startPriority: 1,
   loadPriority: 50,

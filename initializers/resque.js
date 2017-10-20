@@ -2,6 +2,17 @@
 
 const NR = require('node-resque')
 
+/**
+ * The node-resque workers and scheduler which process tasks.
+ * @see https://github.com/taskrabbit/node-resque
+ *
+ * @namespace api.resque
+ * @property {Object} queue - The Node Resque `queue`.  Used to enqueue tasks and read properties from Redis.
+ * @property {Object} multiWorker - The Node Resque `Multi Worker`.  Runs tasks.
+ * @property {Object} scheduler - The Node Resque `scheduler`.  Checks on delaed tasks.
+ * @property {Object} connectionDetails - Connection oprions (from `api.redis.clients.tasks`).
+ */
+
 module.exports = {
   startPriority: 200,
   stopPriority: 100,

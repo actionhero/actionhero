@@ -1,5 +1,11 @@
 'use strict'
 
+/**
+ * Collects and formats allowed params for this server.
+ *
+ * @namespace api.params
+ */
+
 module.exports = {
   loadPriority: 420,
   initialize: function (api, next) {

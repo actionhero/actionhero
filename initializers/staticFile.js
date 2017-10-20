@@ -4,6 +4,13 @@ const fs = require('fs')
 const path = require('path')
 const Mime = require('mime')
 
+/**
+ * Countains helpers for returning flies to connections.
+ *
+ * @namespace api.staticFile
+ * @property {Array} searchLoactions - This paths which can be searched for this file.  Comprised of paths from api.config.general.paths and plugins.
+ */
+
 module.exports = {
   loadPriority: 510,
   initialize: function (api, next) {

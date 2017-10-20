@@ -2,6 +2,16 @@
 
 const uuid = require('uuid')
 
+/**
+ * Server connection handling.
+ *
+ * @namespace api.connections
+ * @property {Object} connections - Dictionary of currently-established client connections.
+ * @property {Object} middleware - Dictionary of loaded middleware modules.
+ * @property {Array} globalMiddleware - Array of global middleware modules.
+ * @property {Array} allowedVerbs - Verbs the server will allow clients to send.
+ */
+
 module.exports = {
   loadPriority: 400,
   initialize: function (api, next) {
