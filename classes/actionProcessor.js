@@ -206,7 +206,13 @@ module.exports = class ActionProcessor {
             const method = this.prepareStringMethod(validator)
             validatorResponse = await method.call(api, params[key], this)
           }
-          if (validatorResponse !== true) { this.validatorErrors.push(validatorResponse) }
+          if (validatorResponse !== true) {
+            if (validatorResponse === false) {
+              this.validatorErrors.push(new Error(`Input for parameter "${key}" failed validation!`))
+            } else {
+              this.validatorErrors.push(validatorResponse)
+            }
+          }
         } catch (error) {
           this.validatorErrors.push(error)
         }

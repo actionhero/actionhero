@@ -61,7 +61,14 @@ module.exports = class Process {
     ].forEach(async (file) => {
       delete require.cache[require.resolve(file)]
       const InitializerClass = require(file)
-      const initializer = new InitializerClass()
+      let initializer
+
+      try {
+        initializer = new InitializerClass()
+      } catch (error) {
+        this.fatalError(error, file)
+      }
+
       try {
         initializer.validate()
         await initializer.initialize(api)
@@ -97,7 +104,13 @@ module.exports = class Process {
 
       delete require.cache[require.resolve(file)]
       const InitializerClass = require(file)
-      const initializer = new InitializerClass()
+      let initializer
+
+      try {
+        initializer = new InitializerClass()
+      } catch (error) {
+        this.fatalError(error, file)
+      }
 
       // check if initializer already exists (exclude utils and config)
       if (
