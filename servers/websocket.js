@@ -229,7 +229,7 @@ module.exports = class WebSocketServer extends ActionHero.Server {
       message = {status: 'OK', context: 'response', data: data}
       return this.sendMessage(connection, message)
     } catch (error) {
-      message = {status: error, context: 'response', data: data}
+      message = {status: error, error, context: 'response', data: data}
       return this.sendMessage(connection, message)
     }
   }
