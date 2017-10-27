@@ -18,5 +18,8 @@
         "delay",
         "service",
         "tcp"
+    ],
+    "addons": [
+      { "plan": "heroku-redis" }
     ]
 }
