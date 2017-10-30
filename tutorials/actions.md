@@ -339,6 +339,8 @@ If you don't want your action to respond to the client, or you have already sent
 
 If you are certain that your action is only going to be handled by a web server, then a connivence function has been provided to you via `data.connection.setHeader()`. This function is a proxy to the <a href='https://nodejs.org/api/http.html#http_response_setheader_name_value'>Node HTTP Response setHeader</a> function and allows you to set response headers without having to drill into the `data.connection.rawConnection` object. Please be aware, the `data.connection.setHeader()` function will only be available if your action is being handled by a web server. Other server types will throw an exception. See [Servers: Customizing the Connection](tutorial-servers.html) for more details.
 
+Similarly to the above, the web server also exposes `data.connection.setStatusCode()`, again only for actions in use by the web server.  This can be used as a helper to set the HTTP responses' status code, ie: 404, 200, etc.
+
 ## Middleware
 
 You can create middlware which would apply to the connection both before and after an action.  Middleware can be either global (applied to all actions) or local, specified in each action via `action.middleware = []`.  Supply the `names` of any middleware you want to use.
