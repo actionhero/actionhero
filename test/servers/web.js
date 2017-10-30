@@ -1120,7 +1120,7 @@ describe('Server: Web', () => {
       api.actions.actions.proxyHeaders = {
         '1': {
           name: 'proxyHeaders',
-          description: 'proxy test',
+          description: 'proxy header test',
           inputs: {},
           outputExample: {},
           run: (data) => {
@@ -1129,9 +1129,29 @@ describe('Server: Web', () => {
         }
       }
 
+      api.actions.versions.proxyStatusCode = [1]
+      api.actions.actions.proxyStatusCode = {
+        '1': {
+          name: 'proxyStatusCode',
+          description: 'proxy status code test',
+          inputs: {
+            code: {
+              required: true,
+              default: 200,
+              formatter: (p) => { return parseInt(p) }
+            }
+          },
+          outputExample: {},
+          run: (data) => {
+            data.connection.setStatusCode(data.params.code)
+          }
+        }
+      }
+
       api.routes.loadRoutes({
         get: [
-          {path: '/proxy', action: 'proxyHeaders', apiVersion: 1}
+          {path: '/proxy', action: 'proxyHeaders', apiVersion: 1},
+          {path: '/code', action: 'proxyStatusCode', apiVersion: 1}
         ]
       })
     })
@@ -1139,12 +1159,26 @@ describe('Server: Web', () => {
     after(() => {
       api.routes.routes = originalRoutes
       delete api.actions.versions.proxyHeaders
+      delete api.actions.versions.proxyStatusCode
       delete api.actions.actions.proxyHeaders
+      delete api.actions.actions.proxyStatusCode
     })
 
     it('actions handled by the web server support proxy for setHeaders', async () => {
       let response = await request.get(url + '/api/proxy', {resolveWithFullResponse: true})
       expect(response.headers['x-foo']).to.exist.and.be.equal('bar')
+    })
+
+    it('actions handled by the web server support proxy for setting status code', async () => {
+      let responseDefault = await request.get(url + '/api/proxyStatusCode', {resolveWithFullResponse: true})
+      expect(responseDefault.statusCode).to.exist.and.be.equal(200)
+
+      try {
+        await request.get(url + '/api/proxyStatusCode?code=404', {resolveWithFullResponse: true})
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.toString()).to.match(/StatusCodeError: 404/)
+      }
     })
   })
 })
