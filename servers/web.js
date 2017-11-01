@@ -31,6 +31,10 @@ module.exports = class WebServer extends ActionHero.Server {
     this.connectionCustomMethods = {
       setHeader: (connection, key, value) => {
         connection.rawConnection.res.setHeader(key, value)
+      },
+
+      setStatusCode: (connection, value) => {
+        connection.rawConnection.responseHttpCode = value
       }
     }
   }
