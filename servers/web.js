@@ -474,7 +474,12 @@ module.exports = class WebServer extends ActionHero.Server {
     // API
     if (requestMode === 'api') {
       if (connection.rawConnection.method === 'TRACE') { requestMode = 'trace' }
-      let search = connection.rawConnection.parsedURL.search.slice(1)
+      let search = ''
+
+      if (connection.rawConnection.parsedURL.search !== null) {
+        search = connection.rawConnection.parsedURL.search.slice(1)
+      }
+
       this.fillParamsFromWebRequest(connection, qs.parse(search, this.config.queryParseOptions))
       connection.rawConnection.params.query = connection.rawConnection.parsedURL.query
       if (
