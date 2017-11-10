@@ -309,6 +309,15 @@ describe('Server: Web', () => {
     }
   })
 
+  it('should not reject promise with fatal when sending only action on url on node 9', async () => {
+    try {
+      let body = await request.get(url + '/api/status').then(toJson)
+      expect(body.error).to.not.exist()
+    } catch (error) {
+      throw new Error('should not get here, request should succeed')
+    }
+  })
+
   it('real actions do not have an error response', async () => {
     let body = await request.get(url + '/api/status').then(toJson)
     expect(body.error).to.not.exist()
