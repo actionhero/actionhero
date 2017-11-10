@@ -7,6 +7,14 @@ machine:
   node:
     version: 8
 
+dependencies:
+  post:
+    - case $CIRCLE_NODE_INDEX in 0) NODE_VERSION=8 ;; 1) NODE_VERSION=9;; esac; nvm install $NODE_VERSION && nvm alias default $NODE_VERSION
+    - node --version
+    - npm --version
+    - npm install
+    - npm rebuild
+
 test:
   override:
     - "echo Node Version: `node --version` && npm test":
