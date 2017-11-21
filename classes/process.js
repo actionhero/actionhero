@@ -60,10 +60,10 @@ module.exports = class Process {
       path.resolve(__dirname, '..', 'initializers', 'config.js')
     ].forEach(async (file) => {
       delete require.cache[require.resolve(file)]
-      const InitializerClass = require(file)
       let initializer
 
       try {
+        const InitializerClass = require(file)
         initializer = new InitializerClass()
       } catch (error) {
         this.fatalError(error, file)
@@ -103,10 +103,10 @@ module.exports = class Process {
       if (ext !== 'js') { return }
 
       delete require.cache[require.resolve(file)]
-      const InitializerClass = require(file)
       let initializer
 
       try {
+        const InitializerClass = require(file)
         initializer = new InitializerClass()
       } catch (error) {
         this.fatalError(error, file)

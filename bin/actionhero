@@ -135,7 +135,7 @@ const handleMethod = async () => {
       }
     }
   } catch (error) {
-    console.error(error.toString())
+    console.error(error)
     process.exit(1)
   }
 }
