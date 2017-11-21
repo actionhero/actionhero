@@ -32,7 +32,7 @@ You can also define more than one action per file if you would like, and extend 
 
 ```js
 // Compound Action with Shared Inputs//
-const {Action, api} = require('actionhero')
+const {Action} = require('actionhero')
 
 class ValidatedAction extends Action {
   constructor () {
@@ -50,7 +50,7 @@ class ValidatedAction extends Action {
   }
 
   emailValidator (param) {
-    if (email.indexOf('@') < 0) {
+    if (param.indexOf('@') < 0) {
       throw new Error('that is not a valid email address')
     }
   }
@@ -139,7 +139,7 @@ class ValidatedAction extends Action {
       multiplier: {
         required: false,
         validator: (param, connection, actionTemplate) => {
-          if (param < 0) { throw new Error('must be > 0') } else { return true }
+          if (param < 0) { throw new Error('must be > 0') }
         },
         formatter: (param, connection, actionTemplate) => {
           return parseInt(param)
@@ -197,7 +197,7 @@ action.inputs = {
   multiplier: {
     required: true,
     validator: (param, connection, actionTemplate) => {
-      if (param < 0) { throw new Error('must be > 0') } else { return true }
+      if (param < 0) { throw new Error('must be > 0') }
     },
     formatter: (param, connection, actionTemplate) => {
       return parseInt(param);
@@ -216,7 +216,7 @@ action.inputs = {
         required: true,
         default: 1,
         validator: (param, connection, actionTemplate) => {
-          if (param < 0) { throw new Error('must be > 0') } else { return true }
+          if (param < 0) { throw new Error('must be > 0') }
         },
         formatter: (param, connection, actionTemplate) => {
           return parseInt(param);
@@ -240,7 +240,7 @@ The properties of an input are:
   * you can also have a static assignment for `default` father than a function, ie: `default: 123`
   * Default: Parameter has no default value
 * `validator = function(param, connection, actionTemplate)`
-  * should return true if validation passed
+  * should return true, null, or undefined (return nothing) if validation passed
   * should throw an error message if validation fails which will be returned to the client
   * Default: Parameter is always valid
 * `schema` (object)
@@ -271,7 +271,6 @@ moneyInCents: {
   validator: (p) => {
     if(isNaN(parseFloat(p)){ throw new Error('not a number') }
     if(p < 0){ throw new Error('money cannot be negative') }
-    else{ return true }
   }
 }
 ```
