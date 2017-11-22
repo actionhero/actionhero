@@ -178,7 +178,7 @@ describe('Core: API', () => {
               required: false,
               default: () => { return 'abc123' },
               validator: function (s) {
-                if (s === 'abc123') { return true } else { return 'fancyParam should be "abc123".  so says ' + this.id }
+                if (s !== 'abc123') { return 'fancyParam should be "abc123".  so says ' + this.id }
               },
               formatter: function (s) {
                 return String(s)
@@ -240,6 +240,11 @@ describe('Core: API', () => {
     it('will use formatter if provided (and still use validator)', async () => {
       let response = await api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123})
       expect(response.requesterInformation.receivedParams.fancyParam).to.equal('123')
+    })
+
+    it('succeeds a validator which returns no response', async () => {
+      let response = await api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 'abc123'})
+      expect(response.error).to.not.exist()
     })
 
     it('will filter params not set in the target action or global safelist', async () => {
