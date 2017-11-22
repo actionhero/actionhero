@@ -219,17 +219,19 @@ module.exports = class WebSocketServer extends ActionHero.Server {
 
     let words = []
     let message
+    let room = null
     if (data.room) {
+      room = data.room
       words.push(data.room)
       delete data.room
     }
     for (let i in data) { words.push(data[i]) }
     try {
       let data = await connection.verbs(verb, words)
-      message = {status: 'OK', context: 'response', data: data}
+      message = {status: 'OK', context: 'response', data, verb, room}
       return this.sendMessage(connection, message)
     } catch (error) {
-      message = {status: error, error, context: 'response', data: data}
+      message = {status: error, error, context: 'response', data, verb, room}
       return this.sendMessage(connection, message)
     }
   }
