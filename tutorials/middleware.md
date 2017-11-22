@@ -148,7 +148,7 @@ Priority is optional in all cases, but can be used to order your middleware. If 
 
 More detail and nuance on chat middleware can be found in the [chat tutorial](tutorial-chat.html)
 
-### Chat Midleware Notes
+### Chat Middleware Notes
 
 * In the example above, I want to announce the member joining the room, but he has not yet been added to the room, as the join logic is still firing. If the connection itself were to make the broadcast, it would fail because the connection is not in the room. Instead, an empty `{}` connection is used to proxy the message coming from the 'server'.
 * Only the `sayCallbacks` return `messagePayload`. This allows you to modify the message being sent to your clients.

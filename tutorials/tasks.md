@@ -182,7 +182,7 @@ You can create you own tasks by placing them in a `./tasks/` directory at the ro
 * `task.description`: a description
 * `task.queue`: the default queue to run this task within (can be overwritten when enqueued)
 * `task.frequency`: In milliseconds, how often should I run?. A frequency of `> 0` denotes this task as periodic and ActionHero will automatically enqueued when the server boots. Only one instance of a periodic task will be enqueued within the cluster at a time, regardless of how many ActionHero nodes are connected.
-* `task.midleware`: midleware modify how your tasks are enqueued. For example, if you use the `queue-lock` plugin, only one instance of any job (with similar arguments) can be enqueued at a time. You can [learn more about midleware here](tutorial-middleware.html)
+* `task.middleware`: middleware modify how your tasks are enqueued. For example, if you use the `queue-lock` plugin, only one instance of any job (with similar arguments) can be enqueued at a time. You can [learn more about middleware here](tutorial-middleware.html)
 
 `task.run` contains the actual work that the task does. It takes the following arguments:
 

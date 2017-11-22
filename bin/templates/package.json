@@ -9,7 +9,6 @@
   "dependencies" : {
     "actionhero" : "%%versionNumber%%",
     "ws" : "latest",
-    "fakeredis" : "latest",
     "ioredis" : "latest"
   },
   "devDependencies" : {
