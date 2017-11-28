@@ -61,7 +61,7 @@ Or deploy a free API server now:
 
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/actionhero/actionhero)
 
-## Learn More
+## Learn More 📚
 
 - [Getting Started @ www.actionherojs.com](https://www.actionherojs.com/get-started)
   - ActionHero's marketing site can be found @ [https://github.com/actionhero/www.actionherojs.com/](https://github.com/actionhero/www.actionherojs.com/).  If you want to contribute to this site, visit the [related project](https://github.com/actionhero/www.actionherojs.com)
@@ -71,7 +71,7 @@ Or deploy a free API server now:
 - [Interact with the Community & View the Release History](https://www.actionherojs.com/community)
 - [Server Client](https://github.com/actionhero/actionhero-client)
 
-## In-depth Tutorials
+## In-depth Tutorials 🎓
 
 ### Core Components
 - [Actions](https://docs.actionherojs.com/tutorial-actions.html)
@@ -93,7 +93,7 @@ Or deploy a free API server now:
 - [Socket Server](https://docs.actionherojs.com/tutorial-socket-server.html)
 - [WebSocket Server](https://docs.actionherojs.com/tutorial-websocket-server.html)
 
-### Testing, Deployment, and Operations
+### Testing, Deployment, and Operations 
 - [Running ActionHero](https://docs.actionherojs.com/tutorial-running-actionhero.html)
 - [Development Mode & REPL](https://docs.actionherojs.com/tutorial-development-mode.html)
 - [Testing & SpecHelper](https://docs.actionherojs.com/tutorial-testing.html)
