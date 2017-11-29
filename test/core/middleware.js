@@ -20,7 +20,7 @@ describe('Core: Middleware', () => {
   })
 
   describe('action preProcessors', () => {
-    it('I can define a global preProcessor and it can append the connection', async () => {
+    it('can define a global preProcessor and it can append the connection', async () => {
       api.actions.addMiddleware({
         name: 'test middleware',
         global: true,
@@ -34,7 +34,7 @@ describe('Core: Middleware', () => {
       expect(_preProcessorNote).to.equal('note')
     })
 
-    it('I can define an async global preProcessor and it can append the connection', async () => {
+    it('can define an async global preProcessor and it can append the connection', async () => {
       api.actions.addMiddleware({
         name: 'test middleware',
         global: true,
@@ -49,7 +49,7 @@ describe('Core: Middleware', () => {
       expect(_preProcessorNote).to.equal('slept')
     })
 
-    it('I can define a local preProcessor and it will not append the connection', async () => {
+    it('can define a local preProcessor and it will not append the connection', async () => {
       api.actions.addMiddleware({
         name: 'test middleware',
         global: false,
@@ -61,6 +61,48 @@ describe('Core: Middleware', () => {
       let {_preProcessorNote, error} = await api.specHelper.runAction('randomNumber')
       expect(error).to.not.exist()
       expect(_preProcessorNote).to.not.exist()
+    })
+
+    describe('midleware can read properties of the action template', () => {
+      before(() => {
+        api.actions.versions.authAction = [1]
+        api.actions.actions.authAction = {
+          '1': {
+            name: 'authAction',
+            description: 'I am a test',
+            version: 1,
+            authenticated: true,
+            run: (data) => {
+              data.response.thing = 'stuff'
+            }
+          }
+        }
+      })
+
+      after(() => {
+        delete api.actions.actions.authAction
+        delete api.actions.versions.authAction
+      })
+
+      it('can read action template properties', async () => {
+        api.actions.addMiddleware({
+          name: 'auth middleware',
+          global: true,
+          preProcessor: (data) => {
+            if (data.actionTemplate.authenticated === true) {
+              data.response.authenticatedAction = true
+            } else {
+              data.response.authenticatedAction = false
+            }
+          }
+        })
+
+        let randomResponse = await api.specHelper.runAction('randomNumber')
+        expect(randomResponse.authenticatedAction).to.equal(false)
+
+        let authResponse = await api.specHelper.runAction('authAction')
+        expect(authResponse.authenticatedAction).to.equal(true)
+      })
     })
 
     it('preProcessors with priorities run in the right order', async () => {
