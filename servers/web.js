@@ -142,6 +142,7 @@ module.exports = class WebServer extends ActionHero.Server {
         connection.rawConnection.res.writeHead(responseHttpCode, this.transformHeaders(headers))
         connection.rawConnection.res.end()
         connection.destroy()
+        fileStream.close()
       }
     }
 

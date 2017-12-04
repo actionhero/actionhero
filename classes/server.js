@@ -142,7 +142,7 @@ module.exports = class MyServer extends Server {
    * @memberof ActionHero.Server
    * @param  {Object}  connection The connection in question.
    * @param  {Error}   error If there was any errror finding or reading this file.
-   * @param  {Object}  fileStream A stream from the file reader which can be piped to the connection.
+   * @param  {Object}  fileStream A stream from the file reader which can be piped to the connection. Has to be explicitly closed if not piped.
    * @param  {string}  mime The mime type of the files
    * @param  {Number}  length The length in bytes of the file.  Useful for setting headers.
    * @param  {Date}    lastModified The timestamp when the file was last modifeid on disk.  Useful for headers.
