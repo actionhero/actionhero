@@ -421,25 +421,21 @@ class ChatRoom extends ActionHero.Initializer {
       let toReturn = true
       if (messagePayload) { newMessagePayload = Object.assign({}, messagePayload) }
 
-      const promises = []
-      api.chatRoom.globalMiddleware.forEach(function (name) {
-        promises.push(async () => {
-          const m = api.chatRoom.middleware[name]
-          try {
-            if (typeof m[direction] === 'function') {
-              if (messagePayload) {
-                let data = await m[direction](connection, room, newMessagePayload)
-                if (data) { newMessagePayload = data }
-              } else {
-                await m[direction](connection, room)
-              }
+      await Promise.all(api.chatRoom.globalMiddleware.map(async (name) => {
+        const m = api.chatRoom.middleware[name]
+        try {
+          if (typeof m[direction] === 'function') {
+            if (messagePayload) {
+              let data = await m[direction](connection, room, newMessagePayload)
+              if (data) { newMessagePayload = data }
+            } else {
+              await m[direction](connection, room)
             }
-          } catch (error) {
-            toReturn = error
           }
-        })
-      })
-      await Promise.all(promises)
+        } catch (error) {
+          toReturn = error
+        }
+      }))
 
       if (toReturn !== true) { return toReturn }
       return newMessagePayload
