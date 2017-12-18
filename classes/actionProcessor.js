@@ -206,6 +206,11 @@ module.exports = class ActionProcessor {
             const method = this.prepareStringMethod(validator)
             validatorResponse = await method.call(api, params[key], this, key)
           }
+
+          // validator function returned nothing; assume param is OK
+          if (validatorResponse === null || validatorResponse === undefined) { return }
+
+          // validator returned something that was not `true`
           if (validatorResponse !== true) {
             if (validatorResponse === false) {
               this.validatorErrors.push(new Error(`Input for parameter "${key}" failed validation!`))
@@ -214,6 +219,7 @@ module.exports = class ActionProcessor {
             }
           }
         } catch (error) {
+          // validator threw an error
           this.validatorErrors.push(error)
         }
       }
