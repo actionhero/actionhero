@@ -29,6 +29,7 @@ module.exports = class ActionHeroCluster {
         filename: this.options.logPath + '/' + this.options.logFile
       })
     )
+    process.env.ACTIONHERO_MASTER_LOG_FILE = this.options.logPath + '/' + this.options.logFile
     if (cluster.isMaster && args.silent !== true) {
       let consoleOptions = {
         colorize: true,
