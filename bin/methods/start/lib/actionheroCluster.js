@@ -33,7 +33,8 @@ module.exports = class ActionHeroCluster {
     if (cluster.isMaster && args.silent !== true) {
       let consoleOptions = {
         colorize: true,
-        timestamp: () => { return this.options.id + ' @ ' + new Date().toISOString() }
+        timestamp: () => { return new Date().toISOString() },
+        formatter: this.logFormatter.bind(this)
       }
 
       transports.push(
@@ -45,6 +46,16 @@ module.exports = class ActionHeroCluster {
       levels: winston.config.syslog.levels,
       transports: transports
     })
+  }
+
+  logFormatter (options) {
+    let line = `master @ ${options.timestamp()} ${winston.config.colorize(options.level, options.level.toUpperCase())}: -`
+    line = `${line} ${(options.message ? options.message : '')}`
+
+    const meta = options.meta || {}
+    meta.id = this.options.id
+
+    return `${line} - ${(meta && Object.keys(meta).length ? '\t'+ JSON.stringify(meta) : '' )}`
   }
 
   defaults () {
