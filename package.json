@@ -27,7 +27,7 @@
     "tcp"
   ],
   "engines": {
-    "node": "^8.0.0"
+    "node": ">=8.0.0"
   },
   "dependencies": {
     "browser_fingerprint": "^1.0.1",
