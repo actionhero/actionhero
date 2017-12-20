@@ -201,10 +201,10 @@ module.exports = class ActionProcessor {
         let validatorResponse
         try {
           if (typeof validator === 'function') {
-            validatorResponse = await validator.call(api, params[key], this)
+            validatorResponse = await validator.call(api, params[key], this, key)
           } else {
             const method = this.prepareStringMethod(validator)
-            validatorResponse = await method.call(api, params[key], this)
+            validatorResponse = await method.call(api, params[key], this, key)
           }
 
           // validator function returned nothing; assume param is OK
