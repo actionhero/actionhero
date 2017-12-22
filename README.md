@@ -93,7 +93,7 @@ Or deploy a free API server now:
 - [Socket Server](https://docs.actionherojs.com/tutorial-socket-server.html)
 - [WebSocket Server](https://docs.actionherojs.com/tutorial-websocket-server.html)
 
-### Testing, Deployment, and Operations 
+### Testing, Deployment, and Operations
 - [Running ActionHero](https://docs.actionherojs.com/tutorial-running-actionhero.html)
 - [Development Mode & REPL](https://docs.actionherojs.com/tutorial-development-mode.html)
 - [Testing & SpecHelper](https://docs.actionherojs.com/tutorial-testing.html)
