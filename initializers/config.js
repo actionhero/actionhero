@@ -60,7 +60,6 @@ module.exports = class Config extends ActionHero.Initializer {
             let cleanPath = file
             if (process.platform === 'win32') { cleanPath = file.replace(/\//g, '\\') }
             delete require.cache[require.resolve(cleanPath)]
-            setTimeout(() => { api.watchedFiles[file].blocked = false }, 1000)
             handler(file)
           }
         })
