@@ -30,7 +30,7 @@
 
 </div>
 
-## ActionHero v18 
+## ActionHero v18
 
 ActionHero v18 is the `async/await` Node.js framework you have been waiting for!
 
