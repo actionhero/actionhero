@@ -110,6 +110,24 @@ module.exports = class Connection {
     return api.i18n.localize(message, this)
   }
 
+  /**
+   * Send a file to a connection (usually in the context of an Action).  Be sure to set `data.toRender = false` in the action!
+   * Uses Server#processFile and will set `connection.params.file = path`
+   *
+   * @function sendFile
+   * @memberof ActionHero.Connection
+   * @param  {String} path The path of the file to send, within one of your `api.config.general.paths.public` directories.
+   * @tutorial file-server
+   */
+
+  /**
+   * Send a message to a connection.  Uses Server#sendMessage.
+   *
+   * @function sendMessage
+   * @memberof ActionHero.Connection
+   * @param  {String} message The message to send.  Can be an Object or String... but it depends on the server in use.
+   */
+
   generateID () {
     return uuid.v4()
   }

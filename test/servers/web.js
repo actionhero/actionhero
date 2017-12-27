@@ -1144,6 +1144,7 @@ describe('Server: Web', () => {
 
   describe('it should work with server custom methods', () => {
     let originalRoutes
+
     before(() => {
       originalRoutes = api.routes.routes
       api.actions.versions.proxyHeaders = [1]
@@ -1178,10 +1179,33 @@ describe('Server: Web', () => {
         }
       }
 
+      api.actions.versions.pipe = [1]
+      api.actions.actions.pipe = {
+        '1': {
+          name: 'pipe',
+          description: 'pipe response test',
+          inputs: {
+            mode: { required: true }
+          },
+          outputExample: {},
+          run: (data) => {
+            data.toRender = false
+            if (data.params.mode === 'string') {
+              data.connection.pipe('a string', {'custom-header': 'cool'})
+            } else if (data.params.mode === 'buffer') {
+              data.connection.pipe(Buffer.from('a buffer'), {'custom-header': 'still-cool'})
+            } else {
+              throw new Error('I Do not know this mode')
+            }
+          }
+        }
+      }
+
       api.routes.loadRoutes({
         get: [
           {path: '/proxy', action: 'proxyHeaders', apiVersion: 1},
-          {path: '/code', action: 'proxyStatusCode', apiVersion: 1}
+          {path: '/code', action: 'proxyStatusCode', apiVersion: 1},
+          {path: '/pipe', action: 'pipe', apiVersion: 1}
         ]
       })
     })
@@ -1190,8 +1214,10 @@ describe('Server: Web', () => {
       api.routes.routes = originalRoutes
       delete api.actions.versions.proxyHeaders
       delete api.actions.versions.proxyStatusCode
+      delete api.actions.versions.pipe
       delete api.actions.actions.proxyHeaders
       delete api.actions.actions.proxyStatusCode
+      delete api.actions.actions.pipe
     })
 
     it('actions handled by the web server support proxy for setHeaders', async () => {
@@ -1209,6 +1235,20 @@ describe('Server: Web', () => {
       } catch (error) {
         expect(error.toString()).to.match(/StatusCodeError: 404/)
       }
+    })
+
+    it('can pipe string responses with custom headers to clients', async () => {
+      let response = await request.get(url + '/api/pipe?mode=string', {resolveWithFullResponse: true})
+      expect(response.headers['custom-header']).to.exist.and.be.equal('cool')
+      expect(response.headers['content-length']).to.exist.and.be.equal('8')
+      expect(response.body).to.exist.and.be.equal('a string')
+    })
+
+    it('can pipe buffer responses with custom headers to clients', async () => {
+      let response = await request.get(url + '/api/pipe?mode=buffer', {resolveWithFullResponse: true})
+      expect(response.headers['custom-header']).to.exist.and.be.equal('still-cool')
+      expect(response.headers['content-length']).to.exist.and.be.equal('8')
+      expect(response.body).to.exist.and.be.equal('a buffer')
     })
   })
 })
