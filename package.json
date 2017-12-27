@@ -36,21 +36,22 @@
     "formidable": "^1.0.17",
     "glob": "^7.1.2",
     "i18n": "^0.8.3",
-    "ioredis": "^3.2.1",
+    "ioredis": "^3.2.2",
     "is-running": "^2.0.1",
-    "mime": "^2.0.3",
+    "mime": "^2.1.0",
     "node-resque": "^5.0.2",
     "optimist": "^0.6.1",
     "primus": "^7.1.0",
     "qs": "^6.5.1",
-    "uglify-js": "^3.1.9",
+    "uglify-js": "^3.3.2",
     "uuid": "^3.1.0",
     "winston": "^2.4.0",
-    "ws": "^3.3.1"
+    "ws": "^3.3.3"
   },
   "devDependencies": {
+    "artillery": "^1.6.0-12",
     "chai": "^4.1.2",
-    "cross-env": "^5.1.1",
+    "cross-env": "^5.1.3",
     "dirty-chai": "^2.0.0",
     "docdash-actionhero": "^0.0.8",
     "jsdoc": "^3.5.5",
@@ -84,6 +85,7 @@
     "help": "node ./bin/actionhero help",
     "test": "cross-env NODE_ENV=test mocha",
     "pretest": "standard",
+    "posttest": "test/loadtest",
     "start": "node ./bin/actionhero",
     "docs": "jsdoc -c jsdoc-conf.json"
   }

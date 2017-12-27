@@ -1,0 +1,23 @@
+config:
+  target: 'http://localhost:8080'
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 500
+scenarios:
+  - name: A fast action (randomNumber)
+    flow:
+    - get:
+        url: "/api/randomNumber"
+  - name: A slow action (sleepTest)
+    flow:
+    - get:
+        url: "/api/sleepTest"
+  - name: A redis action (cachetest)
+    flow:
+    - get:
+        url: "/api/cachetest?key=key&value=value"
+  - name: A static file (actionhero.png)
+    flow:
+    - get:
+        url: "/logo/actionhero.png"

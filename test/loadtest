@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -e
+
+cd $(dirname "$0")
+cd ..
+
+# Ensure we set the PORT we want; test ENV normally has a random port
+PORT=8080 ./bin/actionhero start &
+ACTIONHERO_PID=$!
+echo " *** Started ActionHero server on localhost with pid $ACTIONHERO_PID *** "
+
+sleep 5
+
+./node_modules/.bin/artillery run test/artillery.yml
+
+sleep 5
+
+echo " *** Stopping ActionHero server with pid $ACTIONHERO_PID *** "
+kill $ACTIONHERO_PID
