@@ -35,6 +35,12 @@ module.exports = class WebServer extends ActionHero.Server {
 
       setStatusCode: (connection, value) => {
         connection.rawConnection.responseHttpCode = value
+      },
+
+      pipe: (connection, buffer, headers) => {
+        for (let k in headers) { connection.setHeader(k, headers[k]) }
+        if (typeof buffer === 'string') { buffer = Buffer.from(buffer) }
+        connection.rawConnection.res.end(buffer)
       }
     }
   }
