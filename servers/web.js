@@ -490,7 +490,12 @@ const initialize = function (api, options, next) {
     // API
     } else if (requestMode === 'api') {
       if (connection.rawConnection.method === 'TRACE') { requestMode = 'trace' }
-      let search = connection.rawConnection.parsedURL.search.slice(1)
+
+      let search = ''
+      if (connection.rawConnection.parsedURL.search) {
+        search = connection.rawConnection.parsedURL.search.slice(1)
+      }
+
       fillParamsFromWebRequest(connection, qs.parse(search, api.config.servers.web.queryParseOptions))
       connection.rawConnection.params.query = connection.rawConnection.parsedURL.query
       if (
