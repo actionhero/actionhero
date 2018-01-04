@@ -43,7 +43,7 @@
     "optimist": "^0.6.1",
     "primus": "^7.1.0",
     "qs": "^6.5.1",
-    "uglify-js": "^3.3.2",
+    "uglify-js": "^3.3.4",
     "uuid": "^3.1.0",
     "winston": "^2.4.0",
     "ws": "^3.3.3"
@@ -54,7 +54,7 @@
     "dirty-chai": "^2.0.1",
     "docdash-actionhero": "^0.0.8",
     "jsdoc": "^3.5.5",
-    "mocha": "^4.0.1",
+    "mocha": "^4.1.0",
     "request": "^2.83.0",
     "request-promise-native": "^1.0.5",
     "standard": "^10.0.3"
