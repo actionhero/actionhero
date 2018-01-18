@@ -17,7 +17,7 @@ services:
   redis:
     image: redis
   actionhero:
-    image: actionhero/actionhero
+    build: ./
     ports:
      - 8080
      - 5000
