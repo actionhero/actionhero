@@ -55,8 +55,12 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  randomNumber: { handler: handler.action }
-  cacheTest: { handler: handler.action }
+  file:
+    handler: handler.run
+  randomNumber:
+    handler: handler.run
+  cacheTest:
+    handler: handler.run
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

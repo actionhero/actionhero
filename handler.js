@@ -35,12 +35,17 @@ class LambdaServer extends Server {
     const actionName = parts[(parts.length - 1)]
     connection.params.action = actionName
 
-    await api.servers.servers.lambda.processAction(connection)
+    if (actionName === 'file') {
+      await api.servers.servers.lambda.processFile(connection)
+    } else {
+      await api.servers.servers.lambda.processAction(connection)
+    }
   }
 
   sendMessage (connection, message) {
     const response = {
       statusCode: 200,
+      headers: {'Content-type': 'application/json'},
       body: JSON.stringify({
         message: message,
         input: connection.rawConnection.event
@@ -56,7 +61,26 @@ class LambdaServer extends Server {
   }
 
   sendFile (connection, error, fileStream, mime, length) {
-    throw new Error('TODO')
+    if (error) {
+      return connection.sendMessage({error})
+    }
+
+    let buffer = Buffer.alloc(0)
+    fileStream.on('data', (chunk) => { buffer = Buffer.concat([buffer, chunk]) })
+    fileStream.on('end', () => {
+      const response = {
+        statusCode: 200,
+        headers: {'Content-type': mime},
+        body: buffer.toString('base64'),
+        // body: fileStream.toString('base64'),
+        isBase64Encoded: true
+      }
+
+      connection.rawConnection.callback(null, response)
+
+      connection.destroy()
+      api.commands.stop()
+    })
   }
 
   async runFunction (event, context, callback) {
@@ -115,7 +139,7 @@ const checkRunning = async () => {
 }
 
 (async () => {
-  module.exports.action = async (event, context, callback) => {
+  module.exports.run = async (event, context, callback) => {
     await checkRunning()
     await api.servers.servers.lambda.runFunction(event, context, callback)
   }
