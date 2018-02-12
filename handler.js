@@ -7,24 +7,19 @@ const sleep = async (time = 100) => {
   return new Promise((resolve) => { setTimeout(resolve, time) })
 }
 
-const checkRunning = async () => {
-  console.log('.')
+const awaitRunning = async () => {
   if (api.running !== true) {
     await sleep()
-    return checkRunning()
+    return awaitRunning()
   }
 }
 
 (async () => {
   module.exports.run = async (event, context, callback) => {
-    await checkRunning()
+    await awaitRunning()
     await api.servers.servers.lambda.runFunction(event, context, callback)
     await actionhero.stop()
   }
 
   actionhero.start()
-  // let server = new LambdaServer()
-  // server.config = { enabled: true }
-  // await server.start(api)
-  // api.servers.servers.lambda = server
 })()
