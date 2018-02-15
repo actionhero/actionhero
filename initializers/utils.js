@@ -264,7 +264,7 @@ let responses = await api.utils.asyncWaterfall(jobs)
     api.utils.parseIPv6URI = (addr) => {
       let host = '::1'
       let port = '80'
-      let regexp = new RegExp(/\[([0-9a-f:]+)]:([0-9]{1,5})/)
+      let regexp = new RegExp(/\[([0-9a-f:]+(?:%.+)?)]:([0-9]{1,5})/)
       // if we have brackets parse them and find a port
       if (addr.indexOf('[') > -1 && addr.indexOf(']') > -1) {
         let res = regexp.exec(addr)
