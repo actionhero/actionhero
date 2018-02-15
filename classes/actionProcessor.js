@@ -46,7 +46,7 @@ module.exports = class ActionProcessor {
     this.actionStatus = String(status)
 
     if (status instanceof Error) {
-      error = status
+      error = await api.config.errors.genericError(this, status)
     } else if (status === 'server_shutting_down') {
       error = await api.config.errors.serverShuttingDown(this)
     } else if (status === 'too_many_requests') {
@@ -60,7 +60,7 @@ module.exports = class ActionProcessor {
     } else if (status === 'validator_errors') {
       error = await api.config.errors.invalidParams(this, this.validatorErrors)
     } else if (status) {
-      error = status
+      error = await api.config.errors.genericStatus(this, status)
     }
 
     if (error && typeof error === 'string') {

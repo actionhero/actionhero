@@ -83,6 +83,16 @@ exports['default'] = {
         return api.i18n.localize(['actionhero.errors.dataLengthTooLarge', {maxLength: maxLength, receivedLength: receivedLength}])
       },
 
+      // Decorate your response based on Error here
+      async genericError (data, error) {
+        return error
+      },
+
+      // Decorate your response based on status value
+      async genericStatus (data, status) {
+        return status
+      },
+
       // ///////////////
       // FILE SERVER //
       // ///////////////
