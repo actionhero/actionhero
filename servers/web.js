@@ -292,7 +292,7 @@ module.exports = class WebServer extends ActionHero.Server {
       }
     }
 
-    let { ip, port } = api.utils.parseHeaderForClientAddress(req.headers)
+    let { ip, port } = api.utils.parseHeadersForClientAddress(req.headers)
 
     this.buildConnection({
       rawConnection: {

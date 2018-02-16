@@ -243,17 +243,11 @@ let responses = await api.utils.asyncWaterfall(jobs)
      * @param  {Object} headers key-value header parameters
      * @return {Object} A new Object, contains ip and port
      */
-    api.utils.parseHeaderForClientAddress = (headers) => {
+    api.utils.parseHeadersForClientAddress = (headers) => {
       let ip = null
       let port = null
 
-      if (headers['x-forwarded-port']) {
-        port = headers['x-forwarded-port']
-      }
-
-      if (headers['x-real-ip']) {
-        ip = headers['x-real-ip']
-      } else if (headers['x-forwarded-for']) {
+      if (headers['x-forwarded-for']) {
         let parts
         let forwardedIp = headers['x-forwarded-for'].split(',')[0]
         if (forwardedIp.indexOf('.') >= 0 || (forwardedIp.indexOf('.') < 0 && forwardedIp.indexOf(':') < 0)) {
@@ -268,6 +262,12 @@ let responses = await api.utils.asyncWaterfall(jobs)
           if (parts.host) { ip = parts.host }
           if (parts.port) { port = parts.port }
         }
+      }
+      if (headers['x-forwarded-port']) {
+        port = headers['x-forwarded-port']
+      }
+      if (headers['x-real-ip']) { // https://distinctplace.com/2014/04/23/story-behind-x-forwarded-for-and-x-real-ip-headers/
+        ip = headers['x-real-ip']
       }
       return { ip, port }
     }

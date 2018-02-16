@@ -177,7 +177,7 @@ module.exports = class WebSocketServer extends ActionHero.Server {
   handleConnection (rawConnection) {
     const parsedCookies = this.fingerprinter.parseCookies(rawConnection)
     const fingerprint = parsedCookies[api.config.servers.web.fingerprintOptions.cookieKey]
-    let { ip, port } = api.utils.parseHeaderForClientAddress(rawConnection.headers)
+    let { ip, port } = api.utils.parseHeadersForClientAddress(rawConnection.headers)
 
     this.buildConnection({
       rawConnection: rawConnection,

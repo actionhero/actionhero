@@ -112,6 +112,26 @@ describe('Utils', () => {
     })
   })
 
+  describe('#parseHeadersForClientAddress', () => {
+    it('only x-real-ip, port is null', () => {
+      let headers = {
+        'x-real-ip': '10.11.12.13'
+      }
+      let { ip, port } = api.utils.parseHeadersForClientAddress(headers)
+      expect(ip).to.equal('10.11.12.13')
+      expect(port).to.equal(null)
+    })
+    it('load balancer, x-forwarded-for format', () => {
+      let headers = {
+        'x-forwarded-for': '35.36.37.38',
+        'x-forwarded-port': '80'
+      }
+      let { ip, port } = api.utils.parseHeadersForClientAddress(headers)
+      expect(ip).to.equal('35.36.37.38')
+      expect(port).to.equal('80')
+    })
+  })
+
   describe('#parseIPv6URI', () => {
     it('address and port', () => {
       let uri = '[2604:4480::5]:8080'
