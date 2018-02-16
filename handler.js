@@ -8,8 +8,8 @@ const sleep = async (time = 100) => {
 }
 
 const awaitRunning = async () => {
+  await sleep()
   if (api.running !== true) {
-    await sleep()
     return awaitRunning()
   }
 }
@@ -18,7 +18,6 @@ const awaitRunning = async () => {
   module.exports.run = async (event, context, callback) => {
     await awaitRunning()
     await api.servers.servers.lambda.runFunction(event, context, callback)
-    await actionhero.stop()
   }
 
   actionhero.start()

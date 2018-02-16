@@ -5,7 +5,20 @@ exports['default'] = {
     lambda: (api) => {
       return {
         enabled: true,
-        returnMetadata: true
+        returnMetadata: true,
+        shutdownAfterRequest: true
+      }
+    }
+  }
+}
+
+exports['production'] = {
+  servers: {
+    lambda: (api) => {
+      return {
+        enabled: true,
+        returnMetadata: false,
+        shutdownAfterRequest: false
       }
     }
   }

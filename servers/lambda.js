@@ -56,6 +56,7 @@ module.exports = class LambdaServer extends ActionHero.Server {
     connection.rawConnection.callback(error, response)
 
     connection.destroy()
+    this.maybeShutdown()
   }
 
   sendFile (connection, error, fileStream, mime, length) {
@@ -70,13 +71,13 @@ module.exports = class LambdaServer extends ActionHero.Server {
         statusCode: 200,
         headers: {'Content-type': mime},
         body: buffer.toString('base64'),
-        // body: fileStream.toString('base64'),
         isBase64Encoded: true
       }
 
       connection.rawConnection.callback(null, response)
 
       connection.destroy()
+      this.maybeShutdown()
     })
   }
 
@@ -118,6 +119,13 @@ module.exports = class LambdaServer extends ActionHero.Server {
 
     if (data.toRender === true) {
       this.sendMessage(data.connection, data.response, data.messageCount)
+    }
+  }
+
+  async maybeShutdown () {
+    // should we stop this process after a request?
+    if (this.config.shutdownAfterRequest === true) {
+      await api.commands.stop()
     }
   }
 }
