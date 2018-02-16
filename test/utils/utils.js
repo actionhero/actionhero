@@ -163,6 +163,20 @@ describe('Utils', () => {
         expect(e.message).to.equal('failed to parse address')
       }
     })
+
+    it('should parse locally scoped ipv6 URIs without port', () => {
+      let uri = 'fe80::1ff:fe23:4567:890a%eth2'
+      let parts = api.utils.parseIPv6URI(uri)
+      expect(parts.host).to.equal('fe80::1ff:fe23:4567:890a%eth2')
+      expect(parts.port).to.equal(80)
+    })
+
+    it('should parse locally scoped ipv6 URIs with port', () => {
+      let uri = '[fe80::1ff:fe23:4567:890a%eth2]:8080'
+      let parts = api.utils.parseIPv6URI(uri)
+      expect(parts.host).to.equal('fe80::1ff:fe23:4567:890a%eth2')
+      expect(parts.port).to.equal(8080)
+    })
   })
 
   describe('utils.filterObjectForLogging', () => {
