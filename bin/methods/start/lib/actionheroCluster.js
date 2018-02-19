@@ -226,20 +226,20 @@ module.exports = class ActionHeroCluster {
     })
 
     if (
-        this.options.expectedWorkers < this.workers.length &&
+      this.options.expectedWorkers < this.workers.length &&
         this.workers.length >= 1 &&
         !stateCounts.stopping &&
         !stateCounts.stopped &&
         !stateCounts.restarting
-      ) {
+    ) {
       worker = this.workers[(this.workers.length - 1)]
       this.log('signaling worker #' + worker.id + ' to stop', 'info')
       worker.stop()
     } else if (
-        (this.options.expectedWorkers > this.workers.length) &&
+      (this.options.expectedWorkers > this.workers.length) &&
         !stateCounts.starting &&
         !stateCounts.restarting
-      ) {
+    ) {
       workerId = 1
       this.workers.forEach((w) => {
         if (w.id === workerId) { workerId++ }

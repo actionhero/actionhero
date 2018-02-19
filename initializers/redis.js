@@ -105,7 +105,7 @@ await api.redis.publish(payload)
         requestId: requestId,
         method: method,
         connectionId: connectionId,
-        args: args   // [1,2,3]
+        args: args // [1,2,3]
       }
 
       await api.redis.publish(payload)
