@@ -49,7 +49,7 @@ describe('Core: API', () => {
       'callback',
       'action',
       'apiVersion',
-      'key',  // from cacheTest action
+      'key', // from cacheTest action
       'value' // from cacheTest action
     ].forEach((item) => {
       expect(api.params.postVariables.indexOf(item) >= 0).to.equal(true)

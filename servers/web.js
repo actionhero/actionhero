@@ -353,12 +353,12 @@ module.exports = class WebServer extends ActionHero.Server {
     }
 
     if (
-        !data.response.error &&
+      !data.response.error &&
         data.action &&
         data.params.apiVersion &&
         api.actions.actions[data.params.action][data.params.apiVersion].matchExtensionMimeType === true &&
         data.connection.extension
-      ) {
+    ) {
       data.connection.rawConnection.responseHeaders.push(['Content-Type', Mime.getType(data.connection.extension)])
     }
 
@@ -462,7 +462,7 @@ module.exports = class WebServer extends ActionHero.Server {
       this.fillParamsFromWebRequest(connection, qs.parse(search, this.config.queryParseOptions))
       connection.rawConnection.params.query = connection.rawConnection.parsedURL.query
       if (
-          connection.rawConnection.method !== 'GET' &&
+        connection.rawConnection.method !== 'GET' &&
           connection.rawConnection.method !== 'HEAD' &&
           (
             connection.rawConnection.req.headers['content-type'] ||
