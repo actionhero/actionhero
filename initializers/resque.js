@@ -95,8 +95,7 @@ module.exports = class Resque extends ActionHero.Initializer {
           checkTimeout: api.config.tasks.checkTimeout,
           minTaskProcessors: api.config.tasks.minTaskProcessors,
           maxTaskProcessors: api.config.tasks.maxTaskProcessors,
-          maxEventLoopDelay: api.config.tasks.maxEventLoopDelay,
-          toDisconnectProcessors: api.config.tasks.toDisconnectProcessors
+          maxEventLoopDelay: api.config.tasks.maxEventLoopDelay
         }, api.tasks.jobs)
 
         // normal worker emitters

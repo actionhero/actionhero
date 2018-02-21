@@ -39,8 +39,6 @@ exports['default'] = {
       checkTimeout: 500,
       // how many ms would constitue an event loop delay to halt taskProcessors spawning?
       maxEventLoopDelay: 5,
-      // When we kill off a taskProcessor, should we disconnect that local redis connection?
-      toDisconnectProcessors: true,
       // Customize Resque primitives, replace null with required replacement.
       resque_overrides: {
         queue: null,
