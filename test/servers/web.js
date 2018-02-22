@@ -1194,6 +1194,8 @@ describe('Server: Web', () => {
               data.connection.pipe('a string', {'custom-header': 'cool'})
             } else if (data.params.mode === 'buffer') {
               data.connection.pipe(Buffer.from('a buffer'), {'custom-header': 'still-cool'})
+            } else if (data.params.mode === 'contentType') {
+              data.connection.pipe('just some good, old-fashioned words', {'Content-Type': 'text/plain', 'custom-header': 'words'})
             } else {
               throw new Error('I Do not know this mode')
             }
@@ -1249,6 +1251,14 @@ describe('Server: Web', () => {
       expect(response.headers['custom-header']).to.exist.and.be.equal('still-cool')
       expect(response.headers['content-length']).to.exist.and.be.equal('8')
       expect(response.body).to.exist.and.be.equal('a buffer')
+    })
+
+    it('can pipe buffer responses with custom content types to clients', async () => {
+      let {headers, body} = await request.get(url + '/api/pipe?mode=contentType', {resolveWithFullResponse: true})
+      expect(headers['content-type']).to.equal('text/plain')
+      expect(headers['content-length']).to.equal('35')
+      expect(headers['custom-header']).to.equal('words')
+      expect(body).to.equal('just some good, old-fashioned words')
     })
   })
 })
