@@ -83,14 +83,11 @@ exports['default'] = {
         return api.i18n.localize(['actionhero.errors.dataLengthTooLarge', {maxLength: maxLength, receivedLength: receivedLength}])
       },
 
-      // Decorate your response based on Error here
+      // Decorate your response based on Error here.
+      // Any action that throws an Error will pass through this method before returning
+      //   an error to the client. Reponse can be edited here, status codes changed, etc.
       async genericError (data, error) {
         return error
-      },
-
-      // Decorate your response based on status value
-      async genericStatus (data, status) {
-        return status
       },
 
       // ///////////////

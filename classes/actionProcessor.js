@@ -60,7 +60,7 @@ module.exports = class ActionProcessor {
     } else if (status === 'validator_errors') {
       error = await api.config.errors.invalidParams(this, this.validatorErrors)
     } else if (status) {
-      error = await api.config.errors.genericStatus(this, status)
+      error = status
     }
 
     if (error && typeof error === 'string') {
