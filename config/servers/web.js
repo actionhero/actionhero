@@ -6,6 +6,7 @@ exports['default'] = {
   servers: {
     web: (api) => {
       return {
+        '_toExpand': false,
         enabled: true,
         // HTTP or HTTPS?
         secure: false,
