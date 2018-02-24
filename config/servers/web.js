@@ -84,7 +84,14 @@ exports['default'] = {
         compress: false,
         // options to pass to the query parser
         // learn more about the options @ https://github.com/hapijs/qs
-        queryParseOptions: {}
+        queryParseOptions: {},
+        // mime types enabled for custom handling on non-GET, non-HEAD calls with a defined Content-Type header
+        tailoredMimeTypes: [],
+        // if mime type found in the `tailoredMimeTypes` array, this function is called.
+        // Intention is to fill connection.params object by processing connection.rawConnection.req
+        async handleTailoredMime (connection) {
+
+        }
       }
     }
   }

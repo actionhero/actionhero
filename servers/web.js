@@ -469,31 +469,38 @@ module.exports = class WebServer extends ActionHero.Server {
             connection.rawConnection.req.headers['Content-Type']
           )
       ) {
-        connection.rawConnection.form = new formidable.IncomingForm()
-        for (i in this.config.formOptions) {
-          connection.rawConnection.form[i] = this.config.formOptions[i]
-        }
-
         let rawBody = Buffer.alloc(0)
         if (this.config.saveRawBody) {
           connection.rawConnection.req.on('data', (chunk) => { rawBody = Buffer.concat([rawBody, chunk]) })
         }
+        // Check for custom handling of mime type
+        let mimeType = connection.rawConnection.req.headers['content-type'] || connection.rawConnection.req.headers['Content-Type']
+        if (api.config.servers.web.tailoredMimeTypes.indexOf(mimeType) > -1) {
+          await api.config.servers.web.handleTailoredMime(connection)
+        } else {
+          // process request using formidable
+          connection.rawConnection.form = new formidable.IncomingForm()
+          for (i in this.config.formOptions) {
+            connection.rawConnection.form[i] = this.config.formOptions[i]
+          }
 
-        let {fields, files} = await new Promise((resolve) => {
-          connection.rawConnection.form.parse(connection.rawConnection.req, (error, fields, files) => {
-            if (error) {
-              this.log('error processing form: ' + String(error), 'error')
-              connection.error = new Error('There was an error processing this form.')
-            }
-            resolve({fields, files})
+          let {fields, files} = await new Promise((resolve) => {
+            connection.rawConnection.form.parse(connection.rawConnection.req, (error, fields, files) => {
+              if (error) {
+                this.log('error processing form: ' + String(error), 'error')
+                connection.error = new Error('There was an error processing this form.')
+              }
+              resolve({fields, files})
+            })
           })
-        })
 
-        connection.rawConnection.params.body = fields
+          connection.rawConnection.params.body = fields
+          connection.rawConnection.params.files = files
+          this.fillParamsFromWebRequest(connection, files)
+          this.fillParamsFromWebRequest(connection, fields)
+        }
+
         connection.rawConnection.params.rawBody = rawBody
-        connection.rawConnection.params.files = files
-        this.fillParamsFromWebRequest(connection, files)
-        this.fillParamsFromWebRequest(connection, fields)
 
         if (this.config.queryRouting !== true) { connection.params.action = null }
         api.routes.processRoute(connection, pathParts)
