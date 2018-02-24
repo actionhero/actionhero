@@ -11,6 +11,7 @@ const actionhero = new ActionHero.Process()
 
 let api
 let originalUnknownAction
+let originalGenericError
 
 describe('Core: Errors', () => {
   before(async () => {
@@ -51,5 +52,48 @@ describe('Core: Errors', () => {
 
     let {error} = await api.specHelper.runAction('notARealAction')
     expect(error.sleepy).to.equal(true)
+  })
+})
+
+describe('Core: Errors: Custom Error Decoration', () => {
+  let errorMsg = 'worst action ever!'
+  before(async () => {
+    api = await actionhero.start()
+    originalGenericError = api.config.errors.genericError
+    api.actions.versions.errorAction = [1]
+    api.actions.actions.errorAction = {
+      '1': {
+        name: 'errorAction',
+        description: 'this action throws errors',
+        version: 1,
+        inputs: {},
+        run: async (data) => {
+          throw new Error(errorMsg)
+        }
+      }
+    }
+  })
+
+  after(async () => {
+    await actionhero.stop()
+    delete api.actions.actions.errorAction
+    delete api.actions.versions.errorAction
+    api.config.errors.genericError = originalGenericError
+  })
+
+  it('will return an actions error', async () => {
+    let response = await api.specHelper.runAction('errorAction')
+    expect(response.error).to.equal('Error: worst action ever!')
+    expect(response.requestId).to.not.exist()
+  })
+
+  it('can decorate an error', async () => {
+    api.config.errors.genericError = async (data, error) => {
+      data.response.requestId = 'id-12345'
+      return error
+    }
+    let response = await api.specHelper.runAction('errorAction')
+    expect(response.error).to.equal('Error: worst action ever!')
+    expect(response.requestId).to.equal('id-12345')
   })
 })

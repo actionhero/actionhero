@@ -20,14 +20,14 @@ module.exports = class RedisKeys extends CLI {
   inputs () {
     return {
       prefix: {
-        requried: true,
+        required: true,
         default: 'actionhero',
         note: 'the redis prefix for searching keys'
       }
     }
   }
 
-  async run ({params}) => {
+  async run ({params}) {
     let keys = await api.redis.clients.client.keys(params.prefix)
     api.log('Found ' + keys.length + 'keys:')
     keys.forEach((k) => { api.log(k) })
