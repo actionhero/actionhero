@@ -280,36 +280,6 @@ module.exports = class WebServer extends ActionHero.Server {
       }
     }
 
-    let remoteIP = req.connection.remoteAddress
-    let remotePort = req.connection.remotePort
-
-    // helpers for unix socket bindings with no forward
-    if (!remoteIP && !remotePort) {
-      remoteIP = '0.0.0.0'
-      remotePort = '0'
-    }
-
-    if (req.headers['x-forwarded-for']) {
-      let parts
-      let forwardedIp = req.headers['x-forwarded-for'].split(',')[0]
-      if (forwardedIp.indexOf('.') >= 0 || (forwardedIp.indexOf('.') < 0 && forwardedIp.indexOf(':') < 0)) {
-        // IPv4
-        forwardedIp = forwardedIp.replace('::ffff:', '') // remove any IPv6 information, ie: '::ffff:127.0.0.1'
-        parts = forwardedIp.split(':')
-        if (parts[0]) { remoteIP = parts[0] }
-        if (parts[1]) { remotePort = parts[1] }
-      } else {
-        // IPv6
-        parts = api.utils.parseIPv6URI(forwardedIp)
-        if (parts.host) { remoteIP = parts.host }
-        if (parts.port) { remotePort = parts.port }
-      }
-
-      if (req.headers['x-forwarded-port']) {
-        remotePort = req.headers['x-forwarded-port']
-      }
-    }
-
     if (this.config.allowedRequestHosts && this.config.allowedRequestHosts.length > 0) {
       let guess = 'http://'
       if (this.config.secure) { guess = 'https://' }
@@ -321,6 +291,8 @@ module.exports = class WebServer extends ActionHero.Server {
         return res.end(`You are being redirected to ${newHost + req.url}\r\n`)
       }
     }
+
+    let { ip, port } = api.utils.parseHeadersForClientAddress(req.headers)
 
     this.buildConnection({
       rawConnection: {
@@ -335,8 +307,8 @@ module.exports = class WebServer extends ActionHero.Server {
       },
       id: fingerprint + '-' + uuid.v4(),
       fingerprint: fingerprint,
-      remoteAddress: remoteIP,
-      remotePort: remotePort
+      remoteAddress: ip || req.connection.remoteAddress || '0.0.0.0',
+      remotePort: port || req.connection.remotePort || '0'
     })
   }
 
@@ -381,12 +353,12 @@ module.exports = class WebServer extends ActionHero.Server {
     }
 
     if (
-        !data.response.error &&
+      !data.response.error &&
         data.action &&
         data.params.apiVersion &&
         api.actions.actions[data.params.action][data.params.apiVersion].matchExtensionMimeType === true &&
         data.connection.extension
-      ) {
+    ) {
       data.connection.rawConnection.responseHeaders.push(['Content-Type', Mime.getType(data.connection.extension)])
     }
 
@@ -490,7 +462,7 @@ module.exports = class WebServer extends ActionHero.Server {
       this.fillParamsFromWebRequest(connection, qs.parse(search, this.config.queryParseOptions))
       connection.rawConnection.params.query = connection.rawConnection.parsedURL.query
       if (
-          connection.rawConnection.method !== 'GET' &&
+        connection.rawConnection.method !== 'GET' &&
           connection.rawConnection.method !== 'HEAD' &&
           (
             connection.rawConnection.req.headers['content-type'] ||

@@ -112,6 +112,26 @@ describe('Utils', () => {
     })
   })
 
+  describe('#parseHeadersForClientAddress', () => {
+    it('only x-real-ip, port is null', () => {
+      let headers = {
+        'x-real-ip': '10.11.12.13'
+      }
+      let { ip, port } = api.utils.parseHeadersForClientAddress(headers)
+      expect(ip).to.equal('10.11.12.13')
+      expect(port).to.equal(null)
+    })
+    it('load balancer, x-forwarded-for format', () => {
+      let headers = {
+        'x-forwarded-for': '35.36.37.38',
+        'x-forwarded-port': '80'
+      }
+      let { ip, port } = api.utils.parseHeadersForClientAddress(headers)
+      expect(ip).to.equal('35.36.37.38')
+      expect(port).to.equal('80')
+    })
+  })
+
   describe('#parseIPv6URI', () => {
     it('address and port', () => {
       let uri = '[2604:4480::5]:8080'
@@ -142,6 +162,20 @@ describe('Utils', () => {
       } catch (e) {
         expect(e.message).to.equal('failed to parse address')
       }
+    })
+
+    it('should parse locally scoped ipv6 URIs without port', () => {
+      let uri = 'fe80::1ff:fe23:4567:890a%eth2'
+      let parts = api.utils.parseIPv6URI(uri)
+      expect(parts.host).to.equal('fe80::1ff:fe23:4567:890a%eth2')
+      expect(parts.port).to.equal(80)
+    })
+
+    it('should parse locally scoped ipv6 URIs with port', () => {
+      let uri = '[fe80::1ff:fe23:4567:890a%eth2]:8080'
+      let parts = api.utils.parseIPv6URI(uri)
+      expect(parts.host).to.equal('fe80::1ff:fe23:4567:890a%eth2')
+      expect(parts.port).to.equal(8080)
     })
   })
 

@@ -166,7 +166,7 @@ module.exports = class MyServer extends Server {
     [
       'start',
       'stop',
-      'sendFile',    // connection, error, fileStream, mime, length, lastModified
+      'sendFile', // connection, error, fileStream, mime, length, lastModified
       'sendMessage', // connection, message
       'goodbye'
     ].forEach((method) => {

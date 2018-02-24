@@ -238,6 +238,41 @@ let responses = await api.utils.asyncWaterfall(jobs)
     }
 
     /**
+     * Return ip and port information if defined in the header
+     *
+     * @param  {Object} headers key-value header parameters
+     * @return {Object} A new Object, contains ip and port
+     */
+    api.utils.parseHeadersForClientAddress = (headers) => {
+      let ip = null
+      let port = null
+
+      if (headers['x-forwarded-for']) {
+        let parts
+        let forwardedIp = headers['x-forwarded-for'].split(',')[0]
+        if (forwardedIp.indexOf('.') >= 0 || (forwardedIp.indexOf('.') < 0 && forwardedIp.indexOf(':') < 0)) {
+          // IPv4
+          forwardedIp = forwardedIp.replace('::ffff:', '') // remove any IPv6 information, ie: '::ffff:127.0.0.1'
+          parts = forwardedIp.split(':')
+          if (parts[0]) { ip = parts[0] }
+          if (parts[1]) { port = parts[1] }
+        } else {
+          // IPv6
+          parts = api.utils.parseIPv6URI(forwardedIp)
+          if (parts.host) { ip = parts.host }
+          if (parts.port) { port = parts.port }
+        }
+      }
+      if (headers['x-forwarded-port']) {
+        port = headers['x-forwarded-port']
+      }
+      if (headers['x-real-ip']) { // https://distinctplace.com/2014/04/23/story-behind-x-forwarded-for-and-x-real-ip-headers/
+        ip = headers['x-real-ip']
+      }
+      return { ip, port }
+    }
+
+    /**
      * Transform the cookie headers of a node HTTP `req` Object into a hash.
      *
      * @param  {Object} req A node.js `req` Object
@@ -264,7 +299,7 @@ let responses = await api.utils.asyncWaterfall(jobs)
     api.utils.parseIPv6URI = (addr) => {
       let host = '::1'
       let port = '80'
-      let regexp = new RegExp(/\[([0-9a-f:]+)]:([0-9]{1,5})/)
+      let regexp = new RegExp(/\[([0-9a-f:]+(?:%.+)?)]:([0-9]{1,5})/)
       // if we have brackets parse them and find a port
       if (addr.indexOf('[') > -1 && addr.indexOf(']') > -1) {
         let res = regexp.exec(addr)
