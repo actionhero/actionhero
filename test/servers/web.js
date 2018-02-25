@@ -403,50 +403,50 @@ describe('Server: Web', () => {
       expect(body.body.key).to.equal('value')
     })
 
-    // describe('tailoredMimeTypes and handleTailoredMime', () => {
-    //   let origHandleTailoredMime
-    //   before(() => {
-    //     origHandleTailoredMime = api.config.servers.web.handleTailoredMime
-    //   })
-    //   after(() => {
-    //     api.config.servers.web.tailoredMimeTypes = []
-    //     api.config.servers.web.handleTailoredMime = origHandleTailoredMime
-    //   })
-    //   it('formidable will not really process non-JSON requests when defaulting to JSON', async () => {
-    //     let requestBody = '<elem>this is like xml</elem>'
-    //     let body = await request.post(url + '/api/paramTestAction', {'body': requestBody}).then(toJson)
-    //     expect(body.body).to.not.exist()
-    //     expect(body.rawBody).to.not.exist()
-    //   })
-    //   it('.body will be empty if the content-type cannot be handled by formidable', async () => {
-    //     let requestBody = '<texty>this is like xml</texty>'
-    //     let body = await request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'text/xml'}}).then(toJson)
-    //     expect(body.body).to.deep.equal({})
-    //     expect(body.rawBody).to.equal('')
-    //   })
-    //
-    //   it('.body and .rawBody can be filled by using tailoredMimeTypes', async () => {
-    //     api.config.servers.web.tailoredMimeTypes = ['text/xml']
-    //     api.config.servers.web.handleTailoredMime = async function (connection) {
-    //       let rawBody = await new Promise((resolve, reject) => {
-    //         let fullBody = Buffer.alloc(0)
-    //         connection.rawConnection.req
-    //         // .on('error', (err) => { reject(err) })
-    //         // .on('aborted', () => { reject(new Error('Request aborted')) })
-    //         .on('data', (chunk) => { fullBody = Buffer.concat([fullBody, chunk]) })
-    //         .on('end', () => { resolve(fullBody) })
-    //       })
-    //       // made a custom to not change the paramTestAction and config.saveRawBody interaction
-    //       connection.rawConnection.params.customRawBody = rawBody.toString()
-    //       // applied raw body into a JSON object. `connection.params` would be more AH Action appropiate
-    //       connection.rawConnection.params.body = {xml: rawBody.toString()}
-    //     }
-    //     let xml = '<pure>this is like xml</pure>'
-    //     let body = await request.post(url + '/api/paramTestAction', {'body': xml, 'headers': {'Content-type': 'text/xml'}}).then(toJson)
-    //     expect(body.body.xml).to.equal(xml)
-    //     expect(body.customRawBody).to.equal(xml)
-    //   })
-    // })
+    describe('tailoredMimeTypes and handleTailoredMime', () => {
+      let origHandleTailoredMime
+      before(() => {
+        origHandleTailoredMime = api.config.servers.web.handleTailoredMime
+      })
+      after(() => {
+        api.config.servers.web.tailoredMimeTypes = []
+        api.config.servers.web.handleTailoredMime = origHandleTailoredMime
+      })
+      it('formidable will not really process non-JSON requests when defaulting to JSON', async () => {
+        let requestBody = '<elem>this is like xml</elem>'
+        let body = await request.post(url + '/api/paramTestAction', {'body': requestBody}).then(toJson)
+        expect(body.body).to.not.exist()
+        expect(body.rawBody).to.not.exist()
+      })
+      it('.body will be empty if the content-type cannot be handled by formidable', async () => {
+        let requestBody = '<texty>this is like xml</texty>'
+        let body = await request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'text/xml'}}).then(toJson)
+        expect(body.body).to.deep.equal({})
+        expect(body.rawBody).to.equal('')
+      })
+
+      it('.body and .rawBody can be filled by using tailoredMimeTypes', async () => {
+        api.config.servers.web.tailoredMimeTypes = ['text/xml']
+        api.config.servers.web.handleTailoredMime = async function (connection) {
+          let rawBody = await new Promise((resolve, reject) => {
+            let fullBody = Buffer.alloc(0)
+            connection.rawConnection.req
+            // .on('error', (err) => { reject(err) })
+            // .on('aborted', () => { reject(new Error('Request aborted')) })
+            .on('data', (chunk) => { fullBody = Buffer.concat([fullBody, chunk]) })
+            .on('end', () => { resolve(fullBody) })
+          })
+          // made a custom to not change the paramTestAction and config.saveRawBody interaction
+          connection.rawConnection.params.customRawBody = rawBody.toString()
+          // applied raw body into a JSON object. `connection.params` would be more AH Action appropiate
+          connection.rawConnection.params.body = {xml: rawBody.toString()}
+        }
+        let xml = '<pure>this is like xml</pure>'
+        let body = await request.post(url + '/api/paramTestAction', {'body': xml, 'headers': {'Content-type': 'text/xml'}}).then(toJson)
+        expect(body.body.xml).to.equal(xml)
+        expect(body.customRawBody).to.equal(xml)
+      })
+    })
 
     describe('connection.rawConnection.rawBody', () => {
       let orig
