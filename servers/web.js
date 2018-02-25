@@ -475,7 +475,7 @@ module.exports = class WebServer extends ActionHero.Server {
         }
         // Check for custom handling of mime type
         let mimeType = connection.rawConnection.req.headers['content-type'] || connection.rawConnection.req.headers['Content-Type']
-        if (this.config.tailoredMimeTypes.indexOf(mimeType) > -1) {
+        if (this.config.tailoredMimeTypes.includes(mimeType)) {
           await this.config.handleTailoredMime(connection)
         } else {
           // process request using formidable
