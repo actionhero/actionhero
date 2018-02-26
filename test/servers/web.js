@@ -433,8 +433,8 @@ describe('Server: Web', () => {
             connection.rawConnection.req
             // .on('error', (err) => { reject(err) })
             // .on('aborted', () => { reject(new Error('Request aborted')) })
-            .on('data', (chunk) => { fullBody = Buffer.concat([fullBody, chunk]) })
-            .on('end', () => { resolve(fullBody) })
+              .on('data', (chunk) => { fullBody = Buffer.concat([fullBody, chunk]) })
+              .on('end', () => { resolve(fullBody) })
           })
           // made a custom to not change the paramTestAction and config.saveRawBody interaction
           connection.rawConnection.params.customRawBody = rawBody.toString()
