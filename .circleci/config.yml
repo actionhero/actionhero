@@ -66,7 +66,9 @@ jobs:
     docker:
       - image: circleci/node:9
     steps:
-      - run:
+      - checkout
+      - run: sudo npm install -g npm@latest
+      - run: npm-install
           name: deploy-docs
           command: ./bin/deploy-docs
 
