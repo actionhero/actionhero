@@ -57,13 +57,13 @@ jobs:
       - image: circleci/node:8
       - image: redis:4
     <<: *shared-test-steps
-    <<: *ignored-branches
+    # <<: *ignored-branches
   test-node-v9:
     docker:
       - image: circleci/node:9
       - image: redis:4
     <<: *shared-test-steps
-    <<: *ignored-branches
+    # <<: *ignored-branches
   deploy-docs-website:
     docker:
       - image: circleci/node:9
