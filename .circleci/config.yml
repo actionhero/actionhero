@@ -2,6 +2,11 @@ version: 2
 
 # Define common steps all parts of the test workflow use
 refrences:
+  ignored-branches: &ignored-branches
+     branches:
+      ignore:
+        - gh-pages
+
   shared-test-steps: &shared-test-steps
     steps:
       - checkout
@@ -52,11 +57,13 @@ jobs:
       - image: circleci/node:8
       - image: redis:4
     <<: *shared-test-steps
+    <<: *ignored-branches
   test-node-v9:
     docker:
       - image: circleci/node:9
       - image: redis:4
     <<: *shared-test-steps
+    <<: *ignored-branches
 
 # Run all the tests is parallel
 workflows:
