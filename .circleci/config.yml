@@ -6,7 +6,7 @@ refrences:
     - checkout
     - run:
         name: update-npm
-        command: 'sudo npm install -g npm@latest'
+        command: sudo npm install -g npm@latest
     - restore_cache:
         key: dependency-cache-{{ checksum "package.json" }}
     - run:
@@ -50,12 +50,14 @@ jobs:
     docker:
       - image: circleci/node:8
       - image: redis:4
-    steps: <<: *test-steps
+    steps:
+      <<: *test-steps
   test-node-v9:
     docker:
       - image: circleci/node:9
       - image: redis:4
-    steps: <<: *test-steps
+    steps:
+      <<: *test-steps
 
 # Run all the tests is parallel
 workflows:
