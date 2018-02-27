@@ -2,47 +2,48 @@ version: 2
 
 # Define common steps all parts of the test workflow use
 refrences:
-  steps: &test-steps
-    - checkout
-    - run:
-        name: update-npm
-        command: sudo npm install -g npm@latest
-    - restore_cache:
-        key: dependency-cache-{{ checksum "package.json" }}
-    - run:
-        name: npm-install
-        command: npm install
-    - save_cache:
-        key: dependency-cache-{{ checksum "package.json" }}
-        paths:
-          - ./node_modules
-    - run:
-        name: rebuild packages for this node version
-        command: npm rebuild
-    - run:
-        name: display-node-version
-        command: node --version
-    - run:
-        name: display-npm-version
-        command: npm --version
-    - run:
-        name: test-reporter-setup
-        command: mkdir ./junit && npm install mocha-junit-reporter
-    - run:
-        name: linter
-        command: ./node_modules/.bin/standard
-    - run:
-        name: test
-        command: ./node_modules/.bin/mocha test --reporter mocha-junit-reporter
-        environment:
-          MOCHA_FILE: ./junit/mocha.xml
-          NODE_ENV: test
-          maxMemoryAlloted: 500
-        when: always
-    - store_test_results:
-        path: ./junit
-    - store_artifacts:
-        path: ./junit
+  shared-test-steps: &shared-test-steps
+    steps:
+      - checkout
+      - run:
+          name: update-npm
+          command: sudo npm install -g npm@latest
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run:
+          name: npm-install
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
+      - run:
+          name: rebuild packages for this node version
+          command: npm rebuild
+      - run:
+          name: display-node-version
+          command: node --version
+      - run:
+          name: display-npm-version
+          command: npm --version
+      - run:
+          name: test-reporter-setup
+          command: mkdir ./junit && npm install mocha-junit-reporter
+      - run:
+          name: linter
+          command: ./node_modules/.bin/standard
+      - run:
+          name: test
+          command: ./node_modules/.bin/mocha test --reporter mocha-junit-reporter
+          environment:
+            MOCHA_FILE: ./junit/mocha.xml
+            NODE_ENV: test
+            maxMemoryAlloted: 500
+          when: always
+      - store_test_results:
+          path: ./junit
+      - store_artifacts:
+          path: ./junit
 
 # Test the common workflow on multiple versions of node
 jobs:
@@ -50,12 +51,14 @@ jobs:
     docker:
       - image: circleci/node:8
       - image: redis:4
-    <<: *test-steps
+    steps:
+      <<: *test-steps
   test-node-v9:
     docker:
       - image: circleci/node:9
       - image: redis:4
-    <<: *test-steps
+    steps:
+      <<: *test-steps
 
 # Run all the tests is parallel
 workflows:
