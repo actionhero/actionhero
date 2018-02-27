@@ -1,0 +1,117 @@
+version: 2
+
+# Define common steps all parts of the test workflow use
+refrences:
+  ignored-branches: &ignored-branches
+     branches:
+      ignore:
+        - gh-pages
+
+  cache-options: &cache-options
+    key: package-cache-{{ checksum "package.json" }}
+
+  shared-test-steps: &shared-test-steps
+    steps:
+      - checkout
+      - restore_cache:
+          <<: *cache-options
+      - run:
+          name: rebuild packages for this node version
+          command: npm rebuild
+      - run:
+          name: display-node-version
+          command: node --version
+      - run:
+          name: display-npm-version
+          command: npm --version
+      - run:
+          name: test-reporter-setup
+          command: mkdir ./junit
+      - run:
+          name: linter
+          command: ./node_modules/.bin/standard
+      - run:
+          name: test
+          command: ./node_modules/.bin/mocha test --reporter mocha-junit-reporter
+          environment:
+            MOCHA_FILE: ./junit/mocha.xml
+            NODE_ENV: test
+            maxMemoryAlloted: 500
+          when: always
+      - store_test_results:
+          path: ./junit
+      - store_artifacts:
+          path: ./junit
+
+# Test the common workflow on multiple versions of node
+jobs:
+  build:
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - restore_cache:
+          <<: *cache-options
+      - run:
+          name: npm-install
+          command: npm install
+      - run:
+          name: test-reporter-setup
+          command: npm install mocha-junit-reporter --no-save
+      - save_cache:
+          <<: *cache-options
+          paths:
+            - ./node_modules
+
+  test-node-v8:
+    docker:
+      - image: circleci/node:8
+      - image: redis:4
+    <<: *shared-test-steps
+
+  test-node-v9:
+    docker:
+      - image: circleci/node:9
+      - image: redis:4
+    <<: *shared-test-steps
+
+  deploy-docs-website:
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - restore_cache:
+          <<: *cache-options
+      - run:
+          name: deploy-docs
+          command: ./bin/deploy-docs
+
+# Run all the tests is parallel
+workflows:
+  version: 2
+  test-all-node-versions:
+    jobs:
+      - build
+          filters:
+            <<: *ignored-branches
+
+      - test-node-v8:
+          requires:
+            - build
+          filters:
+            <<: *ignored-branches
+
+      - test-node-v9:
+          filters:
+            <<: *ignored-branches
+          requires:
+            - build
+
+      - deploy-docs-website:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - test-node-v8
+            - test-node-v9

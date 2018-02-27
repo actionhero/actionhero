@@ -42,15 +42,15 @@ mkdir docs
 npm run docs
 cp -a docs/. gh-pages-branch/
 touch gh-pages-branch/.nojekyll
-cp circle.yml gh-pages-branch/circle.yml
+mkdir gh-pages-branch/.circleci && cp .circleci/config.yml gh-pages-branch/.circleci/config.yml
 cp public/favicon.ico gh-pages-branch/favicon.ico
 echo 'docs.actionherojs.com' >> gh-pages-branch/CNAME
 
 ## Build other versions
-VERSION_V17=$(git tag --sort=committerdate | grep v17 | tail -n1)
+VERSION_V17=$(git tag --sort=refname | grep v17 | tail -n1)
 build_branch "v17" $VERSION_V17
 
-VERSION_V18=$(git tag --sort=committerdate | grep v18 | tail -n1)
+VERSION_V18=$(git tag --sort=refname | grep v18 | tail -n1)
 build_branch $VERSION_V18 $VERSION_V18
 
 ## Build a version referance file for the site
