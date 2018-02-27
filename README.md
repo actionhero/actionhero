@@ -1,6 +1,6 @@
 # ActionHero
 
-*The reusable, scalable, and quick node.js API server for stateless and stateful applications*
+*The reusable, scalable, and quick node.js API server for stateless and stateful applications* 
 
 <div align="center">
   <img src="https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png" alt="ActionHero Logo" />
