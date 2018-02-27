@@ -57,19 +57,14 @@ jobs:
       - image: circleci/node:8
       - image: redis:4
     <<: *shared-test-steps
-    # <<: *ignored-branches
   test-node-v9:
     docker:
       - image: circleci/node:9
       - image: redis:4
     <<: *shared-test-steps
-    # <<: *ignored-branches
   deploy-docs-website:
     docker:
       - image: circleci/node:9
-    branches:
-      only:
-        - master
     steps:
       - run:
           name: deploy-docs
@@ -80,9 +75,17 @@ workflows:
   version: 2
   test-all-node-versions:
     jobs:
-      - test-node-v8
-      - test-node-v9
+      - test-node-v8:
+          filters:
+            <<: *ignored-branches
+      - test-node-v9:
+          filters:
+            <<: *ignored-branches
       - deploy-docs-website:
+          filters:
+            branches:
+              only:
+                - master
           requires:
             - test-node-v8
             - test-node-v9
