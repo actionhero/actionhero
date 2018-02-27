@@ -64,11 +64,25 @@ jobs:
       - image: redis:4
     <<: *shared-test-steps
     <<: *ignored-branches
+  deploy-docs-website:
+    docker:
+      - image: circleci/node:9
+    branches:
+      only:
+        - master
+    steps:
+      - run:
+          name: deploy-docs
+          command: ./bin/deploy-docs
 
 # Run all the tests is parallel
 workflows:
   version: 2
-  build_and_test:
+  test-all-node-versions:
     jobs:
       - test-node-v8
       - test-node-v9
+      - deploy-docs-website:
+          requires:
+            - test-node-v8
+            - test-node-v9
