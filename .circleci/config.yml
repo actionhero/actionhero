@@ -26,7 +26,7 @@ jobs:
           command: npm --version
       - run:
           name: test-reporter-setup
-          command: mkdir ./junit && npm install mocha-junit-reporter
+          command: mkdir ./junit && npm install mocha-junit-reporter 
       - run:
           name: linter
           command: ./node_modules/.bin/standard
@@ -39,6 +39,6 @@ jobs:
             maxMemoryAlloted: 500
           when: always
       - store_test_results:
-          path: ~/junit
+          path: ./junit
       - store_artifacts:
-          path: ~/junit
+          path: ./junit
