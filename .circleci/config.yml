@@ -67,7 +67,12 @@ jobs:
       - image: circleci/node:9
     steps:
       - checkout
-      - run: sudo npm install -g npm@latest
+      - run:
+          name: update-npm
+          command: sudo npm install -g npm@latest
+      - run:
+          name: npm-install
+          command: npm install
       - run: npm-install
           name: deploy-docs
           command: ./bin/deploy-docs
