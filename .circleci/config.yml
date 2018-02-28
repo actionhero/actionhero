@@ -91,7 +91,7 @@ workflows:
   version: 2
   test-all-node-versions:
     jobs:
-      - build
+      - build:
           filters:
             <<: *ignored-branches
 
