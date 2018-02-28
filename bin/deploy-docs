@@ -42,7 +42,6 @@ mkdir docs
 npm run docs
 cp -a docs/. gh-pages-branch/
 touch gh-pages-branch/.nojekyll
-cp circle.yml gh-pages-branch/circle.yml
 cp public/favicon.ico gh-pages-branch/favicon.ico
 echo 'docs.actionherojs.com' >> gh-pages-branch/CNAME
 
