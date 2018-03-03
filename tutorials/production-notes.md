@@ -273,33 +273,40 @@ Note that it is not necessary to run the Sentinel nodes on separate servers. The
 
 To run this configuration, configure ioredis with a list of the Sentinel nodes and the name of the cluster. The driver will automatically connect to an appropriate Sentinel in round-robin fashion, reconnecting to another node if one is down, or fails.
 
-An example of a `redis.js` config file for sentinels would be:
+Assuming your sentinels were monitoring "mymaster" via `sentinel monitor mymaster 127.0.0.1 6379 2`, an example of a `redis.js` config file for sentinels would be:
 
 ```js
-exports.production = {
-  redis: function(api){
+let db = 0
+let sentinels = [{ host: '127.0.0.1', port: 26379 }]
+let name = 'mymaster'
+
+exports['default'] = {
+  redis: (api) => {
     return {
-      channel: 'actionhero-myApp',
-      rpcTimeout: 5000,
+      enabled: true,
 
-      pkg: 'ioredis',
-      port: null,
-      host: null,
-      password: 'redis-password',
-      database: 0,
-
-      options: {
-        name: 'myCluster',
-        password: 'redis-password',
-        db: 0,
-        sentinels: [
-          { host: '1.2.3.4', port: 26379 },
-        ]
+      '_toExpand': false,
+      client: {
+        konstructor: require('ioredis'),
+        args: [{ db, sentinels, name }],
+        buildNew: true
+      },
+      subscriber: {
+        konstructor: require('ioredis'),
+        args: [{ db, sentinels, name }],
+        buildNew: true
+      },
+      tasks: {
+        konstructor: require('ioredis'),
+        args: [{ db, sentinels, name }],
+        buildNew: true
       }
     }
   }
 }
 ```
+
+Additional options can be found here: [github.com/luin/ioredis#sentinel](https://github.com/luin/ioredis#sentinel)
 
 ### Cluster Mode
 
