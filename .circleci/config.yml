@@ -79,6 +79,9 @@ jobs:
     docker:
       - image: circleci/node:8
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "26:d0:d7:75:4d:2c:38:21:87:58:55:b2:9a:9c:04:bc"
       - checkout
       - restore_cache:
           <<: *cache-options
