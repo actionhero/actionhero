@@ -359,7 +359,8 @@ module.exports = class WebServer extends ActionHero.Server {
         api.actions.actions[data.params.action][data.params.apiVersion].matchExtensionMimeType === true &&
         data.connection.extension
     ) {
-      data.connection.rawConnection.responseHeaders.push(['Content-Type', Mime.getType(data.connection.extension)])
+      let mime = Mime.getType(data.connection.extension)
+      if (mime) { data.connection.rawConnection.responseHeaders.push(['Content-Type', mime]) }
     }
 
     if (data.response.error) {
