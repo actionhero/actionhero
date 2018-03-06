@@ -1,5 +1,5 @@
 'use strict'
-const {Action} = require('./../index.js')
+const { Action } = require('./../index.js')
 
 module.exports = class RandomNumber extends Action {
   constructor () {
@@ -11,6 +11,6 @@ module.exports = class RandomNumber extends Action {
 
   async run ({connection, response}) {
     response.randomNumber = Math.random()
-    response.stringRandomNumber = connection.localize(['Your random number is {{number}}', {number: Math.random()}])
+    response.stringRandomNumber = connection.localize(['Your random number is {{randomNumber}}', response])
   }
 }
