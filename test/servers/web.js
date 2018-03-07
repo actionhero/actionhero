@@ -950,6 +950,14 @@ describe('Server: Web', () => {
       }
     })
 
+    it('returns application/json when the mime type cannot be determined for an action', async () => {
+      let response = await request.get(url + '/api/mimeTestAction/thing.bogus', {resolveWithFullResponse: true})
+      expect(response.headers['content-type']).to.match(/json/)
+      let body = JSON.parse(response.body)
+      expect(body.matchedRoute.path).to.equal('/mimeTestAction/:key')
+      expect(body.matchedRoute.action).to.equal('mimeTestAction')
+    })
+
     it('route actions have the matched route availalbe to the action', async () => {
       let body = await request.get(url + '/api/mimeTestAction/thing.json').then(toJson)
       expect(body.matchedRoute.path).to.equal('/mimeTestAction/:key')

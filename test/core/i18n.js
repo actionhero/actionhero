@@ -21,7 +21,7 @@ const readLocaleFile = (locale) => {
 }
 
 const spanish = {
-  'Your random number is {{number}}': 'Su número aleatorio es {{number}}',
+  'Your random number is {{randomNumber}}': 'Su número aleatorio es {{randomNumber}}',
   actionhero: {
     errors: {
       missingParams: '{{param}} es un parámetro requerido para esta acción',
@@ -62,7 +62,7 @@ describe('Core: i18n', () => {
     let content = readLocaleFile('test-env-en');
 
     [
-      'Your random number is {{number}}'
+      'Your random number is {{randomNumber}}'
     ].forEach((s) => {
       expect(content[s]).to.equal(s)
     })
