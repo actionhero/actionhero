@@ -46,7 +46,7 @@ module.exports = class ActionProcessor {
     this.actionStatus = String(status)
 
     if (status instanceof Error) {
-      error = await api.config.errors.genericError(this, status)
+      error = (typeof api.config.errors.genericError === 'function' ? await api.config.errors.genericError(this, status) : status)
     } else if (status === 'server_shutting_down') {
       error = await api.config.errors.serverShuttingDown(this)
     } else if (status === 'too_many_requests') {
