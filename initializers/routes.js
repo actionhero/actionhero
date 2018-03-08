@@ -125,13 +125,17 @@ module.exports = class Routes extends ActionHero.Initializer {
      */
     api.routes.registerRoute = (method, path, action, apiVersion, matchTrailingPathParts, dir) => {
       if (!matchTrailingPathParts) { matchTrailingPathParts = false }
-      api.routes.routes[method].push({
-        path: path,
-        matchTrailingPathParts: matchTrailingPathParts,
-        action: action,
-        dir: dir,
-        apiVersion: apiVersion
-      })
+      let verbs = method === 'all' ? api.routes.verbs : [method]
+      for (let vi in verbs) {
+        let verb = verbs[vi]
+        api.routes.routes[verb].push({
+          path: path,
+          matchTrailingPathParts: matchTrailingPathParts,
+          action: action,
+          dir: dir,
+          apiVersion: apiVersion
+        })
+      }
     }
 
     // load in the routes file
