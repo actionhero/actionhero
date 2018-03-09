@@ -109,7 +109,7 @@ module.exports = class Generate extends ActionHero.CLI {
       '/README.md': 'readmeMd',
       '/test/example.js': 'exampleTest',
       '/locales/en.json': 'enLocale',
-      '/.gitignore':'gitignore'
+      '/.gitignore': 'gitignore'
     }
 
     for (let file in newFileMap) {
