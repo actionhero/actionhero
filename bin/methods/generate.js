@@ -38,7 +38,8 @@ module.exports = class Generate extends ActionHero.CLI {
       publicLogo: '/public/logo/actionhero.png',
       publicCss: '/public/css/cosmo.css',
       exampleTest: '/test/template.js.example',
-      enLocale: '/locales/en.json'
+      enLocale: '/locales/en.json',
+      gitignore: '/.gitignore'
     }
 
     for (let name in oldFileMap) {
@@ -107,7 +108,8 @@ module.exports = class Generate extends ActionHero.CLI {
       '/public/logo/actionhero.png': 'publicLogo',
       '/README.md': 'readmeMd',
       '/test/example.js': 'exampleTest',
-      '/locales/en.json': 'enLocale'
+      '/locales/en.json': 'enLocale',
+      '/.gitignore': 'gitignore'
     }
 
     for (let file in newFileMap) {

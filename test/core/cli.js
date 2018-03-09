@@ -127,7 +127,8 @@ describe('Core: CLI', () => {
         'locales/en.json',
         'tasks',
         'test',
-        'test/example.js'
+        'test/example.js',
+        '.gitignore'
       ].forEach((f) => {
         expect(fs.existsSync(testDir + '/' + f)).to.equal(true)
       })
