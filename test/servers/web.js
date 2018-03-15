@@ -423,6 +423,24 @@ describe('Server: Web', () => {
         expect(body.body.key).to.equal('value')
         expect(body.rawBody).to.equal('')
       })
+
+      describe('invalid/improper mime types', () => {
+        before(() => { api.config.servers.web.saveRawBody = true })
+
+        it('.body will be empty if the content-type cannot be handled by formidable and not crash', async () => {
+          let requestBody = '<texty>this is like xml</texty>'
+          let body = await request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'text/xml'}}).then(toJson)
+          expect(body.body).to.deep.equal({})
+          expect(body.rawBody).to.equal(requestBody)
+        })
+
+        it('will set the body properly if mime type is wrong', async () => {
+          let requestBody = '<texty>this is like xml</texty>'
+          let body = await request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}).then(toJson)
+          expect(body.body).to.deep.equal({})
+          expect(body.rawBody).to.equal(requestBody)
+        })
+      })
     })
   })
 
@@ -1157,7 +1175,7 @@ describe('Server: Web', () => {
     })
   })
 
-  describe('it should work with server custom methods', () => {
+  describe('custom methods', () => {
     let originalRoutes
 
     before(() => {
