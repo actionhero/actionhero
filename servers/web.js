@@ -479,26 +479,12 @@ module.exports = class WebServer extends ActionHero.Server {
         if (this.config.saveRawBody) {
           connection.rawConnection.req.on('data', (chunk) => { rawBody = Buffer.concat([rawBody, chunk]) })
         }
-        // let rawBody = Promise.resolve(Buffer.alloc(0))
-        // if (this.config.saveRawBody) {
-        //   rawBody = new Promise((resolve, reject) => {
-        //     let fullBody = Buffer.alloc(0)
-        //     if (!connection.rawConnection || !connection.rawConnection.req) {
-        //       return resolve(fullBody)
-        //     }
-        //     connection.rawConnection.req
-        //       .on('error', (err) => { reject(err) })
-        //       .on('aborted', () => { reject(new Error('Request aborted while saveRawBody')) })
-        //       .on('data', (chunk) => { fullBody = Buffer.concat([fullBody, chunk]) })
-        //       .on('end', () => { resolve(fullBody) })
-        //   })
-        // }
 
         let {fields, files} = await new Promise((resolve) => {
           connection.rawConnection.form.parse(connection.rawConnection.req, (error, fields, files) => {
             if (error) {
-              if (error.message.indexOf('unknown content-type') > -1 && this.config.saveRawBody) {
-                this.log('Formidable failed. Request stream is not in formbidable', 'error')
+              if (this.config.saveRawBody) {
+                // this.log('Formidable failed. Request body saved to connection.rawConnection.params.rawBody')
               } else {
                 connection.error = new Error('There was an error processing this form.')
               }
