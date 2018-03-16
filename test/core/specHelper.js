@@ -11,16 +11,16 @@ const actionhero = new ActionHero.Process()
 let api
 
 describe('Core: specHelper', () => {
-  before(async () => { api = await actionhero.start() })
-  after(async () => { await actionhero.stop() })
+  beforeAll(async () => { api = await actionhero.start() })
+  afterAll(async () => { await actionhero.stop() })
 
-  it('can make a requset with just params', async () => {
+  test('can make a requset with just params', async () => {
     let {randomNumber} = await api.specHelper.runAction('randomNumber')
     expect(randomNumber).to.be.at.least(0)
     expect(randomNumber).to.be.at.most(1)
   })
 
-  it('will stack up messages recieved', async () => {
+  test('will stack up messages recieved', async () => {
     let connection = new api.specHelper.Connection()
     connection.params.thing = 'stuff'
     let {error} = await api.specHelper.runAction('x', connection)
@@ -31,7 +31,7 @@ describe('Core: specHelper', () => {
   })
 
   describe('metadata, type-saftey, and errors', () => {
-    before(() => {
+    beforeAll(() => {
       api.actions.versions.stringResponseTestAction = [1]
       api.actions.actions.stringResponseTestAction = {
         '1': {
@@ -83,7 +83,7 @@ describe('Core: specHelper', () => {
       }
     })
 
-    after(() => {
+    afterAll(() => {
       delete api.actions.actions.stringResponseTestAction
       delete api.actions.versions.stringResponseTestAction
       delete api.actions.actions.stringErrorTestAction
@@ -95,7 +95,7 @@ describe('Core: specHelper', () => {
     })
 
     describe('happy-path', () => {
-      it('if the response payload is an object, it appends metadata', async () => {
+      test('if the response payload is an object, it appends metadata', async () => {
         let response = await api.specHelper.runAction('randomNumber')
         expect(response.error).to.not.exist()
         expect(response.randomNumber).to.exist()
@@ -104,7 +104,7 @@ describe('Core: specHelper', () => {
         expect(response.requesterInformation.remoteIP).to.equal('testServer')
       })
 
-      it('if the response payload is a string, it maintains type', async () => {
+      test('if the response payload is a string, it maintains type', async () => {
         let response = await api.specHelper.runAction('stringResponseTestAction')
         expect(response).to.equal('something response')
         expect(response.error).to.not.exist()
@@ -113,7 +113,7 @@ describe('Core: specHelper', () => {
         expect(response.requesterInformation).to.not.exist()
       })
 
-      it('if the response payload is a array, it maintains type', async () => {
+      test('if the response payload is a array, it maintains type', async () => {
         let response = await api.specHelper.runAction('arrayResponseTestAction')
         expect(response).to.deep.equal([1, 2, 3])
         expect(response.error).to.not.exist()
@@ -124,48 +124,60 @@ describe('Core: specHelper', () => {
     })
 
     describe('disabling metadata', () => {
-      before(() => { api.specHelper.returnMetadata = false })
-      after(() => { api.specHelper.returnMetadata = true })
+      beforeAll(() => { api.specHelper.returnMetadata = false })
+      afterAll(() => { api.specHelper.returnMetadata = true })
 
-      it('if the response payload is an object, it should not append metadata', async () => {
-        let response = await api.specHelper.runAction('randomNumber')
-        expect(response.error).to.not.exist()
-        expect(response.randomNumber).to.exist()
-        expect(response.messageCount).to.not.exist()
-        expect(response.serverInformation).to.not.exist()
-        expect(response.requesterInformation).to.not.exist()
-      })
+      test(
+        'if the response payload is an object, it should not append metadata',
+        async () => {
+          let response = await api.specHelper.runAction('randomNumber')
+          expect(response.error).to.not.exist()
+          expect(response.randomNumber).to.exist()
+          expect(response.messageCount).to.not.exist()
+          expect(response.serverInformation).to.not.exist()
+          expect(response.requesterInformation).to.not.exist()
+        }
+      )
     })
 
     describe('errors', () => {
-      it('if the response payload is an object and there is an error, it appends metadata', async () => {
-        let response = await api.specHelper.runAction('x')
-        expect(response.error).to.equal('Error: unknown action or invalid apiVersion')
-        expect(response.messageCount).to.equal(1)
-        expect(response.serverInformation.serverName).to.equal('actionhero')
-        expect(response.requesterInformation.remoteIP).to.equal('testServer')
-      })
+      test(
+        'if the response payload is an object and there is an error, it appends metadata',
+        async () => {
+          let response = await api.specHelper.runAction('x')
+          expect(response.error).to.equal('Error: unknown action or invalid apiVersion')
+          expect(response.messageCount).to.equal(1)
+          expect(response.serverInformation.serverName).to.equal('actionhero')
+          expect(response.requesterInformation.remoteIP).to.equal('testServer')
+        }
+      )
 
-      it('if the response payload is a string, just the error will be returned', async () => {
-        let response = await api.specHelper.runAction('stringErrorTestAction')
-        expect(response).to.equal('Error: some error')
-        expect(response.messageCount).to.not.exist()
-        expect(response.serverInformation).to.not.exist()
-        expect(response.requesterInformation).to.not.exist()
-      })
+      test(
+        'if the response payload is a string, just the error will be returned',
+        async () => {
+          let response = await api.specHelper.runAction('stringErrorTestAction')
+          expect(response).to.equal('Error: some error')
+          expect(response.messageCount).to.not.exist()
+          expect(response.serverInformation).to.not.exist()
+          expect(response.requesterInformation).to.not.exist()
+        }
+      )
 
-      it('if the response payload is a array, just the error will be returned', async () => {
-        let response = await api.specHelper.runAction('arrayErrorTestAction')
-        expect(response).to.equal('Error: some error')
-        expect(response.messageCount).to.not.exist()
-        expect(response.serverInformation).to.not.exist()
-        expect(response.requesterInformation).to.not.exist()
-      })
+      test(
+        'if the response payload is a array, just the error will be returned',
+        async () => {
+          let response = await api.specHelper.runAction('arrayErrorTestAction')
+          expect(response).to.equal('Error: some error')
+          expect(response.messageCount).to.not.exist()
+          expect(response.serverInformation).to.not.exist()
+          expect(response.requesterInformation).to.not.exist()
+        }
+      )
     })
   })
 
   describe('test responses', () => {
-    it('will not report a broken test as a broken action (sync)', async () => {
+    test('will not report a broken test as a broken action (sync)', async () => {
       let response = await api.specHelper.runAction('randomNumber')
       try {
         response.not.a.real.thing()
@@ -175,7 +187,7 @@ describe('Core: specHelper', () => {
       }
     })
 
-    it('will not report a broken test as a broken action (async)', async () => {
+    test('will not report a broken test as a broken action (async)', async () => {
       let response = await api.specHelper.runAction('sleepTest')
       try {
         response.not.a.real.thing()
@@ -187,7 +199,7 @@ describe('Core: specHelper', () => {
   })
 
   describe('files', () => {
-    it('can request file data', async () => {
+    test('can request file data', async () => {
       let data = await api.specHelper.getStaticFile('simple.html')
       expect(data.error).to.not.exist()
       expect(data.content).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
@@ -195,7 +207,7 @@ describe('Core: specHelper', () => {
       expect(data.length).to.equal(101)
     })
 
-    it('missing files', async () => {
+    test('missing files', async () => {
       let data = await api.specHelper.getStaticFile('missing.html')
       expect(data.error).to.equal('That file is not found')
       expect(data.mime).to.equal('text/html')
@@ -207,7 +219,7 @@ describe('Core: specHelper', () => {
     let connection
     let connId
 
-    it('can make a requset with a spec\'d connection', async () => {
+    test('can make a requset with a spec\'d connection', async () => {
       connection = new api.specHelper.Connection()
       connection.params = {
         key: 'someKey',
@@ -223,7 +235,7 @@ describe('Core: specHelper', () => {
       expect(connection.fingerprint).to.equal(connId)
     })
 
-    it('can make second request', async () => {
+    test('can make second request', async () => {
       let response = await api.specHelper.runAction('randomNumber', connection)
       expect(response.messageCount).to.equal(2)
       expect(connection.messages).to.have.length(3)
@@ -231,17 +243,20 @@ describe('Core: specHelper', () => {
       expect(connection.fingerprint).to.equal(connId)
     })
 
-    it('will generate new ids and fingerprints for a new connection', async () => {
-      let response = await api.specHelper.runAction('randomNumber')
-      expect(response.messageCount).to.equal(1)
-      expect(response.requesterInformation.id).not.to.equal(connId)
-      expect(response.requesterInformation.fingerprint).not.to.equal(connId)
-    })
+    test(
+      'will generate new ids and fingerprints for a new connection',
+      async () => {
+        let response = await api.specHelper.runAction('randomNumber')
+        expect(response.messageCount).to.equal(1)
+        expect(response.requesterInformation.id).not.to.equal(connId)
+        expect(response.requesterInformation.fingerprint).not.to.equal(connId)
+      }
+    )
   })
 
   describe('tasks', () => {
     let taskRan = false
-    before(() => {
+    beforeAll(() => {
       api.tasks.tasks.testTask = {
         name: 'testTask',
         description: 'task: ' + this.name,
@@ -258,12 +273,12 @@ describe('Core: specHelper', () => {
       api.tasks.jobs.testTask = api.tasks.jobWrapper('testTask')
     })
 
-    after(() => {
+    afterAll(() => {
       delete api.testOutput
       delete api.tasks.tasks.testTask
     })
 
-    it('can run tasks', async () => {
+    test('can run tasks', async () => {
       let response = await api.specHelper.runTask('testTask')
       expect(response).to.equal('OK')
       expect(taskRan).to.equal(true)

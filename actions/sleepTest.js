@@ -1,5 +1,4 @@
 'use strict'
-const {promisify} = require('util')
 const ActionHero = require('./../index.js')
 
 module.exports = class CacheTest extends ActionHero.Action {
@@ -26,7 +25,7 @@ module.exports = class CacheTest extends ActionHero.Action {
   }
 
   async sleep (time) {
-    return promisify(setTimeout)(time)
+    await new Promise((resolve) => { setTimeout(resolve, time) })
   }
 
   async run ({response, params}) {

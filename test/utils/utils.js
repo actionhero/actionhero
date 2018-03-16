@@ -14,18 +14,18 @@ let api
 const sleep = async (timeout) => { await promisify(setTimeout)(timeout) }
 
 describe('Utils', () => {
-  before(async () => { api = await actionhero.start() })
-  after(async () => { await actionhero.stop() })
+  beforeAll(async () => { api = await actionhero.start() })
+  afterAll(async () => { await actionhero.stop() })
 
   describe('utils.arrayUniqueify', () => {
-    it('works', () => {
+    test('works', () => {
       let a = [1, 2, 3, 3, 4, 4, 4, 5, 5, 5]
       expect(api.utils.arrayUniqueify(a)).to.deep.equal([1, 2, 3, 4, 5])
     })
   })
 
   describe('utils.asyncWaterfall', () => {
-    it('works with no args', async () => {
+    test('works with no args', async () => {
       let sleepyFunc = async () => {
         await sleep(100)
         return (new Date()).getTime()
@@ -40,7 +40,7 @@ describe('Utils', () => {
       expect(results[2]).to.be.above(results[1])
     })
 
-    it('works with args', async () => {
+    test('works with args', async () => {
       let sleepyFunc = async (response) => {
         await sleep(100)
         return response
@@ -62,13 +62,13 @@ describe('Utils', () => {
   })
 
   describe('utils.collapseObjectToArray', () => {
-    it('fails with numerical keys', () => {
+    test('fails with numerical keys', () => {
       let o = {0: 'a', 1: 'b'}
       let response = api.utils.collapseObjectToArray(o)
       expect(response).to.deep.equal(['a', 'b'])
     })
 
-    it('fails with non-numerical keys', () => {
+    test('fails with non-numerical keys', () => {
       let o = {a: 1}
       let response = api.utils.collapseObjectToArray(o)
       expect(response).to.equal(false)
@@ -81,21 +81,21 @@ describe('Utils', () => {
     let C = {a: 1, b: {m: 10, n: 11}}
     let D = {a: 1, b: {n: 111, o: 22}}
 
-    it('simple', () => {
+    test('simple', () => {
       let Z = api.utils.hashMerge(A, B)
       expect(Z.a).to.equal(1)
       expect(Z.b).to.equal(-2)
       expect(Z.c).to.equal(3)
     })
 
-    it('directional', () => {
+    test('directional', () => {
       let Z = api.utils.hashMerge(B, A)
       expect(Z.a).to.equal(1)
       expect(Z.b).to.equal(2)
       expect(Z.c).to.equal(3)
     })
 
-    it('nested', () => {
+    test('nested', () => {
       let Z = api.utils.hashMerge(C, D)
       expect(Z.a).to.equal(1)
       expect(Z.b.m).to.equal(10)
@@ -105,7 +105,7 @@ describe('Utils', () => {
   })
 
   describe('eventLoopDelay', () => {
-    it('works', async () => {
+    test('works', async () => {
       let eventLoopDelay = await api.utils.eventLoopDelay(10000)
       expect(eventLoopDelay).to.be.above(0)
       expect(eventLoopDelay).to.be.below(1)
@@ -113,7 +113,7 @@ describe('Utils', () => {
   })
 
   describe('#parseHeadersForClientAddress', () => {
-    it('only x-real-ip, port is null', () => {
+    test('only x-real-ip, port is null', () => {
       let headers = {
         'x-real-ip': '10.11.12.13'
       }
@@ -121,7 +121,7 @@ describe('Utils', () => {
       expect(ip).to.equal('10.11.12.13')
       expect(port).to.equal(null)
     })
-    it('load balancer, x-forwarded-for format', () => {
+    test('load balancer, x-forwarded-for format', () => {
       let headers = {
         'x-forwarded-for': '35.36.37.38',
         'x-forwarded-port': '80'
@@ -133,28 +133,28 @@ describe('Utils', () => {
   })
 
   describe('#parseIPv6URI', () => {
-    it('address and port', () => {
+    test('address and port', () => {
       let uri = '[2604:4480::5]:8080'
       let parts = api.utils.parseIPv6URI(uri)
       expect(parts.host).to.equal('2604:4480::5')
       expect(parts.port).to.equal(8080)
     })
 
-    it('address without port', () => {
+    test('address without port', () => {
       let uri = '2604:4480::5'
       let parts = api.utils.parseIPv6URI(uri)
       expect(parts.host).to.equal('2604:4480::5')
       expect(parts.port).to.equal(80)
     })
 
-    it('full uri', () => {
+    test('full uri', () => {
       let uri = 'http://[2604:4480::5]:8080/foo/bar'
       let parts = api.utils.parseIPv6URI(uri)
       expect(parts.host).to.equal('2604:4480::5')
       expect(parts.port).to.equal(8080)
     })
 
-    it('failing address', () => {
+    test('failing address', () => {
       let uri = '[2604:4480:z:5]:80'
       try {
         let parts = api.utils.parseIPv6URI(uri)
@@ -164,14 +164,14 @@ describe('Utils', () => {
       }
     })
 
-    it('should parse locally scoped ipv6 URIs without port', () => {
+    test('should parse locally scoped ipv6 URIs without port', () => {
       let uri = 'fe80::1ff:fe23:4567:890a%eth2'
       let parts = api.utils.parseIPv6URI(uri)
       expect(parts.host).to.equal('fe80::1ff:fe23:4567:890a%eth2')
       expect(parts.port).to.equal(80)
     })
 
-    it('should parse locally scoped ipv6 URIs with port', () => {
+    test('should parse locally scoped ipv6 URIs with port', () => {
       let uri = '[fe80::1ff:fe23:4567:890a%eth2]:8080'
       let parts = api.utils.parseIPv6URI(uri)
       expect(parts.host).to.equal('fe80::1ff:fe23:4567:890a%eth2')
@@ -206,7 +206,7 @@ describe('Utils', () => {
       }
     }
 
-    it('can filter top level params, no matter the type', () => {
+    test('can filter top level params, no matter the type', () => {
       let inputs = JSON.parse(JSON.stringify(testInput)) // quick deep Clone
       api.config.general.filteredParams.push('p1', 'p2', 'o2')
       let filteredParams = api.utils.filterObjectForLogging(inputs)
@@ -216,7 +216,7 @@ describe('Utils', () => {
       expect(filteredParams.o1).to.deep.equal(testInput.o1) // unchanged
     })
 
-    it('will not filter things that do not exist', () => {
+    test('will not filter things that do not exist', () => {
       // Identity
       let inputs = JSON.parse(JSON.stringify(testInput)) // quick deep Clone
       let filteredParams = api.utils.filterObjectForLogging(inputs)
@@ -227,7 +227,7 @@ describe('Utils', () => {
       expect(filteredParams2).to.deep.equal(testInput)
     })
 
-    it('can filter a single level dot notation', () => {
+    test('can filter a single level dot notation', () => {
       let inputs = JSON.parse(JSON.stringify(testInput)) // quick deep Clone
       api.config.general.filteredParams.push('p1', 'o1.o1p1', 'somethingNotExist')
       let filteredParams = api.utils.filterObjectForLogging(inputs)
@@ -240,7 +240,7 @@ describe('Utils', () => {
       expect(filteredParams.o2).to.deep.equal(testInput.o2)
     })
 
-    it('can filter two levels deep', () => {
+    test('can filter two levels deep', () => {
       let inputs = JSON.parse(JSON.stringify(testInput)) // quick deep Clone
       api.config.general.filteredParams.push('p2', 'o1.o2.o2p1', 'o1.o2.notThere')
       let filteredParams = api.utils.filterObjectForLogging(inputs)

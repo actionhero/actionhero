@@ -33,18 +33,18 @@ newFileContent += '}\n'
 const sleep = async (timeout) => { await promisify(setTimeout)(timeout) }
 
 describe('Core: Developer Mode', () => {
-  before(async () => {
+  beforeAll(async () => {
     api = await actionhero.start()
     await sleep(1001) // allow the file to get stat-ed once in the original state
   })
 
-  after(async () => {
+  afterAll(async () => {
     await actionhero.stop()
     fs.writeFileSync(originalFile, originalContent)
     await sleep(1001 * 3)
   })
 
-  it('random numbers work initially', async () => {
+  test('random numbers work initially', async () => {
     let {error, randomNumber} = await api.specHelper.runAction('randomNumber')
     expect(error).to.not.exist()
     expect(randomNumber).to.be.at.most(1)
@@ -52,11 +52,11 @@ describe('Core: Developer Mode', () => {
   })
 
   describe('with new file', () => {
-    before(() => {
+    beforeAll(() => {
       fs.writeFileSync(originalFile, newFileContent)
     })
 
-    it('I can change the file and new actions will be loaded up', async () => {
+    test('I can change the file and new actions will be loaded up', async () => {
       await sleep(3001) // file read timer is 1 second; time to notice the change + 3x time to reload API
       expect(api.actions.actions.randomNumber['1'].description).to.equal('HACK')
       let {randomNumber} = await api.specHelper.runAction('randomNumber')
@@ -65,13 +65,13 @@ describe('Core: Developer Mode', () => {
   })
 
   describe('reseting', () => {
-    it('can be placed back', async () => {
+    test('can be placed back', async () => {
       fs.writeFileSync(originalFile, originalContent)
       await sleep(5001)
       expect(api.actions.actions.randomNumber['1'].description).to.equal('I am an API method which will generate a random number')
     }).timeout(10000)
 
-    it('works as it did originally', async () => {
+    test('works as it did originally', async () => {
       let {error, randomNumber} = await api.specHelper.runAction('randomNumber')
       expect(error).to.not.exist()
       expect(randomNumber).to.be.at.most(1)

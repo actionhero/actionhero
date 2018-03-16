@@ -14,28 +14,28 @@ let originalUnknownAction
 let originalGenericError
 
 describe('Core: Errors', () => {
-  before(async () => {
+  beforeAll(async () => {
     api = await actionhero.start()
     originalUnknownAction = api.config.errors.unknownAction
   })
 
-  after(async () => {
+  afterAll(async () => {
     await actionhero.stop()
     api.config.errors.unknownAction = originalUnknownAction
   })
 
-  it('returns string errors properly', async () => {
+  test('returns string errors properly', async () => {
     let {error} = await api.specHelper.runAction('notARealAction')
     expect(error).to.equal('Error: unknown action or invalid apiVersion')
   })
 
-  it('returns Error object properly', async () => {
+  test('returns Error object properly', async () => {
     api.config.errors.unknownAction = () => { return new Error('error test') }
     let {error} = await api.specHelper.runAction('notARealAction')
     expect(error).to.equal('Error: error test')
   })
 
-  it('returns generic object properly', async () => {
+  test('returns generic object properly', async () => {
     api.config.errors.unknownAction = () => { return {code: 'error111', reason: 'busted'} }
 
     let {error} = await api.specHelper.runAction('notARealAction')
@@ -43,7 +43,7 @@ describe('Core: Errors', () => {
     expect(error.reason).to.equal('busted')
   })
 
-  it('can have async error handlers', async () => {
+  test('can have async error handlers', async () => {
     api.config.errors.unknownAction = async () => {
       return new Promise((resolve) => {
         setTimeout(() => { resolve({sleepy: true}) }, 100)
@@ -57,7 +57,7 @@ describe('Core: Errors', () => {
 
 describe('Core: Errors: Custom Error Decoration', () => {
   let errorMsg = 'worst action ever!'
-  before(async () => {
+  beforeAll(async () => {
     api = await actionhero.start()
     originalGenericError = api.config.errors.genericError
     api.actions.versions.errorAction = [1]
@@ -74,20 +74,20 @@ describe('Core: Errors: Custom Error Decoration', () => {
     }
   })
 
-  after(async () => {
+  afterAll(async () => {
     await actionhero.stop()
     delete api.actions.actions.errorAction
     delete api.actions.versions.errorAction
     api.config.errors.genericError = originalGenericError
   })
 
-  it('will return an actions error', async () => {
+  test('will return an actions error', async () => {
     let response = await api.specHelper.runAction('errorAction')
     expect(response.error).to.equal('Error: worst action ever!')
     expect(response.requestId).to.not.exist()
   })
 
-  it('can decorate an error', async () => {
+  test('can decorate an error', async () => {
     api.config.errors.genericError = async (data, error) => {
       data.response.requestId = 'id-12345'
       return error

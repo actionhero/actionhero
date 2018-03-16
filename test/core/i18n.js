@@ -35,7 +35,7 @@ const sleep = async (timeout) => { await promisify(setTimeout)(timeout) }
 fs.writeFileSync(path.join(__dirname, '/../../locales/test-env-es.json'), JSON.stringify(spanish, null, 2))
 
 describe('Core: i18n', () => {
-  before(async () => {
+  beforeAll(async () => {
     await sleep(500) // sleep to ensure normal local files are saved to disk
     api = await actionhero.start()
     originalDetermineConnectionLocale = api.i18n.determineConnectionLocale
@@ -47,62 +47,74 @@ describe('Core: i18n', () => {
     api.i18n.configure(options)
   })
 
-  after(async () => {
+  afterAll(async () => {
     fs.unlinkSync(path.join(__dirname, '/../../locales/test-env-en.json'))
     fs.unlinkSync(path.join(__dirname, '/../../locales/test-env-es.json'))
     await actionhero.stop()
     api.i18n.determineConnectionLocale = originalDetermineConnectionLocale
   })
 
-  it('should create localization files by default, and strings from actions should be included', async () => {
-    let {randomNumber} = await api.specHelper.runAction('randomNumber')
-    expect(randomNumber).to.be.at.most(1)
-    expect(randomNumber).to.be.at.least(0)
+  test(
+    'should create localization files by default, and strings from actions should be included',
+    async () => {
+      let {randomNumber} = await api.specHelper.runAction('randomNumber')
+      expect(randomNumber).to.be.at.most(1)
+      expect(randomNumber).to.be.at.least(0)
 
-    let content = readLocaleFile('test-env-en');
+      let content = readLocaleFile('test-env-en');
 
-    [
-      'Your random number is {{randomNumber}}'
-    ].forEach((s) => {
-      expect(content[s]).to.equal(s)
-    })
-  })
+      [
+        'Your random number is {{randomNumber}}'
+      ].forEach((s) => {
+        expect(content[s]).to.equal(s)
+      })
+    }
+  )
 
-  it('should respect the content of the localization files for generic messages to connections', async () => {
-    let response
+  test(
+    'should respect the content of the localization files for generic messages to connections',
+    async () => {
+      let response
 
-    api.i18n.determineConnectionLocale = () => { return 'test-env-en' }
-    response = await api.specHelper.runAction('randomNumber')
-    expect(response.stringRandomNumber).to.match(/Your random number is/)
+      api.i18n.determineConnectionLocale = () => { return 'test-env-en' }
+      response = await api.specHelper.runAction('randomNumber')
+      expect(response.stringRandomNumber).to.match(/Your random number is/)
 
-    api.i18n.determineConnectionLocale = () => { return 'test-env-es' }
-    response = await api.specHelper.runAction('randomNumber')
-    expect(response.stringRandomNumber).to.match(/Su número aleatorio es/)
-  })
+      api.i18n.determineConnectionLocale = () => { return 'test-env-es' }
+      response = await api.specHelper.runAction('randomNumber')
+      expect(response.stringRandomNumber).to.match(/Su número aleatorio es/)
+    }
+  )
 
-  it('should respect the content of the localization files for api errors to connections or use defaults', async () => {
-    let response
-    api.i18n.determineConnectionLocale = () => { return 'test-env-en' }
-    response = await api.specHelper.runAction('cacheTest')
-    expect(response.error).to.equal('Error: actionhero.errors.missingParams')
+  test(
+    'should respect the content of the localization files for api errors to connections or use defaults',
+    async () => {
+      let response
+      api.i18n.determineConnectionLocale = () => { return 'test-env-en' }
+      response = await api.specHelper.runAction('cacheTest')
+      expect(response.error).to.equal('Error: actionhero.errors.missingParams')
 
-    api.i18n.determineConnectionLocale = () => { return 'test-env-es' }
-    response = await api.specHelper.runAction('cacheTest')
-    expect(response.error).to.match(/key es un parámetro requerido para esta acción/)
-  })
+      api.i18n.determineConnectionLocale = () => { return 'test-env-es' }
+      response = await api.specHelper.runAction('cacheTest')
+      expect(response.error).to.match(/key es un parámetro requerido para esta acción/)
+    }
+  )
 
-  it('should respect the content of the localization files for http errors to connections or use defaults', async () => {
-    let response
-    api.i18n.determineConnectionLocale = () => { return 'test-env-en' }
-    response = await api.specHelper.getStaticFile('missing-file.html')
-    expect(response.error).to.equal('actionhero.errors.fileNotFound')
+  test(
+    'should respect the content of the localization files for http errors to connections or use defaults',
+    async () => {
+      let response
+      api.i18n.determineConnectionLocale = () => { return 'test-env-en' }
+      response = await api.specHelper.getStaticFile('missing-file.html')
+      expect(response.error).to.equal('actionhero.errors.fileNotFound')
 
-    api.i18n.determineConnectionLocale = () => { return 'test-env-es' }
-    response = await api.specHelper.getStaticFile('missing-file.html')
-    expect(response.error).to.match(/Ese archivo no se encuentra/)
-  })
+      api.i18n.determineConnectionLocale = () => { return 'test-env-es' }
+      response = await api.specHelper.getStaticFile('missing-file.html')
+      expect(response.error).to.match(/Ese archivo no se encuentra/)
+    }
+  )
 
-  it('determineConnectionLocale cannot be an async method', async () => {
+  test('determineConnectionLocale cannot be an async method', async () => {
     api.i18n.determineConnectionLocale = async () => {
       await sleep(1)
       return 'test-env-es'

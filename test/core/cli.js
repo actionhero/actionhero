@@ -65,7 +65,7 @@ describe('Core: CLI', () => {
   if (process.platform === 'win32') {
     console.log('*** CANNOT RUN CLI TESTS ON WINDOWS.  Sorry. ***')
   } else {
-    before(async () => {
+    beforeAll(async () => {
       if (process.env.SKIP_CLI_TEST_SETUP === 'true') { return }
 
       let sourcePackage = path.normalize(path.join(__dirname, '/../../bin/templates/package.json'))
@@ -80,12 +80,12 @@ describe('Core: CLI', () => {
       fs.writeFileSync(`${testDir}/package.json`, result)
     })
 
-    it('should have made the test dir', () => {
+    test('should have made the test dir', () => {
       expect(fs.existsSync(testDir)).to.equal(true)
       expect(fs.existsSync(testDir + '/package.json')).to.equal(true)
     })
 
-    it('can call npm install in the new project', async () => {
+    test('can call npm install in the new project', async () => {
       try {
         await doCommand(`npm install`)
       } catch (error) {
@@ -95,7 +95,7 @@ describe('Core: CLI', () => {
       }
     }).timeout(60000)
 
-    it('can generate a new project', async () => {
+    test('can generate a new project', async () => {
       await doCommand(`${binary} generate`);
 
       [
@@ -134,19 +134,19 @@ describe('Core: CLI', () => {
       })
     }).timeout(10000)
 
-    it('can call the help command', async () => {
+    test('can call the help command', async () => {
       let {stdout} = await doCommand(`${binary} help`)
       expect(stdout).to.match(/actionhero start cluster/)
       expect(stdout).to.match(/The reusable, scalable, and quick node.js API server for stateless and stateful applications/)
       expect(stdout).to.match(/actionhero generate server/)
     })
 
-    it('can call the version command', async () => {
+    test('can call the version command', async () => {
       let {stdout} = await doCommand(`${binary} version`)
       expect(stdout).to.contain(pacakgeJSON.version)
     })
 
-    it('will show a warning with bogus input', async () => {
+    test('will show a warning with bogus input', async () => {
       try {
         await doCommand(`${binary} not-a-thing`)
         throw new Error('should not get here')
@@ -158,14 +158,14 @@ describe('Core: CLI', () => {
       }
     })
 
-    it('can generate an action', async () => {
+    test('can generate an action', async () => {
       await doCommand(`${binary} generate action --name=myAction --description=my_description`)
       let data = String(fs.readFileSync(`${testDir}/actions/myAction.js`))
       expect(data).to.match(/this.name = 'myAction'/)
       expect(data).to.match(/this.description = 'my_description'/)
     })
 
-    it('can generate a task', async () => {
+    test('can generate a task', async () => {
       await doCommand(`${binary} generate task --name=myTask --description=my_description --queue=my_queue --frequency=12345`)
       let data = String(fs.readFileSync(`${testDir}/tasks/myTask.js`))
       expect(data).to.match(/this.name = 'myTask'/)
@@ -174,7 +174,7 @@ describe('Core: CLI', () => {
       expect(data).to.match(/this.frequency = 12345/)
     })
 
-    it('can generate a CLI command', async () => {
+    test('can generate a CLI command', async () => {
       await doCommand(`${binary} generate cli --name=myCommand --description=my_description --example=my_example`)
       let data = String(fs.readFileSync(`${testDir}/bin/myCommand.js`))
       expect(data).to.match(/this.name = 'myCommand'/)
@@ -182,7 +182,7 @@ describe('Core: CLI', () => {
       expect(data).to.match(/this.example = 'my_example'/)
     })
 
-    it('can generate a server', async () => {
+    test('can generate a server', async () => {
       await doCommand(`${binary} generate server --name=myServer`)
       let data = String(fs.readFileSync(`${testDir}/servers/myServer.js`))
       expect(data).to.match(/this.type = 'myServer'/)
@@ -192,7 +192,7 @@ describe('Core: CLI', () => {
       expect(data).to.match(/sendWelcomeMessage: false/)
     })
 
-    it('can generate an initializer', async () => {
+    test('can generate an initializer', async () => {
       await doCommand(`${binary} generate initializer --name=myInitializer --stopPriority=123`)
       let data = String(fs.readFileSync(`${testDir}/initializers/myInitializer.js`))
       expect(data).to.match(/this.loadPriority = 1000/)
@@ -203,36 +203,36 @@ describe('Core: CLI', () => {
       expect(data).to.match(/async stop \(\) {/)
     })
 
-    it('can call npm test in the new project and not fail', async () => {
+    test('can call npm test in the new project and not fail', async () => {
       await doCommand(`npm test`)
     }).timeout(120000)
 
     // NOTE: To run these tests, don't await! It will be fine... what could go wrong?
     describe('can run a single server', () => {
       let serverPid
-      before(async function () {
+      beforeAll(async function () {
         doCommand(`${binary} start`)
         await sleep(3000)
         serverPid = pid
       })
 
-      after(async () => {
+      afterAll(async () => {
         if (isrunning(serverPid)) { await doCommand(`kill ${serverPid}`) }
       })
 
-      it('can boot a single server', async () => {
+      test('can boot a single server', async () => {
         let response = await request(`http://localhost:${port}/api/showDocumentation`, {json: true})
         expect(response.serverInformation.serverName).to.equal('my_actionhero_project')
       })
 
-      it('can handle signals to reboot', async () => {
+      test('can handle signals to reboot', async () => {
         await doCommand(`kill -s USR2 ${serverPid}`)
         await sleep(3000)
         let response = await request(`http://localhost:${port}/api/showDocumentation`, {json: true})
         expect(response.serverInformation.serverName).to.equal('my_actionhero_project')
       })
 
-      it('can handle signals to stop', async () => {
+      test('can handle signals to stop', async () => {
         await doCommand(`kill ${serverPid}`)
         await sleep(3000)
         try {
@@ -243,22 +243,22 @@ describe('Core: CLI', () => {
         }
       })
 
-      it('will shutdown after the alloted time')
+      test('will shutdown after the alloted time')
     })
 
     describe('can run a cluster', () => {
       let clusterPid
-      before(async function () {
+      beforeAll(async function () {
         doCommand(`${binary} start cluster --workers=2`)
         await sleep(3000)
         clusterPid = pid
       })
 
-      after(async () => {
+      afterAll(async () => {
         if (isrunning(clusterPid)) { await doCommand(`kill ${clusterPid}`) }
       })
 
-      it('should be running the cluster with 2 nodes', async () => {
+      test('should be running the cluster with 2 nodes', async () => {
         let {stdout} = await doCommand(`ps awx`)
         let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
         let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
@@ -269,7 +269,7 @@ describe('Core: CLI', () => {
         expect(response.serverInformation.serverName).to.equal('my_actionhero_project')
       })
 
-      it('can handle signals to add a worker', async () => {
+      test('can handle signals to add a worker', async () => {
         await doCommand(`kill -s TTIN ${clusterPid}`)
         await sleep(1000)
 
@@ -280,7 +280,7 @@ describe('Core: CLI', () => {
         expect(children.length).to.equal(3)
       })
 
-      it('can handle signals to remove a worker', async () => {
+      test('can handle signals to remove a worker', async () => {
         await doCommand(`kill -s TTOU ${clusterPid}`)
         await sleep(1000)
 
@@ -291,7 +291,7 @@ describe('Core: CLI', () => {
         expect(children.length).to.equal(2)
       })
 
-      it('can handle signals to reboot (graceful)', async () => {
+      test('can handle signals to reboot (graceful)', async () => {
         await doCommand(`kill -s USR2 ${clusterPid}`)
         await sleep(2000)
 
@@ -305,7 +305,7 @@ describe('Core: CLI', () => {
         expect(response.serverInformation.serverName).to.equal('my_actionhero_project')
       })
 
-      it('can handle signals to reboot (hup)', async () => {
+      test('can handle signals to reboot (hup)', async () => {
         await doCommand(`kill -s WINCH ${clusterPid}`)
         await sleep(2000)
 
@@ -319,7 +319,7 @@ describe('Core: CLI', () => {
         expect(response.serverInformation.serverName).to.equal('my_actionhero_project')
       })
 
-      it('can handle signals to stop', async () => {
+      test('can handle signals to stop', async () => {
         await doCommand(`kill ${clusterPid}`)
         await sleep(2000)
 
@@ -330,8 +330,8 @@ describe('Core: CLI', () => {
         expect(children.length).to.equal(0)
       })
 
-      it('can detect flapping and exit')
-      it('can reboot and abosrb code changes without downtime')
+      test('can detect flapping and exit')
+      test('can reboot and abosrb code changes without downtime')
     })
   }
 })

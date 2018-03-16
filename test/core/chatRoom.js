@@ -14,7 +14,7 @@ let api
 const sleep = async (timeout) => { await promisify(setTimeout)(timeout) }
 
 describe('Core: Action Cluster', () => {
-  before(async () => {
+  beforeAll(async () => {
     api = await actionhero.start()
     for (var room in api.config.general.startingChatRooms) {
       try {
@@ -26,14 +26,14 @@ describe('Core: Action Cluster', () => {
     }
   })
 
-  after(async () => { await actionhero.stop() })
+  afterAll(async () => { await actionhero.stop() })
 
   describe('say and clients on separate servers', () => {
     let client1
     let client2
     let client3
 
-    before(async () => {
+    beforeAll(async () => {
       client1 = new api.specHelper.Connection()
       client2 = new api.specHelper.Connection()
       client3 = new api.specHelper.Connection()
@@ -44,32 +44,41 @@ describe('Core: Action Cluster', () => {
       await sleep(100)
     })
 
-    after(async () => {
+    afterAll(async () => {
       client1.destroy()
       client2.destroy()
       client3.destroy()
       await sleep(100)
     })
 
-    it('all connections can join the default room and client #1 can see them', async () => {
-      let {room, membersCount} = await client1.verbs('roomView', 'defaultRoom')
-      expect(room).to.equal('defaultRoom')
-      expect(membersCount).to.equal(3)
-    })
+    test(
+      'all connections can join the default room and client #1 can see them',
+      async () => {
+        let {room, membersCount} = await client1.verbs('roomView', 'defaultRoom')
+        expect(room).to.equal('defaultRoom')
+        expect(membersCount).to.equal(3)
+      }
+    )
 
-    it('all connections can join the default room and client #2 can see them', async () => {
-      let {room, membersCount} = await client2.verbs('roomView', 'defaultRoom')
-      expect(room).to.equal('defaultRoom')
-      expect(membersCount).to.equal(3)
-    })
+    test(
+      'all connections can join the default room and client #2 can see them',
+      async () => {
+        let {room, membersCount} = await client2.verbs('roomView', 'defaultRoom')
+        expect(room).to.equal('defaultRoom')
+        expect(membersCount).to.equal(3)
+      }
+    )
 
-    it('all connections can join the default room and client #3 can see them', async () => {
-      let {room, membersCount} = await client3.verbs('roomView', 'defaultRoom')
-      expect(room).to.equal('defaultRoom')
-      expect(membersCount).to.equal(3)
-    })
+    test(
+      'all connections can join the default room and client #3 can see them',
+      async () => {
+        let {room, membersCount} = await client3.verbs('roomView', 'defaultRoom')
+        expect(room).to.equal('defaultRoom')
+        expect(membersCount).to.equal(3)
+      }
+    )
 
-    it('clients can communicate across the cluster', async () => {
+    test('clients can communicate across the cluster', async () => {
       await client1.verbs('say', ['defaultRoom', 'Hi', 'from', 'client', '1'])
       await sleep(100)
 
@@ -89,17 +98,17 @@ describe('Core: Action Cluster', () => {
       }
     })
 
-    it('can check if rooms exist', async () => {
+    test('can check if rooms exist', async () => {
       let found = await api.chatRoom.exists('defaultRoom')
       expect(found).to.equal(true)
     })
 
-    it('can check if a room does not exist', async () => {
+    test('can check if a room does not exist', async () => {
       let found = await api.chatRoom.exists('missingRoom')
       expect(found).to.equal(false)
     })
 
-    it('server can create new room', async () => {
+    test('server can create new room', async () => {
       let room = 'newRoom'
       let found
       found = await api.chatRoom.exists(room)
@@ -109,7 +118,7 @@ describe('Core: Action Cluster', () => {
       expect(found).to.equal(true)
     })
 
-    it('server cannot create already existing room', async () => {
+    test('server cannot create already existing room', async () => {
       try {
         await api.chatRoom.add('defaultRoom')
         throw new Error('should not get here')
@@ -118,7 +127,7 @@ describe('Core: Action Cluster', () => {
       }
     })
 
-    it('can enumerate all the rooms in the system', async () => {
+    test('can enumerate all the rooms in the system', async () => {
       await api.chatRoom.add('newRoom')
       let rooms = await api.chatRoom.list()
       expect(rooms).to.have.length(3);
@@ -127,7 +136,7 @@ describe('Core: Action Cluster', () => {
       })
     })
 
-    it('server can add connections to a LOCAL room', async () => {
+    test('server can add connections to a LOCAL room', async () => {
       let client = new api.specHelper.Connection()
       expect(client.rooms).to.have.length(0)
       let didAdd = await api.chatRoom.addMember(client.id, 'defaultRoom')
@@ -136,7 +145,7 @@ describe('Core: Action Cluster', () => {
       client.destroy()
     })
 
-    it('will not re-add a member to a room', async () => {
+    test('will not re-add a member to a room', async () => {
       let client = new api.specHelper.Connection()
       expect(client.rooms).to.have.length(0)
       let didAdd = await api.chatRoom.addMember(client.id, 'defaultRoom')
@@ -150,7 +159,7 @@ describe('Core: Action Cluster', () => {
       }
     })
 
-    it('will not add a member to a non-existant room', async () => {
+    test('will not add a member to a non-existant room', async () => {
       let client = new api.specHelper.Connection()
       expect(client.rooms).to.have.length(0)
       try {
@@ -162,7 +171,7 @@ describe('Core: Action Cluster', () => {
       }
     })
 
-    it('server will not remove a member not in a room', async () => {
+    test('server will not remove a member not in a room', async () => {
       let client = new api.specHelper.Connection()
       try {
         await api.chatRoom.removeMember(client.id, 'defaultRoom')
@@ -173,7 +182,7 @@ describe('Core: Action Cluster', () => {
       }
     })
 
-    it('server can remove connections to a room', async () => {
+    test('server can remove connections to a room', async () => {
       let client = new api.specHelper.Connection()
       let didAdd = await api.chatRoom.addMember(client.id, 'defaultRoom')
       expect(didAdd).to.equal(true)
@@ -182,7 +191,7 @@ describe('Core: Action Cluster', () => {
       client.destroy()
     })
 
-    it('server can destroy a room and connections will be removed', async () => {
+    test('server can destroy a room and connections will be removed', async () => {
       try {
         // to ensure it starts empty
         await api.chatRoom.destroy('newRoom')
@@ -204,7 +213,7 @@ describe('Core: Action Cluster', () => {
       client.destroy()
     })
 
-    it('can get a list of room members', async () => {
+    test('can get a list of room members', async () => {
       let client = new api.specHelper.Connection()
       expect(client.rooms).to.have.length(0)
       await api.chatRoom.add('newRoom')
@@ -237,7 +246,7 @@ describe('Core: Action Cluster', () => {
         api.chatRoom.generateMessagePayload = originalGenerateMessagePayload
       })
 
-      it('generateMessagePayload can be overloaded', async () => {
+      test('generateMessagePayload can be overloaded', async () => {
         api.chatRoom.generateMessagePayload = (message) => {
           return {
             thing: 'stuff',
@@ -255,7 +264,7 @@ describe('Core: Action Cluster', () => {
         expect(message.message).to.not.exist()
       })
 
-      it('(join + leave) can add middleware to announce members', async () => {
+      test('(join + leave) can add middleware to announce members', async () => {
         api.chatRoom.addMiddleware({
           name: 'add chat middleware',
           join: async (connection, room) => {
@@ -279,7 +288,7 @@ describe('Core: Action Cluster', () => {
         expect(clientA.messages.pop().message).to.equal('I have entered the room: ' + clientB.id)
       })
 
-      it('(say) can modify message payloads', async () => {
+      test('(say) can modify message payloads', async () => {
         api.chatRoom.addMiddleware({
           name: 'chat middleware',
           say: (connection, room, messagePayload) => {
@@ -297,35 +306,38 @@ describe('Core: Action Cluster', () => {
         expect(lastMessage.message).to.equal('something else')
       })
 
-      it('can add middleware in a particular order and will be passed modified messagePayloads', async () => {
-        api.chatRoom.addMiddleware({
-          name: 'chat middleware 1',
-          priority: 1000,
-          say: (connection, room, messagePayload, callback) => {
-            messagePayload.message = 'MIDDLEWARE 1'
-            return messagePayload
-          }
-        })
+      test(
+        'can add middleware in a particular order and will be passed modified messagePayloads',
+        async () => {
+          api.chatRoom.addMiddleware({
+            name: 'chat middleware 1',
+            priority: 1000,
+            say: (connection, room, messagePayload, callback) => {
+              messagePayload.message = 'MIDDLEWARE 1'
+              return messagePayload
+            }
+          })
 
-        api.chatRoom.addMiddleware({
-          name: 'chat middleware 2',
-          priority: 2000,
-          say: (connection, room, messagePayload) => {
-            messagePayload.message = messagePayload.message + ' MIDDLEWARE 2'
-            return messagePayload
-          }
-        })
+          api.chatRoom.addMiddleware({
+            name: 'chat middleware 2',
+            priority: 2000,
+            say: (connection, room, messagePayload) => {
+              messagePayload.message = messagePayload.message + ' MIDDLEWARE 2'
+              return messagePayload
+            }
+          })
 
-        await clientA.verbs('roomAdd', 'defaultRoom')
-        await clientB.verbs('roomAdd', 'defaultRoom')
-        await clientB.verbs('say', ['defaultRoom', 'something', 'awesome'])
-        await sleep(100)
+          await clientA.verbs('roomAdd', 'defaultRoom')
+          await clientB.verbs('roomAdd', 'defaultRoom')
+          await clientB.verbs('say', ['defaultRoom', 'something', 'awesome'])
+          await sleep(100)
 
-        let lastMessage = clientA.messages[(clientA.messages.length - 1)]
-        expect(lastMessage.message).to.equal('MIDDLEWARE 1 MIDDLEWARE 2')
-      })
+          let lastMessage = clientA.messages[(clientA.messages.length - 1)]
+          expect(lastMessage.message).to.equal('MIDDLEWARE 1 MIDDLEWARE 2')
+        }
+      )
 
-      it('say middleware can block excecution', async () => {
+      test('say middleware can block excecution', async () => {
         api.chatRoom.addMiddleware({
           name: 'chat middleware',
           say: (connection, room, messagePayload) => {
@@ -343,7 +355,7 @@ describe('Core: Action Cluster', () => {
         expect(clientA.messages[0].welcome).to.match(/Welcome/)
       })
 
-      it('join middleware can block excecution', async () => {
+      test('join middleware can block excecution', async () => {
         api.chatRoom.addMiddleware({
           name: 'chat middleware',
           join: (connection, room) => {
@@ -360,7 +372,7 @@ describe('Core: Action Cluster', () => {
         }
       })
 
-      it('leave middleware can block excecution', async () => {
+      test('leave middleware can block excecution', async () => {
         api.chatRoom.addMiddleware({
           name: 'chat middleware',
           leave: (connection, room) => {

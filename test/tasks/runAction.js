@@ -11,10 +11,10 @@ const actionhero = new ActionHero.Process()
 let api
 
 describe('Test: RunAction', () => {
-  before(async () => { api = await actionhero.start() })
-  after(async () => { await actionhero.stop() })
+  beforeAll(async () => { api = await actionhero.start() })
+  afterAll(async () => { await actionhero.stop() })
 
-  it('can run the task manually', async () => {
+  test('can run the task manually', async () => {
     const {randomNumber} = await api.specHelper.runTask('runAction', {action: 'randomNumber'})
     expect(randomNumber).to.be.at.least(0)
     expect(randomNumber).to.be.at.most(1)

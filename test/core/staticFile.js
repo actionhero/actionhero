@@ -13,32 +13,32 @@ let api
 let url
 
 describe('Core: Static File', () => {
-  before(async () => {
+  beforeAll(async () => {
     api = await actionhero.start()
     url = 'http://localhost:' + api.config.servers.web.port + '/' + api.config.servers.web.urlPathForFiles
   })
 
-  after(async () => { await actionhero.stop() })
+  afterAll(async () => { await actionhero.stop() })
 
-  it('file: an HTML file', async () => {
+  test('file: an HTML file', async () => {
     let response = await api.specHelper.getStaticFile('simple.html')
     expect(response.mime).to.equal('text/html')
     expect(response.content).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
   })
 
-  it('file: 404 pages', async () => {
+  test('file: 404 pages', async () => {
     let response = await api.specHelper.getStaticFile('someRandomFile')
     expect(response.error).to.equal('That file is not found')
     expect(response.content).to.be.null()
   })
 
-  it('I should not see files outside of the public dir', async () => {
+  test('I should not see files outside of the public dir', async () => {
     let response = await api.specHelper.getStaticFile('../config/config.json')
     expect(response.error).to.equal('That file is not found')
     expect(response.content).to.be.null()
   })
 
-  it('file: sub paths should work', async () => {
+  test('file: sub paths should work', async () => {
     let response = await api.specHelper.getStaticFile('logo/actionhero.png')
     expect(response.mime).to.equal('image/png')
     expect(response.length).to.equal(59273)
@@ -47,34 +47,37 @@ describe('Core: Static File', () => {
     expect(response.content.length).to.be.at.most(60000)
   })
 
-  it('should send back the cache-control header', async () => {
+  test('should send back the cache-control header', async () => {
     let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
     expect(response.statusCode).to.equal(200)
     expect(response.headers['cache-control']).to.be.ok()
   })
 
-  it('should send back the etag header', async () => {
+  test('should send back the etag header', async () => {
     let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
     expect(response.statusCode).to.equal(200)
     expect(response.headers['etag']).to.be.ok()
   })
 
-  it('should send back a 304 if the header "if-modified-since" is present and condition matches', async () => {
-    let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
-    expect(response.statusCode).to.equal(200)
+  test(
+    'should send back a 304 if the header "if-modified-since" is present and condition matches',
+    async () => {
+      let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
+      expect(response.statusCode).to.equal(200)
 
-    try {
-      await request(url + '/simple.html', {
-        headers: { 'If-Modified-Since': new Date().toUTCString() },
-        resolveWithFullResponse: true
-      })
-      throw new Error('should not get here')
-    } catch (error) {
-      expect(error.toString()).to.match(/304/)
+      try {
+        await request(url + '/simple.html', {
+          headers: { 'If-Modified-Since': new Date().toUTCString() },
+          resolveWithFullResponse: true
+        })
+        throw new Error('should not get here')
+      } catch (error) {
+        expect(error.toString()).to.match(/304/)
+      }
     }
-  })
+  )
 
-  it('should send back a 304 if the ETAG header is present', async () => {
+  test('should send back a 304 if the ETAG header is present', async () => {
     let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
     expect(response.statusCode).to.equal(200)
     expect(response.body).to.equal('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
@@ -94,7 +97,7 @@ describe('Core: Static File', () => {
     }
   })
 
-  it('should send a different etag for other files', async () => {
+  test('should send a different etag for other files', async () => {
     let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
     expect(response.statusCode).to.equal(200)
     expect(response.headers['etag']).to.be.ok()
@@ -107,73 +110,88 @@ describe('Core: Static File', () => {
     expect(etagTwo).not.to.equal(etag)
   })
 
-  it('should send back the file if the header "if-modified-since" is present but condition does not match', async () => {
-    let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
-    expect(response.statusCode).to.equal(200)
-    let lastModified = new Date(response.headers['last-modified'])
-    let delay = 24 * 1000 * 3600
+  test(
+    'should send back the file if the header "if-modified-since" is present but condition does not match',
+    async () => {
+      let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
+      expect(response.statusCode).to.equal(200)
+      let lastModified = new Date(response.headers['last-modified'])
+      let delay = 24 * 1000 * 3600
 
-    let secondResponse = await request(url + '/simple.html', {
-      headers: {'If-Modified-Since': new Date(lastModified.getTime() - delay).toUTCString()},
-      resolveWithFullResponse: true
-    })
+      let secondResponse = await request(url + '/simple.html', {
+        headers: {'If-Modified-Since': new Date(lastModified.getTime() - delay).toUTCString()},
+        resolveWithFullResponse: true
+      })
 
-    expect(secondResponse.statusCode).to.equal(200)
-    expect(secondResponse.body.length).to.be.above(1)
-  })
+      expect(secondResponse.statusCode).to.equal(200)
+      expect(secondResponse.body.length).to.be.above(1)
+    }
+  )
 
   describe('Compression', () => {
     let serverCompressionState
-    before(() => {
+    beforeAll(() => {
       serverCompressionState = api.config.servers.web.compress
       api.config.servers.web.compress = true // activate compression, default is likely to be false
     })
 
-    after(() => {
+    afterAll(() => {
       api.config.servers.web.compress = serverCompressionState
     })
 
-    it('should respect accept-encoding header priority with gzip as first in a list of encodings', async () => {
-      let response = await request.get(url + '/simple.html', {
-        headers: {'Accept-Encoding': 'gzip, deflate, sdch, br'},
-        resolveWithFullResponse: true
-      })
+    test(
+      'should respect accept-encoding header priority with gzip as first in a list of encodings',
+      async () => {
+        let response = await request.get(url + '/simple.html', {
+          headers: {'Accept-Encoding': 'gzip, deflate, sdch, br'},
+          resolveWithFullResponse: true
+        })
 
-      expect(response.statusCode).to.equal(200)
-      expect(response.headers['content-encoding']).to.equal('gzip')
-    })
+        expect(response.statusCode).to.equal(200)
+        expect(response.headers['content-encoding']).to.equal('gzip')
+      }
+    )
 
-    it('should respect accept-encoding header priority with deflate as second in a list of encodings', async () => {
-      let response = await request.get(url + '/simple.html', {
-        headers: {'Accept-Encoding': 'br, deflate, gzip'},
-        resolveWithFullResponse: true
-      })
+    test(
+      'should respect accept-encoding header priority with deflate as second in a list of encodings',
+      async () => {
+        let response = await request.get(url + '/simple.html', {
+          headers: {'Accept-Encoding': 'br, deflate, gzip'},
+          resolveWithFullResponse: true
+        })
 
-      expect(response.statusCode).to.equal(200)
-      expect(response.headers['content-encoding']).to.equal('deflate') // br is not a currently supported encoding
-    })
+        expect(response.statusCode).to.equal(200)
+        expect(response.headers['content-encoding']).to.equal('deflate') // br is not a currently supported encoding
+      }
+    )
 
-    it('should respect accept-encoding header priority with gzip as only option', async () => {
-      let response = await request.get(url + '/simple.html', {
-        headers: {'Accept-Encoding': 'gzip'},
-        resolveWithFullResponse: true
-      })
+    test(
+      'should respect accept-encoding header priority with gzip as only option',
+      async () => {
+        let response = await request.get(url + '/simple.html', {
+          headers: {'Accept-Encoding': 'gzip'},
+          resolveWithFullResponse: true
+        })
 
-      expect(response.statusCode).to.equal(200)
-      expect(response.headers['content-encoding']).to.equal('gzip')
-    })
+        expect(response.statusCode).to.equal(200)
+        expect(response.headers['content-encoding']).to.equal('gzip')
+      }
+    )
 
-    it('should not encode content without a valid a supported value in accept-encoding header', async () => {
-      let response = await request.get(url + '/simple.html', {
-        headers: {'Accept-Encoding': 'sdch, br'},
-        resolveWithFullResponse: true
-      })
+    test(
+      'should not encode content without a valid a supported value in accept-encoding header',
+      async () => {
+        let response = await request.get(url + '/simple.html', {
+          headers: {'Accept-Encoding': 'sdch, br'},
+          resolveWithFullResponse: true
+        })
 
-      expect(response.statusCode).to.equal(200)
-      expect(response.headers['content-encoding']).to.not.exist()
-    })
+        expect(response.statusCode).to.equal(200)
+        expect(response.headers['content-encoding']).to.not.exist()
+      }
+    )
 
-    it('should not encode content without accept-encoding header', async () => {
+    test('should not encode content without accept-encoding header', async () => {
       let response = await request.get(url + '/simple.html', {
         resolveWithFullResponse: true
       })

@@ -16,7 +16,7 @@ let configChanges
 
 describe('Core: Plugins', () => {
   describe('with plugin', () => {
-    before(async () => {
+    beforeAll(async () => {
       configChanges = {
         plugins: {
           'testPlugin': { path: path.join(__dirname, '..', 'testPlugin') }
@@ -26,32 +26,32 @@ describe('Core: Plugins', () => {
       api = await actionhero.start({configChanges})
     })
 
-    after(async () => { await actionhero.stop() })
+    afterAll(async () => { await actionhero.stop() })
 
-    it('can load an action from a plugin', async () => {
+    test('can load an action from a plugin', async () => {
       let response = await api.specHelper.runAction('pluginAction')
       expect(response.error).to.not.exist()
       expect(response.cool).to.equal(true)
     })
 
-    it('can load a task from a plugin', () => {
+    test('can load a task from a plugin', () => {
       expect(api.tasks.tasks.pluginTask).to.exist()
       expect(api.tasks.jobs.pluginTask).to.exist()
     })
 
-    it('can load an initializer from a plugin', () => {
+    test('can load an initializer from a plugin', () => {
       expect(api.pluginInitializer.here).to.equal(true)
     })
 
-    it('can load a server from a plugin')
+    test('can load a server from a plugin')
 
-    it('can serve static files from a plugin', async () => {
+    test('can serve static files from a plugin', async () => {
       let file = await api.specHelper.getStaticFile('plugin.html')
       expect(file.content).to.equal('<h1>PLUGIN!<h1>\n')
       expect(file.mime).to.equal('text/html')
     })
 
-    it('can load CLI command from a plugin', async () => {
+    test('can load CLI command from a plugin', async () => {
       let env = Object.assign({}, process.env)
       env.configChanges = JSON.stringify(configChanges)
 
@@ -66,7 +66,7 @@ describe('Core: Plugins', () => {
   })
 
   describe('with plugin sections ignored', () => {
-    before(async () => {
+    beforeAll(async () => {
       configChanges = {
         plugins: {
           'testPlugin': {
@@ -84,30 +84,30 @@ describe('Core: Plugins', () => {
       api = await actionhero.start()
     })
 
-    after(async () => { await actionhero.stop() })
+    afterAll(async () => { await actionhero.stop() })
 
-    it('will not load an action from an un-loaded plugin', async () => {
+    test('will not load an action from an un-loaded plugin', async () => {
       let response = await api.specHelper.runAction('pluginAction')
       expect(response.error).to.match(/unknown action or invalid apiVersion/)
     })
 
-    it('will not load a task from an un-loaded plugin', () => {
+    test('will not load a task from an un-loaded plugin', () => {
       expect(api.tasks.tasks.pluginTask).not.to.exist()
       expect(api.tasks.jobs.pluginTask).not.to.exist()
     })
 
-    it('will not load an initializer from an un-loaded plugin', () => {
+    test('will not load an initializer from an un-loaded plugin', () => {
       expect(api.pluginInitializer).not.to.exist()
     })
 
-    it('will not load a server from an un-loaded plugin')
+    test('will not load a server from an un-loaded plugin')
 
-    it('will not serve static files from an un-loaded plugin', async () => {
+    test('will not serve static files from an un-loaded plugin', async () => {
       let file = await api.specHelper.getStaticFile('plugin.html')
       expect(file.error).to.match(/file is not found/)
     })
 
-    it('will not load CLI command from an un-loaded plugin', async () => {
+    test('will not load CLI command from an un-loaded plugin', async () => {
       let env = Object.assign({}, process.env)
       env.configChanges = JSON.stringify(configChanges)
 
@@ -125,31 +125,31 @@ describe('Core: Plugins', () => {
   })
 
   describe('without plugin', () => {
-    before(async () => { api = await actionhero.start() })
-    after(async () => { await actionhero.stop() })
+    beforeAll(async () => { api = await actionhero.start() })
+    afterAll(async () => { await actionhero.stop() })
 
-    it('will not load an action from an un-loaded plugin', async () => {
+    test('will not load an action from an un-loaded plugin', async () => {
       let response = await api.specHelper.runAction('pluginAction')
       expect(response.error).to.match(/unknown action or invalid apiVersion/)
     })
 
-    it('will not load a task from an un-loaded plugin', () => {
+    test('will not load a task from an un-loaded plugin', () => {
       expect(api.tasks.tasks.pluginTask).not.to.exist()
       expect(api.tasks.jobs.pluginTask).not.to.exist()
     })
 
-    it('will not load an initializer from an un-loaded plugin', () => {
+    test('will not load an initializer from an un-loaded plugin', () => {
       expect(api.pluginInitializer).not.to.exist()
     })
 
-    it('will not load a server from an un-loaded plugin')
+    test('will not load a server from an un-loaded plugin')
 
-    it('will not serve static files from an un-loaded plugin', async () => {
+    test('will not serve static files from an un-loaded plugin', async () => {
       let file = await api.specHelper.getStaticFile('plugin.html')
       expect(file.error).to.match(/file is not found/)
     })
 
-    it('will not load CLI command from an un-loaded plugin', async () => {
+    test('will not load CLI command from an un-loaded plugin', async () => {
       let {stdout: helpResponse, stderr: error1} = await promisify(exec)('./bin/actionhero help')
       expect(error1).to.equal('')
       expect(helpResponse).to.not.contain('hello')

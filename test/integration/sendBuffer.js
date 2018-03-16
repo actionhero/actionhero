@@ -14,14 +14,14 @@ let api
 let url
 
 describe('Server: sendBuffer', () => {
-  before(async () => {
+  beforeAll(async () => {
     api = await actionhero.start()
     url = 'http://localhost:' + api.config.servers.web.port
   })
 
-  after(async () => { await actionhero.stop() })
+  afterAll(async () => { await actionhero.stop() })
 
-  before(() => {
+  beforeAll(() => {
     api.actions.versions.sendBufferTest = [1]
     api.actions.actions.sendBufferTest = {
       '1': {
@@ -58,7 +58,7 @@ describe('Server: sendBuffer', () => {
     api.routes.loadRoutes()
   })
 
-  after(() => {
+  afterAll(() => {
     delete api.actions.actions.sendBufferTest
     delete api.actions.versions.sendBufferTest
     delete api.actions.versions.sendUnknownLengthBufferTest
@@ -66,12 +66,12 @@ describe('Server: sendBuffer', () => {
     api.routes.loadRoutes()
   })
 
-  it('Server should sendBuffer', async () => {
+  test('Server should sendBuffer', async () => {
     let body = await request.get(url + '/api/sendBufferTest')
     expect(body).to.equal('Example of data buffer')
   })
 
-  it('Server should send a stream with no specified length', async () => {
+  test('Server should send a stream with no specified length', async () => {
     let {body, headers} = await request.get({
       uri: url + '/api/sendUnknownLengthBufferTest',
       resolveWithFullResponse: true

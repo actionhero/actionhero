@@ -53,39 +53,39 @@ const connectClients = async () => {
 }
 
 describe('Server: Socket', () => {
-  before(async () => {
+  beforeAll(async () => {
     api = await actionhero.start()
     await connectClients()
     let result = await makeSocketRequest(client2, 'detailsView')
     client2Details = result.data
   })
 
-  after(async () => {
+  afterAll(async () => {
     client.write('quit\r\n')
     client2.write('quit\r\n')
     client3.write('quit\r\n')
     await actionhero.stop()
   })
 
-  it('socket connections should be able to connect and get JSON', async () => {
+  test('socket connections should be able to connect and get JSON', async () => {
     let response = await makeSocketRequest(client, 'hello')
     expect(response).to.be.instanceof(Object)
     expect(response.error).to.equal('unknown action or invalid apiVersion')
   })
 
-  it('single string message are treated as actions', async () => {
+  test('single string message are treated as actions', async () => {
     let response = await makeSocketRequest(client, 'status')
     expect(response).to.be.instanceof(Object)
     expect(response.id).to.equal('test-server-' + process.pid)
   })
 
-  it('stringified JSON can also be sent as actions', async () => {
+  test('stringified JSON can also be sent as actions', async () => {
     let response = await makeSocketRequest(client, JSON.stringify({action: 'status', params: {something: 'else'}}))
     expect(response).to.be.instanceof(Object)
     expect(response.id).to.equal('test-server-' + process.pid)
   })
 
-  it('really long messages are OK', async () => {
+  test('really long messages are OK', async () => {
     let msg = {
       action: 'cacheTest',
       params: {
@@ -99,7 +99,7 @@ describe('Server: Socket', () => {
     expect(response.cacheTestResults.loadResp.value).to.equal(msg.params.value)
   })
 
-  it('I can get my details', async () => {
+  test('I can get my details', async () => {
     let response = await makeSocketRequest(client2, 'detailsView')
     let now = new Date().getTime()
     expect(response.status).to.equal('OK')
@@ -111,41 +111,44 @@ describe('Server: Socket', () => {
     client2Details = response.data // save for later!
   })
 
-  it('params can be updated', async () => {
+  test('params can be updated', async () => {
     let response = await makeSocketRequest(client, 'paramAdd key=otherKey')
     expect(response.status).to.equal('OK')
     let responseAgain = await makeSocketRequest(client, 'paramsView')
     expect(responseAgain.data.key).to.equal('otherKey')
   })
 
-  it('actions will fail without proper params set to the connection', async () => {
-    await makeSocketRequest(client, 'paramDelete key')
-    let response = await makeSocketRequest(client, 'cacheTest')
-    expect(response.error).to.equal('key is a required parameter for this action')
-  })
+  test(
+    'actions will fail without proper params set to the connection',
+    async () => {
+      await makeSocketRequest(client, 'paramDelete key')
+      let response = await makeSocketRequest(client, 'cacheTest')
+      expect(response.error).to.equal('key is a required parameter for this action')
+    }
+  )
 
-  it('a new param can be added and viewed', async () => {
+  test('a new param can be added and viewed', async () => {
     let response = await makeSocketRequest(client, 'paramAdd key=socketTestKey')
     expect(response.status).to.equal('OK')
     let viewResponse = await makeSocketRequest(client, 'paramView key')
     expect(viewResponse.data).to.equal('socketTestKey')
   })
 
-  it('another new param can be added and viewed', async () => {
+  test('another new param can be added and viewed', async () => {
     let response = await makeSocketRequest(client, 'paramAdd value=abc123')
     expect(response.status).to.equal('OK')
     let viewResponse = await makeSocketRequest(client, 'paramView value')
     expect(viewResponse.data).to.equal('abc123')
   })
 
-  it('actions will work once all the needed params are added', async () => {
+  test('actions will work once all the needed params are added', async () => {
     await makeSocketRequest(client, 'paramAdd key=socketTestKey')
     await makeSocketRequest(client, 'paramAdd value=abc123')
     let response = await makeSocketRequest(client, 'cacheTest')
     expect(response.cacheTestResults.saveResp).to.equal(true)
   })
 
-  it('params are sticky between actions', async () => {
+  test('params are sticky between actions', async () => {
     await makeSocketRequest(client, 'paramAdd key=socketTestKey')
     await makeSocketRequest(client, 'paramAdd value=abc123')
     let response = await makeSocketRequest(client, 'cacheTest')
@@ -158,12 +161,12 @@ describe('Server: Socket', () => {
     expect(responseAgain.cacheTestResults.loadResp.value).to.equal('abc123')
   })
 
-  it('only params sent in a JSON block are used', async () => {
+  test('only params sent in a JSON block are used', async () => {
     let response = await makeSocketRequest(client, JSON.stringify({action: 'cacheTest', params: {key: 'someOtherValue'}}))
     expect(response.error).to.equal('value is a required parameter for this action')
   })
 
-  it('will limit how many simultaneous connections I can have', async () => {
+  test('will limit how many simultaneous connections I can have', async () => {
     let responses = []
     let msg = ''
     let i = 0
@@ -200,34 +203,37 @@ describe('Server: Socket', () => {
   })
 
   describe('maxDataLength', () => {
-    before(() => { api.config.servers.socket.maxDataLength = 64 })
-    after(() => { api.config.servers.socket.maxDataLength = 0 })
+    beforeAll(() => { api.config.servers.socket.maxDataLength = 64 })
+    afterAll(() => { api.config.servers.socket.maxDataLength = 0 })
 
-    it('will error If received data length is bigger then maxDataLength', async () => {
-      let msg = {
-        action: 'cacheTest',
-        params: {
-          key: uuid.v4(),
-          value: uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4()
+    test(
+      'will error If received data length is bigger then maxDataLength',
+      async () => {
+        let msg = {
+          action: 'cacheTest',
+          params: {
+            key: uuid.v4(),
+            value: uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4() + uuid.v4()
+          }
         }
-      }
 
-      let response = await makeSocketRequest(client, JSON.stringify(msg))
-      expect(response.status).to.equal('error')
-      expect(response.error).to.equal('data length is too big (64 received/449 max)')
-    })
+        let response = await makeSocketRequest(client, JSON.stringify(msg))
+        expect(response.status).to.equal('error')
+        expect(response.error).to.equal('data length is too big (64 received/449 max)')
+      }
+    )
   })
 
   describe('custom data delimiter', () => {
-    after(() => { api.config.servers.socket.delimiter = '\n' })
+    afterAll(() => { api.config.servers.socket.delimiter = '\n' })
 
-    it('will parse /newline data delimiter', async () => {
+    test('will parse /newline data delimiter', async () => {
       api.config.servers.socket.delimiter = '\n'
       let response = await makeSocketRequest(client, JSON.stringify({action: 'status'}), '\n')
       expect(response.context).to.equal('response')
     })
 
-    it('will parse custom `^]` data delimiter', async () => {
+    test('will parse custom `^]` data delimiter', async () => {
       api.config.servers.socket.delimiter = '^]'
       let response = await makeSocketRequest(client, JSON.stringify({action: 'status'}), '^]')
       expect(response.context).to.equal('response')
@@ -235,7 +241,7 @@ describe('Server: Socket', () => {
   })
 
   describe('chat', () => {
-    before(() => {
+    beforeAll(() => {
       api.chatRoom.addMiddleware({
         name: 'join chat middleware',
         join: async (connection, room) => {
@@ -251,7 +257,7 @@ describe('Server: Socket', () => {
       })
     })
 
-    after(() => {
+    afterAll(() => {
       api.chatRoom.middleware = {}
       api.chatRoom.globalMiddleware = []
     })
@@ -272,22 +278,25 @@ describe('Server: Socket', () => {
       await sleep(250)
     })
 
-    it('clients are in the default room', async () => {
+    test('clients are in the default room', async () => {
       let response = await makeSocketRequest(client, 'roomView defaultRoom')
       expect(response.data.room).to.equal('defaultRoom')
     })
 
-    it('clients can view additional info about rooms they are in', async () => {
+    test('clients can view additional info about rooms they are in', async () => {
       let response = await makeSocketRequest(client, 'roomView defaultRoom')
       expect(response.data.membersCount).to.equal(3)
     })
 
-    it('clients see an appropriate error when viewing rooms they are not in', async () => {
-      let response = await makeSocketRequest(client, 'roomView notARoom')
-      expect(response.error).to.match(/connection not in this room/)
-    })
+    test(
+      'clients see an appropriate error when viewing rooms they are not in',
+      async () => {
+        let response = await makeSocketRequest(client, 'roomView notARoom')
+        expect(response.error).to.match(/connection not in this room/)
+      }
+    )
 
-    it('rooms can be changed', async () => {
+    test('rooms can be changed', async () => {
       await makeSocketRequest(client, 'roomAdd otherRoom')
       let response = await makeSocketRequest(client, 'roomLeave defaultRoom')
       expect(response.status).to.equal('OK')
@@ -296,7 +305,7 @@ describe('Server: Socket', () => {
       expect(responseAgain.data.membersCount).to.equal(1)
     })
 
-    it('connections in the first room see the count go down', async () => {
+    test('connections in the first room see the count go down', async () => {
       await makeSocketRequest(client, 'roomAdd   otherRoom')
       await makeSocketRequest(client, 'roomLeave defaultRoom')
       let response = await makeSocketRequest(client2, 'roomView defaultRoom')
@@ -304,7 +313,7 @@ describe('Server: Socket', () => {
       expect(response.data.membersCount).to.equal(2)
     })
 
-    it('folks in my room hear what I say (and say works)', async () => {
+    test('folks in my room hear what I say (and say works)', async () => {
       await new Promise(async (resolve) => {
         makeSocketRequest(client2, 'say defaultRoom hello?' + '\r\n')
         let response = await makeSocketRequest(client3, '')
@@ -313,7 +322,7 @@ describe('Server: Socket', () => {
       })
     })
 
-    it('folks not in my room no not hear what I say', async () => {
+    test('folks not in my room no not hear what I say', async () => {
       await makeSocketRequest(client, 'roomLeave defaultRoom')
 
       await new Promise(async (resolve) => {
@@ -332,7 +341,7 @@ describe('Server: Socket', () => {
       })
     })
 
-    it('I can get my id', async () => {
+    test('I can get my id', async () => {
       let response = await makeSocketRequest(client, 'detailsView')
       expect(response.status).to.equal('OK')
       expect(response.data.remoteIP).to.equal('127.0.0.1')
@@ -342,7 +351,7 @@ describe('Server: Socket', () => {
       let currentSanitize
       let currentGenerate
 
-      before(async () => {
+      beforeAll(async () => {
         // Ensure that default behavior works
         await makeSocketRequest(client2, 'roomAdd defaultRoom')
         let response = await makeSocketRequest(client2, 'roomView defaultRoom')
@@ -374,7 +383,7 @@ describe('Server: Socket', () => {
         }
       })
 
-      after(() => {
+      afterAll(() => {
         api.chatRoom.joinCallbacks = {}
         api.chatRoom.leaveCallbacks = {}
 
@@ -382,7 +391,7 @@ describe('Server: Socket', () => {
         api.chatRoom.generateMemberDetails = currentGenerate
       })
 
-      it('should view non-default member data', async () => {
+      test('should view non-default member data', async () => {
         await makeSocketRequest(client2, 'roomAdd defaultRoom')
         let response = await makeSocketRequest(client2, 'roomView defaultRoom')
         expect(response.data.room).to.equal('defaultRoom')
@@ -393,7 +402,7 @@ describe('Server: Socket', () => {
       })
     })
 
-    it('Folks are notified when I join a room', async () => {
+    test('Folks are notified when I join a room', async () => {
       await makeSocketRequest(client, 'roomAdd otherRoom')
       makeSocketRequest(client2, 'roomAdd otherRoom')
       let response = await makeSocketRequest(client, '')
@@ -401,7 +410,7 @@ describe('Server: Socket', () => {
       expect(response.from).to.equal(0)
     })
 
-    it('Folks are notified when I leave a room', async () => {
+    test('Folks are notified when I leave a room', async () => {
       makeSocketRequest(client2, 'roomLeave defaultRoom\r\n')
       let response = await makeSocketRequest(client, '')
       expect(response.message).to.equal('I have left the room: ' + client2Details.id)
@@ -410,9 +419,9 @@ describe('Server: Socket', () => {
   })
 
   describe('disconnect', () => {
-    after(async () => { await connectClients() })
+    afterAll(async () => { await connectClients() })
 
-    it('server can disconnect a client', async () => {
+    test('server can disconnect a client', async () => {
       let response = await makeSocketRequest(client, 'status')
       expect(response.id).to.equal('test-server-' + process.pid)
       expect(client.readable).to.equal(true)
