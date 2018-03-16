@@ -10,6 +10,7 @@ const fs = require('fs')
 const os = require('os')
 const path = require('path')
 const {promisify} = require('util')
+// const {PassThrough} = require('stream')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
@@ -439,6 +440,31 @@ describe('Server: Web', () => {
           let body = await request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}).then(toJson)
           expect(body.body).to.deep.equal({})
           expect(body.rawBody).to.equal(requestBody)
+        })
+
+        it('.body will be empty if the content-type cannot be handled by formidable', async () => {
+          let innerNoteList = ''
+          for (let i = 0; i < 1000; i++) { innerNoteList += `<innerNode>innerNode${i}</innerNode>` }
+          let requestBody = `<texty>${innerNoteList}</texty>`
+          // var bufferStream = new PassThrough()
+          // bufferStream.end(Buffer.from(requestBody))
+          // var req = request.post(url + '/api/paramTestAction', {headers: {'Content-type': 'text/xml'}})
+          // bufferStream.pipe(req)
+          //
+          // await new Promise((resolve, reject) => {
+          //   bufferStream.on('close', () => { console.log('Closing bufferStream') })
+          //   bufferStream.on('drain', () => { console.log('Drain bufferStream') })
+          //   bufferStream.on('error', (e) => { console.log('Error bufferStream ' + e) })
+          //   bufferStream.on('finish', resolve)
+          // })
+          // var respString = await req
+          // var resp = JSON.parse(respString)
+          // console.log('resp: ' + JSON.stringify(resp))
+
+          let resp = await request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'text/xml'}}).then(toJson)
+          expect(resp.error).to.not.exist()
+          expect(resp.body).to.deep.equal({})
+          expect(resp.rawBody).to.equal(requestBody)
         })
       })
     })
