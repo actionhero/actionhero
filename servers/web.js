@@ -475,9 +475,19 @@ module.exports = class WebServer extends ActionHero.Server {
           connection.rawConnection.form[i] = this.config.formOptions[i]
         }
 
-        let rawBody = Buffer.alloc(0)
+        let rawBody = Promise.resolve(Buffer.alloc(0))
         if (this.config.saveRawBody) {
-          connection.rawConnection.req.on('data', (chunk) => { rawBody = Buffer.concat([rawBody, chunk]) })
+          rawBody = new Promise((resolve, reject) => {
+            let fullBody = Buffer.alloc(0)
+            if (!connection.rawConnection || !connection.rawConnection.req) {
+              return resolve(fullBody)
+            }
+            connection.rawConnection.req
+              .on('error', (err) => { reject(err) })
+              .on('aborted', () => { reject(new Error('Request aborted while saveRawBody')) })
+              .on('data', (chunk) => { fullBody = Buffer.concat([fullBody, chunk]) })
+              .on('end', () => { resolve(fullBody) })
+          })
         }
 
         let {fields, files} = await new Promise((resolve) => {
@@ -493,7 +503,7 @@ module.exports = class WebServer extends ActionHero.Server {
           })
         })
         connection.rawConnection.params.body = fields
-        connection.rawConnection.params.rawBody = rawBody
+        connection.rawConnection.params.rawBody = await rawBody
         connection.rawConnection.params.files = files
         this.fillParamsFromWebRequest(connection, files)
         this.fillParamsFromWebRequest(connection, fields)
