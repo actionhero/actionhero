@@ -434,9 +434,16 @@ describe('Server: Web', () => {
           expect(body.rawBody).to.equal(requestBody)
         })
 
-        it('will set the body properly if mime type is wrong', async () => {
+        it('will set the body properly if mime type is wrong (bad header)', async () => {
           let requestBody = '<texty>this is like xml</texty>'
           let body = await request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'application/json'}}).then(toJson)
+          expect(body.body).to.deep.equal({})
+          expect(body.rawBody).to.equal(requestBody)
+        })
+
+        it('will set the body properly if mime type is wrong (text)', async () => {
+          let requestBody = 'I am normal \r\n text with \r\n line breaks'
+          let body = await request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'text/plain'}}).then(toJson)
           expect(body.body).to.deep.equal({})
           expect(body.rawBody).to.equal(requestBody)
         })
