@@ -26,21 +26,21 @@ describe('Core: Errors', () => {
 
   test('returns string errors properly', async () => {
     let {error} = await api.specHelper.runAction('notARealAction')
-    expect(error).to.equal('Error: unknown action or invalid apiVersion')
+    expect(error).toEqual('Error: unknown action or invalid apiVersion')
   })
 
   test('returns Error object properly', async () => {
     api.config.errors.unknownAction = () => { return new Error('error test') }
     let {error} = await api.specHelper.runAction('notARealAction')
-    expect(error).to.equal('Error: error test')
+    expect(error).toEqual('Error: error test')
   })
 
   test('returns generic object properly', async () => {
     api.config.errors.unknownAction = () => { return {code: 'error111', reason: 'busted'} }
 
     let {error} = await api.specHelper.runAction('notARealAction')
-    expect(error.code).to.equal('error111')
-    expect(error.reason).to.equal('busted')
+    expect(error.code).toEqual('error111')
+    expect(error.reason).toEqual('busted')
   })
 
   test('can have async error handlers', async () => {
@@ -51,7 +51,7 @@ describe('Core: Errors', () => {
     }
 
     let {error} = await api.specHelper.runAction('notARealAction')
-    expect(error.sleepy).to.equal(true)
+    expect(error.sleepy).toEqual(true)
   })
 })
 
@@ -83,8 +83,8 @@ describe('Core: Errors: Custom Error Decoration', () => {
 
   test('will return an actions error', async () => {
     let response = await api.specHelper.runAction('errorAction')
-    expect(response.error).to.equal('Error: worst action ever!')
-    expect(response.requestId).to.not.exist()
+    expect(response.error).toEqual('Error: worst action ever!')
+    expect(response.requestId).toBeUndefined()
   })
 
   test('can decorate an error', async () => {
@@ -93,7 +93,7 @@ describe('Core: Errors: Custom Error Decoration', () => {
       return error
     }
     let response = await api.specHelper.runAction('errorAction')
-    expect(response.error).to.equal('Error: worst action ever!')
-    expect(response.requestId).to.equal('id-12345')
+    expect(response.error).toEqual('Error: worst action ever!')
+    expect(response.requestId).toEqual('id-12345')
   })
 })

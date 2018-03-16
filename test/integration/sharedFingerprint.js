@@ -46,29 +46,29 @@ describe('Integration: Web Server + Websocket Socket shared fingerprint', () => 
     fingerprint = body.requesterInformation.fingerprint
     let headers = { cookie: api.config.servers.web.fingerprintOptions.cookieKey + '=' + fingerprint }
     let {client, connectResponse} = await connectClient({headers: headers})
-    expect(connectResponse.status).to.equal('OK')
-    expect(connectResponse.data.id).to.be.ok()
+    expect(connectResponse.status).toEqual('OK')
+    expect(connectResponse.data.id).toBeTruthy()
     let id = connectResponse.data.id
-    expect(api.connections.connections[id].fingerprint).to.equal(fingerprint)
+    expect(api.connections.connections[id].fingerprint).toEqual(fingerprint)
     client.disconnect()
   })
 
   test('should not exist when web server has not been called', async () => {
     let {client, connectResponse} = await connectClient({})
-    expect(connectResponse.status).to.equal('OK')
-    expect(connectResponse.data.id).to.be.ok()
+    expect(connectResponse.status).toEqual('OK')
+    expect(connectResponse.data.id).toBeTruthy()
     let id = connectResponse.data.id
-    expect(api.connections.connections[id].fingerprint).not.to.equal(fingerprint)
+    expect(api.connections.connections[id].fingerprint).not.toEqual(fingerprint)
     client.disconnect()
   })
 
   test('should exist as long as cookie is passed', async () => {
     let headers = { cookie: api.config.servers.web.fingerprintOptions.cookieKey + '=' + 'dummyValue' }
     let {client, connectResponse} = await connectClient({headers: headers})
-    expect(connectResponse.status).to.equal('OK')
-    expect(connectResponse.data.id).to.be.ok()
+    expect(connectResponse.status).toEqual('OK')
+    expect(connectResponse.data.id).toBeTruthy()
     let id = connectResponse.data.id
-    expect(api.connections.connections[id].fingerprint).to.equal('dummyValue')
+    expect(api.connections.connections[id].fingerprint).toEqual('dummyValue')
     client.disconnect()
   })
 })

@@ -68,7 +68,7 @@ describe('Server: sendBuffer', () => {
 
   test('Server should sendBuffer', async () => {
     let body = await request.get(url + '/api/sendBufferTest')
-    expect(body).to.equal('Example of data buffer')
+    expect(body).toEqual('Example of data buffer')
   })
 
   test('Server should send a stream with no specified length', async () => {
@@ -78,6 +78,6 @@ describe('Server: sendBuffer', () => {
     })
 
     expect(headers).to.not.have.property('content-length')
-    expect(body).to.equal('Example of unknown length data buffer')
+    expect(body).toEqual('Example of unknown length data buffer')
   })
 })

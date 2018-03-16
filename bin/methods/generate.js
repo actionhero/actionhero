@@ -37,7 +37,7 @@ module.exports = class Generate extends ActionHero.CLI {
       publicChat: '/public/chat.html',
       publicLogo: '/public/logo/actionhero.png',
       publicCss: '/public/css/cosmo.css',
-      exampleTest: '/test/template.js.example',
+      exampleTest: '/__tests__/template.js.example',
       enLocale: '/locales/en.json',
       gitignore: '/.gitignore'
     }

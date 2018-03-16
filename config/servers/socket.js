@@ -29,7 +29,7 @@ exports.test = {
     socket: (api) => {
       return {
         enabled: true,
-        port: (process.env.PORT || 20000) + (process.env.JEST_WORKER_ID || 0),
+        port: parseInt(process.env.PORT || 20000) + parseInt(process.env.JEST_WORKER_ID || 0),
         secure: false
       }
     }

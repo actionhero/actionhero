@@ -30,5 +30,7 @@
 		}
 	},
 	"Node Healthy": "Node Healthy",
-	"Your random number is {{randomNumber}}": "Your random number is {{randomNumber}}"
+	"Your random number is {{randomNumber}}": "Your random number is {{randomNumber}}",
+	"Unhealthy": "Unhealthy",
+	"Using more than {{maxMemoryAlloted}} MB of RAM/HEAP": "Using more than {{maxMemoryAlloted}} MB of RAM/HEAP"
 }

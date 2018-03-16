@@ -32,8 +32,8 @@ describe('Core: Middleware', () => {
         })
 
         let {_preProcessorNote, error} = await api.specHelper.runAction('randomNumber')
-        expect(error).to.not.exist()
-        expect(_preProcessorNote).to.equal('note')
+        expect(error).toBeUndefined()
+        expect(_preProcessorNote).toEqual('note')
       }
     )
 
@@ -50,8 +50,8 @@ describe('Core: Middleware', () => {
         })
 
         let {_preProcessorNote, error} = await api.specHelper.runAction('randomNumber')
-        expect(error).to.not.exist()
-        expect(_preProcessorNote).to.equal('slept')
+        expect(error).toBeUndefined()
+        expect(_preProcessorNote).toEqual('slept')
       }
     )
 
@@ -67,8 +67,8 @@ describe('Core: Middleware', () => {
         })
 
         let {_preProcessorNote, error} = await api.specHelper.runAction('randomNumber')
-        expect(error).to.not.exist()
-        expect(_preProcessorNote).to.not.exist()
+        expect(error).toBeUndefined()
+        expect(_preProcessorNote).toBeUndefined()
       }
     )
 
@@ -107,10 +107,10 @@ describe('Core: Middleware', () => {
         })
 
         let randomResponse = await api.specHelper.runAction('randomNumber')
-        expect(randomResponse.authenticatedAction).to.equal(false)
+        expect(randomResponse.authenticatedAction).toEqual(false)
 
         let authResponse = await api.specHelper.runAction('authAction')
-        expect(authResponse.authenticatedAction).to.equal(true)
+        expect(authResponse.authenticatedAction).toEqual(true)
       })
     })
 
@@ -161,10 +161,10 @@ describe('Core: Middleware', () => {
       })
 
       let response = await api.specHelper.runAction('randomNumber')
-      expect(response._processorNoteFirst).to.equal('first')
-      expect(response._processorNoteEarly).to.equal('early')
-      expect(response._processorNoteDefault).to.equal('default')
-      expect(response._processorNoteLate).to.equal('late')
+      expect(response._processorNoteFirst).toEqual('first')
+      expect(response._processorNoteEarly).toEqual('early')
+      expect(response._processorNoteDefault).toEqual('default')
+      expect(response._processorNoteLate).toEqual('late')
     })
 
     test('multiple preProcessors with same priority are executed', async () => {
@@ -187,8 +187,8 @@ describe('Core: Middleware', () => {
       })
 
       let response = await api.specHelper.runAction('randomNumber')
-      expect(response._processorNoteFirst).to.equal('first')
-      expect(response._processorNoteSecond).to.equal('second')
+      expect(response._processorNoteFirst).toEqual('first')
+      expect(response._processorNoteSecond).toEqual('second')
     })
 
     test('postProcessors can append the connection', async () => {
@@ -201,7 +201,7 @@ describe('Core: Middleware', () => {
       })
 
       let response = await api.specHelper.runAction('randomNumber')
-      expect(response._postProcessorNote).to.equal('note')
+      expect(response._postProcessorNote).toEqual('note')
     })
 
     test('postProcessors with priorities run in the right order', async () => {
@@ -251,10 +251,10 @@ describe('Core: Middleware', () => {
       })
 
       let response = await api.specHelper.runAction('randomNumber')
-      expect(response._processorNoteFirst).to.equal('first')
-      expect(response._processorNoteEarly).to.equal('early')
-      expect(response._processorNoteDefault).to.equal('default')
-      expect(response._processorNoteLate).to.equal('late')
+      expect(response._processorNoteFirst).toEqual('first')
+      expect(response._processorNoteEarly).toEqual('early')
+      expect(response._processorNoteDefault).toEqual('default')
+      expect(response._processorNoteLate).toEqual('late')
     })
 
     test('multiple postProcessors with same priority are executed', async () => {
@@ -277,8 +277,8 @@ describe('Core: Middleware', () => {
       })
 
       let response = await api.specHelper.runAction('randomNumber')
-      expect(response._processorNoteFirst).to.equal('first')
-      expect(response._processorNoteSecond).to.equal('second')
+      expect(response._processorNoteFirst).toEqual('first')
+      expect(response._processorNoteSecond).toEqual('second')
     })
 
     test('preProcessors can block actions', async () => {
@@ -291,8 +291,8 @@ describe('Core: Middleware', () => {
       })
 
       let {randomNumber, error} = await api.specHelper.runAction('randomNumber')
-      expect(error).to.equal('Error: BLOCKED')
-      expect(randomNumber).to.not.exist()
+      expect(error).toEqual('Error: BLOCKED')
+      expect(randomNumber).toBeUndefined()
     })
 
     test('postProcessors can modify toRender', async () => {
@@ -337,8 +337,8 @@ describe('Core: Middleware', () => {
 
       connection = new api.specHelper.Connection()
 
-      expect(middlewareRan).to.equal(true)
-      expect(connection.touched).to.equal('connect')
+      expect(middlewareRan).toEqual(true)
+      expect(connection.touched).toEqual('connect')
     })
 
     test('can create callbacks on connection destroy', async () => {
@@ -347,12 +347,12 @@ describe('Core: Middleware', () => {
         name: 'connection middleware',
         destroy: (_connection) => {
           middlewareRan = true
-          expect(_connection.touched).to.equal('connect')
+          expect(_connection.touched).toEqual('connect')
         }
       })
 
       connection.destroy()
-      expect(middlewareRan).to.equal(true)
+      expect(middlewareRan).toEqual(true)
     })
   })
 })

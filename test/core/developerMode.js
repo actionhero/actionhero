@@ -47,7 +47,7 @@ describe('Core: Developer Mode', () => {
 
   test('random numbers work initially', async () => {
     let {error, randomNumber} = await api.specHelper.runAction('randomNumber')
-    expect(error).to.not.exist()
+    expect(error).toBeUndefined()
     expect(randomNumber).to.be.at.most(1)
     expect(randomNumber).to.be.at.least(0)
   })
@@ -59,9 +59,9 @@ describe('Core: Developer Mode', () => {
 
     test('I can change the file and new actions will be loaded up', async () => {
       await sleep(3001) // file read timer is 1 second; time to notice the change + 3x time to reload API
-      expect(api.actions.actions.randomNumber['1'].description).to.equal('HACK')
+      expect(api.actions.actions.randomNumber['1'].description).toEqual('HACK')
       let {randomNumber} = await api.specHelper.runAction('randomNumber')
-      expect(randomNumber).to.equal('not a number!')
+      expect(randomNumber).toEqual('not a number!')
     }).timeout(10000)
   })
 
@@ -69,12 +69,12 @@ describe('Core: Developer Mode', () => {
     test('can be placed back', async () => {
       fs.writeFileSync(originalFile, originalContent)
       await sleep(5001)
-      expect(api.actions.actions.randomNumber['1'].description).to.equal('I am an API method which will generate a random number')
+      expect(api.actions.actions.randomNumber['1'].description).toEqual('I am an API method which will generate a random number')
     }).timeout(10000)
 
     test('works as it did originally', async () => {
       let {error, randomNumber} = await api.specHelper.runAction('randomNumber')
-      expect(error).to.not.exist()
+      expect(error).toBeUndefined()
       expect(randomNumber).to.be.at.most(1)
       expect(randomNumber).to.be.at.least(0)
     })

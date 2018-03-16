@@ -67,7 +67,7 @@ describe('Core: i18n', () => {
       [
         'Your random number is {{randomNumber}}'
       ].forEach((s) => {
-        expect(content[s]).to.equal(s)
+        expect(content[s]).toEqual(s)
       })
     }
   )
@@ -79,11 +79,11 @@ describe('Core: i18n', () => {
 
       api.i18n.determineConnectionLocale = () => { return 'test-env-en' }
       response = await api.specHelper.runAction('randomNumber')
-      expect(response.stringRandomNumber).to.match(/Your random number is/)
+      expect(response.stringRandomNumber).toMatch(/Your random number is/)
 
       api.i18n.determineConnectionLocale = () => { return 'test-env-es' }
       response = await api.specHelper.runAction('randomNumber')
-      expect(response.stringRandomNumber).to.match(/Su número aleatorio es/)
+      expect(response.stringRandomNumber).toMatch(/Su número aleatorio es/)
     }
   )
 
@@ -93,11 +93,11 @@ describe('Core: i18n', () => {
       let response
       api.i18n.determineConnectionLocale = () => { return 'test-env-en' }
       response = await api.specHelper.runAction('cacheTest')
-      expect(response.error).to.equal('Error: actionhero.errors.missingParams')
+      expect(response.error).toEqual('Error: actionhero.errors.missingParams')
 
       api.i18n.determineConnectionLocale = () => { return 'test-env-es' }
       response = await api.specHelper.runAction('cacheTest')
-      expect(response.error).to.match(/key es un parámetro requerido para esta acción/)
+      expect(response.error).toMatch(/key es un parámetro requerido para esta acción/)
     }
   )
 
@@ -107,11 +107,11 @@ describe('Core: i18n', () => {
       let response
       api.i18n.determineConnectionLocale = () => { return 'test-env-en' }
       response = await api.specHelper.getStaticFile('missing-file.html')
-      expect(response.error).to.equal('actionhero.errors.fileNotFound')
+      expect(response.error).toEqual('actionhero.errors.fileNotFound')
 
       api.i18n.determineConnectionLocale = () => { return 'test-env-es' }
       response = await api.specHelper.getStaticFile('missing-file.html')
-      expect(response.error).to.match(/Ese archivo no se encuentra/)
+      expect(response.error).toMatch(/Ese archivo no se encuentra/)
     }
   )
 
@@ -122,6 +122,6 @@ describe('Core: i18n', () => {
     }
 
     let response = await api.specHelper.getStaticFile('missing-file.html')
-    expect(response.error).to.match(/actionhero.errors.fileNotFound/) // should this have worked, it would have been in Spanish
+    expect(response.error).toMatch(/actionhero.errors.fileNotFound/) // should this have worked, it would have been in Spanish
   })
 })
