@@ -3,16 +3,25 @@
 const fs = require('fs')
 const path = require('path')
 const Mime = require('mime')
-const {promisify} = require('util')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
-function asyncStats (file) {
-  return promisify(fs.stat)(file)
+async function asyncStats (file) {
+  await new Promise((resolve, reject) => {
+    fs.stat(file, (error, data) => {
+      if (error) { return reject(error) }
+      return resolve(data)
+    })
+  })
 }
 
-function asyncReadLink (file) {
-  return promisify(fs.readLink)(file)
+async function asyncReadLink (file) {
+  await new Promise((resolve, reject) => {
+    fs.readLink((error, data) => {
+      if (error) { return reject(error) }
+      return resolve(data)
+    })
+  })
 }
 
 /**

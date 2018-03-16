@@ -6,13 +6,20 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const path = require('path')
-const {promisify} = require('util')
-const exec = require('child_process').exec
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
 
 let configChanges
+
+async function exec (command, args) {
+  await new Promise((resolve, reject) => {
+    require('child_process').exec(command, args, (error, data) => {
+      if (error) { return reject(error) }
+      return resolve(data)
+    })
+  })
+}
 
 describe('Core: Plugins', () => {
   describe('with plugin', () => {
@@ -55,11 +62,11 @@ describe('Core: Plugins', () => {
       let env = Object.assign({}, process.env)
       env.configChanges = JSON.stringify(configChanges)
 
-      let {stdout: helpResponse, stderr: error1} = await promisify(exec)('./bin/actionhero help', {env})
+      let {stdout: helpResponse, stderr: error1} = await exec('./bin/actionhero help', {env})
       expect(error1).to.equal('')
       expect(helpResponse).to.contain('hello')
 
-      let {stdout: helloResponse, stderr: error2} = await promisify(exec)('./bin/actionhero hello', {env})
+      let {stdout: helloResponse, stderr: error2} = await exec('./bin/actionhero hello', {env})
       expect(error2).to.equal('')
       expect(helloResponse).to.contain('hello')
     })
@@ -111,12 +118,12 @@ describe('Core: Plugins', () => {
       let env = Object.assign({}, process.env)
       env.configChanges = JSON.stringify(configChanges)
 
-      let {stdout: helpResponse, stderr: error1} = await promisify(exec)('./bin/actionhero help', {env})
+      let {stdout: helpResponse, stderr: error1} = await exec('./bin/actionhero help', {env})
       expect(error1).to.equal('')
       expect(helpResponse).to.not.contain('hello')
 
       try {
-        await promisify(exec)('./bin/actionhero hello', {env})
+        await exec('./bin/actionhero hello', {env})
         throw new Error('should not get here')
       } catch (error) {
         expect(error).to.match(/`hello` is not a method I can perform/)
@@ -150,12 +157,12 @@ describe('Core: Plugins', () => {
     })
 
     test('will not load CLI command from an un-loaded plugin', async () => {
-      let {stdout: helpResponse, stderr: error1} = await promisify(exec)('./bin/actionhero help')
+      let {stdout: helpResponse, stderr: error1} = await exec('./bin/actionhero help')
       expect(error1).to.equal('')
       expect(helpResponse).to.not.contain('hello')
 
       try {
-        await promisify(exec)('./bin/actionhero hello')
+        await exec('./bin/actionhero hello')
         throw new Error('should not get here')
       } catch (error) {
         expect(error).to.match(/`hello` is not a method I can perform/)

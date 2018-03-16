@@ -10,7 +10,6 @@ chai.use(dirtyChai)
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
-const {promisify} = require('util')
 const spawn = require('child_process').spawn
 const request = require('request-promise-native')
 const isrunning = require('is-running')
@@ -59,7 +58,9 @@ const doCommand = async (command, useCwd) => {
   })
 }
 
-const sleep = async (timeout) => { await promisify(setTimeout)(timeout) }
+async function sleep (time) {
+  await new Promise((resolve) => { setTimeout(resolve, time) })
+}
 
 describe('Core: CLI', () => {
   if (process.platform === 'win32') {

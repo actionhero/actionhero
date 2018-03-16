@@ -9,14 +9,23 @@ const request = require('request-promise-native')
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
-const {promisify} = require('util')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
 let url
 
-const sleep = async (timeout) => { await promisify(setTimeout)(timeout) }
-const exec = promisify(require('child_process').exec)
+async function sleep (time) {
+  await new Promise((resolve) => { setTimeout(resolve, time) })
+}
+
+async function exec (command) {
+  await new Promise((resolve, reject) => {
+    require('child_process').exec(command, (error, data) => {
+      if (error) { return reject(error) }
+      return resolve(data)
+    })
+  })
+}
 
 const toJson = async (string) => {
   try {

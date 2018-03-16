@@ -6,7 +6,6 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const fs = require('fs')
-const {promisify} = require('util')
 const path = require('path')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
@@ -30,7 +29,9 @@ newFileContent += '    data.response.randomNumber = "not a number!"\n'
 newFileContent += '  }\n'
 newFileContent += '}\n'
 
-const sleep = async (timeout) => { await promisify(setTimeout)(timeout) }
+async function sleep (time) {
+  await new Promise((resolve) => { setTimeout(resolve, time) })
+}
 
 describe('Core: Developer Mode', () => {
   beforeAll(async () => {

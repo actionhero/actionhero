@@ -1,7 +1,6 @@
 'use strict'
 
 const REPL = require('repl')
-const {promisify} = require('util')
 const ActionHero = require('./../../index.js')
 const api = ActionHero.api
 
@@ -13,7 +12,7 @@ module.exports = class Console extends ActionHero.CLI {
   }
 
   async sleep (time) {
-    return promisify(setTimeout)(time)
+    await new Promise((resolve) => { setTimeout(resolve, time) })
   }
 
   async run () {

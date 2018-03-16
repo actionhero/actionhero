@@ -8,10 +8,13 @@ chai.use(dirtyChai)
 const fs = require('fs')
 const os = require('os')
 const path = require('path')
-const {promisify} = require('util')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
+
+async function sleep (time) {
+  await new Promise((resolve) => { setTimeout(resolve, time) })
+}
 
 describe('Core: Cache', () => {
   beforeAll(async () => { api = await actionhero.start() })
@@ -62,7 +65,7 @@ describe('Core: Cache', () => {
   test('cache.load with expired items should not return them', async () => {
     let saveResp = await api.cache.save('testKey_slow', 'abc123', 10)
     expect(saveResp).to.equal(true)
-    await promisify(setTimeout)(20)
+    await sleep(20)
     try {
       await api.cache.load('testKey_slow')
       throw new Error('should not get here')
@@ -96,7 +99,7 @@ describe('Core: Cache', () => {
       await api.cache.save(key, 'val', 1000)
       let loadResp = await api.cache.load(key)
       expect(loadResp.value).to.equal('val')
-      await promisify(setTimeout)(1001)
+      await sleep(1001)
       try {
         await api.cache.load(key)
         throw new Error('should not get here')
@@ -118,19 +121,19 @@ describe('Core: Cache', () => {
       expect(saveResp).to.equal(true)
 
       // wait for `timeout` and try to load the key
-      await promisify(setTimeout)(timeout)
+      await sleep(timeout)
 
       let loadResp = await api.cache.load('testKey_slow', {expireTimeMS: expireTime})
       expect(loadResp.value).to.equal('abc123')
 
       // wait another `timeout` and load the key again within the extended expire time
-      await promisify(setTimeout)(timeout)
+      await sleep(timeout)
 
       loadResp = await api.cache.load('testKey_slow')
       expect(loadResp.value).to.equal('abc123')
 
       // wait another `timeout` and the key load should fail without the extension
-      await promisify(setTimeout)(timeout)
+      await sleep(timeout)
 
       try {
         loadResp = await api.cache.load('testKey_slow')

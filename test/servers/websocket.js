@@ -6,12 +6,13 @@ const expect = chai.expect
 chai.use(dirtyChai)
 
 const path = require('path')
-const {promisify} = require('util')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
 
-const sleep = async (timeout) => { await promisify(setTimeout)(timeout) }
+async function sleep (time) {
+  await new Promise((resolve) => { setTimeout(resolve, time) })
+}
 
 let clientA
 let clientB

@@ -7,12 +7,13 @@ chai.use(dirtyChai)
 
 const uuid = require('uuid')
 const path = require('path')
-const {promisify} = require('util')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
 
-const sleep = async (timeout) => { await promisify(setTimeout)(timeout) }
+async function sleep (time) {
+  await new Promise((resolve) => { setTimeout(resolve, time) })
+}
 
 const net = require('net')
 let client
