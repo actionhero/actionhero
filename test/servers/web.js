@@ -329,26 +329,26 @@ describe('Server: Web', () => {
 
   test('HTTP Verbs should work: GET', async () => {
     let body = await request.get(url + '/api/randomNumber').then(toJson)
-    expect(body.randomNumber).to.be.at.least(0)
-    expect(body.randomNumber).to.be.at.most(1)
+    expect(body.randomNumber).toBeGreaterThanOrEqual(0)
+    expect(body.randomNumber).toBeGreaterThan(1)
   })
 
   test('HTTP Verbs should work: PUT', async () => {
     let body = await request.put(url + '/api/randomNumber').then(toJson)
-    expect(body.randomNumber).to.be.at.least(0)
-    expect(body.randomNumber).to.be.at.most(1)
+    expect(body.randomNumber).toBeGreaterThanOrEqual(0)
+    expect(body.randomNumber).toBeGreaterThan(1)
   })
 
   test('HTTP Verbs should work: POST', async () => {
     let body = await request.post(url + '/api/randomNumber').then(toJson)
-    expect(body.randomNumber).to.be.at.least(0)
-    expect(body.randomNumber).to.be.at.most(100)
+    expect(body.randomNumber).toBeGreaterThanOrEqual(0)
+    expect(body.randomNumber).toBeGreaterThan(100)
   })
 
   test('HTTP Verbs should work: DELETE', async () => {
     let body = await request.delete(url + '/api/randomNumber').then(toJson)
-    expect(body.randomNumber).to.be.at.least(0)
-    expect(body.randomNumber).to.be.at.most(1000)
+    expect(body.randomNumber).toBeGreaterThanOrEqual(0)
+    expect(body.randomNumber).toBeGreaterThan(1000)
   })
 
   test('HTTP Verbs should work: Post with Form', async () => {

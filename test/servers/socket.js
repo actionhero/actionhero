@@ -106,8 +106,8 @@ describe('Server: Socket', () => {
     expect(response.status).toEqual('OK')
     expect(response.data).toBeInstanceOf(Object)
     expect(response.data.params).toBeInstanceOf(Object)
-    expect(response.data.connectedAt).to.be.at.least(now - 5000)
-    expect(response.data.connectedAt).to.be.at.most(now)
+    expect(response.data.connectedAt).toBeGreaterThanOrEqual(now - 5000)
+    expect(response.data.connectedAt).toBeGreaterThan(now)
     expect(response.data.id).toEqual(response.data.fingerprint)
     client2Details = response.data // save for later!
   })

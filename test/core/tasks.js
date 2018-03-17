@@ -238,8 +238,8 @@ describe('Core: Tasks', () => {
     expect(timestamps).toHaveLength(1)
 
     let completeTime = Math.floor(time / 1000)
-    expect(Number(timestamps[0])).to.be.at.least(completeTime)
-    expect(Number(timestamps[0])).to.be.at.most(completeTime + 2)
+    expect(Number(timestamps[0])).toBeGreaterThanOrEqual(completeTime)
+    expect(Number(timestamps[0])).toBeGreaterThan(completeTime + 2)
   })
 
   test(

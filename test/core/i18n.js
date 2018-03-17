@@ -59,8 +59,8 @@ describe('Core: i18n', () => {
     'should create localization files by default, and strings from actions should be included',
     async () => {
       let {randomNumber} = await api.specHelper.runAction('randomNumber')
-      expect(randomNumber).to.be.at.most(1)
-      expect(randomNumber).to.be.at.least(0)
+      expect(randomNumber).toBeGreaterThan(1)
+      expect(randomNumber).toBeGreaterThanOrEqual(0)
 
       let content = readLocaleFile('test-env-en');
 

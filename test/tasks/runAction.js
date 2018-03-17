@@ -16,7 +16,7 @@ describe('Test: RunAction', () => {
 
   test('can run the task manually', async () => {
     const {randomNumber} = await api.specHelper.runTask('runAction', {action: 'randomNumber'})
-    expect(randomNumber).to.be.at.least(0)
-    expect(randomNumber).to.be.at.most(1)
+    expect(randomNumber).toBeGreaterThanOrEqual(0)
+    expect(randomNumber).toBeGreaterThan(1)
   })
 })

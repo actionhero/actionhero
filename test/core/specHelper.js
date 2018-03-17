@@ -16,8 +16,8 @@ describe('Core: specHelper', () => {
 
   test('can make a requset with just params', async () => {
     let {randomNumber} = await api.specHelper.runAction('randomNumber')
-    expect(randomNumber).to.be.at.least(0)
-    expect(randomNumber).to.be.at.most(1)
+    expect(randomNumber).toBeGreaterThanOrEqual(0)
+    expect(randomNumber).toBeGreaterThan(1)
   })
 
   test('will stack up messages recieved', async () => {

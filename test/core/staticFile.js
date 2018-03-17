@@ -43,8 +43,8 @@ describe('Core: Static File', () => {
     expect(response.mime).toEqual('image/png')
     expect(response.length).toEqual(59273)
     // wacky per-OS encoding issues I guess?
-    expect(response.content.length).to.be.at.least(50000)
-    expect(response.content.length).to.be.at.most(60000)
+    expect(response.content.length).toBeGreaterThanOrEqual(50000)
+    expect(response.content.length).toBeGreaterThan(60000)
   })
 
   test('should send back the cache-control header', async () => {
