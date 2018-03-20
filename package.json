@@ -76,6 +76,11 @@
       "expect"
     ]
   },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "<rootDir>/__tests__/testPlugin"
+    ]
+  },
   "scripts": {
     "postinstall": "echo 'To generate a new actionhero project, run \"npx actionhero generate\"'",
     "help": "node ./bin/actionhero help",
