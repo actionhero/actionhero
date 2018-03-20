@@ -322,7 +322,7 @@ class Cache extends ActionHero.Initializer {
      */
     api.cache.checkLock = async (key, retry, startTime) => {
       const sleep = async function (time) {
-        await new Promise((resolve) => { setTimeout(resolve, time) })
+        return new Promise((resolve) => { setTimeout(resolve, time) })
       }
 
       if (!startTime) { startTime = new Date().getTime() }

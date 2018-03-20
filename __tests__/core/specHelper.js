@@ -1,10 +1,5 @@
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-
 const path = require('path')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
@@ -17,7 +12,7 @@ describe('Core: specHelper', () => {
   test('can make a requset with just params', async () => {
     let {randomNumber} = await api.specHelper.runAction('randomNumber')
     expect(randomNumber).toBeGreaterThanOrEqual(0)
-    expect(randomNumber).toBeGreaterThan(1)
+    expect(randomNumber).toBeLessThan(1)
   })
 
   test('will stack up messages recieved', async () => {
