@@ -1,10 +1,5 @@
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-
 const path = require('path')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
@@ -199,7 +194,7 @@ describe('Core: Tasks', () => {
     api.tasks.tasks.taskWithMethod = new TaskWithMethod()
     api.tasks.jobs.taskWithMethod = api.tasks.jobWrapper('taskWithMethod')
     await api.specHelper.runFullTask('taskWithMethod', {})
-    expect(taskOutput).to.have.lengthOf(3)
+    expect(taskOutput).toHaveLength(3)
     expect(taskOutput[0]).toEqual('one')
     expect(taskOutput[1]).toEqual('two')
     expect(taskOutput[2]).toEqual('tree')
@@ -239,7 +234,7 @@ describe('Core: Tasks', () => {
 
     let completeTime = Math.floor(time / 1000)
     expect(Number(timestamps[0])).toBeGreaterThanOrEqual(completeTime)
-    expect(Number(timestamps[0])).toBeGreaterThan(completeTime + 2)
+    expect(Number(timestamps[0])).toBeLessThan(completeTime + 2)
   })
 
   test(
@@ -337,7 +332,7 @@ describe('Core: Tasks', () => {
           try {
             await api.tasks.enqueue('middlewareTask', {})
           } catch (error) {
-            expect(error.toString()).to.be.equal('Error: You cannot enqueue me!')
+            expect(error.toString()).toEqual('Error: You cannot enqueue me!')
           }
         }
       )
@@ -410,15 +405,13 @@ describe('Core: Tasks', () => {
 
       test('can prevent the running of a task with return value', async () => {
         let result = await api.specHelper.runFullTask('middlewareTask', {stop: true})
-        expect(result).to.be.undefined()
+        expect(result).toBeUndefined()
       })
     })
   })
 
   describe('details view in a working system', () => {
     test('can use api.tasks.details to learn about the system', async () => {
-      this.timeout(1000 * 10)
-
       api.config.tasks.queues = ['*']
 
       await api.tasks.enqueue('slowTask', {a: 1})
@@ -437,7 +430,7 @@ describe('Core: Tasks', () => {
       expect(details.workers[workerName].payload['class']).toEqual('slowTask')
 
       await api.resque.multiWorker.stop()
-    })
+    }, 10000)
   })
 
   describe('full worker flow', () => {
