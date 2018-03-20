@@ -4,7 +4,7 @@ const chai = require('chai')
 const dirtyChai = require('dirty-chai')
 const expect = chai.expect
 chai.use(dirtyChai)
-
+const {PassThrough} = require('stream')
 const request = require('request-promise-native')
 const fs = require('fs')
 const os = require('os')
@@ -446,6 +446,73 @@ describe('Server: Web', () => {
           let body = await request.post(url + '/api/paramTestAction', {'body': requestBody, 'headers': {'Content-type': 'text/plain'}}).then(toJson)
           expect(body.body).to.deep.equal({})
           expect(body.rawBody).to.equal(requestBody)
+        })
+
+        it('rawBody will exist if the content-type cannot be handled by formidable', async () => {
+          let requestPart1 = '<texty><innerNode>more than'
+          let requestPart2 = ' two words</innerNode></texty>'
+
+          var bufferStream = new PassThrough()
+          var req = request.post(url + '/api/paramTestAction', {headers: {'Content-type': 'text/xml'}})
+          bufferStream.write(Buffer.from(requestPart1)) // write the first part
+          bufferStream.pipe(req)
+          setTimeout(() => {
+            bufferStream.end(Buffer.from(requestPart2)) // end signals no more is coming
+          }, 50)
+
+          await new Promise((resolve, reject) => {
+            bufferStream.on('finish', resolve)
+          })
+          var respString = await req
+          var resp = JSON.parse(respString)
+          expect(resp.error).to.not.exist()
+          expect(resp.body).to.deep.equal({})
+          expect(resp.rawBody).to.equal(requestPart1 + requestPart2)
+        })
+        it('rawBody and form will process JSON with odd stream testing', async () => {
+          let requestJson = { a: 1, b: 'two' }
+          let requestString = JSON.stringify(requestJson)
+          let middleIdx = Math.floor(requestString.length / 2)
+          let requestPart1 = requestString.substring(0, middleIdx)
+          let requestPart2 = requestString.substring(middleIdx)
+
+          var bufferStream = new PassThrough()
+          var req = request.post(url + '/api/paramTestAction', {'headers': {'Content-type': 'application/json'}})
+          bufferStream.write(Buffer.from(requestPart1)) // write the first part
+          bufferStream.pipe(req)
+          setTimeout(() => {
+            bufferStream.end(Buffer.from(requestPart2)) // end signals no more is coming
+          }, 50)
+
+          await new Promise((resolve, reject) => {
+            bufferStream.on('finish', resolve)
+          })
+          var respString = await req
+          var resp = JSON.parse(respString)
+          expect(resp.error).to.not.exist()
+          expect(resp.body).to.deep.equal(requestJson)
+          expect(resp.rawBody).to.equal(requestString)
+        })
+        it('rawBody processing will not hang on writable error', async () => {
+          let requestPart1 = '<texty><innerNode>more than'
+
+          var bufferStream = new PassThrough()
+          var req = request.post(url + '/api/paramTestAction', {headers: {'Content-type': 'text/xml'}})
+          bufferStream.write(Buffer.from(requestPart1)) // write the first part
+          bufferStream.pipe(req)
+          setTimeout(() => {
+            bufferStream.destroy(new Error('This stream is broken.')) // sends an error and closes the stream
+          }, 50)
+
+          await new Promise((resolve, reject) => {
+            bufferStream.on('finish', resolve)
+            bufferStream.on('error', resolve)
+          })
+          var respString = await req
+          var resp = JSON.parse(respString)
+          expect(resp.error).to.not.exist()
+          expect(resp.body).to.deep.equal({})
+          expect(resp.rawBody).to.equal(requestPart1) // stream ends with only one part processed
         })
       })
     })
