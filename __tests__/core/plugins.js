@@ -1,11 +1,7 @@
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-
 const path = require('path')
+const ChildProcess = require('child_process')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
@@ -13,10 +9,10 @@ let api
 let configChanges
 
 async function exec (command, args) {
-  await new Promise((resolve, reject) => {
-    require('child_process').exec(command, args, (error, data) => {
+  return new Promise((resolve, reject) => {
+    ChildProcess.exec(command, args, (error, stdout, stderr) => {
       if (error) { return reject(error) }
-      return resolve(data)
+      return resolve({stdout, stderr})
     })
   })
 }
@@ -120,13 +116,13 @@ describe('Core: Plugins', () => {
 
       let {stdout: helpResponse, stderr: error1} = await exec('./bin/actionhero help', {env})
       expect(error1).toEqual('')
-      expect(helpResponse).to.not.contain('hello')
+      expect(helpResponse).not.toContain('hello')
 
       try {
         await exec('./bin/actionhero hello', {env})
         throw new Error('should not get here')
       } catch (error) {
-        expect(error).toMatch(/`hello` is not a method I can perform/)
+        expect(error.toString()).toMatch(/`hello` is not a method I can perform/)
       }
     })
   })
@@ -159,13 +155,13 @@ describe('Core: Plugins', () => {
     test('will not load CLI command from an un-loaded plugin', async () => {
       let {stdout: helpResponse, stderr: error1} = await exec('./bin/actionhero help')
       expect(error1).toEqual('')
-      expect(helpResponse).to.not.contain('hello')
+      expect(helpResponse).not.toContain('hello')
 
       try {
         await exec('./bin/actionhero hello')
         throw new Error('should not get here')
       } catch (error) {
-        expect(error).toMatch(/`hello` is not a method I can perform/)
+        expect(error.toString()).toMatch(/`hello` is not a method I can perform/)
       }
     })
   })
