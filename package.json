@@ -83,7 +83,6 @@
     "postinstall": "echo 'To generate a new actionhero project, run \"npx actionhero generate\"'",
     "help": "node ./bin/actionhero help",
     "test": "cross-env NODE_ENV=test mocha",
-    "grepTest": "cross-env NODE_ENV=test mocha --grep $1",
     "pretest": "standard",
     "start": "node ./bin/actionhero",
     "docs": "jsdoc -c jsdoc-conf.json"

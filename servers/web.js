@@ -475,10 +475,6 @@ module.exports = class WebServer extends ActionHero.Server {
           connection.rawConnection.form[i] = this.config.formOptions[i]
         }
 
-        // let rawBody = Buffer.alloc(0)
-        // if (this.config.saveRawBody) {
-        //   connection.rawConnection.req.on('data', (chunk) => { rawBody = Buffer.concat([rawBody, chunk]) })
-        // }
         let rawBody = Promise.resolve(Buffer.alloc(0))
         if (this.config.saveRawBody) {
           rawBody = new Promise((resolve, reject) => {
@@ -498,6 +494,7 @@ module.exports = class WebServer extends ActionHero.Server {
             resolve({fields, files})
           })
         })
+
         connection.rawConnection.params.body = fields
         connection.rawConnection.params.rawBody = await rawBody
         connection.rawConnection.params.files = files

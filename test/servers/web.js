@@ -10,7 +10,6 @@ const fs = require('fs')
 const os = require('os')
 const path = require('path')
 const {promisify} = require('util')
-// const {PassThrough} = require('stream')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
