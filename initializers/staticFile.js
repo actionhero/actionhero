@@ -7,19 +7,19 @@ const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
 async function asyncStats (file) {
-  await new Promise((resolve, reject) => {
-    fs.stat(file, (error, data) => {
+  return new Promise((resolve, reject) => {
+    fs.stat(file, (error, stats) => {
       if (error) { return reject(error) }
-      return resolve(data)
+      return resolve(stats)
     })
   })
 }
 
 async function asyncReadLink (file) {
-  await new Promise((resolve, reject) => {
-    fs.readLink((error, data) => {
+  return new Promise((resolve, reject) => {
+    fs.readLink(file, (error, linkString) => {
       if (error) { return reject(error) }
-      return resolve(data)
+      return resolve(linkString)
     })
   })
 }

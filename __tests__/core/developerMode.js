@@ -49,7 +49,7 @@ describe('Core', () => {
     })
 
     // TODO: Jest doesn't allow us to run require again in tests... even if we clear the require cache
-
+    //
     // describe('with new file', () => {
     //   beforeAll(async () => {
     //     fs.writeFileSync(file, newFileContent)
