@@ -1,10 +1,5 @@
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-
 const path = require('path')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
@@ -113,7 +108,7 @@ describe('Server: Web Socket', () => {
 
     test('I can get my connection details', async () => {
       let response = await awaitMethod(clientA, 'detailsView')
-      expect(response.data.connectedAt).to.be.below(new Date().getTime())
+      expect(response.data.connectedAt).toBeLessThan(new Date().getTime())
       expect(response.data.remoteIP).toEqual('127.0.0.1')
     })
 

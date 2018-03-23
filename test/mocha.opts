@@ -1,5 +1,0 @@
---colors
---recursive
---reporter dot
---timeout 5000
---check-leaks
