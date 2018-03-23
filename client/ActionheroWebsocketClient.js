@@ -37,17 +37,18 @@ ActionheroWebsocketClient.prototype.defaults = function () {
 ActionheroWebsocketClient.prototype.connect = function (callback) {
   var self = this
   self.messageCount = 0
+  var urlWithSession = self.options.url + '?' + self.options.cookieKey + '=' + self.getCookie(self.options.cookieKey)
 
   if (self.client && self.externalClient !== true) {
     self.client.end()
     self.client.removeAllListeners()
     delete self.client
-    self.client = Primus.connect(self.options.url, self.options)
+    self.client = Primus.connect(urlWithSession, self.options)
   } else if (self.client && self.externalClient === true) {
     self.client.end()
     self.client.open()
   } else {
-    self.client = Primus.connect(self.options.url, self.options)
+    self.client = Primus.connect(urlWithSession, self.options)
   }
 
   self.client.on('open', function () {
@@ -101,6 +102,11 @@ ActionheroWebsocketClient.prototype.connect = function (callback) {
   self.client.on('data', function (data) {
     self.handleMessage(data)
   })
+}
+
+ActionheroWebsocketClient.prototype.getCookie = function (name) {
+  match = document.cookie.match(new RegExp(name + '=([^;]+)'))
+  if (match) return match[1]
 }
 
 ActionheroWebsocketClient.prototype.configure = function (callback) {
