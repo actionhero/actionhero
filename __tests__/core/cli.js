@@ -6,13 +6,13 @@ const fs = require('fs')
 const os = require('os')
 const path = require('path')
 const spawn = require('child_process').spawn
-// const request = require('request-promise-native')
-// const isrunning = require('is-running')
+const request = require('request-promise-native')
+const isrunning = require('is-running')
 const testDir = os.tmpdir() + path.sep + 'actionheroTestProject'
 const binary = './node_modules/.bin/actionhero'
 const pacakgeJSON = require(path.join(__dirname, '/../../package.json'))
 
-const port = 9999
+const port = 18080
 let pid
 
 let AHPath
@@ -27,7 +27,6 @@ const doCommand = async (command, useCwd) => {
     let stderr = ''
 
     let env = process.env
-    env.PORT = port
 
     let cmd = spawn(bin, args, {
       cwd: useCwd ? testDir : __dirname,
@@ -40,7 +39,8 @@ const doCommand = async (command, useCwd) => {
     pid = cmd.pid
 
     cmd.on('close', (exitCode) => {
-      if (stderr.length > 0 || exitCode !== 0) {
+      // running jest in a sub-shell returns the output as stderr, so we need to filter it
+      if ((stderr.length > 0 && stderr.indexOf('✓') < 0) || exitCode !== 0) {
         let error = new Error(stderr)
         error.stderr = stderr
         error.stdout = stdout
@@ -53,9 +53,9 @@ const doCommand = async (command, useCwd) => {
   })
 }
 
-// async function sleep (time) {
-//   await new Promise((resolve) => { setTimeout(resolve, time) })
-// }
+async function sleep (time) {
+  await new Promise((resolve) => { setTimeout(resolve, time) })
+}
 
 describe('Core: CLI', () => {
   if (process.platform === 'win32') {
@@ -199,138 +199,137 @@ describe('Core: CLI', () => {
       expect(data).toMatch(/async stop \(\) {/)
     })
 
-    // TODO
-    // test('can call npm test in the new project and not fail', async () => {
-    //   await doCommand(`npm test`)
-    // }, 120000)
+    test('can call npm test in the new project and not fail', async () => {
+      await doCommand(`npm test`)
+    }, 120000)
 
-    // NOTE: To run these tests, don't await! It will be fine... what could go wrong?
+    describe('can run a single server', () => {
+      // NOTE: To run these tests, don't await! It will be fine... what could go wrong?
+      let serverPid
 
-    // TODO
-    // describe('can run a single server', () => {
-    //   let serverPid
-    //   beforeAll(async function () {
-    //     doCommand(`${binary} start`)
-    //     await sleep(3000)
-    //     serverPid = pid
-    //   })
-    //
-    //   afterAll(async () => {
-    //     if (isrunning(serverPid)) { await doCommand(`kill ${serverPid}`) }
-    //   })
-    //
-    //   test('can boot a single server', async () => {
-    //     let response = await request(`http://localhost:${port}/api/showDocumentation`, {json: true})
-    //     expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
-    //   })
-    //
-    //   test('can handle signals to reboot', async () => {
-    //     await doCommand(`kill -s USR2 ${serverPid}`)
-    //     await sleep(3000)
-    //     let response = await request(`http://localhost:${port}/api/showDocumentation`, {json: true})
-    //     expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
-    //   })
-    //
-    //   test('can handle signals to stop', async () => {
-    //     await doCommand(`kill ${serverPid}`)
-    //     await sleep(3000)
-    //     try {
-    //       await request(`http://localhost:${port}/api/showDocumentation`)
-    //       throw new Error('should not get here')
-    //     } catch (error) {
-    //       expect(error.toString()).toMatch(/ECONNREFUSED/)
-    //     }
-    //   })
-    //
-    //   test('will shutdown after the alloted time')
-    // })
-    //
-    // describe('can run a cluster', () => {
-    //   let clusterPid
-    //   beforeAll(async function () {
-    //     doCommand(`${binary} start cluster --workers=2`)
-    //     await sleep(3000)
-    //     clusterPid = pid
-    //   })
-    //
-    //   afterAll(async () => {
-    //     if (isrunning(clusterPid)) { await doCommand(`kill ${clusterPid}`) }
-    //   })
-    //
-    //   test('should be running the cluster with 2 nodes', async () => {
-    //     let {stdout} = await doCommand(`ps awx`)
-    //     let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
-    //     let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
-    //     expect(parents.length).toEqual(1)
-    //     expect(children.length).toEqual(2)
-    //
-    //     let response = await request(`http://localhost:${port}/api/showDocumentation`, {json: true})
-    //     expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
-    //   })
-    //
-    //   test('can handle signals to add a worker', async () => {
-    //     await doCommand(`kill -s TTIN ${clusterPid}`)
-    //     await sleep(1000)
-    //
-    //     let {stdout} = await doCommand(`ps awx`)
-    //     let parents = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start cluster') >= 0 })
-    //     let children = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start') >= 0 && l.indexOf('cluster') < 0 })
-    //     expect(parents.length).toEqual(1)
-    //     expect(children.length).toEqual(3)
-    //   })
-    //
-    //   test('can handle signals to remove a worker', async () => {
-    //     await doCommand(`kill -s TTOU ${clusterPid}`)
-    //     await sleep(1000)
-    //
-    //     let {stdout} = await doCommand(`ps awx`)
-    //     let parents = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start cluster') >= 0 })
-    //     let children = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start') >= 0 && l.indexOf('cluster') < 0 })
-    //     expect(parents.length).toEqual(1)
-    //     expect(children.length).toEqual(2)
-    //   })
-    //
-    //   test('can handle signals to reboot (graceful)', async () => {
-    //     await doCommand(`kill -s USR2 ${clusterPid}`)
-    //     await sleep(2000)
-    //
-    //     let {stdout} = await doCommand(`ps awx`)
-    //     let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
-    //     let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
-    //     expect(parents.length).toEqual(1)
-    //     expect(children.length).toEqual(2)
-    //
-    //     let response = await request(`http://localhost:${port}/api/showDocumentation`, {json: true})
-    //     expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
-    //   })
-    //
-    //   test('can handle signals to reboot (hup)', async () => {
-    //     await doCommand(`kill -s WINCH ${clusterPid}`)
-    //     await sleep(2000)
-    //
-    //     let {stdout} = await doCommand(`ps awx`)
-    //     let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
-    //     let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
-    //     expect(parents.length).toEqual(1)
-    //     expect(children.length).toEqual(2)
-    //
-    //     let response = await request(`http://localhost:${port}/api/showDocumentation`, {json: true})
-    //     expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
-    //   })
-    //
-    //   test('can handle signals to stop', async () => {
-    //     await doCommand(`kill ${clusterPid}`)
-    //     await sleep(2000)
-    //
-    //     let {stdout} = await doCommand(`ps awx`)
-    //     let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
-    //     let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
-    //     expect(parents.length).toEqual(0)
-    //     expect(children.length).toEqual(0)
-    //   })
-    //
-    //   test('can detect flapping and exit')
-    //   test('can reboot and abosrb code changes without downtime')
-    // })
+      beforeAll(async function () {
+        debugger; //eslint-disable-line
+        doCommand(`${binary} start`)
+        await sleep(3000)
+        serverPid = pid
+      })
+
+      afterAll(async () => {
+        if (isrunning(serverPid)) { await doCommand(`kill ${serverPid}`) }
+      })
+
+      test('can boot a single server', async () => {
+        let response = await request(`http://localhost:${port}/api/showDocumentation`, {json: true})
+        expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
+      })
+
+      test('can handle signals to reboot', async () => {
+        await doCommand(`kill -s USR2 ${serverPid}`)
+        await sleep(3000)
+        let response = await request(`http://localhost:${port}/api/showDocumentation`, {json: true})
+        expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
+      })
+
+      test('can handle signals to stop', async () => {
+        await doCommand(`kill ${serverPid}`)
+        await sleep(3000)
+        try {
+          await request(`http://localhost:${port}/api/showDocumentation`)
+          throw new Error('should not get here')
+        } catch (error) {
+          expect(error.toString()).toMatch(/ECONNREFUSED/)
+        }
+      })
+
+      test('will shutdown after the alloted time')
+    })
+
+    describe('can run a cluster', () => {
+      let clusterPid
+      beforeAll(async function () {
+        doCommand(`${binary} start cluster --workers=2`)
+        await sleep(3000)
+        clusterPid = pid
+      })
+
+      afterAll(async () => {
+        if (isrunning(clusterPid)) { await doCommand(`kill ${clusterPid}`) }
+      })
+
+      test('should be running the cluster with 2 nodes', async () => {
+        let {stdout} = await doCommand(`ps awx`)
+        let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
+        let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
+        expect(parents.length).toEqual(1)
+        expect(children.length).toEqual(2)
+
+        let response = await request(`http://localhost:${port}/api/showDocumentation`, {json: true})
+        expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
+      })
+
+      test('can handle signals to add a worker', async () => {
+        await doCommand(`kill -s TTIN ${clusterPid}`)
+        await sleep(1000)
+
+        let {stdout} = await doCommand(`ps awx`)
+        let parents = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start cluster') >= 0 })
+        let children = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start') >= 0 && l.indexOf('cluster') < 0 })
+        expect(parents.length).toEqual(1)
+        expect(children.length).toEqual(3)
+      })
+
+      test('can handle signals to remove a worker', async () => {
+        await doCommand(`kill -s TTOU ${clusterPid}`)
+        await sleep(1000)
+
+        let {stdout} = await doCommand(`ps awx`)
+        let parents = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start cluster') >= 0 })
+        let children = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start') >= 0 && l.indexOf('cluster') < 0 })
+        expect(parents.length).toEqual(1)
+        expect(children.length).toEqual(2)
+      })
+
+      test('can handle signals to reboot (graceful)', async () => {
+        await doCommand(`kill -s USR2 ${clusterPid}`)
+        await sleep(2000)
+
+        let {stdout} = await doCommand(`ps awx`)
+        let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
+        let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
+        expect(parents.length).toEqual(1)
+        expect(children.length).toEqual(2)
+
+        let response = await request(`http://localhost:${port}/api/showDocumentation`, {json: true})
+        expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
+      })
+
+      test('can handle signals to reboot (hup)', async () => {
+        await doCommand(`kill -s WINCH ${clusterPid}`)
+        await sleep(2000)
+
+        let {stdout} = await doCommand(`ps awx`)
+        let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
+        let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
+        expect(parents.length).toEqual(1)
+        expect(children.length).toEqual(2)
+
+        let response = await request(`http://localhost:${port}/api/showDocumentation`, {json: true})
+        expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
+      })
+
+      test('can handle signals to stop', async () => {
+        await doCommand(`kill ${clusterPid}`)
+        await sleep(2000)
+
+        let {stdout} = await doCommand(`ps awx`)
+        let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
+        let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
+        expect(parents.length).toEqual(0)
+        expect(children.length).toEqual(0)
+      })
+
+      test('can detect flapping and exit')
+      test('can reboot and abosrb code changes without downtime')
+    })
   }
 })
