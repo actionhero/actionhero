@@ -13,7 +13,7 @@
 
     var client;
     var boot = function(){
-      client = new ActionheroWebsocketClient;
+      client = new ActionheroWebsocketClient();
 
       client.on('connected',    function(){ console.log('connected!') })
       client.on('disconnected', function(){ console.log('disconnected :(') })
