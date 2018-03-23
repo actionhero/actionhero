@@ -1,10 +1,5 @@
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-
 const request = require('request-promise-native')
 const stream = require('stream')
 const path = require('path')
@@ -77,7 +72,7 @@ describe('Server: sendBuffer', () => {
       resolveWithFullResponse: true
     })
 
-    expect(headers).to.not.have.property('content-length')
+    expect(headers).not.toHaveProperty('content-length')
     expect(body).toEqual('Example of unknown length data buffer')
   })
 })
