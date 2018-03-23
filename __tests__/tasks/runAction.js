@@ -1,10 +1,5 @@
 'use strict'
 
-const chai = require('chai')
-const dirtyChai = require('dirty-chai')
-const expect = chai.expect
-chai.use(dirtyChai)
-
 const path = require('path')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
@@ -17,6 +12,6 @@ describe('Test: RunAction', () => {
   test('can run the task manually', async () => {
     const {randomNumber} = await api.specHelper.runTask('runAction', {action: 'randomNumber'})
     expect(randomNumber).toBeGreaterThanOrEqual(0)
-    expect(randomNumber).toBeGreaterThan(1)
+    expect(randomNumber).toBeLessThan(1)
   })
 })
