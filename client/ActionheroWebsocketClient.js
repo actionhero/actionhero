@@ -105,7 +105,8 @@ ActionheroWebsocketClient.prototype.connect = function (callback) {
 }
 
 ActionheroWebsocketClient.prototype.getCookie = function (name) {
-  match = document.cookie.match(new RegExp(name + '=([^;]+)'))
+  if (typeof document === 'undefined' || !document.cookie) { return }
+  var match = document.cookie.match(new RegExp(name + '=([^;]+)'))
   if (match) return match[1]
 }
 
