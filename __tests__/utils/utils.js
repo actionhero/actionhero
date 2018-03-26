@@ -5,13 +5,19 @@ const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
 
-async function sleep (time) {
-  await new Promise((resolve) => { setTimeout(resolve, time) })
-}
-
 describe('Utils', () => {
   beforeAll(async () => { api = await actionhero.start() })
   afterAll(async () => { await actionhero.stop() })
+
+  describe('util.sleep', () => {
+    test('it sleeps', async () => {
+      const start = new Date().getTime()
+      await api.utils.sleep(100)
+      const end = new Date().getTime()
+      expect(end - start).toBeGreaterThanOrEqual(100)
+      expect(end - start).toBeLessThan(110)
+    })
+  })
 
   describe('utils.arrayUniqueify', () => {
     test('works', () => {
@@ -23,7 +29,7 @@ describe('Utils', () => {
   describe('utils.asyncWaterfall', () => {
     test('works with no args', async () => {
       let sleepyFunc = async () => {
-        await sleep(100)
+        await api.utils.sleep(100)
         return (new Date()).getTime()
       }
 
@@ -38,7 +44,7 @@ describe('Utils', () => {
 
     test('works with args', async () => {
       let sleepyFunc = async (response) => {
-        await sleep(100)
+        await api.utils.sleep(100)
         return response
       }
 

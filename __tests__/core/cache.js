@@ -7,10 +7,6 @@ const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
 
-async function sleep (time) {
-  await new Promise((resolve) => { setTimeout(resolve, time) })
-}
-
 describe('Core', () => {
   describe('cache', () => {
     beforeAll(async () => { api = await actionhero.start() })
@@ -61,7 +57,7 @@ describe('Core', () => {
     test('cache.load with expired items should not return them', async () => {
       let saveResp = await api.cache.save('testKey_slow', 'abc123', 10)
       expect(saveResp).toEqual(true)
-      await sleep(20)
+      await api.utils.sleep(20)
       try {
         await api.cache.load('testKey_slow')
         throw new Error('should not get here')
@@ -95,7 +91,7 @@ describe('Core', () => {
         await api.cache.save(key, 'val', 1000)
         let loadResp = await api.cache.load(key)
         expect(loadResp.value).toEqual('val')
-        await sleep(1001)
+        await api.utils.sleep(1001)
         try {
           await api.cache.load(key)
           throw new Error('should not get here')
@@ -117,19 +113,19 @@ describe('Core', () => {
         expect(saveResp).toEqual(true)
 
         // wait for `timeout` and try to load the key
-        await sleep(timeout)
+        await api.utils.sleep(timeout)
 
         let loadResp = await api.cache.load('testKey_slow', {expireTimeMS: expireTime})
         expect(loadResp.value).toEqual('abc123')
 
         // wait another `timeout` and load the key again within the extended expire time
-        await sleep(timeout)
+        await api.utils.sleep(timeout)
 
         loadResp = await api.cache.load('testKey_slow')
         expect(loadResp.value).toEqual('abc123')
 
         // wait another `timeout` and the key load should fail without the extension
-        await sleep(timeout)
+        await api.utils.sleep(timeout)
 
         try {
           loadResp = await api.cache.load('testKey_slow')

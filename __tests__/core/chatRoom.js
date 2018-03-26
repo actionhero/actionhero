@@ -5,10 +5,6 @@ const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
 
-async function sleep (time) {
-  await new Promise((resolve) => { setTimeout(resolve, time) })
-}
-
 describe('Core', () => {
   describe('chatRoom', () => {
     beforeAll(async () => {
@@ -38,14 +34,14 @@ describe('Core', () => {
         client1.verbs('roomAdd', 'defaultRoom')
         client2.verbs('roomAdd', 'defaultRoom')
         client3.verbs('roomAdd', 'defaultRoom')
-        await sleep(100)
+        await api.utils.sleep(100)
       })
 
       afterAll(async () => {
         client1.destroy()
         client2.destroy()
         client3.destroy()
-        await sleep(100)
+        await api.utils.sleep(100)
       })
 
       test(
@@ -77,7 +73,7 @@ describe('Core', () => {
 
       test('clients can communicate across the cluster', async () => {
         await client1.verbs('say', ['defaultRoom', 'Hi', 'from', 'client', '1'])
-        await sleep(100)
+        await api.utils.sleep(100)
 
         let {message, room, from} = client2.messages[(client2.messages.length - 1)]
         expect(message).toEqual('Hi from client 1')
@@ -255,7 +251,7 @@ describe('Core', () => {
           await clientA.verbs('roomAdd', 'defaultRoom')
           await clientB.verbs('roomAdd', 'defaultRoom')
           await clientA.verbs('say', ['defaultRoom', 'hi there'])
-          await sleep(100)
+          await api.utils.sleep(100)
           let message = clientB.messages[(clientB.messages.length - 1)]
           expect(message.thing).toEqual('stuff')
           expect(message.message).toBeUndefined()
@@ -279,7 +275,7 @@ describe('Core', () => {
           await clientA.verbs('roomAdd', 'defaultRoom')
           await clientB.verbs('roomAdd', 'defaultRoom')
           await clientB.verbs('roomLeave', 'defaultRoom')
-          await sleep(100)
+          await api.utils.sleep(100)
 
           expect(clientA.messages.pop().message).toEqual('I have left the room: ' + clientB.id)
           expect(clientA.messages.pop().message).toEqual('I have entered the room: ' + clientB.id)
@@ -297,7 +293,7 @@ describe('Core', () => {
           await clientA.verbs('roomAdd', 'defaultRoom')
           await clientB.verbs('roomAdd', 'defaultRoom')
           await clientB.verbs('say', ['defaultRoom', 'something', 'awesome'])
-          await sleep(100)
+          await api.utils.sleep(100)
 
           let lastMessage = clientA.messages[(clientA.messages.length - 1)]
           expect(lastMessage.message).toEqual('something else')
@@ -327,7 +323,7 @@ describe('Core', () => {
             await clientA.verbs('roomAdd', 'defaultRoom')
             await clientB.verbs('roomAdd', 'defaultRoom')
             await clientB.verbs('say', ['defaultRoom', 'something', 'awesome'])
-            await sleep(100)
+            await api.utils.sleep(100)
 
             let lastMessage = clientA.messages[(clientA.messages.length - 1)]
             expect(lastMessage.message).toEqual('MIDDLEWARE 1 MIDDLEWARE 2')
@@ -345,7 +341,7 @@ describe('Core', () => {
           await clientA.verbs('roomAdd', 'defaultRoom')
           await clientB.verbs('roomAdd', 'defaultRoom')
           await clientB.verbs('say', ['defaultRoom', 'something', 'awesome'])
-          await sleep(100)
+          await api.utils.sleep(100)
 
           // welcome message is passed, no join/leave/or say messages
           expect(clientA.messages).toHaveLength(1)

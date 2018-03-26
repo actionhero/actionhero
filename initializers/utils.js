@@ -394,6 +394,15 @@ let responses = await api.utils.asyncWaterfall(jobs)
     }
 
     /**
+    Sleep with a Promise
+
+    @param {Number} time The number of ms to sleep
+    */
+    api.utils.sleep = (time) => {
+      return new Promise((resolve) => { setTimeout(resolve, time) })
+    }
+
+    /**
      * Check if a directory exists.
      *
      * @param  {string} dir The directory to check.

@@ -5,10 +5,6 @@ const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
 
-async function sleep (time) {
-  await new Promise((resolve) => { setTimeout(resolve, time) })
-}
-
 let taskOutput = []
 let queue = 'testQueue'
 
@@ -59,7 +55,7 @@ describe('Core: Tasks', () => {
       }
 
       async run (params) {
-        await sleep(5000)
+        await api.utils.sleep(5000)
         taskOutput.push('slowTask')
         return 'slowTask'
       }
@@ -179,7 +175,7 @@ describe('Core: Tasks', () => {
         this.queue = queue
       }
       async stepOne () {
-        await sleep(100)
+        await api.utils.sleep(100)
         taskOutput.push('one')
       }
       stepTwo () {
@@ -417,7 +413,7 @@ describe('Core: Tasks', () => {
       await api.tasks.enqueue('slowTask', {a: 1})
       api.resque.multiWorker.start()
 
-      await sleep(2000)
+      await api.utils.sleep(2000)
 
       let details = await api.tasks.details()
 
@@ -439,7 +435,7 @@ describe('Core: Tasks', () => {
       api.config.tasks.queues = ['*']
       api.resque.multiWorker.start()
 
-      await sleep(500)
+      await api.utils.sleep(500)
 
       expect(taskOutput[0]).toEqual('first')
       await api.resque.multiWorker.stop()
@@ -453,7 +449,7 @@ describe('Core: Tasks', () => {
       await api.resque.startScheduler()
       await api.resque.multiWorker.start()
 
-      await sleep(1500)
+      await api.utils.sleep(1500)
       expect(taskOutput[0]).toEqual('delayed')
       await api.resque.multiWorker.stop()
       await api.resque.stopScheduler()
@@ -467,7 +463,7 @@ describe('Core: Tasks', () => {
       await api.resque.startScheduler()
       await api.resque.multiWorker.start()
 
-      await sleep(1500)
+      await api.utils.sleep(1500)
       expect(taskOutput[0]).toEqual('periodicTask')
       expect(taskOutput[1]).toEqual('periodicTask')
       expect(taskOutput[2]).toEqual('periodicTask')

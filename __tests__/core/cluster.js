@@ -5,10 +5,6 @@ const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
 
-async function sleep (time) {
-  await new Promise((resolve) => { setTimeout(resolve, time) })
-}
-
 describe('Core: Action Cluster', () => {
   beforeAll(async () => {
     api = await actionhero.start()
@@ -33,7 +29,7 @@ describe('Core: Action Cluster', () => {
         let data = {}
         api.rpcTestMethod = (arg1, arg2) => { data[1] = [arg1, arg2] }
         await api.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'])
-        await sleep(100)
+        await api.utils.sleep(100)
 
         expect(data[1][0]).toEqual('arg1')
         expect(data[1][1]).toEqual('arg2')
@@ -48,7 +44,7 @@ describe('Core: Action Cluster', () => {
         api.rpcTestMethod = (arg1, arg2) => { data[1] = [arg1, arg2] }
 
         await api.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], client.id)
-        await sleep(100)
+        await api.utils.sleep(100)
 
         expect(data[1][0]).toEqual('arg1')
         expect(data[1][1]).toEqual('arg2')

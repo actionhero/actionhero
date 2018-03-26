@@ -10,10 +10,6 @@ const actionhero = new ActionHero.Process()
 let api
 let url
 
-async function sleep (time) {
-  await new Promise((resolve) => { setTimeout(resolve, time) })
-}
-
 async function exec (command) {
   return new Promise((resolve, reject) => {
     require('child_process').exec(command, (error, stdout, stderr) => {
@@ -113,17 +109,17 @@ describe('Server: Web', () => {
       expect(Object.keys(api.connections.connections)).toHaveLength(0)
       request.get(url + '/api/sleepTest').then(toJson) // don't await
 
-      await sleep(100)
+      await api.utils.sleep(100)
       expect(Object.keys(api.connections.connections)).toHaveLength(1)
 
-      await sleep(1000)
+      await api.utils.sleep(1000)
       expect(Object.keys(api.connections.connections)).toHaveLength(0)
     })
 
     test('works for files', async () => {
       expect(Object.keys(api.connections.connections)).toHaveLength(0)
       await request.get(url + '/simple.html')
-      await sleep(100)
+      await api.utils.sleep(100)
       expect(Object.keys(api.connections.connections)).toHaveLength(0)
     })
 
@@ -131,7 +127,7 @@ describe('Server: Web', () => {
       expect(Object.keys(api.connections.connections)).toHaveLength(0)
       let body = await request.get(url + '/api/customRender').then(toJson)
       expect(body).toBeTruthy()
-      await sleep(100)
+      await api.utils.sleep(100)
       expect(Object.keys(api.connections.connections)).toHaveLength(0)
     })
   })
@@ -825,7 +821,7 @@ describe('Server: Web', () => {
         test('closes all descriptors on statusCode 200 responses', async () => {
           let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
           expect(response.statusCode).toEqual(200)
-          await sleep(100)
+          await api.utils.sleep(100)
           expect(await lsofChk()).toEqual('0')
         })
 
@@ -835,7 +831,7 @@ describe('Server: Web', () => {
             throw new Error('should return 304')
           } catch (error) {
             expect(error.statusCode).toEqual(304)
-            await sleep(100)
+            await api.utils.sleep(100)
             expect(await lsofChk()).toEqual('0')
           }
         })

@@ -11,10 +11,6 @@ module.exports = class Console extends ActionHero.CLI {
     this.description = 'start an interactive REPL session with the api object in-scope'
   }
 
-  async sleep (time) {
-    await new Promise((resolve) => { setTimeout(resolve, time) })
-  }
-
   async run () {
     for (let i in api.config.servers) { api.config.servers[i].enabled = false }
     api.config.general.developmentMode = false
@@ -24,7 +20,7 @@ module.exports = class Console extends ActionHero.CLI {
     api.config.tasks.maxTaskProcessors = 0
 
     await api.commands.start.call(api._context)
-    await this.sleep(500)
+    await api.utils.sleep(500)
 
     await new Promise(async (resolve, reject) => {
       const repl = REPL.start({

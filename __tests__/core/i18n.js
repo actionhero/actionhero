@@ -24,16 +24,11 @@ const spanish = {
   }
 }
 
-async function sleep (time) {
-  await new Promise((resolve) => { setTimeout(resolve, time) })
-}
-
 fs.writeFileSync(path.join(__dirname, '/../../locales/test-env-es.json'), JSON.stringify(spanish, null, 2))
 
 describe('Core', () => {
   describe('i18n', () => {
     beforeAll(async () => {
-      await sleep(500) // sleep to ensure normal local files are saved to disk
       api = await actionhero.start()
       originalDetermineConnectionLocale = api.i18n.determineConnectionLocale
 
@@ -113,7 +108,7 @@ describe('Core', () => {
 
     test('determineConnectionLocale cannot be an async method', async () => {
       api.i18n.determineConnectionLocale = async () => {
-        await sleep(1)
+        await api.utils.sleep(1)
         return 'test-env-es'
       }
 

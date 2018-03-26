@@ -24,21 +24,17 @@ const originalContent = fs.readFileSync(file)
 // newFileContent += '  }\n'
 // newFileContent += '}\n'
 
-async function sleep (time) {
-  await new Promise((resolve) => { setTimeout(resolve, time) })
-}
-
 describe('Core', () => {
   describe('developerMode', () => {
     beforeAll(async () => {
       api = await actionhero.start()
-      await sleep(1001 * 3) // allow the file to get stat-ed once in the original state
+      await api.utils.sleep(1001 * 3) // allow the file to get stat-ed once in the original state
     })
 
     afterAll(async () => {
       await actionhero.stop()
       fs.writeFileSync(file, originalContent)
-      await sleep(1001 * 3)
+      await api.utils.sleep(1001 * 3)
     })
 
     test('random numbers work initially', async () => {
@@ -53,7 +49,7 @@ describe('Core', () => {
     // describe('with new file', () => {
     //   beforeAll(async () => {
     //     fs.writeFileSync(file, newFileContent)
-    //     await sleep(1001 * 3) // file read timer is 1 second; time to notice the change + 3x time to reload API
+    //     await api.utils.sleep(1001 * 3) // file read timer is 1 second; time to notice the change + 3x time to reload API
     //   })
     //
     //   test('I can change the file and new actions will be loaded up', async () => {
@@ -66,7 +62,7 @@ describe('Core', () => {
     describe('reseting', () => {
       test('can be placed back', async () => {
         fs.writeFileSync(file, originalContent)
-        await sleep(1001 * 3)
+        await api.utils.sleep(1001 * 3)
         expect(api.actions.actions.randomNumber['1'].description).toEqual('I am an API method which will generate a random number')
       }, 10000)
 

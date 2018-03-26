@@ -4,11 +4,6 @@ const path = require('path')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
-
-async function sleep (time) {
-  await new Promise((resolve) => { setTimeout(resolve, time) })
-}
-
 let clientA
 let clientB
 let clientC
@@ -29,7 +24,7 @@ const connectClients = async () => {
   clientB = new ActionheroWebsocketClient({}, clientBsocket) // eslint-disable-line
   clientC = new ActionheroWebsocketClient({}, clientCsocket) // eslint-disable-line
 
-  await sleep(100)
+  await api.utils.sleep(100)
 }
 
 const awaitMethod = async (client, method, returnsError) => {
@@ -121,7 +116,7 @@ describe('Server: Web Socket', () => {
       awaitRoom(clientA, 'roomAdd', 'defaultRoom')
       awaitRoom(clientA, 'roomAdd', 'defaultRoom')
 
-      await sleep(500)
+      await api.utils.sleep(500)
 
       expect(clientA.rooms).toEqual(['defaultRoom'])
     })
@@ -145,7 +140,7 @@ describe('Server: Web Socket', () => {
         bTime = new Date()
       })
 
-      await sleep(2001)
+      await api.utils.sleep(2001)
 
       expect(responseA.messageCount).toEqual(startingMessageCount + 2)
       expect(responseB.messageCount).toEqual(startingMessageCount + 4)
@@ -181,7 +176,7 @@ describe('Server: Web Socket', () => {
       clientA.action('sleepTest', {sleepDuration: 500}, (response) => { responses.push(response) })
       clientA.action('sleepTest', {sleepDuration: 600}, (response) => { responses.push(response) })
 
-      await sleep(1000)
+      await api.utils.sleep(1000)
 
       expect(responses).toHaveLength(6)
       for (let i in responses) {
@@ -238,7 +233,7 @@ describe('Server: Web Socket', () => {
         await awaitRoom(clientB, 'roomAdd', 'defaultRoom')
         await awaitRoom(clientC, 'roomAdd', 'defaultRoom')
         // timeout to skip welcome messages as clients join rooms
-        await sleep(100)
+        await api.utils.sleep(100)
       })
 
       afterEach(async () => {
@@ -352,7 +347,7 @@ describe('Server: Web Socket', () => {
           clientC.on('say', listener)
 
           clientB.say('otherRoom', 'you should not hear this')
-          await sleep(1000)
+          await api.utils.sleep(1000)
           clientC.removeListener('say', listener)
           resolve()
         })
@@ -408,7 +403,7 @@ describe('Server: Web Socket', () => {
           clientC.on('say', listenerC)
           clientB.say('defaultRoom', 'Test Message')
 
-          await sleep(1000)
+          await api.utils.sleep(1000)
 
           expect(messagesReceived).toEqual(3)
         })
@@ -420,7 +415,7 @@ describe('Server: Web Socket', () => {
             say: async (connection, room, messagePayload) => {
               if (firstSayCall) {
                 firstSayCall = false
-                await sleep(200)
+                await api.utils.sleep(200)
               }
             }
           })
@@ -446,7 +441,7 @@ describe('Server: Web Socket', () => {
           clientC.on('say', listenerC)
           clientB.say('defaultRoom', 'Test Message')
 
-          await sleep(1000)
+          await api.utils.sleep(1000)
 
           expect(messagesReceived).toEqual(7)
         })
@@ -484,7 +479,7 @@ describe('Server: Web Socket', () => {
           clientC.on('say', listenerC)
           clientB.say('defaultRoom', 'Test Message')
 
-          await sleep(1000)
+          await api.utils.sleep(1000)
 
           expect(messagesReceived).toEqual(3)
         })
@@ -597,7 +592,7 @@ describe('Server: Web Socket', () => {
         clientA.connect()
         clientB.connect()
         clientC.connect()
-        await sleep(500)
+        await api.utils.sleep(500)
       })
 
       test('client can disconnect', async () => {
@@ -607,7 +602,7 @@ describe('Server: Web Socket', () => {
         clientB.disconnect()
         clientC.disconnect()
 
-        await sleep(500)
+        await api.utils.sleep(500)
 
         expect(api.servers.servers.websocket.connections().length).toEqual(0)
       })
@@ -627,7 +622,7 @@ describe('Server: Web Socket', () => {
           throw new Error('should not get response')
         })
 
-        await sleep(500)
+        await api.utils.sleep(500)
       })
     })
   })

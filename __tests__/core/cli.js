@@ -54,7 +54,7 @@ const doCommand = async (command, useCwd) => {
 }
 
 async function sleep (time) {
-  await new Promise((resolve) => { setTimeout(resolve, time) })
+  return new Promise((resolve) => { setTimeout(resolve, time) })
 }
 
 describe('Core: CLI', () => {
