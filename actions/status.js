@@ -6,7 +6,7 @@ const packageJSON = require(path.normalize(path.join(__dirname, '..', 'package.j
 
 // These values are probably good starting points, but you should expect to tweak them for your application
 const maxEventLoopDelay = process.env.eventLoopDelay || 10
-const maxMemoryAlloted = process.env.maxMemoryAlloted || 200
+const maxMemoryAlloted = process.env.maxMemoryAlloted || 500
 const maxResqueQueueLength = process.env.maxResqueQueueLength || 1000
 
 module.exports = class RandomNumber extends ActionHero.Action {

@@ -78,8 +78,7 @@ exports.test = {
       },
       paths: {
         'locale': [
-          // require('os').tmpdir() + require('path').sep + 'locales',
-          path.join(__dirname, '/../locales')
+          path.join(__dirname, '..', 'locales')
         ]
       },
       rpcTimeout: 3000

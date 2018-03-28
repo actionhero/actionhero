@@ -180,17 +180,18 @@ await api.redis.publish(payload)
     api.redis.doCluster('api.log', [`actionhero member ${api.id} has left the cluster`])
 
     await api.redis.clients.subscriber.unsubscribe()
-    api.redis.status.subscribed = false;
+    api.redis.status.subscribed = false
 
-    ['client', 'subscriber', 'tasks'].forEach((r) => {
-      let client = api.redis.clients[r]
+    const keys = Object.keys(api.redis.clients)
+    for (let i in keys) {
+      let client = api.redis.clients[keys[i]]
       if (typeof client.quit === 'function') {
-        client.quit()
+        await client.quit()
       } else if (typeof client.end === 'function') {
-        client.end()
+        await client.end()
       } else if (typeof client.disconnect === 'function') {
-        client.disconnect()
+        await client.disconnect()
       }
-    })
+    }
   }
 }
