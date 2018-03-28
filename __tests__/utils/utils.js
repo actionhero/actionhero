@@ -15,7 +15,7 @@ describe('Utils', () => {
       await api.utils.sleep(100)
       const end = new Date().getTime()
       expect(end - start).toBeGreaterThanOrEqual(100)
-      expect(end - start).toBeLessThan(110)
+      expect(end - start).toBeLessThan(125)
     })
   })
 

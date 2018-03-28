@@ -111,7 +111,6 @@ ActionheroWebsocketClient.prototype.urlWithSession = function () {
     if (cookieValue && cookieValue.length > 0 ) { url += '?' + self.options.cookieKey + '=' + cookieValue }
   }
 
-  console.log(url)
   return url
 }
 

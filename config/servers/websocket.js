@@ -54,11 +54,3 @@ exports['default'] = {
     }
   }
 }
-
-exports['test'] = {
-  servers: {
-    websocket: (api) => {
-      return { clientUrl: null }
-    }
-  }
-}
