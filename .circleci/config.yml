@@ -67,12 +67,14 @@ jobs:
     docker:
       - image: circleci/node:8
       - image: redis:4
+      - image: selenium/standalone-chrome:latest
     <<: *shared-test-steps
 
   test-node-v9:
     docker:
       - image: circleci/node:9
       - image: redis:4
+      - image: selenium/standalone-chrome:latest
     <<: *shared-test-steps
 
   deploy-docs-website:
