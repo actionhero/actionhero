@@ -35,6 +35,7 @@ refrences:
           command: ./node_modules/.bin/jest tests --ci --testResultsProcessor="jest-junit" --runInBand
           environment:
             NODE_ENV: test
+            SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
             JEST_JUNIT_OUTPUT: reports/junit/jest.xml
             maxMemoryAlloted: 500
           when: always
