@@ -268,7 +268,7 @@ describe('Core: CLI', () => {
 
       test('can handle signals to add a worker', async () => {
         await doCommand(`kill -s TTIN ${clusterPid}`)
-        await sleep(1000)
+        await sleep(2500)
 
         let {stdout} = await doCommand(`ps awx`)
         let parents = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start cluster') >= 0 })
@@ -279,7 +279,7 @@ describe('Core: CLI', () => {
 
       test('can handle signals to remove a worker', async () => {
         await doCommand(`kill -s TTOU ${clusterPid}`)
-        await sleep(1000)
+        await sleep(2500)
 
         let {stdout} = await doCommand(`ps awx`)
         let parents = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start cluster') >= 0 })
