@@ -28,9 +28,6 @@ refrences:
           name: test-reporter-setup
           command: mkdir ./junit
       - run:
-          name: linter
-          command: ./node_modules/.bin/standard
-      - run:
           name: test
           command: ./node_modules/.bin/jest tests --ci --testResultsProcessor="jest-junit" --runInBand
           environment:
@@ -63,6 +60,17 @@ jobs:
           <<: *cache-options
           paths:
             - ./node_modules
+
+  linter:
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - restore_cache:
+          <<: *cache-options
+      - run:
+          name: linter
+          command: ./node_modules/.bin/standard
 
   test-node-v8:
     docker:
@@ -101,17 +109,23 @@ workflows:
           filters:
             <<: *ignored-branches
 
-      - test-node-v8:
-          requires:
-            - build
+      - linter:
           filters:
             <<: *ignored-branches
+          requires:
+            - build
+
+      - test-node-v8:
+          filters:
+            <<: *ignored-branches
+          requires:
+            - linter
 
       - test-node-v9:
           filters:
             <<: *ignored-branches
           requires:
-            - build
+            - linter
 
       - deploy-docs-website:
           filters:
