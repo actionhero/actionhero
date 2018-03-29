@@ -69,8 +69,8 @@ exports['default'] = {
 exports.test = {
   general: (api) => {
     return {
-      id: 'test-server-' + process.pid,
-      serverToken: 'serverToken-' + process.pid,
+      id: 'test-server-' + parseInt(process.env.JEST_WORKER_ID || 0),
+      serverToken: 'serverToken-' + parseInt(process.env.JEST_WORKER_ID || 0),
       developmentMode: true,
       startingChatRooms: {
         'defaultRoom': {},
