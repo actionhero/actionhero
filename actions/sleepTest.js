@@ -1,5 +1,4 @@
 'use strict'
-const {promisify} = require('util')
 const ActionHero = require('./../index.js')
 
 module.exports = class CacheTest extends ActionHero.Action {
@@ -25,15 +24,11 @@ module.exports = class CacheTest extends ActionHero.Action {
     }
   }
 
-  async sleep (time) {
-    return promisify(setTimeout)(time)
-  }
-
   async run ({response, params}) {
     let sleepDuration = params.sleepDuration
     let sleepStarted = new Date().getTime()
 
-    await this.sleep(sleepDuration)
+    await ActionHero.api.utils.sleep(sleepDuration)
     let sleepEnded = new Date().getTime()
     let sleepDelta = sleepEnded - sleepStarted
 

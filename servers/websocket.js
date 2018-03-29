@@ -5,7 +5,6 @@ const UglifyJS = require('uglify-js')
 const fs = require('fs')
 const path = require('path')
 const util = require('util')
-const BrowserFingerprint = require('browser_fingerprint')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
@@ -32,9 +31,7 @@ module.exports = class WebSocketServer extends ActionHero.Server {
     }
   }
 
-  initialize () {
-    this.fingerprinter = new BrowserFingerprint(api.config.servers.web.fingerprintOptions)
-  }
+  initialize () {}
 
   start () {
     const webserver = api.servers.servers.web
@@ -175,8 +172,7 @@ module.exports = class WebSocketServer extends ActionHero.Server {
   }
 
   handleConnection (rawConnection) {
-    const parsedCookies = this.fingerprinter.parseCookies(rawConnection)
-    const fingerprint = parsedCookies[api.config.servers.web.fingerprintOptions.cookieKey]
+    const fingerprint = rawConnection.query[api.config.servers.web.fingerprintOptions.cookieKey]
     let { ip, port } = api.utils.parseHeadersForClientAddress(rawConnection.headers)
 
     this.buildConnection({

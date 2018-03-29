@@ -36,7 +36,9 @@ exports['default'] = {
 
         // websocket Client Options:
         client: {
-          apiPath: '/api' // the api base endpoint on your actionhero server
+          apiPath: '/api', // the api base endpoint on your actionhero server
+          // the cookie name we should use for shared authentication between WS and web connections
+          cookieKey: api.config.servers.web.fingerprintOptions.cookieKey
           // reconnect:        {},
           // timeout:          10000,
           // ping:             25000,
@@ -49,14 +51,6 @@ exports['default'] = {
           // queueSize:        Infinity,
         }
       }
-    }
-  }
-}
-
-exports['test'] = {
-  servers: {
-    websocket: (api) => {
-      return { clientUrl: null }
     }
   }
 }

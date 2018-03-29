@@ -12,17 +12,14 @@
     "ioredis" : "latest"
   },
   "devDependencies" : {
-    "cross-env" : "latest",
-    "chai" : "latest",
-    "dirty-chai" : "latest",
-    "mocha" : "latest",
+    "jest": "latest",
     "standard" : "latest"
   },
   "scripts" : {
     "start" : "actionhero start",
     "actionhero" : "actionhero",
     "pretest": "standard",
-    "test" : "cross-env NODE_ENV=test mocha"
+    "test" : "jest"
   },
   "standard": {
     "ignore": [
@@ -30,11 +27,11 @@
     ],
     "globals": [
       "describe",
-      "before",
+      "test",
+      "beforeAll",
       "beforeEach",
-      "after",
+      "afterAll",
       "afterEach",
-      "it",
       "expect"
     ]
   }

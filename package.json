@@ -49,12 +49,10 @@
     "ws": "^5.0.0"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
-    "cross-env": "^5.1.3",
-    "dirty-chai": "^2.0.1",
     "docdash-actionhero": "^0.0.8",
+    "jest": "^22.4.2",
+    "jest-environment-webdriver": "^0.1.0",
     "jsdoc": "^3.5.5",
-    "mocha": "^5.0.1",
     "request": "^2.83.0",
     "request-promise-native": "^1.0.5",
     "standard": "^11.0.0"
@@ -71,18 +69,25 @@
     ],
     "globals": [
       "describe",
-      "before",
+      "test",
+      "beforeAll",
       "beforeEach",
-      "after",
+      "afterAll",
       "afterEach",
-      "it",
-      "expect"
+      "expect",
+      "browser",
+      "by"
+    ]
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "<rootDir>/__tests__/testPlugin"
     ]
   },
   "scripts": {
     "postinstall": "echo 'To generate a new actionhero project, run \"npx actionhero generate\"'",
     "help": "node ./bin/actionhero help",
-    "test": "cross-env NODE_ENV=test mocha",
+    "test": "jest",
     "pretest": "standard",
     "start": "node ./bin/actionhero",
     "docs": "jsdoc -c jsdoc-conf.json"
