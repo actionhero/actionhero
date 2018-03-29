@@ -177,10 +177,9 @@ await api.redis.publish(payload)
   async stop () {
     if (api.config.redis.enabled === false) { return }
 
-    api.redis.doCluster('api.log', [`actionhero member ${api.id} has left the cluster`])
-
     await api.redis.clients.subscriber.unsubscribe()
     api.redis.status.subscribed = false
+    await api.redis.doCluster('api.log', [`actionhero member ${api.id} has left the cluster`])
 
     const keys = Object.keys(api.redis.clients)
     for (let i in keys) {

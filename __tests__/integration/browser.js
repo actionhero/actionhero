@@ -79,6 +79,11 @@ describe('browser integration tests', () => {
         browser.sleep(1000)
       })
 
+      afterAll(async () => {
+        // navigate away to close the WS connection
+        await browser.get(url)
+      })
+
       test('can connect', async () => {
         const chat = await browser.findElement(by.id('chatBox')).getText()
         expect(chat).toContain('Hello! Welcome to the actionhero api')

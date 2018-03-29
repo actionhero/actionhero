@@ -208,7 +208,6 @@ describe('Core: CLI', () => {
       let serverPid
 
       beforeAll(async function () {
-        debugger; //eslint-disable-line
         doCommand(`${binary} start`)
         await sleep(3000)
         serverPid = pid
