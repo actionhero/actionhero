@@ -48,7 +48,6 @@ ActionHero comes with a `specHelper` to make it easier to test tasks and actions
 Say you had an action that was supposed to respond with a `randomNumber`, and you wanted to write a test for it.
 
 ```js
-const path = require('path')
 const ActionHero = require('actionhero')
 const actionhero = new ActionHero.Process()
 let api
@@ -61,14 +60,14 @@ describe('Action', () => {
     let firstNumber = null
 
     test('generates random numbers', async () => {
-      let {randomNumber} = await api.specHelper.runAction('randomNumber')
+      const {randomNumber} = await api.specHelper.runAction('randomNumber')
       expect(randomNumber).toBeGreaterThan(0)
       expect(randomNumber).toBeLessThan(1)
       firstNumber = randomNumber
     })
 
-    test('is unique / random', async () => {
-      let {randomNumber} = await api.specHelper.runAction('randomNumber')
+    test('is unique', async () => {
+      const {randomNumber} = await api.specHelper.runAction('randomNumber')
       expect(randomNumber).toBeGreaterThan(0)
       expect(randomNumber).toBeLessThan(1)
       expect(randomNumber).not.toEqual(firstNumber)
