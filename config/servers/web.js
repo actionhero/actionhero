@@ -109,7 +109,7 @@ exports.test = {
     web: (api) => {
       return {
         secure: false,
-        port: 18080 + parseInt(process.env.JEST_WORKER_ID || 0),
+        port: 18080 + parseInt(process.env.JEST_WORKER_ID),
         matchExtensionMime: true,
         metadataOptions: {
           serverInformation: true,

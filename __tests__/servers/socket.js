@@ -68,13 +68,13 @@ describe('Server: Socket', () => {
   test('single string message are treated as actions', async () => {
     let response = await makeSocketRequest(client, 'status')
     expect(response).toBeInstanceOf(Object)
-    expect(response.id).toEqual(`test-server-${process.env.JEST_WORKER_ID || 0}`)
+    expect(response.id).toEqual(`test-server-${process.env.JEST_WORKER_ID}`)
   })
 
   test('stringified JSON can also be sent as actions', async () => {
     let response = await makeSocketRequest(client, JSON.stringify({action: 'status', params: {something: 'else'}}))
     expect(response).toBeInstanceOf(Object)
-    expect(response.id).toEqual(`test-server-${process.env.JEST_WORKER_ID || 0}`)
+    expect(response.id).toEqual(`test-server-${process.env.JEST_WORKER_ID}`)
   })
 
   test('really long messages are OK', async () => {
@@ -415,7 +415,7 @@ describe('Server: Socket', () => {
 
     test('server can disconnect a client', async () => {
       let response = await makeSocketRequest(client, 'status')
-      expect(response.id).toEqual(`test-server-${process.env.JEST_WORKER_ID || 0}`)
+      expect(response.id).toEqual(`test-server-${process.env.JEST_WORKER_ID}`)
       expect(client.readable).toEqual(true)
       expect(client.writable).toEqual(true)
 

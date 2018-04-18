@@ -12,7 +12,7 @@ const testDir = os.tmpdir() + path.sep + 'actionheroTestProject'
 const binary = './node_modules/.bin/actionhero'
 const pacakgeJSON = require(path.join(__dirname, '/../../package.json'))
 
-const port = 18080 + parseInt(process.env.JEST_WORKER_ID || 0)
+const port = 18080 + parseInt(process.env.JEST_WORKER_ID)
 let pid
 
 let AHPath
