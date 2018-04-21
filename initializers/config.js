@@ -122,6 +122,31 @@ module.exports = class Config extends ActionHero.Initializer {
       api.commands.restart()
     }
 
+    const loadConfigFile = (f) => {
+      let localConfig = require(f)
+      if (f.includes('routes.js')) {
+        let localRoutes = { routes: {} }
+
+        if (localConfig['default']) { localRoutes = api.utils.hashMerge(localRoutes, localConfig['default'], api) }
+        if (localConfig[api.env]) { localRoutes = api.utils.hashMerge(localRoutes, localConfig[api.env], api) }
+
+        Object.keys(localRoutes.routes).forEach((v) => {
+          if (api.config.routes && api.config.routes[v]) {
+            api.config.routes[v].push(...localRoutes.routes[v])
+          } else {
+            if (!api.config.routes) {
+              api.config.routes = {}
+            }
+
+            api.config.routes[v] = localRoutes.routes[v]
+          }
+        })
+      } else {
+        if (localConfig['default']) { api.config = api.utils.hashMerge(api.config, localConfig['default'], api) }
+        if (localConfig[api.env]) { api.config = api.utils.hashMerge(api.config, localConfig[api.env], api) }
+      }
+    }
+
     api.loadConfigDirectory = (configPath, watch) => {
       const configFiles = glob.sync(path.join(configPath, '**', '*.js'))
 
@@ -131,9 +156,8 @@ module.exports = class Config extends ActionHero.Initializer {
         const f = configFiles[i]
         try {
           // attempt configuration file load
-          let localConfig = require(f)
-          if (localConfig['default']) { api.config = api.utils.hashMerge(api.config, localConfig['default'], api) }
-          if (localConfig[api.env]) { api.config = api.utils.hashMerge(api.config, localConfig[api.env], api) }
+          loadConfigFile(f)
+
           // configuration file load success: clear retries and
           // errors since progress has been made
           loadRetries = 0
@@ -167,11 +191,23 @@ module.exports = class Config extends ActionHero.Initializer {
 
       // We load the config twice. Utilize configuration files load order that succeeded on the first pass.
       // This is to allow 'literal' values to be loaded whenever possible, and then for refrences to be resolved
-      configFiles.forEach((f) => {
-        const localConfig = require(f)
-        if (localConfig['default']) { api.config = api.utils.hashMerge(api.config, localConfig['default'], api) }
-        if (localConfig[api.env]) { api.config = api.utils.hashMerge(api.config, localConfig[api.env], api) }
-      })
+      configFiles.forEach(loadConfigFile)
+
+      // Remove duplicate routes since we might be loading from multiple config directories, also we load every
+      // config directory twice.
+      if (api.config.routes) {
+        Object.keys(api.config.routes).forEach((v) => {
+          api.config.routes[v] = api.config.routes[v].filter((route, index, self) =>
+            index === self.findIndex((r) => (
+              r.path === route.path &&
+              r.action === route.action &&
+              r.apiVersion === route.apiVersion &&
+              r.matchTrailingPathParts === route.matchTrailingPathParts &&
+              r.dir === route.dir
+            ))
+          )
+        })
+      }
     }
 
     api.config = {}
