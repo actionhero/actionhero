@@ -446,7 +446,44 @@ connection.params = {
 
 ### Uploading Files
 
-ActionHero uses the [formidable](https://github.com/felixge/node-formidable) form parsing library. You can set options for it via `api.config.servers.web.formOptions`. You can upload multiple files to an action and they will be available within `connection.params` as formidable response objects containing references to the original file name, where the uploaded file was stored temporarily, etc. Here is an example:
+ActionHero uses the [formidable](https://github.com/felixge/node-formidable) form parsing library. You can set options for it via `api.config.servers.web.formOptions`. You can upload multiple files to an action and they will be available within `connection.params` as formidable response objects containing references to the original file name, where the uploaded file was stored temporarily, etc. Here is an 
+
+** NOTE ** Actionhero V18.1.3 
+example:
+
+```js
+// actions/uploader.js
+
+'use strict'
+const ActionHero = require('actionhero')
+
+module.exports = class MyAction extends ActionHero.Action {
+  constructor () {
+    super()
+    this.name = 'uploader'
+    this.description = 'File upload Service'
+    this.outputExample = {}
+    this.logLevel = 'debug'
+    this.input = { 
+          file1: {required: true},
+          file2: {required: false},
+          key1: {required: false},
+          key2: {required: false},
+     }
+  }
+
+  async run (data) {
+     
+    console.log(data);
+    // data object attempt custom response return ( file_path ) 
+    data.response.file_path = "OK - I Got file"
+        
+  }
+}
+
+```
+
+** NOTE ** Actionhero Before V18.1.3
 
 ```js
 // actions/uploader.js
@@ -466,6 +503,7 @@ exports.action = {
     next();
   }
 };
+
 ```
 
 ```html
