@@ -27,6 +27,10 @@ exports['default'] = {
 
       ---------------------- */
 
+      get: [
+        { path: '/api-status', action: 'status' }
+      ]
+
     }
   }
 }
