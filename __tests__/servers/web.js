@@ -456,10 +456,11 @@ describe('Server: Web', () => {
           let requestPart1 = '<texty><innerNode>more than'
           let requestPart2 = ' two words</innerNode></texty>'
 
-          var bufferStream = new PassThrough()
-          var req = request.post(url + '/api/paramTestAction', {headers: {'Content-type': 'text/xml'}})
+          let bufferStream = new PassThrough()
+          let req = request.post(url + '/api/paramTestAction', {headers: {'Content-type': 'text/xml'}})
           bufferStream.write(Buffer.from(requestPart1)) // write the first part
           bufferStream.pipe(req)
+
           setTimeout(() => {
             bufferStream.end(Buffer.from(requestPart2)) // end signals no more is coming
           }, 50)
@@ -467,8 +468,9 @@ describe('Server: Web', () => {
           await new Promise((resolve, reject) => {
             bufferStream.on('finish', resolve)
           })
-          var respString = await req
-          var resp = JSON.parse(respString)
+
+          let respString = await req
+          let resp = JSON.parse(respString)
           expect(resp.error).toBeUndefined()
           expect(resp.body).toEqual({})
           expect(resp.rawBody).toEqual(requestPart1 + requestPart2)
@@ -481,10 +483,11 @@ describe('Server: Web', () => {
           let requestPart1 = requestString.substring(0, middleIdx)
           let requestPart2 = requestString.substring(middleIdx)
 
-          var bufferStream = new PassThrough()
-          var req = request.post(url + '/api/paramTestAction', {'headers': {'Content-type': 'application/json'}})
+          let bufferStream = new PassThrough()
+          let req = request.post(url + '/api/paramTestAction', {'headers': {'Content-type': 'application/json'}})
           bufferStream.write(Buffer.from(requestPart1)) // write the first part
           bufferStream.pipe(req)
+
           setTimeout(() => {
             bufferStream.end(Buffer.from(requestPart2)) // end signals no more is coming
           }, 50)
@@ -492,8 +495,9 @@ describe('Server: Web', () => {
           await new Promise((resolve, reject) => {
             bufferStream.on('finish', resolve)
           })
-          var respString = await req
-          var resp = JSON.parse(respString)
+
+          let respString = await req
+          let resp = JSON.parse(respString)
           expect(resp.error).toBeUndefined()
           expect(resp.body).toEqual(requestJson)
           expect(resp.rawBody).toEqual(requestString)
@@ -502,20 +506,22 @@ describe('Server: Web', () => {
         test('rawBody processing will not hang on writable error', async () => {
           let requestPart1 = '<texty><innerNode>more than'
 
-          var bufferStream = new PassThrough()
-          var req = request.post(url + '/api/paramTestAction', {headers: {'Content-type': 'text/xml'}})
+          let bufferStream = new PassThrough()
+          let req = request.post(url + '/api/paramTestAction', {headers: {'Content-type': 'text/xml'}})
           bufferStream.write(Buffer.from(requestPart1)) // write the first part
           bufferStream.pipe(req)
+
           setTimeout(() => {
-            bufferStream.destroy(new Error('This stream is broken.')) // sends an error and closes the stream
+            // bufferStream.destroy(new Error('This stream is broken.')) // sends an error and closes the stream
+            bufferStream.end()
           }, 50)
 
           await new Promise((resolve, reject) => {
             bufferStream.on('finish', resolve)
-            bufferStream.on('error', resolve)
           })
-          var respString = await req
-          var resp = JSON.parse(respString)
+
+          let respString = await req
+          let resp = JSON.parse(respString)
           expect(resp.error).toBeUndefined()
           expect(resp.body).toEqual({})
           expect(resp.rawBody).toEqual(requestPart1) // stream ends with only one part processed
