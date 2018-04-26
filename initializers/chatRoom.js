@@ -192,9 +192,7 @@ class ChatRoom extends ActionHero.Initializer {
       if (connection.canChat === true && connection.rooms.indexOf(messagePayload.room) > -1) {
         try {
           const newMessagePayload = await api.chatRoom.runMiddleware(connection, messagePayload.room, 'say', messagePayload)
-          if (!(newMessagePayload instanceof Error)) {
-            connection.sendMessage(newMessagePayload, 'say')
-          }
+          connection.sendMessage(newMessagePayload, 'say')
         } catch (error) {
           api.log(error, 'warning', {messagePayload, connection})
         }
@@ -358,8 +356,7 @@ class ChatRoom extends ActionHero.Initializer {
       }
 
       if (connection.rooms.indexOf(room) < 0) {
-        let response = await api.chatRoom.runMiddleware(connection, room, 'join')
-        if (response instanceof Error) { throw response }
+        await api.chatRoom.runMiddleware(connection, room, 'join')
       }
 
       if (connection.rooms.indexOf(room) < 0) {
@@ -400,8 +397,7 @@ class ChatRoom extends ActionHero.Initializer {
       }
 
       if (connection.rooms.indexOf(room) >= 0) {
-        let response = await api.chatRoom.runMiddleware(connection, room, 'leave')
-        if (response instanceof Error) { throw response }
+        await api.chatRoom.runMiddleware(connection, room, 'leave')
       }
 
       if (connection.rooms.indexOf(room) >= 0) {
