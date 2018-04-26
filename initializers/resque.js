@@ -58,7 +58,11 @@ module.exports = class Resque extends ActionHero.Initializer {
         if (resqueOverrides && resqueOverrides.scheduler) { Scheduler = resqueOverrides.scheduler }
         if (api.config.tasks.scheduler === true) {
           api.resque.schedulerLogging = api.config.tasks.schedulerLogging
-          api.resque.scheduler = new Scheduler({connection: api.resque.connectionDetails, timeout: api.config.tasks.timeout})
+          api.resque.scheduler = new Scheduler({
+            connection: api.resque.connectionDetails,
+            timeout: api.config.tasks.timeout,
+            stuckWorkerTimeout: api.config.tasks.stuckWorkerTimeout
+          })
 
           api.resque.scheduler.on('error', (error) => {
             api.log(error, 'error', '[api.resque.scheduler]')
