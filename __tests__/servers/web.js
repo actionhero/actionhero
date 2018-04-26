@@ -10,15 +10,6 @@ const actionhero = new ActionHero.Process()
 let api
 let url
 
-async function exec (command) {
-  return new Promise((resolve, reject) => {
-    require('child_process').exec(command, (error, stdout, stderr) => {
-      if (error) { return reject(error) }
-      return resolve({stdout, stderr})
-    })
-  })
-}
-
 const toJson = async (string) => {
   try {
     return JSON.parse(string)
@@ -808,35 +799,6 @@ describe('Server: Web', () => {
         expect(response.body).toMatch(/ActionHero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks/)
       }
     )
-
-    if (process.platform === 'win32') {
-      console.log('*** CANNOT RUN FILE DESCRIPTOR TESTS ON WINDOWS.  Sorry. ***')
-    } else {
-      describe('do not leave open file descriptors ', () => {
-        const lsofChk = async () => {
-          const {stdout} = await exec('lsof -n -P|grep "/simple.html"|wc -l')
-          return stdout.trim()
-        }
-
-        test('closes all descriptors on statusCode 200 responses', async () => {
-          let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
-          expect(response.statusCode).toEqual(200)
-          await api.utils.sleep(100)
-          expect(await lsofChk()).toEqual('0')
-        })
-
-        test('closes all descriptors on statusCode 304 responses', async () => {
-          try {
-            await request.get(url + '/simple.html', {headers: {'if-none-match': '*'}, resolveWithFullResponse: true})
-            throw new Error('should return 304')
-          } catch (error) {
-            expect(error.statusCode).toEqual(304)
-            await api.utils.sleep(100)
-            expect(await lsofChk()).toEqual('0')
-          }
-        })
-      })
-    }
 
     describe('can serve files from a specific mapped route', () => {
       beforeAll(() => {

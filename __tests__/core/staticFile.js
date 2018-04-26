@@ -7,6 +7,15 @@ const request = require('request-promise-native')
 let api
 let url
 
+async function exec (command) {
+  return new Promise((resolve, reject) => {
+    require('child_process').exec(command, (error, stdout, stderr) => {
+      if (error) { return reject(error) }
+      return resolve({stdout, stderr})
+    })
+  })
+}
+
 describe('Core', () => {
   describe('static file', () => {
     beforeAll(async () => {
@@ -196,5 +205,34 @@ describe('Core', () => {
         expect(response.headers['content-encoding']).toBeUndefined()
       })
     })
+
+    if (process.platform === 'win32') {
+      console.log('*** CANNOT RUN FILE DESCRIPTOR TESTS ON WINDOWS.  Sorry. ***')
+    } else {
+      describe('do not leave open file descriptors ', () => {
+        const lsofChk = async () => {
+          const {stdout} = await exec('lsof -n -P|grep "/simple.html"|wc -l')
+          return stdout.trim()
+        }
+
+        test('closes all descriptors on statusCode 200 responses', async () => {
+          let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
+          expect(response.statusCode).toEqual(200)
+          await api.utils.sleep(100)
+          expect(await lsofChk()).toEqual('0')
+        }, 10000)
+
+        test('closes all descriptors on statusCode 304 responses', async () => {
+          try {
+            await request.get(url + '/simple.html', {headers: {'if-none-match': '*'}, resolveWithFullResponse: true})
+            throw new Error('should return 304')
+          } catch (error) {
+            expect(error.statusCode).toEqual(304)
+            await api.utils.sleep(100)
+            expect(await lsofChk()).toEqual('0')
+          }
+        }, 10000)
+      })
+    }
   })
 })
