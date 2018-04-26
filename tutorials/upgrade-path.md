@@ -10,6 +10,14 @@ With good [test coverage](tutorial-testing.html) you can make sure that you have
 
 ActionHero follows [semantic versioning](http://semver.org/). This means that a minor change is a right-most number. A new feature added is the middle number, and a breaking change is the left number. You should expect something in your application to need to be changed if you upgrade a major version.
 
+## Upgrading from v18 to v19
+
+**Full Release Notes: [GitHub](https://github.com/actionhero/actionhero/releases/tag/v19.0.0)**
+
+### Configuration
+* in `config/tasks.js` `add api.config.tasks.stuckWorkerTimeout = 3600000`.  This will be a 1 hour timeout for stuck/crashed worker processes
+* in `config/servers/websocket.js` `add api.config.servers.websocket.client.cookieKey = api.config.servers.web.fingerprintOptions.cookieKey`.  This will instruct the ActionHero Websocket Clients to share the same cookie as the web server to share a fingerprint, which can be used to share session information.
+* If you plan to use Jest for your tests, and want to test in parallel, you will need to configure your server in the test environment to make use of `process.env.JEST_WORKER_ID`.  Please view [`config/api.js`](https://github.com/actionhero/actionhero/blob/master/config/api.js), [`config/redis.js`](https://github.com/actionhero/actionhero/blob/master/config/redis.js), [`config/servers/socket.js`](https://github.com/actionhero/actionhero/blob/master/config/servers/socket.js), and [`config/servers/web.js`](https://github.com/actionhero/actionhero/blob/master/config/servers/web.js) for more information
 ## Upgrading from v17 to v18
 
 **Full Release Notes: [GitHub](https://github.com/actionhero/actionhero/releases/tag/v18.0.0)**
