@@ -386,6 +386,110 @@ describe('Core', () => {
             expect(clientA.rooms).toHaveLength(1)
           }
         })
+
+        test('(say verb with async keyword) can modify message payloads', async () => {
+          api.chatRoom.addMiddleware({
+            name: 'chat middleware',
+            say: async (connection, room, messagePayload) => {
+              if (messagePayload.from !== 0) { messagePayload.message = 'something else' }
+              return messagePayload
+            }
+          })
+          await clientA.verbs('roomAdd', 'defaultRoom')
+          await clientB.verbs('roomAdd', 'defaultRoom')
+          await clientB.verbs('say', ['defaultRoom', 'something', 'awesome'])
+          await api.utils.sleep(100)
+          let lastMessage = clientA.messages[(clientA.messages.length - 1)]
+          expect(lastMessage.message).toEqual('something else')
+        })
+
+        test(
+          'can add middleware in a particular order and will be passed modified messagePayloads with both being async functions',
+          async () => {
+            api.chatRoom.addMiddleware({
+              name: 'chat middleware 1',
+              priority: 1000,
+              say: async (connection, room, messagePayload, callback) => {
+                messagePayload.message = 'MIDDLEWARE 1'
+                return messagePayload
+              }
+            })
+
+            api.chatRoom.addMiddleware({
+              name: 'chat middleware 2',
+              priority: 2000,
+              say: async (connection, room, messagePayload) => {
+                messagePayload.message = messagePayload.message + ' MIDDLEWARE 2'
+                return messagePayload
+              }
+            })
+
+            await clientA.verbs('roomAdd', 'defaultRoom')
+            await clientB.verbs('roomAdd', 'defaultRoom')
+            await clientB.verbs('say', ['defaultRoom', 'something', 'awesome'])
+            await api.utils.sleep(100)
+
+            let lastMessage = clientA.messages[(clientA.messages.length - 1)]
+            expect(lastMessage.message).toEqual('MIDDLEWARE 1 MIDDLEWARE 2')
+          }
+        )
+
+        test('say async function middleware can block execution', async () => {
+          api.chatRoom.addMiddleware({
+            name: 'chat middleware',
+            say: async (connection, room, messagePayload) => {
+              throw new Error('messages blocked')
+            }
+          })
+
+          await clientA.verbs('roomAdd', 'defaultRoom')
+          await clientB.verbs('roomAdd', 'defaultRoom')
+          await clientB.verbs('say', ['defaultRoom', 'something', 'awesome'])
+          await api.utils.sleep(100)
+
+          // welcome message is passed, no join/leave/or say messages
+          expect(clientA.messages).toHaveLength(1)
+          expect(clientA.messages[0].welcome).toMatch(/Welcome/)
+        })
+
+        test('join async function middleware can block execution', async () => {
+          api.chatRoom.addMiddleware({
+            name: 'chat middleware',
+            join: async (connection, room) => {
+              throw new Error('joining rooms blocked')
+            }
+          })
+
+          try {
+            await clientA.verbs('roomAdd', 'defaultRoom')
+            throw new Error('should not get here')
+          } catch (error) {
+            expect(error.toString()).toEqual('Error: joining rooms blocked')
+            expect(clientA.rooms).toHaveLength(0)
+          }
+        })
+
+        test('leave async function middleware can block execution', async () => {
+          api.chatRoom.addMiddleware({
+            name: 'chat middleware',
+            leave: async (connection, room) => {
+              throw new Error('Hotel California')
+            }
+          })
+
+          let didJoin = await clientA.verbs('roomAdd', 'defaultRoom')
+          expect(didJoin).toEqual(true)
+          expect(clientA.rooms).toHaveLength(1)
+          expect(clientA.rooms[0]).toEqual('defaultRoom')
+
+          try {
+            await clientA.verbs('roomLeave', 'defaultRoom')
+            throw new Error('should not get here')
+          } catch (error) {
+            expect(error.toString()).toEqual('Error: Hotel California')
+            expect(clientA.rooms).toHaveLength(1)
+          }
+        })
       })
     })
   })
