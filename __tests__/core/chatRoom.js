@@ -314,7 +314,7 @@ describe('Core', () => {
             api.chatRoom.addMiddleware({
               name: 'chat middleware 2',
               priority: 2000,
-              say: async (connection, room, messagePayload) => {
+              say: (connection, room, messagePayload) => {
                 messagePayload.message = messagePayload.message + ' MIDDLEWARE 2'
                 return messagePayload
               }
