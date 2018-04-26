@@ -144,9 +144,9 @@ module.exports = class ActionHeroCluster {
     process.on('SIGHUP', async () => {
       this.log('Signal: SIGHUP', 'info')
       this.log('reload all workers now', 'info')
-      this.workers.forEach(async (worker) => {
+      for (let worker of this.workers) {
         await worker.restart()
-      })
+      }
     })
 
     process.on('SIGTTIN', async () => {

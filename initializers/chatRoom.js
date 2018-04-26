@@ -439,14 +439,15 @@ class ChatRoom extends ActionHero.Initializer {
     }
 
     if (api.config.general.startingChatRooms) {
-      Object.keys(api.config.general.startingChatRooms).forEach(async (room) => {
+      let rooms = Object.keys(api.config.general.startingChatRooms)
+      for (let room of rooms) {
         api.log(`ensuring the existence of the chatRoom: ${room}`)
         try {
           await api.chatRoom.add(room)
         } catch (error) {
           if (!error.toString().match(await api.config.errors.connectionRoomExists(room))) { throw error }
         }
-      })
+      }
     }
   }
 }
