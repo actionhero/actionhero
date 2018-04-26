@@ -1,19 +1,49 @@
 'use strict'
 
-const request = require('request-promise-native')
+const { promisify } = require('util')
+const fs = require('fs')
 const path = require('path')
+
+const request = require('request-promise-native')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()
 let api
 let url
 let configFolders
+const newConfigFolderPath = path.join(__dirname, 'config')
+const newRoutesFilePath = path.join(newConfigFolderPath, 'routes.js')
+const routeFileContent = `exports['default'] = {\n  routes: (api) => {\n    return {\n\n      get: [\n        { path: 'random-number', action: 'randomNumber' }\n      ]\n\n    }\n  }\n}\n`
+
+const createRouteFile = async () => {
+  try {
+    await promisify(fs.mkdir)(newConfigFolderPath)
+  } catch (ex) {}
+
+  try {
+    await promisify(fs.writeFile)(newRoutesFilePath, routeFileContent, { encoding: 'utf-8' })
+  } catch (ex) {}
+}
+
+const removeRouteFile = async () => {
+  try {
+    await promisify(fs.unlink)(newRoutesFilePath)
+  } catch (ex) {}
+
+  try {
+    await promisify(fs.rmdir)(newConfigFolderPath)
+  } catch (ex) {}
+}
 
 describe('Core: config folders', () => {
   beforeAll(async () => {
     configFolders = process.env.ACTIONHERO_CONFIG
+
+    await removeRouteFile()
+    await createRouteFile()
+
     process.env.ACTIONHERO_CONFIG = [
       path.join(__dirname, '../../config'),
-      path.join(__dirname, './config') // TODO: Generate and remove this on the fly.
+      newConfigFolderPath
     ].join(',')
 
     api = await actionhero.start()
@@ -22,6 +52,7 @@ describe('Core: config folders', () => {
 
   afterAll(async () => {
     await actionhero.stop()
+    await removeRouteFile()
     process.env.ACTIONHERO_CONFIG = configFolders
   })
 
