@@ -284,7 +284,7 @@ describe('Core', () => {
         test('(say) can modify message payloads', async () => {
           api.chatRoom.addMiddleware({
             name: 'chat middleware',
-            say: (connection, room, messagePayload) => {
+            say: async (connection, room, messagePayload) => {
               if (messagePayload.from !== 0) { messagePayload.message = 'something else' }
               return messagePayload
             }
@@ -305,7 +305,7 @@ describe('Core', () => {
             api.chatRoom.addMiddleware({
               name: 'chat middleware 1',
               priority: 1000,
-              say: (connection, room, messagePayload, callback) => {
+              say: async (connection, room, messagePayload, callback) => {
                 messagePayload.message = 'MIDDLEWARE 1'
                 return messagePayload
               }
@@ -314,7 +314,7 @@ describe('Core', () => {
             api.chatRoom.addMiddleware({
               name: 'chat middleware 2',
               priority: 2000,
-              say: (connection, room, messagePayload) => {
+              say: async (connection, room, messagePayload) => {
                 messagePayload.message = messagePayload.message + ' MIDDLEWARE 2'
                 return messagePayload
               }
@@ -333,7 +333,7 @@ describe('Core', () => {
         test('say middleware can block excecution', async () => {
           api.chatRoom.addMiddleware({
             name: 'chat middleware',
-            say: (connection, room, messagePayload) => {
+            say: async (connection, room, messagePayload) => {
               throw new Error('messages blocked')
             }
           })
@@ -351,7 +351,7 @@ describe('Core', () => {
         test('join middleware can block excecution', async () => {
           api.chatRoom.addMiddleware({
             name: 'chat middleware',
-            join: (connection, room) => {
+            join: async (connection, room) => {
               throw new Error('joining rooms blocked')
             }
           })
@@ -368,7 +368,7 @@ describe('Core', () => {
         test('leave middleware can block excecution', async () => {
           api.chatRoom.addMiddleware({
             name: 'chat middleware',
-            leave: (connection, room) => {
+            leave: async (connection, room) => {
               throw new Error('Hotel California')
             }
           })
