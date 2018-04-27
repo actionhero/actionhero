@@ -220,7 +220,7 @@ describe('Core', () => {
           expect(response.statusCode).toEqual(200)
           await api.utils.sleep(100)
           expect(await lsofChk()).toEqual('0')
-        }, 10000)
+        }, 30000)
 
         test('closes all descriptors on statusCode 304 responses', async () => {
           try {
@@ -231,7 +231,7 @@ describe('Core', () => {
             await api.utils.sleep(100)
             expect(await lsofChk()).toEqual('0')
           }
-        }, 10000)
+        }, 30000)
       })
     }
   })

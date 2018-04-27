@@ -262,11 +262,11 @@ describe('Server: Socket', () => {
     })
 
     afterEach(async () => {
-      ['defaultRoom', 'otherRoom'].forEach(async (room) => {
+      for (let room of ['defaultRoom', 'otherRoom']) {
         await makeSocketRequest(client, 'roomLeave ' + room)
         await makeSocketRequest(client2, 'roomLeave ' + room)
         await makeSocketRequest(client3, 'roomLeave ' + room)
-      })
+      }
       await api.utils.sleep(250)
     })
 
