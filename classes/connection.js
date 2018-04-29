@@ -138,19 +138,21 @@ module.exports = class Connection {
    * @function destroy
    * @memberof ActionHero.Connection
    */
-  destroy () {
+  async destroy () {
     this.destroyed = true
 
-    api.connections.globalMiddleware.forEach((middlewareName) => {
+    for (let i in api.connections.globalMiddleware) {
+      let middlewareName = api.connections.globalMiddleware[i]
       if (typeof api.connections.middleware[middlewareName].destroy === 'function') {
-        api.connections.middleware[middlewareName].destroy(this)
+        await api.connections.middleware[middlewareName].destroy(this)
       }
-    })
+    }
 
     if (this.canChat === true) {
-      this.rooms.forEach((room) => {
-        api.chatRoom.removeMember(this.id, room)
-      })
+      for (let i in this.rooms) {
+        let room = this.rooms[i]
+        await api.chatRoom.removeMember(this.id, room)
+      }
     }
 
     const server = api.servers.servers[this.type]
@@ -201,8 +203,7 @@ module.exports = class Connection {
       // TODO: investigate allowedVerbs being an array of Constatnts or Symbols
 
       if (verb === 'quit' || verb === 'exit') {
-        server.goodbye(this)
-        return
+        return this.destroy()
       }
 
       if (verb === 'paramAdd') {
