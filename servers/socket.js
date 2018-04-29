@@ -141,7 +141,6 @@ module.exports = class SocketServer extends ActionHero.Server {
 
     connection.rawConnection.on('end', () => {
       if (connection.destroyed !== true) {
-        try { connection.rawConnection.end() } catch (e) {}
         connection.destroy()
       }
     })

@@ -201,8 +201,7 @@ module.exports = class Connection {
       // TODO: investigate allowedVerbs being an array of Constatnts or Symbols
 
       if (verb === 'quit' || verb === 'exit') {
-        server.goodbye(this)
-        return
+        return this.destroy()
       }
 
       if (verb === 'paramAdd') {
