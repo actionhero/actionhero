@@ -53,9 +53,9 @@ describe('Server: Socket', () => {
   })
 
   afterAll(async () => {
-    client.write('quit\r\n')
-    client2.write('quit\r\n')
-    client3.write('quit\r\n')
+    client.end()
+    client2.end()
+    client3.end()
     await actionhero.stop()
   })
 
@@ -156,6 +156,24 @@ describe('Server: Socket', () => {
   test('only params sent in a JSON block are used', async () => {
     let response = await makeSocketRequest(client, JSON.stringify({action: 'cacheTest', params: {key: 'someOtherValue'}}))
     expect(response.error).toEqual('value is a required parameter for this action')
+  })
+
+  test('asking to quit will disconnect', async () => {
+    const newClient = net.connect(api.config.servers.socket.port, () => {
+      newClient.setEncoding('utf8')
+    })
+    await api.utils.sleep(1000)
+
+    expect(newClient.readable).toEqual(true)
+    expect(newClient.writable).toEqual(true)
+    let response = await makeSocketRequest(newClient, 'detailsView')
+    expect(response.status).toEqual('OK')
+
+    newClient.write('quit\n')
+    await api.utils.sleep(500)
+    expect(newClient.readable).toEqual(false)
+    expect(newClient.writable).toEqual(false)
+    newClient.end() // needed to ensure socket closed in test
   })
 
   test('will limit how many simultaneous connections I can have', async () => {
