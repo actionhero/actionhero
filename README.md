@@ -113,4 +113,4 @@ Or deploy a free API server now:
 
 ## License
 
-[Apache 2.0](./LICENSE)
+[Apache 2.0](https://github.com/actionhero/actionhero/blob/master/LICENSE.txt)
