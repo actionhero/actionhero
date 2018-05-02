@@ -110,3 +110,7 @@ Or deploy a free API server now:
 
 * Many folks [have helped](https://github.com/actionhero/actionhero/graphs/contributors) to make ActionHero a reality.
 * If you want to contribute to actionhero, contribute to the conversation on [github](https://github.com/actionhero/actionhero) and join us on [slack](https://slack.actionherojs.com)
+
+## License
+
+[Apache 2.0](./LICENSE)
