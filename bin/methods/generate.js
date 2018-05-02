@@ -39,7 +39,7 @@ module.exports = class Generate extends ActionHero.CLI {
       publicCss: '/public/css/cosmo.css',
       exampleTest: '/__tests__/template.js.example',
       enLocale: '/locales/en.json',
-      gitignore: '/.gitignore'
+      gitignore: '/bin/templates/gitignore'
     }
 
     for (let name in oldFileMap) {

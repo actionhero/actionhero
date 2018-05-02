@@ -1,5 +1,4 @@
-# local actionhero files
-
+# ActionHero files
 pids/*
 tmp/*
 log/*
