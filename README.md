@@ -37,7 +37,7 @@ ActionHero v18 is the `async/await` Node.js framework you have been waiting for!
 ActionHero version 18 has many *significant and breaking* changes from previous versions.  Please read the [Release notes](https://github.com/actionhero/actionhero/releases/tag/v18.0.0) and [Upgrade Guide](https://docs.actionherojs.com/tutorial-upgrade-path.html)
 
 ## Who is the ActionHero?
-ActionHero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs for HTTP, WebSockets, and more.  Clients connected to an actionhero server can [**consume the api**](https://docs.actionherojs.com/tutorial-actions.html), [**consume static content**](https://docs.actionherojs.com/tutorial-file_server.html), and [**communicate with each other**](https://docs.actionherojs.com/tutorial-chat.html).  ActionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.  ActionHero provides a simple Async/Await API for managing every type of connection and background task.
+ActionHero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs for HTTP, WebSockets, and more.  Clients connected to an actionhero server can [**consume the api**](https://docs.actionherojs.com/tutorial-actions.html), [**consume static content**](https://docs.actionherojs.com/tutorial-file-server.html), and [**communicate with each other**](https://docs.actionherojs.com/tutorial-chat.html).  ActionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.  ActionHero provides a simple Async/Await API for managing every type of connection and background task.
 
 Currently actionhero supports the following out of the box...
 
@@ -61,7 +61,7 @@ Or deploy a free API server now:
 
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/actionhero/actionhero)
 
-## Learn More
+## Learn More 📚
 
 - [Getting Started @ www.actionherojs.com](https://www.actionherojs.com/get-started)
   - ActionHero's marketing site can be found @ [https://github.com/actionhero/www.actionherojs.com/](https://github.com/actionhero/www.actionherojs.com/).  If you want to contribute to this site, visit the [related project](https://github.com/actionhero/www.actionherojs.com)
@@ -71,7 +71,7 @@ Or deploy a free API server now:
 - [Interact with the Community & View the Release History](https://www.actionherojs.com/community)
 - [Server Client](https://github.com/actionhero/actionhero-client)
 
-## In-depth Tutorials
+## In-depth Tutorials 🎓
 
 ### Core Components
 - [Actions](https://docs.actionherojs.com/tutorial-actions.html)
@@ -110,3 +110,7 @@ Or deploy a free API server now:
 
 * Many folks [have helped](https://github.com/actionhero/actionhero/graphs/contributors) to make ActionHero a reality.
 * If you want to contribute to actionhero, contribute to the conversation on [github](https://github.com/actionhero/actionhero) and join us on [slack](https://slack.actionherojs.com)
+
+## License
+
+[Apache 2.0](https://github.com/actionhero/actionhero/blob/master/LICENSE.txt)

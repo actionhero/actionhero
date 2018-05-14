@@ -52,18 +52,19 @@ module.exports = class Process {
 
     this.loadInitializers = []
     this.startInitializers = []
-    this.stopInitializers = [];
+    this.stopInitializers = []
 
     // we need to load the utils & config first
-    [
+    let files = [
       path.resolve(__dirname, '..', 'initializers', 'utils.js'),
       path.resolve(__dirname, '..', 'initializers', 'config.js')
-    ].forEach(async (file) => {
+    ]
+    for (let file of files) {
       delete require.cache[require.resolve(file)]
-      const InitializerClass = require(file)
       let initializer
 
       try {
+        const InitializerClass = require(file)
         initializer = new InitializerClass()
       } catch (error) {
         this.fatalError(error, file)
@@ -76,7 +77,7 @@ module.exports = class Process {
       } catch (error) {
         this.fatalError(error, initializer)
       }
-    })
+    }
 
     // load initializers from core
     initializerFiles = initializerFiles.concat(glob.sync(path.join(__dirname, '..', 'initializers', '**', '*.js')))
@@ -103,10 +104,10 @@ module.exports = class Process {
       if (ext !== 'js') { return }
 
       delete require.cache[require.resolve(file)]
-      const InitializerClass = require(file)
       let initializer
 
       try {
+        const InitializerClass = require(file)
         initializer = new InitializerClass()
       } catch (error) {
         this.fatalError(error, file)

@@ -56,13 +56,13 @@ On unix/OSX operating systems, symlinks for both files and folders will be follo
 
 ```js
 // send a file
-async run () {
+async run (data) {
   data.connection.sendFile('/path/to/file.mp3')
   data.toRender = false
 }
 
 // send 404 (web connection)
-async run () {
+async run (data) {
   data.connection.rawConnection.responseHttpCode = 404;
   data.connection.sendFile('404.html')
   data.toRender = false

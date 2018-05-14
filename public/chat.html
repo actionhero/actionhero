@@ -13,7 +13,7 @@
 
     var client;
     var boot = function(){
-      client = new ActionheroWebsocketClient;
+      client = new ActionheroWebsocketClient();
 
       client.on('connected',    function(){ console.log('connected!') })
       client.on('disconnected', function(){ console.log('disconnected :(') })
@@ -31,12 +31,13 @@
       client.on('say',          function(message){ appendMessage(message); })
 
       client.connect(function(error, details){
-        if(error != null){
-          console.log(error);
-        }else{
+        if (error) {
+          console.error(error);
+        } else {
           client.action('createChatRoom', {name: 'defaultRoom'}, function(data){
             client.roomAdd("defaultRoom");
             document.getElementById("name").innerHTML = "<span style=\"color:#" + intToARGB(hashCode(client.id)) + "\">" + client.id + "</span>";
+            document.getElementById("fingerprint").innerHTML = client.fingerprint;
           });
         }
       });
@@ -112,13 +113,14 @@
           <div class="panel panel-default">
             <div class="panel-heading">
               <h3 class="panel-title">Hello,<br /><strong><span id="name"></span></strong></h3>
+              <p style="font-size: 10px"><em>fingerprint: <span id="fingerprint" />)</p>
             </div>
             <div class="panel-body">
               <form id="messageForm" class="form-inline">
                 <div class="form-group">
                   <input type="text" class="form-control" id="message" placeholder="Your Message">
                 </div>
-                <button type="submit" class="btn btn-primary">Send Message</button>
+                <button id="submitButton" type="submit" class="btn btn-primary">Send Message</button>
               </form>
             </div>
           </div>

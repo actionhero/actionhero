@@ -8,7 +8,7 @@ exports['default'] = {
       // Logging levels of task workers
       workerLogging: {
         failure: 'error', // task failure
-        success: 'info',  // task success
+        success: 'info', // task success
         start: 'info',
         end: 'info',
         cleaning_worker: 'info',
@@ -39,8 +39,8 @@ exports['default'] = {
       checkTimeout: 500,
       // how many ms would constitue an event loop delay to halt taskProcessors spawning?
       maxEventLoopDelay: 5,
-      // When we kill off a taskProcessor, should we disconnect that local redis connection?
-      toDisconnectProcessors: true,
+      // how long before we mark a resque worker / task processor as stuck/dead?
+      stuckWorkerTimeout: (1000 * 60 * 60),
       // Customize Resque primitives, replace null with required replacement.
       resque_overrides: {
         queue: null,

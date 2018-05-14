@@ -59,11 +59,12 @@ module.exports = class StartCluster extends ActionHero.CLI {
 
   async run ({params}) {
     let options = {
-      execPath: path.normalize(path.join(__dirname, '/../../actionhero')),
+      execPath: path.normalize(path.join(__dirname, '..', '..', 'actionhero')),
       args: 'start',
       silent: (params.silent === 'true' || params.silent === true),
       expectedWorkers: params.workers,
       id: api.id,
+      pidPath: api.config.general.paths.pid[0],
       buildEnv: (workerId) => {
         let env = {}
 

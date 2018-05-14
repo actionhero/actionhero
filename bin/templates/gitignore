@@ -1,0 +1,24 @@
+# ActionHero files
+pids/*
+tmp/*
+log/*
+cache/*
+coverage/*
+node_modules/*
+locales/test-env-*
+public/javascript/ActionheroWebsocketClient.js
+public/javascript/ActionheroWebsocketClient.min.js
+
+# Node / NPM
+npm-debug.log
+
+# OS-specific wierdness
+.DS_Store
+
+# Redis
+dump.rdb
+cache.dump
+
+# Editor-specific
+/nbproject/*
+/.idea/*

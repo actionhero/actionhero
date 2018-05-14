@@ -58,7 +58,11 @@ module.exports = class Resque extends ActionHero.Initializer {
         if (resqueOverrides && resqueOverrides.scheduler) { Scheduler = resqueOverrides.scheduler }
         if (api.config.tasks.scheduler === true) {
           api.resque.schedulerLogging = api.config.tasks.schedulerLogging
-          api.resque.scheduler = new Scheduler({connection: api.resque.connectionDetails, timeout: api.config.tasks.timeout})
+          api.resque.scheduler = new Scheduler({
+            connection: api.resque.connectionDetails,
+            timeout: api.config.tasks.timeout,
+            stuckWorkerTimeout: api.config.tasks.stuckWorkerTimeout
+          })
 
           api.resque.scheduler.on('error', (error) => {
             api.log(error, 'error', '[api.resque.scheduler]')
@@ -95,8 +99,7 @@ module.exports = class Resque extends ActionHero.Initializer {
           checkTimeout: api.config.tasks.checkTimeout,
           minTaskProcessors: api.config.tasks.minTaskProcessors,
           maxTaskProcessors: api.config.tasks.maxTaskProcessors,
-          maxEventLoopDelay: api.config.tasks.maxEventLoopDelay,
-          toDisconnectProcessors: api.config.tasks.toDisconnectProcessors
+          maxEventLoopDelay: api.config.tasks.maxEventLoopDelay
         }, api.tasks.jobs)
 
         // normal worker emitters

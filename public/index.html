@@ -11,6 +11,9 @@
   </head>
 
   <body>
+    <div class="alert alert-warning" style="display:none; font-weight:bold; position:fixed; top: 0px; left: 0px; width: 100%; z-index:9999; " id="error-container">
+      <p id="error"/>
+    </div>
 
     <div class="container">
       <br />
@@ -64,7 +67,7 @@
             </div>
 
             <div class="col-md-6">
-              <a href="http://www.actionherojs.com/docs" class="btn btn-primary">Learn More about ActionHero</a>
+              <a href="http://www.actionherojs.com" class="btn btn-primary">Learn More about ActionHero</a>
             </div>
           </div>
         </div>
@@ -111,14 +114,20 @@
         }
       }
 
+      var renderError = function (error) {
+        console.error(error)
+        document.getElementById('error').innerHTML = error.toString();
+        document.getElementById('error-container').style.display = 'block';
+      }
+
       var client = new ActionheroWebsocketClient();
       client.action('showDocumentation', function(data){
-        if(data.error){ window.alert(data.error); }
+        if(data.error){ return renderError(data.error); }
         populateDocumentation(data)
       });
 
       client.action('status', function(data){
-        if(data.error){ window.alert(data.error); }
+        if(data.error){ return renderError(data.error); }
         populateStatus(data)
       });
     </script>

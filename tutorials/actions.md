@@ -32,7 +32,7 @@ You can also define more than one action per file if you would like, and extend 
 
 ```js
 // Compound Action with Shared Inputs//
-const {Action, api} = require('actionhero')
+const {Action} = require('actionhero')
 
 class ValidatedAction extends Action {
   constructor () {
@@ -50,7 +50,7 @@ class ValidatedAction extends Action {
   }
 
   emailValidator (param) {
-    if (email.indexOf('@') < 0) {
+    if (param.indexOf('@') < 0) {
       throw new Error('that is not a valid email address')
     }
   }
@@ -139,7 +139,7 @@ class ValidatedAction extends Action {
       multiplier: {
         required: false,
         validator: (param, connection, actionTemplate) => {
-          if (param < 0) { throw new Error('must be > 0') } else { return true }
+          if (param < 0) { throw new Error('must be > 0') }
         },
         formatter: (param, connection, actionTemplate) => {
           return parseInt(param)
@@ -197,7 +197,7 @@ action.inputs = {
   multiplier: {
     required: true,
     validator: (param, connection, actionTemplate) => {
-      if (param < 0) { throw new Error('must be > 0') } else { return true }
+      if (param < 0) { throw new Error('must be > 0') }
     },
     formatter: (param, connection, actionTemplate) => {
       return parseInt(param);
@@ -216,7 +216,7 @@ action.inputs = {
         required: true,
         default: 1,
         validator: (param, connection, actionTemplate) => {
-          if (param < 0) { throw new Error('must be > 0') } else { return true }
+          if (param < 0) { throw new Error('must be > 0') }
         },
         formatter: (param, connection, actionTemplate) => {
           return parseInt(param);
@@ -240,7 +240,7 @@ The properties of an input are:
   * you can also have a static assignment for `default` father than a function, ie: `default: 123`
   * Default: Parameter has no default value
 * `validator = function(param, connection, actionTemplate)`
-  * should return true if validation passed
+  * should return true, null, or undefined (return nothing) if validation passed
   * should throw an error message if validation fails which will be returned to the client
   * Default: Parameter is always valid
 * `schema` (object)
@@ -271,7 +271,6 @@ moneyInCents: {
   validator: (p) => {
     if(isNaN(parseFloat(p)){ throw new Error('not a number') }
     if(p < 0){ throw new Error('money cannot be negative') }
-    else{ return true }
   }
 }
 ```
@@ -337,7 +336,11 @@ You can also modify properties of the connection by accessing `data.connection`,
 
 If you don't want your action to respond to the client, or you have already sent data to the client (perhaps you already rendered a file to them or sent an error HTTP header), you can set `data.toRender = false;`
 
-If you are certain that your action is only going to be handled by a web server, then a connivence function has been provided to you via `data.connection.setHeader()`. This function is a proxy to the <a href='https://nodejs.org/api/http.html#http_response_setheader_name_value'>Node HTTP Response setHeader</a> function and allows you to set response headers without having to drill into the `data.connection.rawConnection` object. Please be aware, the `data.connection.setHeader()` function will only be available if your action is being handled by a web server. Other server types will throw an exception. See [Servers: Customizing the Connection](tutorial-servers.html) for more details.
+If you are certain that your action is only going to be handled by a web server, then a convenience method has been provided to you via `data.connection.setHeader()`. This function is a proxy to the <a href='https://nodejs.org/api/http.html#http_response_setheader_name_value'>Node HTTP Response setHeader</a> function and allows you to set response headers without having to drill into the `data.connection.rawConnection` object. Please be aware, the `data.connection.setHeader()` function will only be available if your action is being handled by a web server. Other server types will throw an exception. See [Servers: Customizing the Connection](tutorial-servers.html) for more details.
+
+Similarly to the above, the web server also exposes `data.connection.setStatusCode()`, again only for actions in use by the web server.  This can be used as a helper to set the HTTP responses' status code, ie: 404, 200, etc.
+
+Finally, if your action is again only for the web server, you can send a string or buffer as a file response with `data.connection.pipe(buffer, headers)`.  You will still need to set `data.toRender = false` in your action to avoid double-sending a response to the client.
 
 ## Middleware
 
@@ -348,7 +351,7 @@ You can [learn more about middleware here](tutorial-middleware.html).
 ## Notes
 
 * Actions' run method are async, and have `data` as their only argument.  Completing an action is as simple returning from the method.  
-* If you throw an error, be sure that it is a `new Error()` object, and not a string.  Thrown errors will automatically be sent to the client in `response.error`
+* If you throw an error, be sure that it is a `new Error()` object, and not a string.  Thrown errors will automatically be sent to the client in `response.error`. Also, throw Errors are processed at `config/errors.js` in `genericError(data, error)`. Here you can check your error add to the response (`requestIds`, status codes, etc.)
 * The metadata `outputExample` is used in reflexive and self-documenting actions in the API, available via the `documentation` verb (and showDocumenation action).
 * You can limit how many actions a persistent client (websocket, tcp, etc) can have pending at once with `api.config.general.simultaneousActions`
 * `actions.inputs` are used for both documentation and for building the whitelist of allowed parameters the API will accept.  Client params not included in these whitelists will be ignored for security. If you wish to disable the whitelisting you can use the flag at `api.config.general.disableParamScrubbing`. Note that [Middleware](tutorial-middleware.html) preProcessors will always have access to all params pre-scrubbing.

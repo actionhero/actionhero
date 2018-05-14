@@ -3,7 +3,6 @@
 const fs = require('fs')
 const path = require('path')
 const os = require('os')
-const {promisify} = require('util')
 const cluster = require('cluster')
 const readline = require('readline')
 const winston = require('winston')
@@ -82,7 +81,7 @@ module.exports = class ActionHeroCluster {
     if (stats.isDirectory() || stats.isSymbolicLink()) {
       return true
     } else {
-      await promisify(fs.mkdir)(p)
+      fs.mkdirSync(p)
     }
   }
 
@@ -110,6 +109,10 @@ module.exports = class ActionHeroCluster {
     }
 
     fs.unlinkSync(file)
+  }
+
+  async sleep (time) {
+    await new Promise((resolve) => { setTimeout(resolve, time) })
   }
 
   async start () {
@@ -141,9 +144,9 @@ module.exports = class ActionHeroCluster {
     process.on('SIGHUP', async () => {
       this.log('Signal: SIGHUP', 'info')
       this.log('reload all workers now', 'info')
-      this.workers.forEach(async (worker) => {
+      for (let worker of this.workers) {
         await worker.restart()
-      })
+      }
     })
 
     process.on('SIGTTIN', async () => {
@@ -194,7 +197,7 @@ module.exports = class ActionHeroCluster {
     if (this.workers.length === 0) {
       this.log('all workers stopped', 'notice')
       await this.clearPidFile()
-      await promisify(setTimeout)(100)
+      await this.sleep(100)
       process.exit()
     }
 
@@ -205,7 +208,7 @@ module.exports = class ActionHeroCluster {
 
     if (this.workers.length > 0) {
       this.log(this.workers.length + ' workers running, waiting on stop', 'info')
-      await promisify(setTimeout)(this.options.stopTimeout)
+      await this.sleep(this.options.stopTimeout)
       this.stop()
     }
   }
@@ -226,20 +229,20 @@ module.exports = class ActionHeroCluster {
     })
 
     if (
-        this.options.expectedWorkers < this.workers.length &&
+      this.options.expectedWorkers < this.workers.length &&
         this.workers.length >= 1 &&
         !stateCounts.stopping &&
         !stateCounts.stopped &&
         !stateCounts.restarting
-      ) {
+    ) {
       worker = this.workers[(this.workers.length - 1)]
       this.log('signaling worker #' + worker.id + ' to stop', 'info')
       worker.stop()
     } else if (
-        (this.options.expectedWorkers > this.workers.length) &&
+      (this.options.expectedWorkers > this.workers.length) &&
         !stateCounts.starting &&
         !stateCounts.restarting
-      ) {
+    ) {
       workerId = 1
       this.workers.forEach((w) => {
         if (w.id === workerId) { workerId++ }

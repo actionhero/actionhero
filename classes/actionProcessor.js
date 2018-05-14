@@ -46,7 +46,7 @@ module.exports = class ActionProcessor {
     this.actionStatus = String(status)
 
     if (status instanceof Error) {
-      error = status
+      error = (typeof api.config.errors.genericError === 'function' ? await api.config.errors.genericError(this, status) : status)
     } else if (status === 'server_shutting_down') {
       error = await api.config.errors.serverShuttingDown(this)
     } else if (status === 'too_many_requests') {
@@ -206,8 +206,20 @@ module.exports = class ActionProcessor {
             const method = this.prepareStringMethod(validator)
             validatorResponse = await method.call(api, params[key], this)
           }
-          if (validatorResponse !== true) { this.validatorErrors.push(validatorResponse) }
+
+          // validator function returned nothing; assume param is OK
+          if (validatorResponse === null || validatorResponse === undefined) { return }
+
+          // validator returned something that was not `true`
+          if (validatorResponse !== true) {
+            if (validatorResponse === false) {
+              this.validatorErrors.push(new Error(`Input for parameter "${key}" failed validation!`))
+            } else {
+              this.validatorErrors.push(validatorResponse)
+            }
+          }
         } catch (error) {
+          // validator threw an error
           this.validatorErrors.push(error)
         }
       }

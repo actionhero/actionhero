@@ -110,6 +110,24 @@ module.exports = class Connection {
     return api.i18n.localize(message, this)
   }
 
+  /**
+   * Send a file to a connection (usually in the context of an Action).  Be sure to set `data.toRender = false` in the action!
+   * Uses Server#processFile and will set `connection.params.file = path`
+   *
+   * @function sendFile
+   * @memberof ActionHero.Connection
+   * @param  {String} path The path of the file to send, within one of your `api.config.general.paths.public` directories.
+   * @tutorial file-server
+   */
+
+  /**
+   * Send a message to a connection.  Uses Server#sendMessage.
+   *
+   * @function sendMessage
+   * @memberof ActionHero.Connection
+   * @param  {String} message The message to send.  Can be an Object or String... but it depends on the server in use.
+   */
+
   generateID () {
     return uuid.v4()
   }
@@ -120,19 +138,21 @@ module.exports = class Connection {
    * @function destroy
    * @memberof ActionHero.Connection
    */
-  destroy () {
+  async destroy () {
     this.destroyed = true
 
-    api.connections.globalMiddleware.forEach((middlewareName) => {
+    for (let i in api.connections.globalMiddleware) {
+      let middlewareName = api.connections.globalMiddleware[i]
       if (typeof api.connections.middleware[middlewareName].destroy === 'function') {
-        api.connections.middleware[middlewareName].destroy(this)
+        await api.connections.middleware[middlewareName].destroy(this)
       }
-    })
+    }
 
     if (this.canChat === true) {
-      this.rooms.forEach((room) => {
-        api.chatRoom.removeMember(this.id, room)
-      })
+      for (let i in this.rooms) {
+        let room = this.rooms[i]
+        await api.chatRoom.removeMember(this.id, room)
+      }
     }
 
     const server = api.servers.servers[this.type]
@@ -183,8 +203,7 @@ module.exports = class Connection {
       // TODO: investigate allowedVerbs being an array of Constatnts or Symbols
 
       if (verb === 'quit' || verb === 'exit') {
-        server.goodbye(this)
-        return
+        return this.destroy()
       }
 
       if (verb === 'paramAdd') {

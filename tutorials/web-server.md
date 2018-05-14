@@ -86,7 +86,7 @@ exports['default'] = {
         secure: false,
         // Passed to https.createServer if secure=true. Should contain SSL certificates
         serverOptions: {},
-        // Should we redirect all traffic to the first host in this array if hte request header doesn't match?
+        // Should we redirect all traffic to the first host in this array if the request header doesn't match?
         // i.e.: [ 'https://www.site.com' ]
         allowedRequestHosts: process.env.ALLOWED_HOSTS ? process.env.ALLOWED_HOSTS.split(',') : [],
         // Port or Socket Path
@@ -450,22 +450,25 @@ ActionHero uses the [formidable](https://github.com/felixge/node-formidable) for
 
 ```js
 // actions/uploader.js
+const ActionHero = require('actionhero')
 
-exports.action = {
-  name: 'uploader',
-  description: 'uploader',
-  inputs: {
-    file1: {required: true},
-    file2: {required: false},
-    key1: {required: false},
-    key2: {required: false},
-  },
-  outputExample: null,
-  run: function(api, data, next){
-    console.log(data.params);
-    next();
+module.exports = class MyAction extends ActionHero.Action {
+  constructor () {
+    super()
+    this.name = 'uploader'
+    this.description = 'File upload Service'
+    this.input = { 
+          file1: {required: true},
+          file2: {required: false},
+          key1: {required: false},
+          key2: {required: false},
+     }
   }
-};
+
+  async run (data) {
+    console.log(data)    
+  }
+}
 ```
 
 ```html
