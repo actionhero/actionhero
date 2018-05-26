@@ -52,7 +52,10 @@ module.exports = class ClusterWorker {
       }
 
       if (message.unhandledRejection) {
-        this.parent.log('worker #' + this.worker.id + ' [' + this.worker.process.pid + ']: unhandled rejection => ' + JSON.stringify(message.unhandledRejection), 'alert')
+        this.parent.log(this.logPrefix() + 'unhandled rejection => ' + message.unhandledRejection.message, 'alert')
+        message.unhandledRejection.stack.forEach((line) => {
+          this.parent.log(this.logPrefix() + '   ' + line, 'alert')
+        })
         this.parent.flapCount++
       }
 
