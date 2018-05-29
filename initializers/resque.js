@@ -75,6 +75,7 @@ module.exports = class Resque extends ActionHero.Initializer {
           api.resque.scheduler.on('working_timestamp', (timestamp) => { api.log(`resque scheduler working timestamp ${timestamp}`, api.resque.schedulerLogging.working_timestamp) })
           api.resque.scheduler.on('transferred_job', (timestamp, job) => { api.log(`resque scheduler enqueuing job ${timestamp}`, api.resque.schedulerLogging.transferred_job, job) })
           api.resque.scheduler.on('master', (state) => { api.log('This node is now the Resque scheduler master') })
+          api.resque.scheduler.on('cleanStuckWorker', (workerName, errorPayload, delta) => { api.log('cleaned stuck worker', 'warning', {workerName, errorPayload, delta}) })
 
           api.resque.scheduler.start()
         }
