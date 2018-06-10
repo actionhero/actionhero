@@ -46,7 +46,7 @@ describe('Core: Plugins', () => {
       expect(api.pluginInitializer.here).toEqual(true)
     })
 
-    test('can load a server from a plugin')
+    // test('can load a server from a plugin')
 
     test('can serve static files from a plugin', async () => {
       let file = await api.specHelper.getStaticFile('plugin.html')
@@ -103,7 +103,7 @@ describe('Core: Plugins', () => {
       expect(api.pluginInitializer).not.toBeTruthy()
     })
 
-    test('will not load a server from an un-loaded plugin')
+    // test('will not load a server from an un-loaded plugin')
 
     test('will not serve static files from an un-loaded plugin', async () => {
       let file = await api.specHelper.getStaticFile('plugin.html')
@@ -145,7 +145,7 @@ describe('Core: Plugins', () => {
       expect(api.pluginInitializer).not.toBeTruthy()
     })
 
-    test('will not load a server from an un-loaded plugin')
+    // test('will not load a server from an un-loaded plugin')
 
     test('will not serve static files from an un-loaded plugin', async () => {
       let file = await api.specHelper.getStaticFile('plugin.html')
