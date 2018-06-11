@@ -143,7 +143,7 @@ describe('Core: Tasks', () => {
     }
   )
 
-  test('will clear crashed workers when booting') // TODO
+  // test('will clear crashed workers when booting') // TODO
 
   test('setup worked', () => {
     expect(Object.keys(api.tasks.tasks)).toHaveLength(3 + 1)
