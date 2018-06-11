@@ -240,7 +240,7 @@ describe('Core: CLI', () => {
         }
       })
 
-      test('will shutdown after the alloted time')
+      // test('will shutdown after the alloted time')
     })
 
     describe('can run a cluster', () => {
@@ -327,8 +327,8 @@ describe('Core: CLI', () => {
         expect(children.length).toEqual(0)
       })
 
-      test('can detect flapping and exit')
-      test('can reboot and abosrb code changes without downtime')
+      // test('can detect flapping and exit')
+      // test('can reboot and abosrb code changes without downtime')
     })
   }
 })
