@@ -1,17 +1,6 @@
 'use strict'
 
-const fs = require('fs')
 const cluster = require('cluster')
-
-function createDirectory (path) {
-  try {
-    fs.mkdirSync(path)
-  } catch (e) {
-    if (e.code !== 'EEXIST') {
-      throw (new Error('Cannot create directory @ ' + path))
-    }
-  }
-}
 
 exports['default'] = {
   logger: (api) => {
@@ -29,21 +18,15 @@ exports['default'] = {
     }
 
     // file logger
-    const hasLogDirectoryConfigured = (api.config.general.paths.log.length === 1)
+    logger.transports.push(function (api, winston) {
+      const logDirectory = api.config.general.paths.log[0]
 
-    if (hasLogDirectoryConfigured) {
-      logger.transports.push(function (api, winston) {
-        const logDirectory = api.config.general.paths.log[0]
-
-        createDirectory(logDirectory)
-
-        return new (winston.transports.File)({
-          filename: api.config.general.paths.log[0] + '/' + api.pids.title + '.log',
-          level: 'info',
-          timestamp: function () { return api.id + ' @ ' + new Date().toISOString() }
-        })
+      return new (winston.transports.File)({
+        filename: logDirectory + '/' + api.pids.title + '.log',
+        level: 'info',
+        timestamp: function () { return api.id + ' @ ' + new Date().toISOString() }
       })
-    }
+    })
 
     // the maximum length of param to log (we will truncate)
     logger.maxLogStringLength = 100
@@ -63,23 +46,17 @@ exports.test = {
     let logger = { transports: [] }
 
     // file logger
-    const hasLogDirectoryConfigured = (api.config.general.paths.log.length === 1)
+    logger.transports.push(function (api, winston) {
+      const logDirectory = api.config.general.paths.log[0]
 
-    if (hasLogDirectoryConfigured) {
-      logger.transports.push(function (api, winston) {
-        const logDirectory = api.config.general.paths.log[0]
-
-        createDirectory(logDirectory)
-
-        return new (winston.transports.File)({
-          filename: api.config.general.paths.log[0] + '/' + api.pids.title + '.log',
-          maxsize: 20480,
-          maxFiles: 1,
-          level: 'debug',
-          timestamp: function () { return api.id + ' @ ' + new Date().toISOString() }
-        })
+      return new (winston.transports.File)({
+        filename: logDirectory + '/' + api.pids.title + '.log',
+        maxsize: 20480,
+        maxFiles: 1,
+        level: 'debug',
+        timestamp: function () { return api.id + ' @ ' + new Date().toISOString() }
       })
-    }
+    })
 
     return logger
   }
