@@ -2,6 +2,7 @@
 
 const net = require('net')
 const tls = require('tls')
+const uuid = require('uuid')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
@@ -169,8 +170,7 @@ module.exports = class SocketServer extends ActionHero.Server {
   async parseRequest (connection, line) {
     let words = line.split(' ')
     let verb = words.shift()
-    connection.messageId++
-    let messageId = connection.params.messageId || connection.messageId
+    connection.messageId = connection.params.messageId || uuid.v4()
 
     if (verb === 'file') {
       if (words.length > 0) { connection.params.file = words[0] }
@@ -180,9 +180,9 @@ module.exports = class SocketServer extends ActionHero.Server {
     if (this.attributes.verbs.indexOf(verb) >= 0) {
       try {
         let data = await connection.verbs(verb, words)
-        return this.sendMessage(connection, {status: 'OK', context: 'response', data: data}, messageId)
+        return this.sendMessage(connection, {status: 'OK', context: 'response', data: data}, connection.messageId)
       } catch (error) {
-        return this.sendMessage(connection, {error: error, context: 'response'}, messageId)
+        return this.sendMessage(connection, {error: error, context: 'response'}, connection.messageId)
       }
     }
 
@@ -196,6 +196,9 @@ module.exports = class SocketServer extends ActionHero.Server {
       }
       if (requestHash.action) {
         connection.params.action = requestHash.action
+      }
+      if (connection.params.messageId) {
+        connection.messageId = connection.params.messageId
       }
     } catch (e) {
       connection.params.action = verb
