@@ -69,7 +69,7 @@ await api.redis.publish(payload)
         if (!Array.isArray(args)) { args = [args] }
         if (method) {
           let response = await method.apply(null, args)
-          await api.redis.respondCluster(message.requestId, response)
+          await api.redis.respondCluster(message.messageId, response)
         } else {
           api.log('RPC method `' + cmdParts.join('.') + '` not found', 'warning')
         }
@@ -77,11 +77,11 @@ await api.redis.publish(payload)
     }
 
     api.redis.subscriptionHandlers.doResponse = function (message) {
-      if (api.redis.rpcCallbacks[message.requestId]) {
-        let {resolve, timer} = api.redis.rpcCallbacks[message.requestId]
+      if (api.redis.rpcCallbacks[message.messageId]) {
+        let {resolve, timer} = api.redis.rpcCallbacks[message.messageId]
         clearTimeout(timer)
         resolve(message.response)
-        delete api.redis.rpcCallbacks[message.requestId]
+        delete api.redis.rpcCallbacks[message.messageId]
       }
     }
 
@@ -97,12 +97,12 @@ await api.redis.publish(payload)
      */
     api.redis.doCluster = async (method, args, connectionId, waitForResponse) => {
       if (waitForResponse === undefined || waitForResponse === null) { waitForResponse = false }
-      const requestId = uuid.v4()
+      const messageId = uuid.v4()
       const payload = {
         messageType: 'do',
         serverId: api.id,
         serverToken: api.config.general.serverToken,
-        requestId: requestId,
+        messageId: messageId,
         method: method,
         connectionId: connectionId,
         args: args // [1,2,3]
@@ -113,19 +113,19 @@ await api.redis.publish(payload)
       if (waitForResponse) {
         let response = await new Promise((resolve, reject) => {
           let timer = setTimeout(() => reject(new Error('RPC Timeout')), api.config.general.rpcTimeout)
-          api.redis.rpcCallbacks[requestId] = {timer, resolve, reject}
+          api.redis.rpcCallbacks[messageId] = {timer, resolve, reject}
         })
 
         return response
       }
     }
 
-    api.redis.respondCluster = async (requestId, response) => {
+    api.redis.respondCluster = async (messageId, response) => {
       const payload = {
         messageType: 'doResponse',
         serverId: api.id,
         serverToken: api.config.general.serverToken,
-        requestId: requestId,
+        messageId: messageId,
         response: response // args to pass back, including error
       }
 

@@ -292,7 +292,8 @@ module.exports = class WebServer extends ActionHero.Server {
       }
     }
 
-    let { ip, port } = api.utils.parseHeadersForClientAddress(req.headers)
+    const { ip, port } = api.utils.parseHeadersForClientAddress(req.headers)
+    const messageId = uuid.v4()
 
     this.buildConnection({
       rawConnection: {
@@ -305,7 +306,8 @@ module.exports = class WebServer extends ActionHero.Server {
         responseHttpCode: responseHttpCode,
         parsedURL: parsedURL
       },
-      id: fingerprint + '-' + uuid.v4(),
+      id: `${fingerprint}-${messageId}`,
+      messageId: messageId,
       fingerprint: fingerprint,
       remoteAddress: ip || req.connection.remoteAddress || '0.0.0.0',
       remotePort: port || req.connection.remotePort || '0'
@@ -563,6 +565,7 @@ module.exports = class WebServer extends ActionHero.Server {
     let requesterInformation = {
       id: connection.id,
       fingerprint: connection.fingerprint,
+      messageId: connection.messageId,
       remoteIP: connection.remoteIP,
       receivedParams: {}
     }

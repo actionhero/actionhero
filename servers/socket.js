@@ -60,7 +60,7 @@ module.exports = class SocketServer extends ActionHero.Server {
     this.on('actionComplete', (data) => {
       if (data.toRender === true) {
         data.response.context = 'response'
-        this.sendMessage(data.connection, data.response, data.messageCount)
+        this.sendMessage(data.connection, data.response, data.messageId)
       }
     })
   }
@@ -69,19 +69,16 @@ module.exports = class SocketServer extends ActionHero.Server {
     await this.gracefulShutdown()
   }
 
-  async sendMessage (connection, message, messageCount) {
+  async sendMessage (connection, message, messageId) {
     if (message.error) {
       message.error = await api.config.errors.serializers.servers.socket(message.error)
     }
 
-    if (connection.respondingTo) {
-      message.messageCount = messageCount
-      connection.respondingTo = null
-    } else if (message.context === 'response') {
-      if (messageCount) {
-        message.messageCount = messageCount
+    if (message.context === 'response') {
+      if (messageId) {
+        message.messageId = messageId
       } else {
-        message.messageCount = connection.messageCount
+        message.messageId = connection.messageId
       }
     }
 
@@ -100,7 +97,7 @@ module.exports = class SocketServer extends ActionHero.Server {
 
   sendFile (connection, error, fileStream) {
     if (error) {
-      this.sendMessage(connection, error, connection.messageCount)
+      this.sendMessage(connection, error, connection.messageId)
     } else {
       fileStream.pipe(connection.rawConnection, {end: false})
     }
@@ -165,9 +162,6 @@ module.exports = class SocketServer extends ActionHero.Server {
     }
 
     if (line.length > 0) {
-      // increment at the start of the request so that responses can be caught in order on the client
-      // this is not handled by the GenericServer
-      connection.messageCount++
       this.parseRequest(connection, line)
     }
   }
@@ -175,6 +169,8 @@ module.exports = class SocketServer extends ActionHero.Server {
   async parseRequest (connection, line) {
     let words = line.split(' ')
     let verb = words.shift()
+    connection.messageId++
+    let messageId = connection.params.messageId || connection.messageId
 
     if (verb === 'file') {
       if (words.length > 0) { connection.params.file = words[0] }
@@ -184,9 +180,9 @@ module.exports = class SocketServer extends ActionHero.Server {
     if (this.attributes.verbs.indexOf(verb) >= 0) {
       try {
         let data = await connection.verbs(verb, words)
-        return this.sendMessage(connection, {status: 'OK', context: 'response', data: data})
+        return this.sendMessage(connection, {status: 'OK', context: 'response', data: data}, messageId)
       } catch (error) {
-        return this.sendMessage(connection, {error: error, context: 'response'})
+        return this.sendMessage(connection, {error: error, context: 'response'}, messageId)
       }
     }
 
