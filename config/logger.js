@@ -1,6 +1,17 @@
 'use strict'
 
 const cluster = require('cluster')
+const fs = require('fs')
+
+const ensureLogDirecotry = (logDirectory) => {
+  try {
+    fs.mkdirSync(logDirectory)
+  } catch (error) {
+    if (error.code !== 'EEXIST') {
+      throw (new Error(`Cannot create log directory @ ${logDirectory}`))
+    }
+  }
+}
 
 exports['default'] = {
   logger: (api) => {
@@ -23,6 +34,7 @@ exports['default'] = {
     if (hasLogDirectoryConfigured) {
       logger.transports.push(function (api, winston) {
         const logDirectory = api.config.general.paths.log[0]
+        ensureLogDirecotry(logDirectory)
 
         return new (winston.transports.File)({
           filename: logDirectory + '/' + api.pids.title + '.log',
@@ -55,6 +67,7 @@ exports.test = {
     if (hasLogDirectoryConfigured) {
       logger.transports.push(function (api, winston) {
         const logDirectory = api.config.general.paths.log[0]
+        ensureLogDirecotry(logDirectory)
 
         return new (winston.transports.File)({
           filename: logDirectory + '/' + api.pids.title + '.log',
