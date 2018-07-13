@@ -33,22 +33,22 @@ const middleware = {
   name: 'timer',
   global: true,
   priority: 90,
-  preProcessor: async () => {
+  preProcessor: async function () {
     const worker = this.worker
     worker.startTime = process.hrtime()
   },
-  postProcessor: async () => {
+  postProcessor: async function () {
     const worker = this.worker
     const elapsed = process.hrtime(worker.startTime)
     const seconds = elapsed[0]
     const millis = elapsed[1] / 1000000
     api.log(worker.job.class + ' done in ' + seconds + ' s and ' + millis + ' ms.', 'info')
   },
-  preEnqueue: async () => {
+  preEnqueue: async function () {
     const arg = this.args[0]
     return (arg === 'ok') // returing `false` will prevent the task from enqueing
   },
-  postEnqueue: async () => {
+  postEnqueue: async function () {
     api.log("Task successfully enqueued!")
   }
 }
