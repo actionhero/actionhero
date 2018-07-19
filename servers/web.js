@@ -418,26 +418,25 @@ module.exports = class WebServer extends ActionHero.Server {
     let requestMode = this.config.rootEndpointType
     let pathname = connection.rawConnection.parsedURL.pathname
     let pathParts = pathname.split('/')
-    let matcherLength
     let i
 
     while (pathParts[0] === '') { pathParts.shift() }
     if (pathParts[pathParts.length - 1] === '') { pathParts.pop() }
 
-    if (pathParts[0] && pathParts[0] === this.config.urlPathForActions) {
+    let urlPathForActionsParts = this.config.urlPathForActions.split('/')
+    let urlPathForFilesParts = this.config.urlPathForFiles.split('/')
+    while (urlPathForActionsParts[0] === '') { urlPathForActionsParts.shift() }
+    while (urlPathForFilesParts[0] === '') { urlPathForFilesParts.shift() }
+
+    // if (pathParts[0] && pathname.indexOf(this.config.urlPathForActions) === 0) {
+    if (pathParts[0] && api.utils.arrayStartignMatch(urlPathForActionsParts, pathParts)) {
       requestMode = 'api'
-      pathParts.shift()
-    } else if (pathParts[0] && pathParts[0] === this.config.urlPathForFiles) {
+      for (i = 0; i < (urlPathForActionsParts.length); i++) { pathParts.shift() }
+
+    // } else if (pathParts[0] && pathname.indexOf(this.config.urlPathForFiles) === 0) {
+    } else if (pathParts[0] && api.utils.arrayStartignMatch(urlPathForFilesParts, pathParts)) {
       requestMode = 'file'
-      pathParts.shift()
-    } else if (pathParts[0] && pathname.indexOf(this.config.urlPathForActions) === 0) {
-      requestMode = 'api'
-      matcherLength = this.config.urlPathForActions.split('/').length
-      for (i = 0; i < (matcherLength - 1); i++) { pathParts.shift() }
-    } else if (pathParts[0] && pathname.indexOf(this.config.urlPathForFiles) === 0) {
-      requestMode = 'file'
-      matcherLength = this.config.urlPathForFiles.split('/').length
-      for (i = 0; i < (matcherLength - 1); i++) { pathParts.shift() }
+      for (i = 0; i < (urlPathForFilesParts.length); i++) { pathParts.shift() }
     }
 
     let extensionParts = connection.rawConnection.parsedURL.pathname.split('.')
