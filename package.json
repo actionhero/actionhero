@@ -46,7 +46,7 @@
     "uglify-js": "^3.4.0",
     "uuid": "^3.2.1",
     "winston": "^2.4.2",
-    "ws": "^5.2.0"
+    "ws": "^6.0.0"
   },
   "devDependencies": {
     "docdash-actionhero": "^0.0.8",
