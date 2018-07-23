@@ -43,10 +43,10 @@
     "optimist": "^0.6.1",
     "primus": "^7.2.2",
     "qs": "^6.5.2",
-    "uglify-js": "^3.4.0",
+    "uglify-js": "^3.4.5",
     "uuid": "^3.2.1",
     "winston": "^2.4.2",
-    "ws": "^5.2.0"
+    "ws": "^6.0.0"
   },
   "devDependencies": {
     "docdash-actionhero": "^0.0.8",
