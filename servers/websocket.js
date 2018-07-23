@@ -5,6 +5,7 @@ const UglifyJS = require('uglify-js')
 const fs = require('fs')
 const path = require('path')
 const util = require('util')
+const uuid = require('uuid')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
@@ -51,8 +52,8 @@ module.exports = class WebSocketServer extends ActionHero.Server {
 
     this.on('actionComplete', (data) => {
       if (data.toRender !== false) {
-        data.connection.response.messageCount = data.messageCount
-        this.sendMessage(data.connection, data.response, data.messageCount)
+        data.connection.response.messageId = data.messageId
+        this.sendMessage(data.connection, data.response, data.messageId)
       }
     })
   }
@@ -66,18 +67,19 @@ module.exports = class WebSocketServer extends ActionHero.Server {
     if (this.server) { this.server.destroy() }
   }
 
-  sendMessage (connection, message, messageCount) {
+  sendMessage (connection, message, messageId) {
     if (message.error) {
       message.error = api.config.errors.serializers.servers.websocket(message.error)
     }
 
     if (!message.context) { message.context = 'response' }
-    if (!messageCount) { messageCount = connection.messageCount }
-    if (message.context === 'response' && !message.messageCount) { message.messageCount = messageCount }
+    if (!messageId) { messageId = connection.messageId }
+    if (message.context === 'response' && !message.messageId) { message.messageId = messageId }
     connection.rawConnection.write(message)
   }
 
   sendFile (connection, error, fileStream, mime, length, lastModified) {
+    const messageId = connection.messageId
     let content = ''
     let response = {
       error: error,
@@ -92,14 +94,14 @@ module.exports = class WebSocketServer extends ActionHero.Server {
         fileStream.on('data', (d) => { content += d })
         fileStream.on('end', () => {
           response.content = content
-          this.sendMessage(connection, response, connection.messageCount)
+          this.sendMessage(connection, response, messageId)
         })
       } else {
-        this.sendMessage(connection, response, connection.messageCount)
+        this.sendMessage(connection, response, messageId)
       }
     } catch (e) {
       this.log(e, 'warning')
-      this.sendMessage(connection, response, connection.messageCount)
+      this.sendMessage(connection, response, messageId)
     }
   }
 
@@ -196,7 +198,9 @@ module.exports = class WebSocketServer extends ActionHero.Server {
   async handleData (connection, data) {
     const verb = data.event
     delete data.event
-    connection.messageCount++
+
+    connection.messageId = data.messageId || uuid.v4()
+    delete data.messageId
     connection.params = {}
 
     if (verb === 'action') {
@@ -222,13 +226,14 @@ module.exports = class WebSocketServer extends ActionHero.Server {
       delete data.room
     }
     for (let i in data) { words.push(data[i]) }
+    const messageId = connection.messageId
     try {
       let data = await connection.verbs(verb, words)
       message = {status: 'OK', context: 'response', data: data}
-      return this.sendMessage(connection, message)
+      return this.sendMessage(connection, message, messageId)
     } catch (error) {
       message = {status: error, context: 'response', data: data}
-      return this.sendMessage(connection, message)
+      return this.sendMessage(connection, message, messageId)
     }
   }
 }

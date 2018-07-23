@@ -151,7 +151,7 @@ module.exports = class MyServer extends ActionHero.Server {
 
   }
 
-  sendMessage (connection, message, messageCount) {
+  sendMessage (connection, message, messageId) {
 
   }
 
@@ -373,7 +373,7 @@ The only breaking changes are related to the capilization of internal methods:
            action: 'randomNumber',
            toProcess: true,
            toRender: true,
-           messageCount: 123,
+           messageId: 123,
            params: { action: 'randomNumber', apiVersion: 1 },
            actionStartTime: 123,
            response: {},

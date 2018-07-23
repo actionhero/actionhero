@@ -83,4 +83,4 @@ If you want to see fuller example of how to create an integration test within Ac
 
 ## Notes
 
-If you do not want the `specHelper` actions to include metadata (`data.response.serverInformation`, `data.response.requesterInformation`, and `data.response.messageCount`) from the server, you can configure `api.specHelper.returnMetadata = false` in your tests.
+If you do not want the `specHelper` actions to include metadata (`data.response.serverInformation`, `data.response.requesterInformation`, and `data.response.messageId`) from the server, you can configure `api.specHelper.returnMetadata = false` in your tests.

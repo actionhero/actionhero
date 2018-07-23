@@ -121,10 +121,10 @@ describe('Server: Web Socket', () => {
       expect(clientA.rooms).toEqual(['defaultRoom'])
     })
 
-    test('properly responds with messageCount', async () => {
+    test('properly responds with messageId', async () => {
       let aTime
       let bTime
-      let startingMessageCount = clientA.messageCount
+      let startingMessageId = clientA.messageId
       awaitRoom(clientA, 'roomAdd', 'defaultRoom') // fast
       let responseA = awaitAction(clientA, 'sleepTest') // slow
       awaitRoom(clientA, 'roomAdd', 'defaultRoom') // fast
@@ -142,9 +142,14 @@ describe('Server: Web Socket', () => {
 
       await api.utils.sleep(2001)
 
-      expect(responseA.messageCount).toEqual(startingMessageCount + 2)
-      expect(responseB.messageCount).toEqual(startingMessageCount + 4)
+      expect(responseA.messageId).toEqual(startingMessageId + 2)
+      expect(responseB.messageId).toEqual(startingMessageId + 4)
       expect(aTime.getTime()).toBeGreaterThan(bTime.getTime())
+    })
+
+    test('messageId can be configurable', async () => {
+      let response = await awaitAction(clientA, 'randomNumber', {messageId: 'aaa'})
+      expect(response.messageId).toBe('aaa')
     })
 
     test('can run actions properly without params', async () => {

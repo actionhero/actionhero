@@ -362,6 +362,24 @@ describe('Server: Web', () => {
     expect(successBody.cacheTestResults.saveResp).toEqual(true)
   })
 
+  describe('messageId', () => {
+    test('generates unique messageIds for each request', async () => {
+      const requestA = await request.get(url + '/api/randomNumber').then(toJson)
+      const requestB = await request.get(url + '/api/randomNumber').then(toJson)
+      expect(requestA.requesterInformation.messageId).not.toEqual(requestB.requesterInformation.messageId)
+    })
+
+    test('messageIds can be provided by the client and returned by the server', async () => {
+      const response = await request.get(url + '/api/randomNumber', {messageId: 'aaa'}).then(toJson)
+      expect(response.requesterInformation.messageId).not.toEqual('aaa')
+    })
+
+    test('a connection id should be a combination of fingerprint and message id', async () => {
+      const response = await request.get(url + '/api/randomNumber').then(toJson)
+      expect(response.requesterInformation.id).toEqual(`${response.requesterInformation.fingerprint}-${response.requesterInformation.messageId}`)
+    })
+  })
+
   describe('connection.rawConnection.params', () => {
     beforeAll(() => {
       api.actions.versions.paramTestAction = [1]

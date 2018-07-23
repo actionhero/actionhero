@@ -158,6 +158,24 @@ describe('Server: Socket', () => {
     expect(response.error).toEqual('value is a required parameter for this action')
   })
 
+  test('messageId is unique', async () => {
+    let responseA = await makeSocketRequest(client, 'randomNumber')
+    let responseB = await makeSocketRequest(client, 'randomNumber')
+    expect(responseA.messageId).not.toEqual(responseB.messageId)
+  })
+
+  test('messageId is configurable (sticky params)', async () => {
+    await makeSocketRequest(client, 'paramAdd messageId=aaaaaa')
+    let response = await makeSocketRequest(client, 'randomNumber')
+    expect(response.messageId).toEqual('aaaaaa')
+    await makeSocketRequest(client, 'paramDelete messageId')
+  })
+
+  test('messageId is configurable (json)', async () => {
+    let response = await makeSocketRequest(client, JSON.stringify({action: 'randomNumber', params: {messageId: 'abc123'}}))
+    expect(response.messageId).toEqual('abc123')
+  })
+
   test('asking to quit will disconnect', async () => {
     const newClient = net.connect(api.config.servers.socket.port, () => {
       newClient.setEncoding('utf8')

@@ -36,7 +36,7 @@ module.exports = class MyServer extends ActionHero.Server {
 
   }
 
-  sendMessage (connection, message, messageCount) {
+  sendMessage (connection, message, messageId) {
 
   }
 

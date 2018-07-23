@@ -74,7 +74,7 @@ data = {
   connection: {},
   action: 'randomNumber',
   toRender: true,
-  messageCount: 1,
+  messageId: 1,
   params: { action: 'randomNumber', apiVersion: 1 },
   actionStartTime: 1429531553417,
   actionTemplate: {}, // the actual object action definition

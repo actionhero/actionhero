@@ -94,7 +94,7 @@ describe('Core: specHelper', () => {
         let response = await api.specHelper.runAction('randomNumber')
         expect(response.error).toBeUndefined()
         expect(response.randomNumber).toBeTruthy()
-        expect(response.messageCount).toEqual(1)
+        expect(response.messageId).toBeTruthy()
         expect(response.serverInformation.serverName).toEqual('actionhero')
         expect(response.requesterInformation.remoteIP).toEqual('testServer')
       })
@@ -103,7 +103,7 @@ describe('Core: specHelper', () => {
         let response = await api.specHelper.runAction('stringResponseTestAction')
         expect(response).toEqual('something response')
         expect(response.error).toBeUndefined()
-        expect(response.messageCount).toBeUndefined()
+        expect(response.messageId).toBeUndefined()
         expect(response.serverInformation).toBeUndefined()
         expect(response.requesterInformation).toBeUndefined()
       })
@@ -112,7 +112,7 @@ describe('Core: specHelper', () => {
         let response = await api.specHelper.runAction('arrayResponseTestAction')
         expect(response).toEqual([1, 2, 3])
         expect(response.error).toBeUndefined()
-        expect(response.messageCount).toBeUndefined()
+        expect(response.messageId).toBeUndefined()
         expect(response.serverInformation).toBeUndefined()
         expect(response.requesterInformation).toBeUndefined()
       })
@@ -128,7 +128,7 @@ describe('Core: specHelper', () => {
           let response = await api.specHelper.runAction('randomNumber')
           expect(response.error).toBeUndefined()
           expect(response.randomNumber).toBeTruthy()
-          expect(response.messageCount).toBeUndefined()
+          expect(response.messageId).toBeUndefined()
           expect(response.serverInformation).toBeUndefined()
           expect(response.requesterInformation).toBeUndefined()
         }
@@ -141,7 +141,7 @@ describe('Core: specHelper', () => {
         async () => {
           let response = await api.specHelper.runAction('x')
           expect(response.error).toEqual('Error: unknown action or invalid apiVersion')
-          expect(response.messageCount).toEqual(1)
+          expect(response.messageId).toBeTruthy()
           expect(response.serverInformation.serverName).toEqual('actionhero')
           expect(response.requesterInformation.remoteIP).toEqual('testServer')
         }
@@ -152,7 +152,7 @@ describe('Core: specHelper', () => {
         async () => {
           let response = await api.specHelper.runAction('stringErrorTestAction')
           expect(response).toEqual('Error: some error')
-          expect(response.messageCount).toBeUndefined()
+          expect(response.messageId).toBeUndefined()
           expect(response.serverInformation).toBeUndefined()
           expect(response.requesterInformation).toBeUndefined()
         }
@@ -163,7 +163,7 @@ describe('Core: specHelper', () => {
         async () => {
           let response = await api.specHelper.runAction('arrayErrorTestAction')
           expect(response).toEqual('Error: some error')
-          expect(response.messageCount).toBeUndefined()
+          expect(response.messageId).toBeUndefined()
           expect(response.serverInformation).toBeUndefined()
           expect(response.requesterInformation).toBeUndefined()
         }
@@ -191,6 +191,11 @@ describe('Core: specHelper', () => {
         expect(String(e)).toEqual('TypeError: Cannot read property \'a\' of undefined')
       }
     })
+
+    test('messageId can be configurable', async () => {
+      let response = await api.specHelper.runAction('randomNumber', {messageId: 'aaa'})
+      expect(response.messageId).toEqual('aaa')
+    })
   })
 
   describe('files', () => {
@@ -213,6 +218,7 @@ describe('Core: specHelper', () => {
   describe('persistent test connections', () => {
     let connection
     let connId
+    let messageIds = []
 
     test('can make a requset with a spec\'d connection', async () => {
       connection = new api.specHelper.Connection()
@@ -224,7 +230,7 @@ describe('Core: specHelper', () => {
       connId = connection.id
 
       let response = await api.specHelper.runAction('cacheTest', connection)
-      expect(response.messageCount).toEqual(1)
+      messageIds.push(response.messageId)
       expect(connection.messages).toHaveLength(2)
       expect(connId).toEqual(connection.id)
       expect(connection.fingerprint).toEqual(connId)
@@ -232,7 +238,7 @@ describe('Core: specHelper', () => {
 
     test('can make second request', async () => {
       let response = await api.specHelper.runAction('randomNumber', connection)
-      expect(response.messageCount).toEqual(2)
+      messageIds.push(response.messageId)
       expect(connection.messages).toHaveLength(3)
       expect(connId).toEqual(connection.id)
       expect(connection.fingerprint).toEqual(connId)
@@ -242,11 +248,17 @@ describe('Core: specHelper', () => {
       'will generate new ids and fingerprints for a new connection',
       async () => {
         let response = await api.specHelper.runAction('randomNumber')
-        expect(response.messageCount).toEqual(1)
+        messageIds.push(response.messageId)
         expect(response.requesterInformation.id).not.toEqual(connId)
         expect(response.requesterInformation.fingerprint).not.toEqual(connId)
       }
     )
+
+    test('message ids are unique', () => {
+      expect(messageIds).toHaveLength(3)
+      expect(messageIds[0]).not.toEqual(messageIds[1])
+      expect(messageIds[1]).not.toEqual(messageIds[2])
+    })
   })
 
   describe('tasks', () => {

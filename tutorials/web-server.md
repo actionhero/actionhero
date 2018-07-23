@@ -198,7 +198,7 @@ config.server.web.serverOptions: {
   params: { action: 'randomNumber', apiVersion: 1 },
   pendingActions: 1,
   totalActions: 1,
-  messageCount: 0,
+  messageId: 0,
   canChat: false,
   sendMessage: [Function],
   sendFile: [Function]
@@ -457,7 +457,7 @@ module.exports = class MyAction extends ActionHero.Action {
     super()
     this.name = 'uploader'
     this.description = 'File upload Service'
-    this.input = { 
+    this.input = {
           file1: {required: true},
           file2: {required: false},
           key1: {required: false},
