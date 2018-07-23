@@ -362,6 +362,24 @@ describe('Server: Web', () => {
     expect(successBody.cacheTestResults.saveResp).toEqual(true)
   })
 
+  describe('messageId', () => {
+    test('generates unique messageIds for each request', async () => {
+      const requestA = await request.get(url + '/api/randomNumber').then(toJson)
+      const requestB = await request.get(url + '/api/randomNumber').then(toJson)
+      expect(requestA.requesterInformation.messageId).not.toEqual(requestB.requesterInformation.messageId)
+    })
+
+    test('messageIds can be provided by the client and returned by the server', async () => {
+      const response = await request.get(url + '/api/randomNumber', {messageId: 'aaa'}).then(toJson)
+      expect(response.requesterInformation.messageId).not.toEqual('aaa')
+    })
+
+    test('a connection id should be a combination of fingerprint and message id', async () => {
+      const response = await request.get(url + '/api/randomNumber').then(toJson)
+      expect(response.requesterInformation.id).toEqual(`${response.requesterInformation.fingerprint}-${response.requesterInformation.messageId}`)
+    })
+  })
+
   describe('connection.rawConnection.params', () => {
     beforeAll(() => {
       api.actions.versions.paramTestAction = [1]
@@ -864,52 +882,6 @@ describe('Server: Web', () => {
         expect(response.body).toEqual('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
       })
     })
-
-    describe('depth routes', () => {
-      beforeAll(() => {
-        api.config.servers.web.urlPathForActions = '/craz/y/action/path'
-        api.config.servers.web.urlPathForFiles = '/a/b/c'
-      })
-
-      afterAll(() => {
-        api.config.servers.web.urlPathForActions = 'api'
-        api.config.servers.web.urlPathForFiles = 'public'
-      })
-
-      test('old action routes stop working', async () => {
-        try {
-          await request.get(url + '/api/randomNumber')
-          throw new Error('should not get here')
-        } catch (error) {
-          expect(error.statusCode).toEqual(404)
-        }
-      })
-
-      test('can ask for nested URL actions', async () => {
-        let response = await request.get(url + '/craz/y/action/path/randomNumber', {resolveWithFullResponse: true})
-        expect(response.statusCode).toEqual(200)
-      })
-
-      test('old file routes stop working', async () => {
-        try {
-          await request.get(url + '/public/simple.html')
-          throw new Error('should not get here')
-        } catch (error) {
-          expect(error.statusCode).toEqual(404)
-        }
-      })
-
-      test('can ask for nested URL files', async () => {
-        let response = await request.get(url + '/a/b/c/simple.html', {resolveWithFullResponse: true})
-        expect(response.statusCode).toEqual(200)
-        expect(response.body).toEqual('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
-      })
-
-      test('can ask for nested URL files with depth', async () => {
-        let response = await request.get(url + '/a/b/c/css/cosmo.css', {resolveWithFullResponse: true})
-        expect(response.statusCode).toEqual(200)
-      })
-    })
   })
 
   describe('routes', () => {
@@ -997,6 +969,112 @@ describe('Server: Web', () => {
         expect(api.params.postVariables).not.toContain('bogusID')
       }
     )
+
+    describe('simple routing', () => {
+      describe('deep routes', () => {
+        beforeAll(() => {
+          api.config.servers.web.urlPathForActions = 'namespace/actions'
+          api.config.servers.web.urlPathForFiles = 'namespace/files'
+        })
+
+        afterAll(() => {
+          api.config.servers.web.urlPathForActions = 'api'
+          api.config.servers.web.urlPathForFiles = 'public'
+        })
+
+        test('old action routes stop working', async () => {
+          try {
+            await request.get(url + '/api/randomNumber')
+            throw new Error('should not get here')
+          } catch (error) {
+            expect(error.statusCode).toEqual(404)
+          }
+        })
+
+        test('can ask for nested URL actions', async () => {
+          let response = await request.get(url + '/namespace/actions/randomNumber', {resolveWithFullResponse: true})
+          expect(response.statusCode).toEqual(200)
+        })
+
+        test('old file routes stop working', async () => {
+          try {
+            await request.get(url + '/public/simple.html')
+            throw new Error('should not get here')
+          } catch (error) {
+            expect(error.statusCode).toEqual(404)
+          }
+        })
+
+        test('can ask for nested URL files', async () => {
+          let response = await request.get(url + '/namespace/files/simple.html', {resolveWithFullResponse: true})
+          expect(response.statusCode).toEqual(200)
+          expect(response.body).toEqual('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
+        })
+
+        test('can ask for nested URL files with depth', async () => {
+          let response = await request.get(url + '/namespace/files/css/cosmo.css', {resolveWithFullResponse: true})
+          expect(response.statusCode).toEqual(200)
+        })
+
+        test('root route files still work', async () => {
+          let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
+          expect(response.statusCode).toEqual(200)
+          expect(response.body).toEqual('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
+        })
+      })
+
+      describe('very deep routes', () => {
+        beforeAll(() => {
+          api.config.servers.web.urlPathForActions = '/craz/y/action/path'
+          api.config.servers.web.urlPathForFiles = '/a/b/c'
+        })
+
+        afterAll(() => {
+          api.config.servers.web.urlPathForActions = 'api'
+          api.config.servers.web.urlPathForFiles = 'public'
+        })
+
+        test('old action routes stop working', async () => {
+          try {
+            await request.get(url + '/api/randomNumber')
+            throw new Error('should not get here')
+          } catch (error) {
+            expect(error.statusCode).toEqual(404)
+          }
+        })
+
+        test('can ask for nested URL actions', async () => {
+          let response = await request.get(url + '/craz/y/action/path/randomNumber', {resolveWithFullResponse: true})
+          expect(response.statusCode).toEqual(200)
+        })
+
+        test('old file routes stop working', async () => {
+          try {
+            await request.get(url + '/public/simple.html')
+            throw new Error('should not get here')
+          } catch (error) {
+            expect(error.statusCode).toEqual(404)
+          }
+        })
+
+        test('can ask for nested URL files', async () => {
+          let response = await request.get(url + '/a/b/c/simple.html', {resolveWithFullResponse: true})
+          expect(response.statusCode).toEqual(200)
+          expect(response.body).toEqual('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
+        })
+
+        test('can ask for nested URL files with depth', async () => {
+          let response = await request.get(url + '/a/b/c/css/cosmo.css', {resolveWithFullResponse: true})
+          expect(response.statusCode).toEqual(200)
+        })
+
+        test('root route files still work', async () => {
+          let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
+          expect(response.statusCode).toEqual(200)
+          expect(response.body).toEqual('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
+        })
+      })
+    })
 
     test('\'all\' routes are duplicated properly', () => {
       api.routes.registerRoute('all', '/other-login', 'login')

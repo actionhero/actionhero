@@ -25,6 +25,9 @@ refrences:
           name: display-npm-version
           command: npm --version
       - run:
+          name: test-log-setup
+          command: mkdir -p ./log
+      - run:
           name: test-reporter-setup
           command: mkdir ./junit
       - run:

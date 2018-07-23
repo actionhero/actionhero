@@ -26,7 +26,8 @@ module.exports = class Params extends ActionHero.Initializer {
       'file',
       'apiVersion',
       'callback',
-      'action'
+      'action',
+      'messageId'
     ]
 
     api.params.buildPostVariables = () => {

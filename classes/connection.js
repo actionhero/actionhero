@@ -16,7 +16,7 @@ module.exports = class Connection {
    * @property {Object} params         - Any params this connection has saved for use in subsequent Actions.
    * @property {Number} pendingActions - How many actions are currently running for this connection?  Most server types have a limit.
    * @property {Number} totalActions   - How many actions has this connection run since it connected.
-   * @property {Number} messageCount   - How many messages has the server sent to thie connection since it connected.
+   * @property {Number} messageId      - The Id of the latest message this connection has sent to the server.
    * @property {Number} connectedAt    - The timestamp of when this connection was created.
    * @property {string} remoteIP       - The remote connection's IP address (as best as we can tell).  May be either IPv4 or IPv6.
    * @property {Number} remotePort     - The remote connection's port.
@@ -51,14 +51,14 @@ module.exports = class Connection {
     this.connectedAt = new Date().getTime();
 
     ['type', 'rawConnection'].forEach((req) => {
-      if (data[req] === null || data[req] === undefined) { throw new Error(req + ' is required to create a new connection object') }
+      if (data[req] === null || data[req] === undefined) { throw new Error(`${req} is required to create a new connection object`) }
       this[req] = data[req]
     });
 
     ['remotePort', 'remoteIP'].forEach((req) => {
       if (data[req] === null || data[req] === undefined) {
         if (api.config.general.enforceConnectionProperties === true) {
-          throw new Error(req + ' is required to create a new connection object')
+          throw new Error(`${req} is required to create a new connection object`)
         } else {
           data[req] = 0 // could be a random uuid as well?
         }
@@ -73,7 +73,7 @@ module.exports = class Connection {
       params: {},
       pendingActions: 0,
       totalActions: 0,
-      messageCount: 0,
+      messageId: 0,
       canChat: false
     }
 

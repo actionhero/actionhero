@@ -110,11 +110,22 @@ module.exports = class Start extends ActionHero.CLI {
           message: error.message,
           stack: stack
         }})
+
         process.nextTick(process.exit)
       })
 
-      process.on('unhandledRejection', (reason, p) => {
-        process.send({unhandledRejection: {reason: reason, p: p}})
+      process.on('unhandledRejection', (rejection) => {
+        let stack
+        try {
+          stack = rejection.stack.split(os.EOL)
+        } catch (e) {
+          stack = [rejection]
+        }
+        process.send({unhandledRejection: {
+          message: rejection.message,
+          stack: stack
+        }})
+
         process.nextTick(process.exit)
       })
     }
