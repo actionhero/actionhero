@@ -49,7 +49,7 @@ const middleware = {
       throw new Error('All actions require a userId')
     }
   },
-  postProcessor (data) => {
+  postProcessor: (data) => {
     if(data.thing.stuff == false){ data.toRender = false }
   }
 }
