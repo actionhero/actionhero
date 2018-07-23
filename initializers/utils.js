@@ -399,7 +399,7 @@ let responses = await api.utils.asyncWaterfall(jobs)
     @param {Array} a The first array, the shorter one
     @param {Array} b The second array, the longer one
     */
-    api.utils.arrayStartignMatch = (a, b) => {
+    api.utils.arrayStartingMatch = (a, b) => {
       let matching = true
       let i = 0
       while (i < a.length) {

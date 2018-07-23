@@ -428,10 +428,10 @@ module.exports = class WebServer extends ActionHero.Server {
     while (urlPathForActionsParts[0] === '') { urlPathForActionsParts.shift() }
     while (urlPathForFilesParts[0] === '') { urlPathForFilesParts.shift() }
 
-    if (pathParts[0] && api.utils.arrayStartignMatch(urlPathForActionsParts, pathParts)) {
+    if (pathParts[0] && api.utils.arrayStartingMatch(urlPathForActionsParts, pathParts)) {
       requestMode = 'api'
       for (i = 0; i < (urlPathForActionsParts.length); i++) { pathParts.shift() }
-    } else if (pathParts[0] && api.utils.arrayStartignMatch(urlPathForFilesParts, pathParts)) {
+    } else if (pathParts[0] && api.utils.arrayStartingMatch(urlPathForFilesParts, pathParts)) {
       requestMode = 'file'
       for (i = 0; i < (urlPathForFilesParts.length); i++) { pathParts.shift() }
     }

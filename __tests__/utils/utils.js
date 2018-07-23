@@ -181,28 +181,28 @@ describe('Utils', () => {
     })
   })
 
-  describe('utils.arrayStartignMatch', () => {
+  describe('utils.arrayStartingMatch', () => {
     test('finds matching arrays', () => {
       const a = [1, 2, 3]
       const b = [1, 2, 3, 4, 5]
-      const numberResult = api.utils.arrayStartignMatch(a, b)
+      const numberResult = api.utils.arrayStartingMatch(a, b)
       expect(numberResult).toBe(true)
 
       const c = ['a', 'b', 'c']
       const d = ['a', 'b', 'c', 'd', 'e']
-      const stringResult = api.utils.arrayStartignMatch(c, d)
+      const stringResult = api.utils.arrayStartingMatch(c, d)
       expect(stringResult).toBe(true)
     })
 
     test('finds non-matching arrays', () => {
       const a = [1, 3]
       const b = [1, 2, 3, 4, 5]
-      const numberResult = api.utils.arrayStartignMatch(a, b)
+      const numberResult = api.utils.arrayStartingMatch(a, b)
       expect(numberResult).toBe(false)
 
       const c = ['a', 'b', 'c']
       const d = ['a', 'b', 'd', 'e']
-      const stringResult = api.utils.arrayStartignMatch(c, d)
+      const stringResult = api.utils.arrayStartingMatch(c, d)
       expect(stringResult).toBe(false)
     })
   })
