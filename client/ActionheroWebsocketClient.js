@@ -36,7 +36,7 @@ ActionheroWebsocketClient.prototype.defaults = function () {
 
 ActionheroWebsocketClient.prototype.connect = function (callback) {
   var self = this
-  self.messageCount = 0
+  self.messageId = self.messageId || 0
 
   if (self.client && self.externalClient !== true) {
     self.client.end()
@@ -50,15 +50,11 @@ ActionheroWebsocketClient.prototype.connect = function (callback) {
     self.client = Primus.connect(self.urlWithSession(), self.options)
   }
 
-  self.client.on('open', function () {
+  self.client.once('open', function () {
     self.configure(function (details) {
-      if (self.state === 'connected') {
-        //
-      } else {
-        self.state = 'connected'
-        if (typeof callback === 'function') { callback(null, details) }
-      }
+      self.state = 'connected'
       self.emit('connected')
+      if (typeof callback === 'function') { callback(null, details) }
     })
   })
 
@@ -67,7 +63,6 @@ ActionheroWebsocketClient.prototype.connect = function (callback) {
   })
 
   self.client.on('reconnect', function () {
-    self.messageCount = 0
     self.emit('reconnect')
   })
 
@@ -83,7 +78,6 @@ ActionheroWebsocketClient.prototype.connect = function (callback) {
   })
 
   self.client.on('close', function () {
-    self.messageCount = 0
     if (self.state !== 'disconnected') {
       self.state = 'disconnected'
       self.emit('disconnected')
@@ -91,7 +85,6 @@ ActionheroWebsocketClient.prototype.connect = function (callback) {
   })
 
   self.client.on('end', function () {
-    self.messageCount = 0
     if (self.state !== 'disconnected') {
       self.state = 'disconnected'
       self.emit('disconnected')
@@ -131,7 +124,7 @@ ActionheroWebsocketClient.prototype.configure = function (callback) {
     self.id = details.data.id
     self.fingerprint = details.data.fingerprint
     self.rooms = details.data.rooms
-    callback(details)
+    return callback(details)
   })
 }
 
@@ -142,21 +135,24 @@ ActionheroWebsocketClient.prototype.configure = function (callback) {
 ActionheroWebsocketClient.prototype.send = function (args, callback) {
   // primus will buffer messages when not connected
   var self = this
-  self.messageCount++
-  if (typeof callback === 'function') {
-    self.callbacks[self.messageCount] = callback
-  }
+  self.messageId++
+  args.messageId = args.params
+    ? (args.params.messageId || args.messageId || self.messageId )
+    : ( args.messageId || self.messageId )
+  if (typeof callback === 'function') { self.callbacks[args.messageId] = callback }
   self.client.write(args)
 }
 
 ActionheroWebsocketClient.prototype.handleMessage = function (message) {
   var self = this
   self.emit('message', message)
+  var messageId = message.messageId
+
   if (message.context === 'response') {
-    if (typeof self.callbacks[message.messageCount] === 'function') {
-      self.callbacks[message.messageCount](message)
+    if (typeof self.callbacks[messageId] === 'function') {
+      self.callbacks[messageId](message)
     }
-    delete self.callbacks[message.messageCount]
+    delete self.callbacks[messageId]
   } else if (message.context === 'user') {
     self.emit('say', message)
   } else if (message.context === 'alert') {

@@ -48,7 +48,7 @@ module.exports = class MyServer extends ActionHero.Server {
 
   }
 
-  sendMessage (connection, message, messageCount) {
+  sendMessage (connection, message, messageId) {
 
   }
 
@@ -171,7 +171,7 @@ The `attribute` "canChat" defines if clients of this server can chat.  If client
 
 ## Sending Responses
 
-All servers need to implement the `server.sendMessage = function(connection, message, messageCount)` method so ActionHero knows how to talk to each client.  This is likely to make use of `connection.rawConnection`.  If you are writing a server for a persistent connection, it is likely you will need to respond with `messageCount` so that the client knows which request your response is about (as they are not always going to get the responses in order).
+All servers need to implement the `server.sendMessage = function(connection, message, messageId)` method so ActionHero knows how to talk to each client.  This is likely to make use of `connection.rawConnection`.  If you are writing a server for a persistent connection, it is likely you will need to respond with `messageId` so that the client knows which request your response is about (as they are not always going to get the responses in order).
 
 ## Sending Files
 
