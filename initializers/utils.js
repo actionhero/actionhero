@@ -396,8 +396,8 @@ let responses = await api.utils.asyncWaterfall(jobs)
     /**
     Compare the first n elements of an array with another, logner array
 
-    @param {Array} a The first array, the shorter one
-    @param {Array} b The second array, the longer one
+    @param {Array} a The first sorted array, the shorter one
+    @param {Array} b The second sorted array, the longer one
     */
     api.utils.arrayStartingMatch = (a, b) => {
       let matching = true
