@@ -80,6 +80,7 @@
     ]
   },
   "jest": {
+    "testURL": "http://localhost",
     "testPathIgnorePatterns": [
       "<rootDir>/__tests__/testPlugin"
     ]

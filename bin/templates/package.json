@@ -35,5 +35,8 @@
       "afterEach",
       "expect"
     ]
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }
