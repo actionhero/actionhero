@@ -20,7 +20,7 @@
     "template": "node_modules/docdash-actionhero",
     "tutorials": "./tutorials",
     "readme": "./README.md",
-    "recurse": true,
+    "recurse": false,
     "verbose": true
   },
   "templates": {
@@ -33,5 +33,25 @@
   },
   "plugins": [
     "plugins/markdown"
-  ]
+  ],
+  "docdash": {
+    "meta": {
+      "title": "ActionHero Documentation",
+      "keyword": "ActionHero Node Framework Docs Documentation",
+      "description": "Documentation for the ActionHero.js Node.js framework"
+    },
+    "search": true,
+    "collapse": true,
+    "typedefs": false,
+    "sectionOrder": [
+      "Tutorials",
+      "Classes",
+      "Modules",
+      "Externals",
+      "Events",
+      "Namespaces",
+      "Mixins",
+      "Interfaces"
+    ]
+  }
 }
