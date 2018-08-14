@@ -36,7 +36,7 @@
     "formidable": "^1.2.1",
     "glob": "^7.1.2",
     "i18n": "^0.8.3",
-    "ioredis": "^3.2.2",
+    "ioredis": "^4.0.0",
     "is-running": "^2.1.0",
     "mime": "^2.3.1",
     "node-resque": "^5.4.1",
