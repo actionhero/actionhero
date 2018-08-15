@@ -49,7 +49,7 @@
     "ws": "^6.0.0"
   },
   "devDependencies": {
-    "docdash-actionhero": "^0.0.8",
+    "docdash": "clenemt/docdash",
     "jest": "^23.5.0",
     "jest-environment-webdriver": "^0.2.0",
     "jsdoc": "^3.5.5",
