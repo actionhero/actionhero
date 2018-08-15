@@ -17,7 +17,7 @@
   },
   "opts": {
     "destination": "./docs",
-    "template": "node_modules/docdash-actionhero",
+    "template": "node_modules/docdash",
     "tutorials": "./tutorials",
     "readme": "./README.md",
     "recurse": false,
@@ -27,7 +27,10 @@
     "default": {
       "includeDate": false,
       "staticFiles": {
-        "include": [ "./tutorials/images" ]
+        "include": [
+          "./tutorials/images",
+          "./public/docs"
+        ]
       }
     }
   },
@@ -40,9 +43,30 @@
       "keyword": "ActionHero Node Framework Docs Documentation",
       "description": "Documentation for the ActionHero.js Node.js framework"
     },
-    "search": true,
+    "menu":{
+      "Main Website":{
+        "href":"https://actionherojs.com",
+        "target":"_blank",
+        "class":"menu-item",
+        "id":"website_link"
+      },
+      "Slack":{
+        "href":"https://slack.actionherojs.com",
+        "target":"_blank",
+        "class":"menu-item",
+        "id":"forum_link"
+      }
+    },
+    "search": false,
     "collapse": true,
     "typedefs": false,
+    "scripts": [
+      "scripts/logo.js",
+      "scripts/style.js",
+      "scripts/VERSIONS.js",
+      "scripts/version-navigation.js",
+      "scripts/google-analytics.js"
+    ],
     "sectionOrder": [
       "Tutorials",
       "Classes",
