@@ -1,11 +1,8 @@
 {
   "source": {
     "include": [
-      "index.js",
+      "actionhero.js",
       "initializers",
-      "classes",
-      "client/ActionheroWebsocketClient.jsdoc",
-      "bin",
       "config"
     ],
     "exclude": [
