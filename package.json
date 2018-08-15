@@ -52,7 +52,7 @@
     "chai": "^4.1.2",
     "cross-env": "^5.1.3",
     "dirty-chai": "^2.0.1",
-    "docdash-actionhero": "^0.0.8",
+    "docdash": "clenemt/docdash",
     "jsdoc": "^3.5.5",
     "mocha": "^5.0.1",
     "request": "^2.83.0",

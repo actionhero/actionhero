@@ -11,7 +11,7 @@ public/javascript/ActionheroWebsocketClient.js
 public/javascript/ActionheroWebsocketClient.min.js
 
 #JSDoc
-docs
+/docs
 gh-pages-branch
 
 # Node / NPM
