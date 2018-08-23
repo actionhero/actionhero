@@ -111,7 +111,6 @@ await api.redis.publish(payload)
       // we need to be sure that we build the response-handling promise before sending the request to Redis
       // it is possible for another node to get and work the request before we resolve our write
       // see https://github.com/actionhero/actionhero/issues/1244 for more information
-      let responsePromise
       if (waitForResponse) {
         return new Promise(async (resolve, reject) => {
           let timer = setTimeout(() => reject(new Error('RPC Timeout')), api.config.general.rpcTimeout)
