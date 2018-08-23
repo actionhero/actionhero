@@ -66,8 +66,8 @@ exports['default'] = {
         formOptions: {
           uploadDir: os.tmpdir(),
           keepExtensions: false,
-          maxFieldsSize: 1024 * 1024 * 100,
-          maxFileSize: 1024 * 1024 * 1000
+          maxFieldsSize: 1024 * 1024 * 20,
+          maxFileSize: 1024 * 1024 * 200
         },
         // Should we pad JSON responses with whitespace to make them more human-readable?
         // set to null to disable
