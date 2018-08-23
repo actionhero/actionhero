@@ -241,7 +241,7 @@ class ChatRoom extends ActionHero.Initializer {
         let membersHash = await api.redis.clients.client.hgetall(api.chatRoom.keys.members + room)
 
         for (let id in membersHash) {
-          api.chatRoom.removeMember(id, room, false)
+          await api.chatRoom.removeMember(id, room, false)
         }
 
         await api.redis.clients.client.srem(api.chatRoom.keys.rooms, room)
