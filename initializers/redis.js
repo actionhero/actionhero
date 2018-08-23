@@ -118,9 +118,9 @@ await api.redis.publish(payload)
           try {
             await api.redis.publish(payload)
           } catch (e) {
-            clearTimeout(timer);
-            delete api.redis.rpcCallbacks[requestId];
-            throw e;
+            clearTimeout(timer)
+            delete api.redis.rpcCallbacks[messageId]
+            throw e
           }
         })
       }
