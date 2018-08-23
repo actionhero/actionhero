@@ -113,17 +113,20 @@ await api.redis.publish(payload)
       // see https://github.com/actionhero/actionhero/issues/1244 for more information
       let responsePromise
       if (waitForResponse) {
-        responsePromise = new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
           let timer = setTimeout(() => reject(new Error('RPC Timeout')), api.config.general.rpcTimeout)
           api.redis.rpcCallbacks[messageId] = {timer, resolve, reject}
+          try {
+            await api.redis.publish(payload)
+          } catch (e) {
+            clearTimeout(timer);
+            delete api.redis.rpcCallbacks[requestId];
+            throw e;
+          }
         })
       }
 
       await api.redis.publish(payload)
-
-      if (waitForResponse) {
-        return Promise.resolve(responsePromise)
-      }
     }
 
     api.redis.respondCluster = async (messageId, response) => {
