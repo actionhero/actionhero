@@ -51,11 +51,23 @@ exports['default'] = {
   }
 }
 
+const Queue = require('node-resque').Queue
+
+class TestQueue extends Queue {
+  constructor (...args) {
+    super(...args)
+    this.queueType = 'test'
+  }
+}
+
 exports.test = {
   tasks: (api) => {
     return {
       timeout: 100,
-      checkTimeout: 50
+      checkTimeout: 50,
+      resque_overrides: {
+        queue: TestQueue
+      }
     }
   }
 }
