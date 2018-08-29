@@ -92,7 +92,7 @@ module.exports = class SocketServer extends ActionHero.Server {
 
   goodbye (connection) {
     try {
-      connection.rawConnection.end(JSON.stringify({status: connection.localize('actionhero.goodbyeMessage'), context: 'api'}) + '\r\n')
+      connection.rawConnection.end(JSON.stringify({ status: connection.localize('actionhero.goodbyeMessage'), context: 'api' }) + '\r\n')
     } catch (e) {}
   }
 
@@ -100,7 +100,7 @@ module.exports = class SocketServer extends ActionHero.Server {
     if (error) {
       this.sendMessage(connection, error, connection.messageId)
     } else {
-      fileStream.pipe(connection.rawConnection, {end: false})
+      fileStream.pipe(connection.rawConnection, { end: false })
     }
   }
 
@@ -158,7 +158,7 @@ module.exports = class SocketServer extends ActionHero.Server {
       if (blen > this.config.maxDataLength) {
         let error = await api.config.errors.dataLengthTooLarge(this.config.maxDataLength, blen)
         this.log(error, 'error')
-        return this.sendMessage(connection, {status: 'error', error: error, context: 'response'})
+        return this.sendMessage(connection, { status: 'error', error: error, context: 'response' })
       }
     }
 
@@ -180,9 +180,9 @@ module.exports = class SocketServer extends ActionHero.Server {
     if (this.attributes.verbs.indexOf(verb) >= 0) {
       try {
         let data = await connection.verbs(verb, words)
-        return this.sendMessage(connection, {status: 'OK', context: 'response', data: data}, connection.messageId)
+        return this.sendMessage(connection, { status: 'OK', context: 'response', data: data }, connection.messageId)
       } catch (error) {
-        return this.sendMessage(connection, {error: error, context: 'response'}, connection.messageId)
+        return this.sendMessage(connection, { error: error, context: 'response' }, connection.messageId)
       }
     }
 

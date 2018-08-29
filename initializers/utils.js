@@ -311,7 +311,7 @@ let responses = await api.utils.asyncWaterfall(jobs)
       } else {
         host = addr
       }
-      return {host: host, port: parseInt(port, 10)}
+      return { host: host, port: parseInt(port, 10) }
     }
 
     /**

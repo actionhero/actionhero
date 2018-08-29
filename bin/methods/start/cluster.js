@@ -53,11 +53,11 @@ module.exports = class StartCluster extends ActionHero.CLI {
         required: false,
         note: 'to fork and run as a new background process defaults to false'
       },
-      silent: {required: false}
+      silent: { required: false }
     }
   }
 
-  async run ({params}) {
+  async run ({ params }) {
     let options = {
       execPath: path.normalize(path.join(__dirname, '..', '..', 'actionhero')),
       args: 'start',

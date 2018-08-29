@@ -194,7 +194,7 @@ class ChatRoom extends ActionHero.Initializer {
           const newMessagePayload = await api.chatRoom.runMiddleware(connection, messagePayload.room, 'say', messagePayload)
           connection.sendMessage(newMessagePayload, 'say')
         } catch (error) {
-          api.log(error, 'warning', {messagePayload, connection})
+          api.log(error, 'warning', { messagePayload, connection })
         }
       }
     }

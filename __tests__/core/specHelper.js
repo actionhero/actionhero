@@ -10,7 +10,7 @@ describe('Core: specHelper', () => {
   afterAll(async () => { await actionhero.stop() })
 
   test('can make a requset with just params', async () => {
-    let {randomNumber} = await api.specHelper.runAction('randomNumber')
+    let { randomNumber } = await api.specHelper.runAction('randomNumber')
     expect(randomNumber).toBeGreaterThanOrEqual(0)
     expect(randomNumber).toBeLessThan(1)
   })
@@ -18,7 +18,7 @@ describe('Core: specHelper', () => {
   test('will stack up messages recieved', async () => {
     let connection = new api.specHelper.Connection()
     connection.params.thing = 'stuff'
-    let {error} = await api.specHelper.runAction('x', connection)
+    let { error } = await api.specHelper.runAction('x', connection)
     expect(connection.messages).toHaveLength(2)
     expect(connection.messages[0].welcome).toEqual('Hello! Welcome to the actionhero api')
     expect(connection.messages[1].error).toEqual('Error: unknown action or invalid apiVersion')
@@ -193,7 +193,7 @@ describe('Core: specHelper', () => {
     })
 
     test('messageId can be configurable', async () => {
-      let response = await api.specHelper.runAction('randomNumber', {messageId: 'aaa'})
+      let response = await api.specHelper.runAction('randomNumber', { messageId: 'aaa' })
       expect(response.messageId).toEqual('aaa')
     })
   })

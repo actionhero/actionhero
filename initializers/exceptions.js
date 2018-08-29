@@ -83,7 +83,7 @@ module.exports = class Exceptions extends ActionHero.Initializer {
 
     api.exceptionHandlers.loader = (fullFilePath, error) => {
       let name = 'loader:' + fullFilePath
-      api.exceptionHandlers.report(error, 'loader', name, {fullFilePath: fullFilePath}, 'alert')
+      api.exceptionHandlers.report(error, 'loader', name, { fullFilePath: fullFilePath }, 'alert')
     }
 
     api.exceptionHandlers.action = (error, data, next) => {
@@ -94,7 +94,7 @@ module.exports = class Exceptions extends ActionHero.Initializer {
         simpleName = error.message
       }
       let name = 'action:' + simpleName
-      api.exceptionHandlers.report(error, 'action', name, {connection: data.connection}, 'error')
+      api.exceptionHandlers.report(error, 'action', name, { connection: data.connection }, 'error')
       data.connection.response = {} // no partial responses
       if (typeof next === 'function') { next() }
     }
@@ -107,7 +107,7 @@ module.exports = class Exceptions extends ActionHero.Initializer {
         simpleName = error.message
       }
       let name = 'task:' + simpleName
-      api.exceptionHandlers.report(error, 'task', name, {task: task, queue: queue, workerId: workerId}, api.config.tasks.workerLogging.failure)
+      api.exceptionHandlers.report(error, 'task', name, { task: task, queue: queue, workerId: workerId }, api.config.tasks.workerLogging.failure)
     }
   }
 }

@@ -48,7 +48,7 @@ module.exports = class Config extends ActionHero.Initializer {
       }
 
       if (api.config.general.developmentMode === true && !api.watchedFiles[file]) {
-        const watcher = fs.watch(file, {persistent: false}, (eventType) => {
+        const watcher = fs.watch(file, { persistent: false }, (eventType) => {
           const stats = fs.statSync(file)
           if (
             api.running === true &&
@@ -64,7 +64,7 @@ module.exports = class Config extends ActionHero.Initializer {
           }
         })
 
-        api.watchedFiles[file] = {watcher, stats: fs.statSync(file)}
+        api.watchedFiles[file] = { watcher, stats: fs.statSync(file) }
       }
     }
 
@@ -166,7 +166,7 @@ module.exports = class Config extends ActionHero.Initializer {
           // error loading configuration, abort if all remaining
           // configuration files have been tried and failed
           // indicating inability to progress
-          loadErrors[f] = {error: error, msg: error.toString()}
+          loadErrors[f] = { error: error, msg: error.toString() }
           if (++loadRetries === limit - i) {
             Object.keys(loadErrors).forEach((e) => {
               console.log(loadErrors[e].error.stack)

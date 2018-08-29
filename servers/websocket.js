@@ -229,10 +229,10 @@ module.exports = class WebSocketServer extends ActionHero.Server {
     const messageId = connection.messageId
     try {
       let data = await connection.verbs(verb, words)
-      message = {status: 'OK', context: 'response', data: data}
+      message = { status: 'OK', context: 'response', data: data }
       return this.sendMessage(connection, message, messageId)
     } catch (error) {
-      message = {status: error, context: 'response', data: data}
+      message = { status: error, context: 'response', data: data }
       return this.sendMessage(connection, message, messageId)
     }
   }

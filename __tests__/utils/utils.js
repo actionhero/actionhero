@@ -49,9 +49,9 @@ describe('Utils', () => {
       }
 
       let jobs = [
-        {method: sleepyFunc, args: ['a']},
-        {method: sleepyFunc, args: ['b']},
-        {method: sleepyFunc, args: ['c']}
+        { method: sleepyFunc, args: ['a'] },
+        { method: sleepyFunc, args: ['b'] },
+        { method: sleepyFunc, args: ['c'] }
       ]
 
       let start = (new Date()).getTime()
@@ -65,23 +65,23 @@ describe('Utils', () => {
 
   describe('utils.collapseObjectToArray', () => {
     test('fails with numerical keys', () => {
-      let o = {0: 'a', 1: 'b'}
+      let o = { 0: 'a', 1: 'b' }
       let response = api.utils.collapseObjectToArray(o)
       expect(response).toEqual(['a', 'b'])
     })
 
     test('fails with non-numerical keys', () => {
-      let o = {a: 1}
+      let o = { a: 1 }
       let response = api.utils.collapseObjectToArray(o)
       expect(response).toEqual(false)
     })
   })
 
   describe('utils.hashMerge', () => {
-    let A = {a: 1, b: 2}
-    let B = {b: -2, c: 3}
-    let C = {a: 1, b: {m: 10, n: 11}}
-    let D = {a: 1, b: {n: 111, o: 22}}
+    let A = { a: 1, b: 2 }
+    let B = { b: -2, c: 3 }
+    let C = { a: 1, b: { m: 10, n: 11 } }
+    let D = { a: 1, b: { n: 111, o: 22 } }
 
     test('simple', () => {
       let Z = api.utils.hashMerge(A, B)

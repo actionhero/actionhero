@@ -61,7 +61,7 @@ module.exports = class Routes extends ActionHero.Initializer {
     }
 
     api.routes.matchURL = (pathParts, match, matchTrailingPathParts) => {
-      let response = {match: false, params: {}}
+      let response = { match: false, params: {} }
       let matchParts = match.split('/')
       let regexp = ''
       let variable = ''
@@ -142,7 +142,7 @@ module.exports = class Routes extends ActionHero.Initializer {
     api.routes.loadRoutes = (rawRoutes) => {
       let counter = 0
 
-      api.routes.routes = {'head': [], 'get': [], 'post': [], 'put': [], 'patch': [], 'delete': []}
+      api.routes.routes = { 'head': [], 'get': [], 'post': [], 'put': [], 'patch': [], 'delete': [] }
 
       if (!rawRoutes) {
         if (api.config.routes) {

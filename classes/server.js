@@ -229,17 +229,17 @@ this.buildConnection({
     this.emit('connection', connection)
 
     if (this.attributes.logConnections === true) {
-      this.log('new connection', 'info', {to: connection.remoteIP})
+      this.log('new connection', 'info', { to: connection.remoteIP })
     }
 
     if (this.attributes.sendWelcomeMessage === true) {
-      connection.sendMessage({welcome: connection.localize('actionhero.welcomeMessage'), context: 'api'})
+      connection.sendMessage({ welcome: connection.localize('actionhero.welcomeMessage'), context: 'api' })
     }
 
     if (typeof this.attributes.sendWelcomeMessage === 'number') {
       setTimeout(() => {
         try {
-          connection.sendMessage({welcome: connection.localize('actionhero.welcomeMessage'), context: 'api'})
+          connection.sendMessage({ welcome: connection.localize('actionhero.welcomeMessage'), context: 'api' })
         } catch (e) {
           this.log(e, 'error')
         }

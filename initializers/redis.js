@@ -78,7 +78,7 @@ await api.redis.publish(payload)
 
     api.redis.subscriptionHandlers.doResponse = function (message) {
       if (api.redis.rpcCallbacks[message.messageId]) {
-        let {resolve, timer} = api.redis.rpcCallbacks[message.messageId]
+        let { resolve, timer } = api.redis.rpcCallbacks[message.messageId]
         clearTimeout(timer)
         resolve(message.response)
         delete api.redis.rpcCallbacks[message.messageId]
@@ -114,7 +114,7 @@ await api.redis.publish(payload)
       if (waitForResponse) {
         return new Promise(async (resolve, reject) => {
           let timer = setTimeout(() => reject(new Error('RPC Timeout')), api.config.general.rpcTimeout)
-          api.redis.rpcCallbacks[messageId] = {timer, resolve, reject}
+          api.redis.rpcCallbacks[messageId] = { timer, resolve, reject }
           try {
             await api.redis.publish(payload)
           } catch (e) {
