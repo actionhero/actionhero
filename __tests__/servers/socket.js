@@ -72,7 +72,7 @@ describe('Server: Socket', () => {
   })
 
   test('stringified JSON can also be sent as actions', async () => {
-    let response = await makeSocketRequest(client, JSON.stringify({action: 'status', params: {something: 'else'}}))
+    let response = await makeSocketRequest(client, JSON.stringify({ action: 'status', params: { something: 'else' } }))
     expect(response).toBeInstanceOf(Object)
     expect(response.id).toEqual(`test-server-${process.env.JEST_WORKER_ID || 0}`)
   })
@@ -154,7 +154,7 @@ describe('Server: Socket', () => {
   })
 
   test('only params sent in a JSON block are used', async () => {
-    let response = await makeSocketRequest(client, JSON.stringify({action: 'cacheTest', params: {key: 'someOtherValue'}}))
+    let response = await makeSocketRequest(client, JSON.stringify({ action: 'cacheTest', params: { key: 'someOtherValue' } }))
     expect(response.error).toEqual('value is a required parameter for this action')
   })
 
@@ -172,7 +172,7 @@ describe('Server: Socket', () => {
   })
 
   test('messageId is configurable (json)', async () => {
-    let response = await makeSocketRequest(client, JSON.stringify({action: 'randomNumber', params: {messageId: 'abc123'}}))
+    let response = await makeSocketRequest(client, JSON.stringify({ action: 'randomNumber', params: { messageId: 'abc123' } }))
     expect(response.messageId).toEqual('abc123')
   })
 
@@ -200,7 +200,7 @@ describe('Server: Socket', () => {
     let i = 0
 
     while (i <= api.config.general.simultaneousActions) {
-      msg += `${JSON.stringify({action: 'sleepTest', sleepDuration: 100})} \r\n`
+      msg += `${JSON.stringify({ action: 'sleepTest', sleepDuration: 100 })} \r\n`
       i++
     }
 
@@ -257,13 +257,13 @@ describe('Server: Socket', () => {
 
     test('will parse /newline data delimiter', async () => {
       api.config.servers.socket.delimiter = '\n'
-      let response = await makeSocketRequest(client, JSON.stringify({action: 'status'}), '\n')
+      let response = await makeSocketRequest(client, JSON.stringify({ action: 'status' }), '\n')
       expect(response.context).toEqual('response')
     })
 
     test('will parse custom `^]` data delimiter', async () => {
       api.config.servers.socket.delimiter = '^]'
-      let response = await makeSocketRequest(client, JSON.stringify({action: 'status'}), '^]')
+      let response = await makeSocketRequest(client, JSON.stringify({ action: 'status' }), '^]')
       expect(response.context).toEqual('response')
     })
   })

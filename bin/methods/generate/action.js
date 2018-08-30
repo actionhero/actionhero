@@ -12,12 +12,12 @@ module.exports = class GenerateAction extends ActionHero.CLI {
     this.description = 'generate a new action'
     this.example = 'actionhero generate action --name=[name] --description=[description]'
     this.inputs = {
-      name: {required: true},
-      description: {required: true, default: `an actionhero action`}
+      name: { required: true },
+      description: { required: true, default: `an actionhero action` }
     }
   }
 
-  run ({params}) {
+  run ({ params }) {
     let template = fs.readFileSync(path.join(__dirname, '/../../templates/action.js'))
     template = String(template);
 

@@ -12,7 +12,7 @@ async function exec (command, args) {
   return new Promise((resolve, reject) => {
     ChildProcess.exec(command, args, (error, stdout, stderr) => {
       if (error) { return reject(error) }
-      return resolve({stdout, stderr})
+      return resolve({ stdout, stderr })
     })
   })
 }
@@ -26,7 +26,7 @@ describe('Core: Plugins', () => {
         }
       }
 
-      api = await actionhero.start({configChanges})
+      api = await actionhero.start({ configChanges })
     })
 
     afterAll(async () => { await actionhero.stop() })
@@ -58,11 +58,11 @@ describe('Core: Plugins', () => {
       let env = Object.assign({}, process.env)
       env.configChanges = JSON.stringify(configChanges)
 
-      let {stdout: helpResponse, stderr: error1} = await exec('./bin/actionhero help', {env})
+      let { stdout: helpResponse, stderr: error1 } = await exec('./bin/actionhero help', { env })
       expect(error1).toEqual('')
       expect(helpResponse).toContain('hello')
 
-      let {stdout: helloResponse, stderr: error2} = await exec('./bin/actionhero hello', {env})
+      let { stdout: helloResponse, stderr: error2 } = await exec('./bin/actionhero hello', { env })
       expect(error2).toEqual('')
       expect(helloResponse).toContain('hello')
     })
@@ -114,12 +114,12 @@ describe('Core: Plugins', () => {
       let env = Object.assign({}, process.env)
       env.configChanges = JSON.stringify(configChanges)
 
-      let {stdout: helpResponse, stderr: error1} = await exec('./bin/actionhero help', {env})
+      let { stdout: helpResponse, stderr: error1 } = await exec('./bin/actionhero help', { env })
       expect(error1).toEqual('')
       expect(helpResponse).not.toContain('hello')
 
       try {
-        await exec('./bin/actionhero hello', {env})
+        await exec('./bin/actionhero hello', { env })
         throw new Error('should not get here')
       } catch (error) {
         expect(error.toString()).toMatch(/`hello` is not a method I can perform/)
@@ -153,7 +153,7 @@ describe('Core: Plugins', () => {
     })
 
     test('will not load CLI command from an un-loaded plugin', async () => {
-      let {stdout: helpResponse, stderr: error1} = await exec('./bin/actionhero help')
+      let { stdout: helpResponse, stderr: error1 } = await exec('./bin/actionhero help')
       expect(error1).toEqual('')
       expect(helpResponse).not.toContain('hello')
 

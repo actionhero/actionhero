@@ -174,7 +174,7 @@ module.exports = class WebServer extends ActionHero.Server {
 
       if (!filestats) { return sendRequestResult() }
 
-      const fileEtag = etag(filestats, {weak: true})
+      const fileEtag = etag(filestats, { weak: true })
       connection.rawConnection.responseHeaders.push(['ETag', fileEtag])
       let noneMatchHeader = reqHeaders['if-none-match']
       let cacheCtrlHeader = reqHeaders['cache-control']
@@ -260,7 +260,7 @@ module.exports = class WebServer extends ActionHero.Server {
   }
 
   handleRequest (req, res) {
-    let {fingerprint, headersHash} = this.fingerprinter.fingerprint(req)
+    let { fingerprint, headersHash } = this.fingerprinter.fingerprint(req)
     let responseHeaders = []
     let cookies = api.utils.parseCookies(req)
     let responseHttpCode = 200
@@ -483,13 +483,13 @@ module.exports = class WebServer extends ActionHero.Server {
           })
         }
 
-        let {fields, files} = await new Promise((resolve) => {
+        let { fields, files } = await new Promise((resolve) => {
           connection.rawConnection.form.parse(connection.rawConnection.req, (error, fields, files) => {
             if (error) {
               this.log('error processing form: ' + String(error), 'error')
               connection.error = new Error('There was an error processing this form.')
             }
-            resolve({fields, files})
+            resolve({ fields, files })
           })
         })
 
@@ -531,7 +531,7 @@ module.exports = class WebServer extends ActionHero.Server {
     // helper for JSON posts
     let collapsedVarsHash = api.utils.collapseObjectToArray(varsHash)
     if (collapsedVarsHash !== false) {
-      varsHash = {payload: collapsedVarsHash} // post was an array, lets call it "payload"
+      varsHash = { payload: collapsedVarsHash } // post was an array, lets call it "payload"
     }
 
     for (let v in varsHash) {

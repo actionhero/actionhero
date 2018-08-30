@@ -1,5 +1,5 @@
 'use strict'
-const {Action} = require('./../index.js')
+const { Action } = require('./../index.js')
 
 module.exports = class ValidationTest extends Action {
   constructor () {
@@ -22,7 +22,7 @@ module.exports = class ValidationTest extends Action {
     }
   }
 
-  run ({params, response}) {
+  run ({ params, response }) {
     response.string = params.string
   }
 }

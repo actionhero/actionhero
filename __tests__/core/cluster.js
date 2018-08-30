@@ -57,7 +57,7 @@ describe('Core: Action Cluster', () => {
       async () => {
         let client = new api.specHelper.Connection()
 
-        let {id, type, canChat} = await api.connections.apply(client.id)
+        let { id, type, canChat } = await api.connections.apply(client.id)
         expect(id).toEqual(client.id)
         expect(type).toEqual('testServer')
         expect(canChat).toEqual(true)
@@ -82,7 +82,7 @@ describe('Core: Action Cluster', () => {
       async () => {
         let client = new api.specHelper.Connection()
 
-        let connection = await api.connections.apply(client.id, 'sendMessage', {message: 'hi'})
+        let connection = await api.connections.apply(client.id, 'sendMessage', { message: 'hi' })
         let message = connection.messages[(connection.messages.length - 1)]
         expect(message.message).toEqual('hi')
       }

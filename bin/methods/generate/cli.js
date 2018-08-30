@@ -12,13 +12,13 @@ module.exports = class GenerateCLI extends ActionHero.CLI {
     this.description = 'generate a new cli command'
     this.example = 'actionhero generate cli --name=[name]'
     this.inputs = {
-      name: {required: true},
-      description: {required: false, default: 'an actionhero cli command'},
-      example: {required: false, default: 'actionhero command --option=yes'}
+      name: { required: true },
+      description: { required: false, default: 'an actionhero cli command' },
+      example: { required: false, default: 'actionhero command --option=yes' }
     }
   }
 
-  run ({params}) {
+  run ({ params }) {
     let template = fs.readFileSync(path.join(__dirname, '/../../templates/cli.js'))
     template = String(template);
 

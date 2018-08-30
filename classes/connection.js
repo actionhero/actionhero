@@ -159,7 +159,7 @@ module.exports = class Connection {
 
     if (server) {
       if (server.attributes.logExits === true) {
-        server.log('connection closed', 'info', {to: this.remoteIP})
+        server.log('connection closed', 'info', { to: this.remoteIP })
       }
       if (typeof server.goodbye === 'function') { server.goodbye(this) }
     }
@@ -197,7 +197,7 @@ module.exports = class Connection {
     if (!(words instanceof Array)) { words = [words] }
 
     if (server && allowedVerbs.indexOf(verb) >= 0) {
-      server.log('verb', 'debug', {verb: verb, to: this.remoteIP, params: JSON.stringify(words)})
+      server.log('verb', 'debug', { verb: verb, to: this.remoteIP, params: JSON.stringify(words) })
 
       // TODO: make this a case statement
       // TODO: investigate allowedVerbs being an array of Constatnts or Symbols

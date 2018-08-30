@@ -530,7 +530,7 @@ module.exports = class Tasks extends ActionHero.Initializer {
      * @return {Promise<Object>} Details about the task system.
      */
     api.tasks.details = async () => {
-      let details = {'queues': {}, 'workers': {}}
+      let details = { 'queues': {}, 'workers': {} }
 
       details.workers = await api.tasks.allWorkingOn()
       details.stats = await api.tasks.stats()

@@ -67,7 +67,7 @@ describe('Server: sendBuffer', () => {
   })
 
   test('Server should send a stream with no specified length', async () => {
-    let {body, headers} = await request.get({
+    let { body, headers } = await request.get({
       uri: url + '/api/sendUnknownLengthBufferTest',
       resolveWithFullResponse: true
     })

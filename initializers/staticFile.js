@@ -75,7 +75,7 @@ module.exports = class StaticFile extends ActionHero.Initializer {
       if (file.indexOf(path.normalize(api.staticFile.searchPath(connection, counter))) !== 0) {
         return api.staticFile.get(connection, counter + 1)
       } else {
-        let {exists, truePath} = await api.staticFile.checkExistence(file)
+        let { exists, truePath } = await api.staticFile.checkExistence(file)
         if (exists) {
           return api.staticFile.sendFile(truePath, connection)
         } else {
@@ -110,7 +110,7 @@ module.exports = class StaticFile extends ActionHero.Initializer {
           fileStream.on('open', () => { resolve() })
         })
 
-        return {connection, fileStream, mime, length, lastModified}
+        return { connection, fileStream, mime, length, lastModified }
       } catch (error) {
         return api.staticFile.sendFileNotFound(connection, await api.config.errors.fileReadError(connection, String(error)))
       }
@@ -154,12 +154,12 @@ module.exports = class StaticFile extends ActionHero.Initializer {
         }
 
         if (stats.isFile()) {
-          return {exists: true, truePath: file}
+          return { exists: true, truePath: file }
         }
 
-        return {exists: false, truePath: file}
+        return { exists: false, truePath: file }
       } catch (error) {
-        return {exists: false, truePath: file}
+        return { exists: false, truePath: file }
       }
     }
 
