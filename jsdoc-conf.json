@@ -63,8 +63,6 @@
     "scripts": [
       "scripts/logo.js",
       "scripts/style.js",
-      "scripts/VERSIONS.js",
-      "scripts/version-navigation.js",
       "scripts/google-analytics.js"
     ],
     "sectionOrder": [
