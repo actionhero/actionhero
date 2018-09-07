@@ -13,9 +13,8 @@ let client3
 
 let client2Details = {}
 
-const makeSocketRequest = async (thisClient, message, delimiter) => {
+const makeSocketRequest = async (thisClient, message, delimiter = '\r\n') => {
   let lines = []
-  if (!delimiter) { delimiter = '\r\n' }
 
   let onData = (d) => {
     d.split(delimiter).forEach((l) => {
@@ -25,14 +24,16 @@ const makeSocketRequest = async (thisClient, message, delimiter) => {
   }
 
   thisClient.on('data', onData)
+  await api.utils.sleep(1)
   thisClient.write(message + delimiter)
 
   await api.utils.sleep(100)
   thisClient.removeListener('data', onData)
 
   let lastLine = lines[(lines.length - 1)]
-  let parsed = null
-  try { parsed = JSON.parse(lastLine) } catch (e) {}
+  if (!lastLine) { return }
+  if (lastLine.length < 3) { return }
+  const parsed = JSON.parse(lastLine)
   return parsed
 }
 
@@ -356,7 +357,7 @@ describe('Server: Socket', () => {
       await new Promise(async (resolve) => {
         makeSocketRequest(client2, 'say defaultRoom you should not hear this' + '\r\n')
         let response = await makeSocketRequest(client, '')
-        expect(response).toBeNull()
+        expect(response).toBeUndefined()
         resolve()
       })
 
