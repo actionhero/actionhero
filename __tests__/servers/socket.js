@@ -14,14 +14,8 @@ let client3
 let client2Details = {}
 
 const makeSocketRequest = async (thisClient, message, delimiter = '\r\n') => {
-  let lines = []
-
-  let onData = (d) => {
-    d.split(delimiter).forEach((l) => {
-      if (l.length > 0) { lines.push(l) }
-    })
-    lines.push()
-  }
+  let data = ''
+  let onData = (d) => { data += d }
 
   thisClient.on('data', onData)
   await api.utils.sleep(10)
@@ -30,10 +24,16 @@ const makeSocketRequest = async (thisClient, message, delimiter = '\r\n') => {
   await api.utils.sleep(100)
   thisClient.removeListener('data', onData)
 
-  let lastLine = lines[(lines.length - 1)]
-  if (!lastLine) { return }
-  if (lastLine.length < 3) { return }
-  const parsed = JSON.parse(lastLine)
+  let lines = data.split(delimiter)
+  let parsed
+  while (!parsed && lines.length > 0) {
+    try {
+      let attemptedLine = lines.pop()
+      parsed = JSON.parse(attemptedLine)
+    } catch (error) {
+      // keep trying
+    }
+  }
   return parsed
 }
 
