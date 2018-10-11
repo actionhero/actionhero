@@ -125,7 +125,7 @@ class ChatRoom extends ActionHero.Initializer {
      */
     api.chatRoom.broadcast = async (connection, room, message) => {
       if (!room || room.length === 0 || message === null || message.length === 0) {
-        return api.config.errors.connectionRoomAndMessage(connection)
+        throw new Error(api.config.errors.connectionRoomAndMessage(connection))
       } else if (connection.rooms === undefined || connection.rooms.indexOf(room) > -1) {
         if (connection.id === undefined) { connection.id = 0 }
         const payload = {
@@ -156,7 +156,7 @@ class ChatRoom extends ActionHero.Initializer {
 
         await api.redis.publish(payloadToSend)
       } else {
-        return api.config.errors.connectionNotInRoom(connection, room)
+        throw new Error(api.config.errors.connectionNotInRoom(connection, room))
       }
     }
 
