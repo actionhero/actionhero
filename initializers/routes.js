@@ -142,7 +142,7 @@ module.exports = class Routes extends ActionHero.Initializer {
     api.routes.loadRoutes = (rawRoutes) => {
       let counter = 0
 
-      api.routes.routes = { 'head': [], 'get': [], 'post': [], 'put': [], 'patch': [], 'delete': [] }
+      api.routes.verbs.forEach((verb) => { api.routes.routes[verb] = api.routes.routes[verb] || [] })
 
       if (!rawRoutes) {
         if (api.config.routes) {
