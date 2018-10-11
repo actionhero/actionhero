@@ -24,7 +24,7 @@ const makeSocketRequest = async (thisClient, message, delimiter = '\r\n') => {
   }
 
   thisClient.on('data', onData)
-  await api.utils.sleep(1)
+  await api.utils.sleep(10)
   thisClient.write(message + delimiter)
 
   await api.utils.sleep(100)
