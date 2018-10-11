@@ -149,10 +149,12 @@ module.exports = class Connection {
     }
 
     if (this.canChat === true) {
+      let promises = []
       for (let i in this.rooms) {
         let room = this.rooms[i]
-        await api.chatRoom.removeMember(this.id, room)
+        promises.push(api.chatRoom.removeMember(this.id, room))
       }
+      await Promise.all(promises)
     }
 
     const server = api.servers.servers[this.type]
