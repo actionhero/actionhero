@@ -256,10 +256,10 @@ describe('Server: Socket', () => {
   describe('custom data delimiter', () => {
     afterEach(() => { api.config.servers.socket.delimiter = '\n' })
 
-    test('will parse /newline data delimiter', async () => {
-      api.config.servers.socket.delimiter = '\n'
+    test('will parse custom newline data delimiter', async () => {
+      api.config.servers.socket.delimiter = 'xXxXxX'
       await api.utils.sleep(10)
-      let response = await makeSocketRequest(client, JSON.stringify({ action: 'status' }), '\n')
+      let response = await makeSocketRequest(client, JSON.stringify({ action: 'status' }), 'xXxXxX')
       expect(response.context).toEqual('response')
     })
 
