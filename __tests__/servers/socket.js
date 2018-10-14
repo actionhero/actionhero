@@ -254,7 +254,7 @@ describe('Server: Socket', () => {
   })
 
   describe('custom data delimiter', () => {
-    afterAll(() => { api.config.servers.socket.delimiter = '\r\n' })
+    afterEach(() => { api.config.servers.socket.delimiter = '\n' })
 
     test('will parse /newline data delimiter', async () => {
       api.config.servers.socket.delimiter = '\n'
