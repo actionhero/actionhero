@@ -366,6 +366,10 @@ describe('Server: Socket', () => {
         })
       })
 
+      beforeEach(async () => {
+        await api.utils.sleep(100) // wait sufficently long for other room ops to complete
+      })
+
       afterAll(() => {
         api.chatRoom.middleware = {}
         api.chatRoom.globalMiddleware = []
