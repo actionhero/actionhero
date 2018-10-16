@@ -366,10 +366,6 @@ describe('Server: Socket', () => {
         })
       })
 
-      beforeEach(async () => {
-        await api.utils.sleep(100) // wait sufficently long for other room ops to complete
-      })
-
       afterAll(() => {
         api.chatRoom.middleware = {}
         api.chatRoom.globalMiddleware = []
@@ -377,6 +373,7 @@ describe('Server: Socket', () => {
 
       test('Folks are notified when I join a room', async () => {
         await makeSocketRequest(client, 'roomAdd otherRoom')
+        await api.utils.sleep(100) // wait sufficently long for other room ops to complete
         makeSocketRequest(client2, 'roomAdd otherRoom')
         let response = await makeSocketRequest(client, '')
         expect(response.message).toEqual('I have entered the room: ' + client2Details.id)
