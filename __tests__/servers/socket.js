@@ -291,27 +291,6 @@ describe('Server: Socket', () => {
   })
 
   describe('chat', () => {
-    beforeAll(() => {
-      api.chatRoom.addMiddleware({
-        name: 'join chat middleware',
-        join: async (connection, room) => {
-          await api.chatRoom.broadcast({}, room, `I have entered the room: ${connection.id}`)
-        }
-      })
-
-      api.chatRoom.addMiddleware({
-        name: 'leave chat middleware',
-        leave: async (connection, room) => {
-          await api.chatRoom.broadcast({}, room, `I have left the room: ${connection.id}`)
-        }
-      })
-    })
-
-    afterAll(() => {
-      api.chatRoom.middleware = {}
-      api.chatRoom.globalMiddleware = []
-    })
-
     beforeEach(async () => {
       await makeSocketRequest(client, 'roomAdd defaultRoom')
       await makeSocketRequest(client2, 'roomAdd defaultRoom')
@@ -370,19 +349,46 @@ describe('Server: Socket', () => {
       })
     })
 
-    test('Folks are notified when I join a room', async () => {
-      await makeSocketRequest(client, 'roomAdd otherRoom')
-      makeSocketRequest(client2, 'roomAdd otherRoom')
-      let response = await makeSocketRequest(client, '')
-      expect(response.message).toEqual('I have entered the room: ' + client2Details.id)
-      expect(response.from).toEqual(0)
-    })
+    describe('chat middleware', () => {
+      beforeAll(() => {
+        api.chatRoom.addMiddleware({
+          name: 'join chat middleware',
+          join: async (connection, room) => {
+            await api.chatRoom.broadcast({}, room, `I have entered the room: ${connection.id}`)
+          }
+        })
 
-    test('Folks are notified when I leave a room', async () => {
-      makeSocketRequest(client2, 'roomLeave defaultRoom\r\n')
-      let response = await makeSocketRequest(client, '')
-      expect(response.message).toEqual('I have left the room: ' + client2Details.id)
-      expect(response.from).toEqual(0)
+        api.chatRoom.addMiddleware({
+          name: 'leave chat middleware',
+          leave: async (connection, room) => {
+            await api.chatRoom.broadcast({}, room, `I have left the room: ${connection.id}`)
+          }
+        })
+      })
+
+      beforeEach(async () => {
+        await api.utils.sleep(100) // wait sufficently long for other room ops to complete
+      })
+
+      afterAll(() => {
+        api.chatRoom.middleware = {}
+        api.chatRoom.globalMiddleware = []
+      })
+
+      test('Folks are notified when I join a room', async () => {
+        await makeSocketRequest(client, 'roomAdd otherRoom')
+        makeSocketRequest(client2, 'roomAdd otherRoom')
+        let response = await makeSocketRequest(client, '')
+        expect(response.message).toEqual('I have entered the room: ' + client2Details.id)
+        expect(response.from).toEqual(0)
+      })
+
+      test('Folks are notified when I leave a room', async () => {
+        makeSocketRequest(client2, 'roomLeave defaultRoom\r\n')
+        let response = await makeSocketRequest(client, '')
+        expect(response.message).toEqual('I have left the room: ' + client2Details.id)
+        expect(response.from).toEqual(0)
+      })
     })
 
     // test('folks not in my room do not hear what I say', async () => {
