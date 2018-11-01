@@ -151,6 +151,10 @@ class Cache extends ActionHero.Initializer {
      */
     api.cache.load = async (key, options) => {
       if (!options) { options = {} }
+            
+      let lockOk = await api.cache.checkLock(key, options.retry)
+      if (lockOk !== true) { throw new Error(api.i18n.localize('actionhero.cache.objectLocked')) }
+      
       let cacheObj = await redis.get(api.cache.redisPrefix + key)
       try { cacheObj = JSON.parse(cacheObj) } catch (e) {}
 
@@ -169,9 +173,6 @@ class Cache extends ActionHero.Initializer {
           expireTimeSeconds = Math.floor((cacheObj.expireTimestamp - new Date().getTime()) / 1000)
         }
       }
-
-      let lockOk = await api.cache.checkLock(key, options.retry)
-      if (lockOk !== true) { throw new Error(api.i18n.localize('actionhero.cache.objectLocked')) }
 
       await redis.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj))
       if (expireTimeSeconds) {
