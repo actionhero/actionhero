@@ -13,7 +13,7 @@ module.exports = class Initializer {
    * @example
 const {Initializer, api} = require('actionhero')
 
-module.exports = class MyCLICommand extends Initializer {
+module.exports = class ConnectToDatabase extends Initializer {
   constructor () {
     super()
     this.name = 'connectToDatabase'
