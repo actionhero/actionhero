@@ -13,8 +13,8 @@ function buildConsoleLogger (level = 'info') {
       format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.colorize(),
-        winston.format.printf(msg => {
-          return `${api.id} @ ${msg.timestamp} - ${msg.level}: ${msg.message}`
+        winston.format.printf(info => {
+          return `${api.id} @ ${info.timestamp} - ${info.level}: ${info.message} ${stringifyExtraMessagePropertiesForConsole(info)}`
         })
       ),
       level,
@@ -22,6 +22,20 @@ function buildConsoleLogger (level = 'info') {
       transports: [ new winston.transports.Console() ]
     })
   }
+}
+
+function stringifyExtraMessagePropertiesForConsole (info) {
+  const skpippedProperties = ['message', 'timestamp', 'level']
+  let response = ''
+
+  for (let key in info) {
+    let value = info[key]
+    if (skpippedProperties.includes(key)) { continue }
+    if (value === undefined || value === null) { continue }
+    response += `${key}=${value} `
+  }
+
+  return response
 }
 
 function buildFileLogger (path, level = 'info', maxFiles = undefined, maxsize = 20480) {
