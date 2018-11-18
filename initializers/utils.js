@@ -400,6 +400,9 @@ let responses = await api.utils.asyncWaterfall(jobs)
     @param {Array} b The second sorted array, the longer one
     */
     api.utils.arrayStartingMatch = (a, b) => {
+      if (a.length === 0) { return false }
+      if (b.length === 0) { return false }
+
       let matching = true
       let i = 0
       while (i < a.length) {

@@ -50,6 +50,10 @@ module.exports = class WebServer extends ActionHero.Server {
       throw new Error('rootEndpointType can only be \'api\' or \'file\'')
     }
 
+    if (!this.config.urlPathForFiles && this.config.rootEndpointType === 'file') {
+      throw new Error('rootEndpointType cannot be "file" without a urlPathForFiles')
+    }
+
     this.fingerprinter = new BrowserFingerprint(this.config.fingerprintOptions)
   }
 
@@ -425,10 +429,17 @@ module.exports = class WebServer extends ActionHero.Server {
     while (pathParts[0] === '') { pathParts.shift() }
     if (pathParts[pathParts.length - 1] === '') { pathParts.pop() }
 
-    let urlPathForActionsParts = this.config.urlPathForActions.split('/')
-    let urlPathForFilesParts = this.config.urlPathForFiles.split('/')
-    while (urlPathForActionsParts[0] === '') { urlPathForActionsParts.shift() }
-    while (urlPathForFilesParts[0] === '') { urlPathForFilesParts.shift() }
+    let urlPathForActionsParts = []
+    if (this.config.urlPathForActions) {
+      urlPathForActionsParts = this.config.urlPathForActions.split('/')
+      while (urlPathForActionsParts[0] === '') { urlPathForActionsParts.shift() }
+    }
+
+    let urlPathForFilesParts = []
+    if (this.config.urlPathForFiles) {
+      urlPathForFilesParts = this.config.urlPathForFiles.split('/')
+      while (urlPathForFilesParts[0] === '') { urlPathForFilesParts.shift() }
+    }
 
     if (pathParts[0] && api.utils.arrayStartingMatch(urlPathForActionsParts, pathParts)) {
       requestMode = 'api'
