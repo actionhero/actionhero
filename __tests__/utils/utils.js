@@ -205,6 +205,20 @@ describe('Utils', () => {
       const stringResult = api.utils.arrayStartingMatch(c, d)
       expect(stringResult).toBe(false)
     })
+
+    test('does not pass with empty arrays; first', () => {
+      const a = []
+      const b = [1, 2, 3, 4, 5]
+      const result = api.utils.arrayStartingMatch(a, b)
+      expect(result).toBe(false)
+    })
+
+    test('does not pass with empty arrays; second', () => {
+      const a = [1, 2, 3, 4, 5]
+      const b = []
+      const result = api.utils.arrayStartingMatch(a, b)
+      expect(result).toBe(false)
+    })
   })
 
   describe('utils.filterObjectForLogging', () => {
