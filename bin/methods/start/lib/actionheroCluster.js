@@ -22,27 +22,32 @@ module.exports = class ActionHeroCluster {
       }
     }
 
-    let transports = []
-    transports.push(
-      new (winston.transports.File)({
-        filename: this.options.logPath + '/' + this.options.logFile
-      })
-    )
-    if (cluster.isMaster && args.silent !== true) {
-      let consoleOptions = {
-        colorize: true,
-        timestamp: () => { return this.options.id + ' @ ' + new Date().toISOString() }
-      }
+    this.loggers = []
 
-      transports.push(
-        new (winston.transports.Console)(consoleOptions)
-      )
-    }
-
-    this.logger = new (winston.Logger)({
+    this.loggers.push(winston.createLogger({
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+      ),
       levels: winston.config.syslog.levels,
-      transports: transports
-    })
+      transports: [ new winston.transports.File({
+        filename: `${this.options.logPath}/${this.options.logFile}`
+      }) ]
+    }))
+
+    if (cluster.isMaster && args.silent !== true) {
+      this.loggers.push(winston.createLogger({
+        format: winston.format.combine(
+          winston.format.timestamp(),
+          winston.format.colorize(),
+          winston.format.printf(msg => {
+            return `${this.options.id} @ ${msg.timestamp} - ${msg.level}: ${msg.message}`
+          })
+        ),
+        levels: winston.config.syslog.levels,
+        transports: [ new winston.transports.Console() ]
+      }))
+    }
   }
 
   defaults () {
@@ -63,7 +68,9 @@ module.exports = class ActionHeroCluster {
   }
 
   log (message, severity) {
-    this.logger.log(severity, message)
+    this.loggers.map((logger) => {
+      logger.log(severity, message)
+    })
   }
 
   buildEnv (workerId) {

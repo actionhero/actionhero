@@ -148,7 +148,7 @@ describe('Server: Web Socket', () => {
     })
 
     test('messageId can be configurable', async () => {
-      let response = await awaitAction(clientA, 'randomNumber', {messageId: 'aaa'})
+      let response = await awaitAction(clientA, 'randomNumber', { messageId: 'aaa' })
       expect(response.messageId).toBe('aaa')
     })
 
@@ -159,13 +159,13 @@ describe('Server: Web Socket', () => {
     })
 
     test('can run actions properly with params', async () => {
-      let response = await awaitAction(clientA, 'cacheTest', {key: 'test key', value: 'test value'})
+      let response = await awaitAction(clientA, 'cacheTest', { key: 'test key', value: 'test value' })
       expect(response.error).toBeUndefined()
       expect(response.cacheTestResults).toBeTruthy()
     })
 
     test('does not have sticky params', async () => {
-      let response = await awaitAction(clientA, 'cacheTest', {key: 'test key', value: 'test value'})
+      let response = await awaitAction(clientA, 'cacheTest', { key: 'test key', value: 'test value' })
       expect(response.cacheTestResults.loadResp.key).toEqual('cacheTest_test key')
       expect(response.cacheTestResults.loadResp.value).toEqual('test value')
       let responseAgain = await awaitAction(clientA, 'cacheTest')
@@ -174,12 +174,12 @@ describe('Server: Web Socket', () => {
 
     test('will limit how many simultaneous connections I can have', async () => {
       let responses = []
-      clientA.action('sleepTest', {sleepDuration: 100}, (response) => { responses.push(response) })
-      clientA.action('sleepTest', {sleepDuration: 200}, (response) => { responses.push(response) })
-      clientA.action('sleepTest', {sleepDuration: 300}, (response) => { responses.push(response) })
-      clientA.action('sleepTest', {sleepDuration: 400}, (response) => { responses.push(response) })
-      clientA.action('sleepTest', {sleepDuration: 500}, (response) => { responses.push(response) })
-      clientA.action('sleepTest', {sleepDuration: 600}, (response) => { responses.push(response) })
+      clientA.action('sleepTest', { sleepDuration: 100 }, (response) => { responses.push(response) })
+      clientA.action('sleepTest', { sleepDuration: 200 }, (response) => { responses.push(response) })
+      clientA.action('sleepTest', { sleepDuration: 300 }, (response) => { responses.push(response) })
+      clientA.action('sleepTest', { sleepDuration: 400 }, (response) => { responses.push(response) })
+      clientA.action('sleepTest', { sleepDuration: 500 }, (response) => { responses.push(response) })
+      clientA.action('sleepTest', { sleepDuration: 600 }, (response) => { responses.push(response) })
 
       await api.utils.sleep(1000)
 
@@ -299,7 +299,7 @@ describe('Server: Web Socket', () => {
           }
 
           clientB.say = (room, message) => {
-            clientB.send({message: message, room: room, event: 'say'})
+            clientB.send({ message: message, room: room, event: 'say' })
           }
 
           clientA.on('say', listener)
@@ -579,7 +579,7 @@ describe('Server: Web Socket', () => {
 
           sleeps.forEach((sleep) => {
             started++
-            clientA.action('sleepTest', {sleepDuration: sleep}, (response) => { toComplete(sleep, response) })
+            clientA.action('sleepTest', { sleepDuration: sleep }, (response) => { toComplete(sleep, response) })
           })
         })
       })

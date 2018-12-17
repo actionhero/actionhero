@@ -25,12 +25,12 @@ module.exports = class RunAction extends ActionHero.Task {
     connection.params = params
 
     const actionProcessor = new ActionHero.ActionProcessor(connection)
-    let {response} = await actionProcessor.processAction()
+    let { response } = await actionProcessor.processAction()
 
     if (response.error) {
-      api.log('task error: ' + response.error, 'error', {params: JSON.stringify(params)})
+      api.log('task error: ' + response.error, 'error', { params: JSON.stringify(params) })
     } else {
-      api.log('[ action @ task ]', 'debug', {params: JSON.stringify(params)})
+      api.log('[ action @ task ]', 'debug', { params: JSON.stringify(params) })
     }
 
     connection.destroy()

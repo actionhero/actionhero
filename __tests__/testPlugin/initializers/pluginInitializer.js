@@ -1,4 +1,4 @@
-const {api, Initializer} = require('./../../../index.js')
+const { api, Initializer } = require('./../../../index.js')
 
 module.exports = class PluginInitializer extends Initializer {
   constructor () {

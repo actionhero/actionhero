@@ -48,7 +48,7 @@ const doCommand = async (command, useCwd) => {
         error.exitCode = exitCode
         return reject(error)
       }
-      return resolve({stderr, stdout, pid, exitCode})
+      return resolve({ stderr, stdout, pid, exitCode })
     })
   })
 }
@@ -131,14 +131,14 @@ describe('Core: CLI', () => {
     }, 10000)
 
     test('can call the help command', async () => {
-      let {stdout} = await doCommand(`${binary} help`)
+      let { stdout } = await doCommand(`${binary} help`)
       expect(stdout).toMatch(/actionhero start cluster/)
       expect(stdout).toMatch(/The reusable, scalable, and quick node.js API server for stateless and stateful applications/)
       expect(stdout).toMatch(/actionhero generate server/)
     })
 
     test('can call the version command', async () => {
-      let {stdout} = await doCommand(`${binary} version`)
+      let { stdout } = await doCommand(`${binary} version`)
       expect(stdout).toContain(pacakgeJSON.version)
     })
 
@@ -218,14 +218,14 @@ describe('Core: CLI', () => {
       })
 
       test('can boot a single server', async () => {
-        let response = await request(`http://localhost:${port}/api/showDocumentation`, {json: true})
+        let response = await request(`http://localhost:${port}/api/showDocumentation`, { json: true })
         expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
       })
 
       test('can handle signals to reboot', async () => {
         await doCommand(`kill -s USR2 ${serverPid}`)
         await sleep(3000)
-        let response = await request(`http://localhost:${port}/api/showDocumentation`, {json: true})
+        let response = await request(`http://localhost:${port}/api/showDocumentation`, { json: true })
         expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
       })
 
@@ -256,13 +256,13 @@ describe('Core: CLI', () => {
       })
 
       test('should be running the cluster with 2 nodes', async () => {
-        let {stdout} = await doCommand(`ps awx`)
+        let { stdout } = await doCommand(`ps awx`)
         let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
         let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).toEqual(1)
         expect(children.length).toEqual(2)
 
-        let response = await request(`http://localhost:${port}/api/showDocumentation`, {json: true})
+        let response = await request(`http://localhost:${port}/api/showDocumentation`, { json: true })
         expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
       })
 
@@ -270,7 +270,7 @@ describe('Core: CLI', () => {
         await doCommand(`kill -s TTIN ${clusterPid}`)
         await sleep(2500)
 
-        let {stdout} = await doCommand(`ps awx`)
+        let { stdout } = await doCommand(`ps awx`)
         let parents = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start cluster') >= 0 })
         let children = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).toEqual(1)
@@ -281,7 +281,7 @@ describe('Core: CLI', () => {
         await doCommand(`kill -s TTOU ${clusterPid}`)
         await sleep(2500)
 
-        let {stdout} = await doCommand(`ps awx`)
+        let { stdout } = await doCommand(`ps awx`)
         let parents = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start cluster') >= 0 })
         let children = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).toEqual(1)
@@ -292,13 +292,13 @@ describe('Core: CLI', () => {
         await doCommand(`kill -s USR2 ${clusterPid}`)
         await sleep(2000)
 
-        let {stdout} = await doCommand(`ps awx`)
+        let { stdout } = await doCommand(`ps awx`)
         let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
         let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).toEqual(1)
         expect(children.length).toEqual(2)
 
-        let response = await request(`http://localhost:${port}/api/showDocumentation`, {json: true})
+        let response = await request(`http://localhost:${port}/api/showDocumentation`, { json: true })
         expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
       })
 
@@ -306,13 +306,13 @@ describe('Core: CLI', () => {
         await doCommand(`kill -s WINCH ${clusterPid}`)
         await sleep(2000)
 
-        let {stdout} = await doCommand(`ps awx`)
+        let { stdout } = await doCommand(`ps awx`)
         let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
         let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).toEqual(1)
         expect(children.length).toEqual(2)
 
-        let response = await request(`http://localhost:${port}/api/showDocumentation`, {json: true})
+        let response = await request(`http://localhost:${port}/api/showDocumentation`, { json: true })
         expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
       })
 
@@ -320,7 +320,7 @@ describe('Core: CLI', () => {
         await doCommand(`kill ${clusterPid}`)
         await sleep(2000)
 
-        let {stdout} = await doCommand(`ps awx`)
+        let { stdout } = await doCommand(`ps awx`)
         let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
         let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).toEqual(0)

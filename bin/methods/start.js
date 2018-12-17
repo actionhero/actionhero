@@ -37,7 +37,7 @@ module.exports = class Start extends ActionHero.CLI {
   }
 
   sendState () {
-    if (cluster.isWorker) { process.send({state: this.state}) }
+    if (cluster.isWorker) { process.send({ state: this.state }) }
   }
 
   async startServer () {
@@ -106,10 +106,10 @@ module.exports = class Start extends ActionHero.CLI {
         } catch (e) {
           stack = [error]
         }
-        process.send({uncaughtException: {
+        process.send({ uncaughtException: {
           message: error.message,
           stack: stack
-        }})
+        } })
 
         process.nextTick(process.exit)
       })
@@ -121,10 +121,10 @@ module.exports = class Start extends ActionHero.CLI {
         } catch (e) {
           stack = [rejection]
         }
-        process.send({unhandledRejection: {
+        process.send({ unhandledRejection: {
           message: rejection.message,
           stack: stack
-        }})
+        } })
 
         process.nextTick(process.exit)
       })

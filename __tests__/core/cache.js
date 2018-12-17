@@ -80,7 +80,7 @@ describe('Core', () => {
     test('cache.save does not need to pass expireTime', async () => {
       let saveResp = await api.cache.save('testKeyForNullExpireTime', 'abc123')
       expect(saveResp).toEqual(true)
-      let {value} = await api.cache.load('testKeyForNullExpireTime')
+      let { value } = await api.cache.load('testKeyForNullExpireTime')
       expect(value).toEqual('abc123')
     })
 
@@ -115,7 +115,7 @@ describe('Core', () => {
         // wait for `timeout` and try to load the key
         await api.utils.sleep(timeout)
 
-        let loadResp = await api.cache.load('testKey_slow', {expireTimeMS: expireTime})
+        let loadResp = await api.cache.load('testKey_slow', { expireTimeMS: expireTime })
         expect(loadResp.value).toEqual('abc123')
 
         // wait another `timeout` and load the key again within the extended expire time
@@ -139,7 +139,7 @@ describe('Core', () => {
     test('cache.save works with arrays', async () => {
       let saveResp = await api.cache.save('array_key', [1, 2, 3])
       expect(saveResp).toEqual(true)
-      let {value} = await api.cache.load('array_key')
+      let { value } = await api.cache.load('array_key')
       expect(value[0]).toEqual(1)
       expect(value[1]).toEqual(2)
       expect(value[2]).toEqual(3)
@@ -151,7 +151,7 @@ describe('Core', () => {
       data.otherThing = [1, 2, 3]
       let saveResp = await api.cache.save('obj_key', data)
       expect(saveResp).toEqual(true)
-      let {value} = await api.cache.load('obj_key')
+      let { value } = await api.cache.load('obj_key')
       expect(value.thing).toEqual('stuff')
       expect(value.otherThing[0]).toEqual(1)
       expect(value.otherThing[1]).toEqual(2)
@@ -177,7 +177,7 @@ describe('Core', () => {
       test('can push and pop from an array', async () => {
         await api.cache.push('testListKey', 'a string')
         await api.cache.push('testListKey', ['an array'])
-        await api.cache.push('testListKey', {what: 'an object'})
+        await api.cache.push('testListKey', { what: 'an object' })
 
         let data
         data = await api.cache.pop('testListKey')
@@ -185,7 +185,7 @@ describe('Core', () => {
         data = await api.cache.pop('testListKey')
         expect(data).toEqual(['an array'])
         data = await api.cache.pop('testListKey')
-        expect(data).toEqual({what: 'an object'})
+        expect(data).toEqual({ what: 'an object' })
         data = await api.cache.pop('testListKey')
         expect(data).toBeNull()
       })
@@ -283,7 +283,7 @@ describe('Core', () => {
           expect(lockOk).toEqual(false)
 
           let start = new Date().getTime()
-          let {value} = await api.cache.load(key, {retry: 2000})
+          let { value } = await api.cache.load(key, { retry: 2000 })
           expect(value).toEqual('value')
           let delta = new Date().getTime() - start
           expect(delta >= 1000).toEqual(true)
@@ -350,7 +350,7 @@ describe('Core', () => {
         await api.cache.clear()
         let count = await api.cache.dumpRead(file)
         expect(count).toEqual(1)
-        let {value} = await api.cache.load('thingA')
+        let { value } = await api.cache.load('thingA')
         expect(value).toEqual(123)
       })
     })

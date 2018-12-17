@@ -26,7 +26,7 @@ module.exports = class RandomNumber extends ActionHero.Action {
     data.response.consumedMemoryMB = consumedMemoryMB
     if (consumedMemoryMB > maxMemoryAlloted) {
       data.response.nodeStatus = data.connection.localize('Unhealthy')
-      data.response.problems.push(data.connection.localize(['Using more than {{maxMemoryAlloted}} MB of RAM/HEAP', {maxMemoryAlloted: maxMemoryAlloted}]))
+      data.response.problems.push(data.connection.localize(['Using more than {{maxMemoryAlloted}} MB of RAM/HEAP', { maxMemoryAlloted: maxMemoryAlloted }]))
     }
   }
 
@@ -36,7 +36,7 @@ module.exports = class RandomNumber extends ActionHero.Action {
     data.response.eventLoopDelay = eventLoopDelay
     if (eventLoopDelay > maxEventLoopDelay) {
       data.response.nodeStatus = data.connection.localize('Node Unhealthy')
-      data.response.problems.push(data.connection.localize(['EventLoop Blocked for more than {{maxEventLoopDelay}} ms', {maxEventLoopDelay: maxEventLoopDelay}]))
+      data.response.problems.push(data.connection.localize(['EventLoop Blocked for more than {{maxEventLoopDelay}} ms', { maxEventLoopDelay: maxEventLoopDelay }]))
     }
   }
 
@@ -52,7 +52,7 @@ module.exports = class RandomNumber extends ActionHero.Action {
 
     if (length > maxResqueQueueLength) {
       data.response.nodeStatus = data.connection.localize('Node Unhealthy')
-      data.response.problems.push(data.connection.localize(['Resque Queues over {{maxResqueQueueLength}} jobs', {maxResqueQueueLength: maxResqueQueueLength}]))
+      data.response.problems.push(data.connection.localize(['Resque Queues over {{maxResqueQueueLength}} jobs', { maxResqueQueueLength: maxResqueQueueLength }]))
     }
   }
 

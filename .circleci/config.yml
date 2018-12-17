@@ -8,7 +8,7 @@ refrences:
         - gh-pages
 
   cache-options: &cache-options
-    key: package-cache-{{ checksum "package.json" }}
+    key: package-cache-{{ .Branch }}-{{ .Revision }}
 
   shared-test-steps: &shared-test-steps
     steps:

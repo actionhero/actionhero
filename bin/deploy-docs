@@ -47,17 +47,17 @@ cp public/favicon.ico gh-pages-branch/favicon.ico
 echo 'docs.actionherojs.com' >> gh-pages-branch/CNAME
 
 ## Build other versions
-VERSION_V17=$(git tag --sort=refname | grep v17 | tail -n1)
-build_branch "v17" $VERSION_V17
-
-VERSION_V18=$(git tag --sort=refname | grep v18 | tail -n1)
-build_branch $VERSION_V18 $VERSION_V18
-
-VERSION_V19=$(git tag --sort=refname | grep v19 | tail -n1)
-build_branch $VERSION_V19 $VERSION_V19
-
-## Build a version referance file for the site
-echo "var DOCUMENTATION_VERSIONS = ['master', '$VERSION_V18', '$VERSION_V17', '$VERSION_V19']" >> gh-pages-branch/scripts/VERSIONS.js
+# VERSION_V17=$(git tag --sort=refname | grep v17 | tail -n1)
+# build_branch $VERSION_V17 $VERSION_V17
+#
+# VERSION_V18=$(git tag --sort=refname | grep v18 | tail -n1)
+# build_branch $VERSION_V18 $VERSION_V18
+#
+# VERSION_V19=$(git tag --sort=refname | grep v19 | tail -n1)
+# build_branch $VERSION_V19 $VERSION_V19
+#
+# ## Build a version referance file for the site
+# echo "var DOCUMENTATION_VERSIONS = ['master', '$VERSION_V18', '$VERSION_V17', '$VERSION_V19']" >> gh-pages-branch/scripts/VERSIONS.js
 
 ## push it
 cd gh-pages-branch

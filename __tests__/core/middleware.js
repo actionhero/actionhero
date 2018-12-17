@@ -26,7 +26,7 @@ describe('Core: Middleware', () => {
           }
         })
 
-        let {_preProcessorNote, error} = await api.specHelper.runAction('randomNumber')
+        let { _preProcessorNote, error } = await api.specHelper.runAction('randomNumber')
         expect(error).toBeUndefined()
         expect(_preProcessorNote).toEqual('note')
       }
@@ -44,7 +44,7 @@ describe('Core: Middleware', () => {
           }
         })
 
-        let {_preProcessorNote, error} = await api.specHelper.runAction('randomNumber')
+        let { _preProcessorNote, error } = await api.specHelper.runAction('randomNumber')
         expect(error).toBeUndefined()
         expect(_preProcessorNote).toEqual('slept')
       }
@@ -61,7 +61,7 @@ describe('Core: Middleware', () => {
           }
         })
 
-        let {_preProcessorNote, error} = await api.specHelper.runAction('randomNumber')
+        let { _preProcessorNote, error } = await api.specHelper.runAction('randomNumber')
         expect(error).toBeUndefined()
         expect(_preProcessorNote).toBeUndefined()
       }
@@ -285,7 +285,7 @@ describe('Core: Middleware', () => {
         }
       })
 
-      let {randomNumber, error} = await api.specHelper.runAction('randomNumber')
+      let { randomNumber, error } = await api.specHelper.runAction('randomNumber')
       expect(error).toEqual('Error: BLOCKED')
       expect(randomNumber).toBeUndefined()
     })

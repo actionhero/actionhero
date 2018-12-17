@@ -21,20 +21,20 @@ describe('Core', () => {
     })
 
     test('returns string errors properly', async () => {
-      let {error} = await api.specHelper.runAction('notARealAction')
+      let { error } = await api.specHelper.runAction('notARealAction')
       expect(error).toEqual('Error: unknown action or invalid apiVersion')
     })
 
     test('returns Error object properly', async () => {
       api.config.errors.unknownAction = () => { return new Error('error test') }
-      let {error} = await api.specHelper.runAction('notARealAction')
+      let { error } = await api.specHelper.runAction('notARealAction')
       expect(error).toEqual('Error: error test')
     })
 
     test('returns generic object properly', async () => {
-      api.config.errors.unknownAction = () => { return {code: 'error111', reason: 'busted'} }
+      api.config.errors.unknownAction = () => { return { code: 'error111', reason: 'busted' } }
 
-      let {error} = await api.specHelper.runAction('notARealAction')
+      let { error } = await api.specHelper.runAction('notARealAction')
       expect(error.code).toEqual('error111')
       expect(error.reason).toEqual('busted')
     })
@@ -42,11 +42,11 @@ describe('Core', () => {
     test('can have async error handlers', async () => {
       api.config.errors.unknownAction = async () => {
         return new Promise((resolve) => {
-          setTimeout(() => { resolve({sleepy: true}) }, 100)
+          setTimeout(() => { resolve({ sleepy: true }) }, 100)
         })
       }
 
-      let {error} = await api.specHelper.runAction('notARealAction')
+      let { error } = await api.specHelper.runAction('notARealAction')
       expect(error.sleepy).toEqual(true)
     })
   })

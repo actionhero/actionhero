@@ -12,29 +12,18 @@ module.exports = class Logger extends ActionHero.Initializer {
   }
 
   initialize () {
-    let transports = []
-    let i
-
-    for (i in api.config.logger.transports) {
-      let t = api.config.logger.transports[i]
-      if (typeof t === 'function') {
-        transports.push(t(api, winston))
-      } else {
-        transports.push(t)
+    api.config.general.paths.log.forEach((p) => {
+      try {
+        api.utils.createDirSafely(p)
+      } catch (error) {
+        if (error.code !== 'EEXIST') { throw error }
       }
-    }
+    })
 
-    api.logger = new (winston.Logger)({transports: transports})
-
-    if (api.config.logger.levels) {
-      api.logger.setLevels(api.config.logger.levels)
-    } else {
-      api.logger.setLevels(winston.config.syslog.levels)
-    }
-
-    if (api.config.logger.colors) {
-      winston.addColors(api.config.logger.colors)
-    }
+    api.loggers = api.config.logger.loggers.map((loggerBuilder) => {
+      const resolvedLogger = loggerBuilder(api)
+      return winston.createLogger(resolvedLogger)
+    })
 
     /**
      * Log a message, with optional metadata.  The message can be logged to a number of locations (stdio, files, etc) as configured via config/logger.js
@@ -56,16 +45,14 @@ api.log('OH NO!', 'warning');
 // custom severity with a metadata object
 api.log('OH NO, something went wrong', 'warning', { error: new Error('things are busted') });
      */
+
     api.log = (message, severity, data) => {
-      if (severity === undefined || severity === null || api.logger.levels[severity] === undefined) { severity = 'info' }
-      let args = [severity, message]
-      if (data !== null && data !== undefined) { args.push(data) }
-      api.logger.log.apply(api.logger, args)
+      api.loggers.map((logger) => {
+        if (severity === undefined || severity === null || logger.levels[severity] === undefined) { severity = 'info' }
+        let args = [severity, message]
+        if (data !== null && data !== undefined) { args.push(data) }
+        return logger.log.apply(logger, args)
+      })
     }
-
-    let logLevels = []
-    for (i in api.logger.levels) { logLevels.push(i) }
-
-    api.log('Logger loaded.  Possible levels include:', 'debug', logLevels)
   }
 }

@@ -149,17 +149,19 @@ module.exports = class Connection {
     }
 
     if (this.canChat === true) {
+      let promises = []
       for (let i in this.rooms) {
         let room = this.rooms[i]
-        await api.chatRoom.removeMember(this.id, room)
+        promises.push(api.chatRoom.removeMember(this.id, room))
       }
+      await Promise.all(promises)
     }
 
     const server = api.servers.servers[this.type]
 
     if (server) {
       if (server.attributes.logExits === true) {
-        server.log('connection closed', 'info', {to: this.remoteIP})
+        server.log('connection closed', 'info', { to: this.remoteIP })
       }
       if (typeof server.goodbye === 'function') { server.goodbye(this) }
     }
@@ -197,7 +199,7 @@ module.exports = class Connection {
     if (!(words instanceof Array)) { words = [words] }
 
     if (server && allowedVerbs.indexOf(verb) >= 0) {
-      server.log('verb', 'debug', {verb: verb, to: this.remoteIP, params: JSON.stringify(words)})
+      server.log('verb', 'debug', { verb: verb, to: this.remoteIP, params: JSON.stringify(words) })
 
       // TODO: make this a case statement
       // TODO: investigate allowedVerbs being an array of Constatnts or Symbols

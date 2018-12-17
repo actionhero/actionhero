@@ -95,4 +95,4 @@ When creating plugins, you may find yourself wanting to do things which could no
 
 ## Published
 
-You can view a list of plugins maintained by at [https://www.actionherojs.com/plugins](www.actionherojs.com/plugins)
+You can view a list of plugins maintained by at [www.actionherojs.com/plugins](https://www.actionherojs.com/plugins)

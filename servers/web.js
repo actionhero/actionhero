@@ -50,6 +50,10 @@ module.exports = class WebServer extends ActionHero.Server {
       throw new Error('rootEndpointType can only be \'api\' or \'file\'')
     }
 
+    if (!this.config.urlPathForFiles && this.config.rootEndpointType === 'file') {
+      throw new Error('rootEndpointType cannot be "file" without a urlPathForFiles')
+    }
+
     this.fingerprinter = new BrowserFingerprint(this.config.fingerprintOptions)
   }
 
@@ -174,7 +178,7 @@ module.exports = class WebServer extends ActionHero.Server {
 
       if (!filestats) { return sendRequestResult() }
 
-      const fileEtag = etag(filestats, {weak: true})
+      const fileEtag = etag(filestats, { weak: true })
       connection.rawConnection.responseHeaders.push(['ETag', fileEtag])
       let noneMatchHeader = reqHeaders['if-none-match']
       let cacheCtrlHeader = reqHeaders['cache-control']
@@ -260,7 +264,7 @@ module.exports = class WebServer extends ActionHero.Server {
   }
 
   handleRequest (req, res) {
-    let {fingerprint, headersHash} = this.fingerprinter.fingerprint(req)
+    let { fingerprint, headersHash } = this.fingerprinter.fingerprint(req)
     let responseHeaders = []
     let cookies = api.utils.parseCookies(req)
     let responseHttpCode = 200
@@ -425,10 +429,17 @@ module.exports = class WebServer extends ActionHero.Server {
     while (pathParts[0] === '') { pathParts.shift() }
     if (pathParts[pathParts.length - 1] === '') { pathParts.pop() }
 
-    let urlPathForActionsParts = this.config.urlPathForActions.split('/')
-    let urlPathForFilesParts = this.config.urlPathForFiles.split('/')
-    while (urlPathForActionsParts[0] === '') { urlPathForActionsParts.shift() }
-    while (urlPathForFilesParts[0] === '') { urlPathForFilesParts.shift() }
+    let urlPathForActionsParts = []
+    if (this.config.urlPathForActions) {
+      urlPathForActionsParts = this.config.urlPathForActions.split('/')
+      while (urlPathForActionsParts[0] === '') { urlPathForActionsParts.shift() }
+    }
+
+    let urlPathForFilesParts = []
+    if (this.config.urlPathForFiles) {
+      urlPathForFilesParts = this.config.urlPathForFiles.split('/')
+      while (urlPathForFilesParts[0] === '') { urlPathForFilesParts.shift() }
+    }
 
     if (pathParts[0] && api.utils.arrayStartingMatch(urlPathForActionsParts, pathParts)) {
       requestMode = 'api'
@@ -483,13 +494,13 @@ module.exports = class WebServer extends ActionHero.Server {
           })
         }
 
-        let {fields, files} = await new Promise((resolve) => {
+        let { fields, files } = await new Promise((resolve) => {
           connection.rawConnection.form.parse(connection.rawConnection.req, (error, fields, files) => {
             if (error) {
               this.log('error processing form: ' + String(error), 'error')
               connection.error = new Error('There was an error processing this form.')
             }
-            resolve({fields, files})
+            resolve({ fields, files })
           })
         })
 
@@ -531,7 +542,7 @@ module.exports = class WebServer extends ActionHero.Server {
     // helper for JSON posts
     let collapsedVarsHash = api.utils.collapseObjectToArray(varsHash)
     if (collapsedVarsHash !== false) {
-      varsHash = {payload: collapsedVarsHash} // post was an array, lets call it "payload"
+      varsHash = { payload: collapsedVarsHash } // post was an array, lets call it "payload"
     }
 
     for (let v in varsHash) {
