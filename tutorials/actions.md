@@ -92,7 +92,42 @@ exports.UserDelete = class UserDelete extends ValidatedAction {
 
 ActionHero supports multiple versions of the same action.  This will allow you to support actions/routes of the same name with upgraded functionality.
 
-* actions optionally have the `action.version` attribute, which defaults to `1`.
+```js
+const { Action } = require('./../index.js')
+
+exports.ActionVersion1 = class ActionVersion1 extends Action {
+  constructor () {
+    super()
+    this.name = 'randomNumber'
+    this.description = 'I am an API method which will generate a random number'
+    this.outputExample = { randomNumber: 0.123 }
+    this.version = 1
+  }
+
+  async run ({ connection, response }) {
+    response.version = 1
+    response.randomNumber = Math.random()
+  }
+}
+
+exports.ActionVersion2 = class ActionVersion2 extends Action {
+  constructor () {
+    super()
+    this.name = 'randomNumber'
+    this.description = 'I am an API method which will generate a random number'
+    this.outputExample = { randomNumber: 0.123 }
+    this.version = 2
+  }
+
+  async run ({ connection, response }) {
+    response.version = 2
+    response.randomNumber = Math.random()
+    response.randomNumber = connection.localize(['Your random number is {{randomNumber}}', response])
+  }
+}
+```
+
+* actions optionally have the `this.version` attribute, which defaults to `1`.
 * a reserved param, `apiVersion` is used to directly specify the version of an action a client may request.
 * if a client doesn't specify an `apiVersion`, they will be directed to the highest numerical version of that action.
 
