@@ -608,7 +608,9 @@ describe('Server: Web', () => {
     test('but duplicate set-cookie requests should be allowed', async () => {
       let response = await request.get(url + '/api/headerTestAction', { resolveWithFullResponse: true })
       expect(response.statusCode).toEqual(200)
-      let parts = response.headers['set-cookie'][0].split(',')
+      // this will convert node >= 10 header array to look like node <= 9 combined strings
+      let cookieString = response.headers['set-cookie'].join()
+      let parts = cookieString.split(',')
       expect(parts[1]).toEqual('value_1=1')
       expect(parts[0]).toEqual('value_2=2')
     })
