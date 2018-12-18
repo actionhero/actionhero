@@ -27,7 +27,6 @@ exports['default'] = {
 
     return {
       enabled: true,
-
       '_toExpand': false,
       client: {
         konstructor: require('ioredis'),
@@ -42,6 +41,30 @@ exports['default'] = {
       tasks: {
         konstructor: require('ioredis'),
         args: [{ port: port, host: host, password: password, db: db, retryStrategy: retryStrategy }],
+        buildNew: true
+      }
+    }
+  }
+}
+
+exports['test'] = {
+  redis: (api) => {
+    return {
+      enabled: true,
+      '_toExpand': false,
+      client: {
+        konstructor: require('ioredis'),
+        args: [{ port: port, host: host, password: password, db: db, keyPrefix: api.env }],
+        buildNew: true
+      },
+      subscriber: {
+        konstructor: require('ioredis'),
+        args: [{ port: port, host: host, password: password, db: db, keyPrefix: api.env }],
+        buildNew: true
+      },
+      tasks: {
+        konstructor: require('ioredis'),
+        args: [{ port: port, host: host, password: password, db: db, keyPrefix: api.env }],
         buildNew: true
       }
     }
