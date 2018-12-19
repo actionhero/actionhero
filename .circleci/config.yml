@@ -91,7 +91,7 @@ jobs:
 
   test-node-v10:
     docker:
-      - image: circleci/node:10.0
+      - image: circleci/node:10
       - image: redis:4
       - image: selenium/standalone-chrome:latest
     <<: *shared-test-steps
