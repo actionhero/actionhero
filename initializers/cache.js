@@ -27,6 +27,7 @@ class Cache extends ActionHero.Initializer {
     if (api.config.redis.enabled === false) { return }
 
     const redis = api.redis.clients.client
+    const keyPrefix = api.config.redis.client.args[0].keyPrefix
 
     api.cache = {
       redisPrefix: api.config.general.cachePrefix,
@@ -42,8 +43,15 @@ class Cache extends ActionHero.Initializer {
      * @async
      * @return {Promise<Array>} Promise resolves an Array of keys
      */
-    api.cache.keys = async () => {
-      return redis.keys(api.cache.redisPrefix + '*')
+    api.cache.keys = async (match = '', keysAry = [], cursor = 0) => {
+      if (match.length === 0) {
+        match = `${keyPrefix ? `${keyPrefix}` : ''}${api.cache.redisPrefix}*`
+      }
+
+      const [ newCursor, matches ] = await redis.scan(cursor, 'match', match)
+      if (matches && matches.length > 0) { keysAry = keysAry.concat(matches) }
+      if (newCursor === '0') { return keysAry }
+      return api.cache.keys(match, keysAry, newCursor)
     }
 
     /**
@@ -76,9 +84,10 @@ class Cache extends ActionHero.Initializer {
      * @return {Promise<Boolean>} will return true if successful.
      */
     api.cache.clear = async () => {
-      let keys = await api.cache.keys()
       let jobs = []
-      keys.forEach((key) => { jobs.push(redis.del(key)) })
+      let keys = await api.cache.keys()
+      let keysWithoutKeyPrefix = keys.map((k) => k.replace(keyPrefix, ''))
+      keysWithoutKeyPrefix.forEach((k) => { jobs.push(redis.del(k)) })
       await Promise.all(jobs)
       return true
     }
@@ -95,9 +104,9 @@ class Cache extends ActionHero.Initializer {
       let data = {}
       let jobs = []
       let keys = await api.cache.keys()
-
-      keys.forEach((key) => {
-        jobs.push(redis.get(key).then((content) => { data[key] = content }))
+      let keysWithoutKeyPrefix = keys.map((k) => k.replace(keyPrefix, ''))
+      keysWithoutKeyPrefix.forEach((k) => {
+        jobs.push(redis.get(k).then((content) => { data[k] = content }))
       })
 
       await Promise.all(jobs)

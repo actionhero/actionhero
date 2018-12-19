@@ -342,7 +342,8 @@ describe('Core', () => {
         let count = await api.cache.dumpWrite(file)
         expect(count).toEqual(1)
         let body = JSON.parse(String(fs.readFileSync(file)))
-        let content = JSON.parse(body['actionhero:cache:thingA'])
+        let searchkey = `actionhero:cache:thingA`
+        let content = JSON.parse(body[searchkey])
         expect(content.value).toEqual(123)
       })
 

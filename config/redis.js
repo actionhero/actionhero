@@ -54,17 +54,17 @@ exports['test'] = {
       '_toExpand': false,
       client: {
         konstructor: require('ioredis'),
-        args: [{ port: port, host: host, password: password, db: db, keyPrefix: api.env }],
+        args: [{ port: port, host: host, password: password, db: db, keyPrefix: `${api.env}:` }],
         buildNew: true
       },
       subscriber: {
         konstructor: require('ioredis'),
-        args: [{ port: port, host: host, password: password, db: db, keyPrefix: api.env }],
+        args: [{ port: port, host: host, password: password, db: db, keyPrefix: `${api.env}:` }],
         buildNew: true
       },
       tasks: {
         konstructor: require('ioredis'),
-        args: [{ port: port, host: host, password: password, db: db, keyPrefix: api.env }],
+        args: [{ port: port, host: host, password: password, db: db, keyPrefix: `${api.env}:` }],
         buildNew: true
       }
     }
