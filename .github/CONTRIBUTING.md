@@ -31,7 +31,7 @@ We use [standard.js](https://standardjs.com) to manage our lint rules.  We run `
 
 ## Documentation
 
-If your contribution adds a new feature of modifies an existing behavior, document your changes using [JSdoc](http://usejsdoc.org/).  We use JSdoc to automatically document ActionHero, and build [docs.actionherojs.com](docs.actionherojs.com) on every push to the master branch or merge of your Pull Request.  There are many plugins to help you with this, like this one for [Atom](https://atom.io/packages/jsdoc), or this one for [VS Code](https://github.com/joelday/vscode-docthis).
+If your contribution adds a new feature of modifies an existing behavior, document your changes using [JSdoc](http://usejsdoc.org/).  We use JSdoc to automatically document ActionHero, and build [https://docs.actionherojs.com](docs.actionherojs.com) on every push to the master branch or merge of your Pull Request.  There are many plugins to help you with this, like this one for [Atom](https://atom.io/packages/jsdoc), or this one for [VS Code](https://github.com/joelday/vscode-docthis).
 
 If you are documenting code, inline JSdocs are preferred.  The only exceptions are tutorials, which are stand-alone markdown files in the `./tutorials` directory of the project. An example of a newly documented method would be:
 
