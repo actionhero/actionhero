@@ -105,6 +105,9 @@ Or deploy a free API server now:
 * Many folks [have helped](https://github.com/actionhero/actionhero/graphs/contributors) to make ActionHero a reality.
 * If you want to contribute to actionhero, contribute to the conversation on [github](https://github.com/actionhero/actionhero) and join us on [slack](https://slack.actionherojs.com)
 
+## Contributing
+* Contributing to ActionHero is easy!  [You can learn more about contributing to ActionHero here](https://github.com/actionhero/actionhero/blob/master/.github/CONTRIBUTING.md)
+
 ## License
 
 [Apache 2.0](https://github.com/actionhero/actionhero/blob/master/LICENSE.txt)
