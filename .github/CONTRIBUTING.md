@@ -1,4 +1,4 @@
-# Contributing
+# Contributing to ActionHero
 
 First, **THANK YOU**.  
 
