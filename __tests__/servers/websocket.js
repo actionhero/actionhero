@@ -488,6 +488,19 @@ describe('Server: Web Socket', () => {
 
           expect(messagesReceived).toEqual(3)
         })
+
+        test('blocking middleware return an error', async () => {
+          api.chatRoom.addMiddleware({
+            name: 'blocking chat middleware',
+            join: (connection, room) => {
+              throw new Error('joining rooms blocked')
+            }
+          })
+
+          const joinResponse = await awaitRoom(clientA, 'roomAdd', 'otherRoom')
+          expect(joinResponse.error).toEqual('Error: joining rooms blocked')
+          expect(joinResponse.status).toEqual('Error: joining rooms blocked')
+        })
       })
 
       describe('custom room member data', () => {
