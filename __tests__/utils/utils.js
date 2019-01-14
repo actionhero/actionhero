@@ -82,6 +82,7 @@ describe('Utils', () => {
     let B = { b: -2, c: 3 }
     let C = { a: 1, b: { m: 10, n: 11 } }
     let D = { a: 1, b: { n: 111, o: 22 } }
+    let E = { a: 1, b: {} }
 
     test('simple', () => {
       let Z = api.utils.hashMerge(A, B)
@@ -101,6 +102,13 @@ describe('Utils', () => {
       let Z = api.utils.hashMerge(C, D)
       expect(Z.a).toEqual(1)
       expect(Z.b.m).toEqual(10)
+      expect(Z.b.n).toEqual(111)
+      expect(Z.b.o).toEqual(22)
+    })
+
+    test('empty', () => {
+      let Z = api.utils.hashMerge(D, E)
+      expect(Z.a).toEqual(1)
       expect(Z.b.n).toEqual(111)
       expect(Z.b.o).toEqual(22)
     })
