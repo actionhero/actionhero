@@ -3,16 +3,25 @@
 const fs = require('fs')
 const path = require('path')
 const Mime = require('mime')
-const {promisify} = require('util')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
-function asyncStats (file) {
-  return promisify(fs.stat)(file)
+async function asyncStats (file) {
+  return new Promise((resolve, reject) => {
+    fs.stat(file, (error, stats) => {
+      if (error) { return reject(error) }
+      return resolve(stats)
+    })
+  })
 }
 
-function asyncReadLink (file) {
-  return promisify(fs.readLink)(file)
+async function asyncReadLink (file) {
+  return new Promise((resolve, reject) => {
+    fs.readLink(file, (error, linkString) => {
+      if (error) { return reject(error) }
+      return resolve(linkString)
+    })
+  })
 }
 
 /**
@@ -66,7 +75,7 @@ module.exports = class StaticFile extends ActionHero.Initializer {
       if (file.indexOf(path.normalize(api.staticFile.searchPath(connection, counter))) !== 0) {
         return api.staticFile.get(connection, counter + 1)
       } else {
-        let {exists, truePath} = await api.staticFile.checkExistence(file)
+        let { exists, truePath } = await api.staticFile.checkExistence(file)
         if (exists) {
           return api.staticFile.sendFile(truePath, connection)
         } else {
@@ -101,7 +110,7 @@ module.exports = class StaticFile extends ActionHero.Initializer {
           fileStream.on('open', () => { resolve() })
         })
 
-        return {connection, fileStream, mime, length, lastModified}
+        return { connection, fileStream, mime, length, lastModified }
       } catch (error) {
         return api.staticFile.sendFileNotFound(connection, await api.config.errors.fileReadError(connection, String(error)))
       }
@@ -145,12 +154,12 @@ module.exports = class StaticFile extends ActionHero.Initializer {
         }
 
         if (stats.isFile()) {
-          return {exists: true, truePath: file}
+          return { exists: true, truePath: file }
         }
 
-        return {exists: false, truePath: file}
+        return { exists: false, truePath: file }
       } catch (error) {
-        return {exists: false, truePath: file}
+        return { exists: false, truePath: file }
       }
     }
 

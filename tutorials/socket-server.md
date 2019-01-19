@@ -14,30 +14,30 @@ Escape character is '^]'.
 {"welcome":"Hello! Welcome to the actionhero api","room":"defaultRoom","context":"api"}
 
 detailsView
-{"status":"OK","context":"response","data":{"id":"2d68c389-521d-4dc6-b4f1-8292cd6cbde6","remoteIP":"127.0.0.1","remotePort":57393,"params":{},"connectedAt":1368918901456,"room":"defaultRoom","totalActions":0,"pendingActions":0},"messageCount":1}
+{"status":"OK","context":"response","data":{"id":"2d68c389-521d-4dc6-b4f1-8292cd6cbde6","remoteIP":"127.0.0.1","remotePort":57393,"params":{},"connectedAt":1368918901456,"room":"defaultRoom","totalActions":0,"pendingActions":0},"messageId":1}
 
 randomNumber
-{"randomNumber":0.4977603426668793,"context":"response","messageCount":2}
+{"randomNumber":0.4977603426668793,"context":"response","messageId":2}
 
 cacheTest
-{"error":"Error: key is a required parameter for this action","context":"response","messageCount":3}
+{"error":"Error: key is a required parameter for this action","context":"response","messageId":3}
 
 paramAdd key=myKey
-{"status":"OK","context":"response","data":null,"messageCount":4}
+{"status":"OK","context":"response","data":null,"messageId":4}
 
 paramAdd value=myValue
-{"status":"OK","context":"response","data":null,"messageCount":5}
+{"status":"OK","context":"response","data":null,"messageId":5}
 paramsView
-{"status":"OK","context":"response","data":{"action":"cacheTest","key":"myKey","value":"myValue"},"messageCount":6}
+{"status":"OK","context":"response","data":{"action":"cacheTest","key":"myKey","value":"myValue"},"messageId":6}
 
 cacheTest
-{"cacheTestResults":{"saveResp":true,"sizeResp":1,"loadResp":{"key":"cacheTest_myKey","value":"myValue","expireTimestamp":1368918936984,"createdAt":1368918931984,"readAt":1368918931995},"deleteResp":true},"context":"response","messageCount":7}
+{"cacheTestResults":{"saveResp":true,"sizeResp":1,"loadResp":{"key":"cacheTest_myKey","value":"myValue","expireTimestamp":1368918936984,"createdAt":1368918931984,"readAt":1368918931995},"deleteResp":true},"context":"response","messageId":7}
 
 roomAdd default Room
 {"status":"OK"}
 
 say defaultRoom hooray!
-{"status":"OK","context":"response","data":null,"messageCount":8}
+{"status":"OK","context":"response","data":null,"messageId":8}
 ```
 
 You can access actionhero's methods via a persistent socket connection. The default port for this type of communication is 5000. As this is a persistent connection, socket connections have actionhero's verbs available to them. These verbs are:
@@ -58,7 +58,7 @@ Please note that any verbs set using the above method will be sticky to the conn
 
 To help sort out the potential stream of messages a socket user may receive, it is best to understand the "context" of the response. For example, by default all actions set a context of "response" indicating that the message being sent to the client is response to a request they sent (either an action or a chat action like `say`). Messages sent by a user via the `say` command have the context of `user` indicating they came form a user. Messages resulting from data sent to the api (like an action) will have the `response` context.
 
-Every message returned also contains a `messageId`, starting from 1, which increments to count a response to each client request.  `say` messages do not increment `messageCount`, which allows this count to be used by the client to map responses to queries.
+Every message returned also contains a `messageId`, starting from 1, which increments to count a response to each client request.  `say` messages do not increment `messageId`, which allows this count to be used by the client to map responses to queries.
 
 `connection.type` for a TCP/Socket client is "socket"
 
@@ -149,7 +149,7 @@ Connected to localhost.
 Escape character is '^]'.
 {"welcome":"Hello! Welcome to the actionhero api","context":"api"}
 $ paramAdd file=simple.html
-{"status":"OK","context":"response","messageCount":1}
+{"status":"OK","context":"response","messageId":1}
 $ file
 <h1>ActionHero</h1>\nI am a flat file being served to you via the API from ./public/simple.html<br />
 ```
@@ -164,9 +164,9 @@ The default method of using actions for TCP clients is to use the methods above 
 
 The main `trick` to working with TCP/wire connections directly is to remember that you can have many ‘pending' requests at the same time. Also, the order in which you receive responses back can be variable. if you request `slowAction` and then `fastAction`, it's fairly likely that you will get a response to `fastAction` first.
 
-Note that only requests the client makes increment the `messageCount`, but broadcasts do not (the `say` command, etc)
+Note that only requests the client makes increment the `messageId`, but broadcasts do not (the `say` command, etc)
 
-[The actionhero Node Client Library](https://github.com/actionhero/actionhero-node-client) uses TCP/TLS connections, and makes use of actionhero's `messageCount` parameter to keep track of requests, and keeps response callbacks for actions in a pending queue. For example:
+[The actionhero Node Client Library](https://github.com/actionhero/actionhero-node-client) uses TCP/TLS connections, and makes use of actionhero's `messageId` parameter to keep track of requests, and keeps response callbacks for actions in a pending queue. For example:
 
 ```js
 const path = require('path')

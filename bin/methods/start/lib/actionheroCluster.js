@@ -3,7 +3,6 @@
 const fs = require('fs')
 const path = require('path')
 const os = require('os')
-const {promisify} = require('util')
 const cluster = require('cluster')
 const readline = require('readline')
 const winston = require('winston')
@@ -23,27 +22,32 @@ module.exports = class ActionHeroCluster {
       }
     }
 
-    let transports = []
-    transports.push(
-      new (winston.transports.File)({
-        filename: this.options.logPath + '/' + this.options.logFile
-      })
-    )
-    if (cluster.isMaster && args.silent !== true) {
-      let consoleOptions = {
-        colorize: true,
-        timestamp: () => { return this.options.id + ' @ ' + new Date().toISOString() }
-      }
+    this.loggers = []
 
-      transports.push(
-        new (winston.transports.Console)(consoleOptions)
-      )
-    }
-
-    this.logger = new (winston.Logger)({
+    this.loggers.push(winston.createLogger({
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+      ),
       levels: winston.config.syslog.levels,
-      transports: transports
-    })
+      transports: [ new winston.transports.File({
+        filename: `${this.options.logPath}/${this.options.logFile}`
+      }) ]
+    }))
+
+    if (cluster.isMaster && args.silent !== true) {
+      this.loggers.push(winston.createLogger({
+        format: winston.format.combine(
+          winston.format.timestamp(),
+          winston.format.colorize(),
+          winston.format.printf(msg => {
+            return `${this.options.id} @ ${msg.timestamp} - ${msg.level}: ${msg.message}`
+          })
+        ),
+        levels: winston.config.syslog.levels,
+        transports: [ new winston.transports.Console() ]
+      }))
+    }
   }
 
   defaults () {
@@ -64,7 +68,9 @@ module.exports = class ActionHeroCluster {
   }
 
   log (message, severity) {
-    this.logger.log(severity, message)
+    this.loggers.map((logger) => {
+      logger.log(severity, message)
+    })
   }
 
   buildEnv (workerId) {
@@ -82,7 +88,7 @@ module.exports = class ActionHeroCluster {
     if (stats.isDirectory() || stats.isSymbolicLink()) {
       return true
     } else {
-      await promisify(fs.mkdir)(p)
+      fs.mkdirSync(p)
     }
   }
 
@@ -110,6 +116,10 @@ module.exports = class ActionHeroCluster {
     }
 
     fs.unlinkSync(file)
+  }
+
+  async sleep (time) {
+    await new Promise((resolve) => { setTimeout(resolve, time) })
   }
 
   async start () {
@@ -141,9 +151,9 @@ module.exports = class ActionHeroCluster {
     process.on('SIGHUP', async () => {
       this.log('Signal: SIGHUP', 'info')
       this.log('reload all workers now', 'info')
-      this.workers.forEach(async (worker) => {
+      for (let worker of this.workers) {
         await worker.restart()
-      })
+      }
     })
 
     process.on('SIGTTIN', async () => {
@@ -194,7 +204,7 @@ module.exports = class ActionHeroCluster {
     if (this.workers.length === 0) {
       this.log('all workers stopped', 'notice')
       await this.clearPidFile()
-      await promisify(setTimeout)(100)
+      await this.sleep(100)
       process.exit()
     }
 
@@ -205,7 +215,7 @@ module.exports = class ActionHeroCluster {
 
     if (this.workers.length > 0) {
       this.log(this.workers.length + ' workers running, waiting on stop', 'info')
-      await promisify(setTimeout)(this.options.stopTimeout)
+      await this.sleep(this.options.stopTimeout)
       this.stop()
     }
   }

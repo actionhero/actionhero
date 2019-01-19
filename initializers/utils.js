@@ -311,7 +311,7 @@ let responses = await api.utils.asyncWaterfall(jobs)
       } else {
         host = addr
       }
-      return {host: host, port: parseInt(port, 10)}
+      return { host: host, port: parseInt(port, 10) }
     }
 
     /**
@@ -394,6 +394,34 @@ let responses = await api.utils.asyncWaterfall(jobs)
     }
 
     /**
+    Compare the first n elements of an array with another, logner array
+
+    @param {Array} a The first sorted array, the shorter one
+    @param {Array} b The second sorted array, the longer one
+    */
+    api.utils.arrayStartingMatch = (a, b) => {
+      if (a.length === 0) { return false }
+      if (b.length === 0) { return false }
+
+      let matching = true
+      let i = 0
+      while (i < a.length) {
+        if (a[i] !== b[i]) { matching = false }
+        i++
+      }
+      return matching
+    }
+
+    /**
+    Sleep with a Promise
+
+    @param {Number} time The number of ms to sleep
+    */
+    api.utils.sleep = (time) => {
+      return new Promise((resolve) => { setTimeout(resolve, time) })
+    }
+
+    /**
      * Check if a directory exists.
      *
      * @param  {string} dir The directory to check.
@@ -428,7 +456,9 @@ let responses = await api.utils.asyncWaterfall(jobs)
      */
     api.utils.createDirSafely = (dir) => {
       if (api.utils.dirExists(dir)) {
-        throw new Error(`directory '${path.normalize(dir)}' already exists`)
+        let error = new Error(`directory '${path.normalize(dir)}' already exists`)
+        error.code = 'EEXIST'
+        throw error
       } else {
         fs.mkdirSync(path.normalize(dir), '0766')
         return `created directory '${path.normalize(dir)}'`
@@ -446,7 +476,9 @@ let responses = await api.utils.asyncWaterfall(jobs)
      */
     api.utils.createFileSafely = (file, data, overwrite) => {
       if (api.utils.fileExists(file) && !overwrite) {
-        throw new Error(`file '${path.normalize(file)}' already exists`)
+        let error = new Error(`file '${path.normalize(file)}' already exists`)
+        error.code = 'EEXIST'
+        throw error
       } else {
         let message = `wrote file '${path.normalize(file)}'`
         if (overwrite && api.utils.fileExists(file)) { message = ` - overwritten file '${path.normalize(file)}'` }
@@ -466,7 +498,9 @@ let responses = await api.utils.asyncWaterfall(jobs)
      */
     api.utils.createLinkfileSafely = (filePath, type, refrence) => {
       if (api.utils.fileExists(filePath)) {
-        throw new Error(`link file '${filePath}' already exists`)
+        let error = new Error(`link file '${filePath}' already exists`)
+        error.code = 'EEXIST'
+        throw error
       } else {
         fs.writeFileSync(filePath, type)
         return `creating linkfile '${filePath}'`
@@ -484,7 +518,9 @@ let responses = await api.utils.asyncWaterfall(jobs)
      */
     api.utils.removeLinkfileSafely = (filePath, type, refrence) => {
       if (!api.utils.fileExists(filePath)) {
-        throw new Error(`link file '${filePath}' doesn't exist`)
+        let error = new Error(`link file '${filePath}' doesn't exist`)
+        error.code = 'ENOEXIST'
+        throw error
       } else {
         fs.unlinkSync(filePath)
         return `removing linkfile '${filePath}'`
@@ -501,7 +537,9 @@ let responses = await api.utils.asyncWaterfall(jobs)
      */
     api.utils.createSymlinkSafely = (destination, source) => {
       if (api.utils.dirExists(destination)) {
-        throw new Error(`symbolic link '${destination}' already exists`)
+        let error = new Error(`symbolic link '${destination}' already exists`)
+        error.code = 'EEXIST'
+        throw error
       } else {
         fs.symlinkSync(source, destination, 'dir')
         return `creating symbolic link '${destination}' => '${source}'`

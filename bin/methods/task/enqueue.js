@@ -10,13 +10,13 @@ module.exports = class TaskEnqueue extends ActionHero.CLI {
     this.description = 'enqueue a defined task into your actionhero cluster'
     this.example = 'actionhero task enqueue --name=[taskName] --args=[JSON-formatted args]'
     this.inputs = {
-      name: {required: true},
-      args: {required: false},
-      params: {required: false}
+      name: { required: true },
+      args: { required: false },
+      params: { required: false }
     }
   }
 
-  async run ({params}) {
+  async run ({ params }) {
     if (!api.tasks.tasks[params.name]) { throw new Error('Task "' + params.name + '" not found') }
 
     let args = {}

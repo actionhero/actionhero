@@ -1,7 +1,6 @@
 'use strict'
 
 const fs = require('fs')
-const {promisify} = require('util')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
@@ -177,9 +176,9 @@ class Cache extends ActionHero.Initializer {
       await redis.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj))
       if (expireTimeSeconds) {
         await redis.expire(api.cache.redisPrefix + key, expireTimeSeconds)
-        return {key, value: cacheObj.value, expireTimestamp: cacheObj.expireTimestamp, createdAt: cacheObj.createdAt, lastReadAt}
+        return { key, value: cacheObj.value, expireTimestamp: cacheObj.expireTimestamp, createdAt: cacheObj.createdAt, lastReadAt }
       } else {
-        return {key, value: cacheObj.value, expireTimestamp: cacheObj.expireTimestamp, createdAt: cacheObj.createdAt, lastReadAt}
+        return { key, value: cacheObj.value, expireTimestamp: cacheObj.expireTimestamp, createdAt: cacheObj.createdAt, lastReadAt }
       }
     }
 
@@ -247,7 +246,7 @@ class Cache extends ActionHero.Initializer {
      * @see api.cache.listLength
      */
     api.cache.push = async (key, item) => {
-      let object = JSON.stringify({data: item})
+      let object = JSON.stringify({ data: item })
       await redis.rpush(api.cache.redisPrefix + key, object)
       return true
     }
@@ -322,6 +321,10 @@ class Cache extends ActionHero.Initializer {
      * @private
      */
     api.cache.checkLock = async (key, retry, startTime) => {
+      const sleep = async function (time) {
+        return new Promise((resolve) => { setTimeout(resolve, time) })
+      }
+
       if (!startTime) { startTime = new Date().getTime() }
 
       let lockedBy = await redis.get(api.cache.lockPrefix + key)
@@ -333,7 +336,7 @@ class Cache extends ActionHero.Initializer {
           return false
         }
 
-        await promisify(setTimeout)(api.cache.lockRetry)
+        await sleep(api.cache.lockRetry)
         return api.cache.checkLock(key, retry, startTime)
       }
     }

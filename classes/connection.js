@@ -16,7 +16,7 @@ module.exports = class Connection {
    * @property {Object} params         - Any params this connection has saved for use in subsequent Actions.
    * @property {Number} pendingActions - How many actions are currently running for this connection?  Most server types have a limit.
    * @property {Number} totalActions   - How many actions has this connection run since it connected.
-   * @property {Number} messageCount   - How many messages has the server sent to thie connection since it connected.
+   * @property {Number} messageId      - The Id of the latest message this connection has sent to the server.
    * @property {Number} connectedAt    - The timestamp of when this connection was created.
    * @property {string} remoteIP       - The remote connection's IP address (as best as we can tell).  May be either IPv4 or IPv6.
    * @property {Number} remotePort     - The remote connection's port.
@@ -51,14 +51,14 @@ module.exports = class Connection {
     this.connectedAt = new Date().getTime();
 
     ['type', 'rawConnection'].forEach((req) => {
-      if (data[req] === null || data[req] === undefined) { throw new Error(req + ' is required to create a new connection object') }
+      if (data[req] === null || data[req] === undefined) { throw new Error(`${req} is required to create a new connection object`) }
       this[req] = data[req]
     });
 
     ['remotePort', 'remoteIP'].forEach((req) => {
       if (data[req] === null || data[req] === undefined) {
         if (api.config.general.enforceConnectionProperties === true) {
-          throw new Error(req + ' is required to create a new connection object')
+          throw new Error(`${req} is required to create a new connection object`)
         } else {
           data[req] = 0 // could be a random uuid as well?
         }
@@ -73,7 +73,7 @@ module.exports = class Connection {
       params: {},
       pendingActions: 0,
       totalActions: 0,
-      messageCount: 0,
+      messageId: 0,
       canChat: false
     }
 
@@ -138,26 +138,30 @@ module.exports = class Connection {
    * @function destroy
    * @memberof ActionHero.Connection
    */
-  destroy () {
+  async destroy () {
     this.destroyed = true
 
-    api.connections.globalMiddleware.forEach((middlewareName) => {
+    for (let i in api.connections.globalMiddleware) {
+      let middlewareName = api.connections.globalMiddleware[i]
       if (typeof api.connections.middleware[middlewareName].destroy === 'function') {
-        api.connections.middleware[middlewareName].destroy(this)
+        await api.connections.middleware[middlewareName].destroy(this)
       }
-    })
+    }
 
     if (this.canChat === true) {
-      this.rooms.forEach((room) => {
-        api.chatRoom.removeMember(this.id, room)
-      })
+      let promises = []
+      for (let i in this.rooms) {
+        let room = this.rooms[i]
+        promises.push(api.chatRoom.removeMember(this.id, room))
+      }
+      await Promise.all(promises)
     }
 
     const server = api.servers.servers[this.type]
 
     if (server) {
       if (server.attributes.logExits === true) {
-        server.log('connection closed', 'info', {to: this.remoteIP})
+        server.log('connection closed', 'info', { to: this.remoteIP })
       }
       if (typeof server.goodbye === 'function') { server.goodbye(this) }
     }
@@ -195,14 +199,13 @@ module.exports = class Connection {
     if (!(words instanceof Array)) { words = [words] }
 
     if (server && allowedVerbs.indexOf(verb) >= 0) {
-      server.log('verb', 'debug', {verb: verb, to: this.remoteIP, params: JSON.stringify(words)})
+      server.log('verb', 'debug', { verb: verb, to: this.remoteIP, params: JSON.stringify(words) })
 
       // TODO: make this a case statement
       // TODO: investigate allowedVerbs being an array of Constatnts or Symbols
 
       if (verb === 'quit' || verb === 'exit') {
-        server.goodbye(this)
-        return
+        return this.destroy()
       }
 
       if (verb === 'paramAdd') {

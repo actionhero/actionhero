@@ -66,7 +66,8 @@ exports['default'] = {
         formOptions: {
           uploadDir: os.tmpdir(),
           keepExtensions: false,
-          maxFieldsSize: 1024 * 1024 * 100
+          maxFieldsSize: 1024 * 1024 * 20,
+          maxFileSize: 1024 * 1024 * 200
         },
         // Should we pad JSON responses with whitespace to make them more human-readable?
         // set to null to disable
@@ -109,7 +110,7 @@ exports.test = {
     web: (api) => {
       return {
         secure: false,
-        port: process.env.PORT || 1000 + (process.pid % 64535),
+        port: 18080 + parseInt(process.env.JEST_WORKER_ID || 0),
         matchExtensionMime: true,
         metadataOptions: {
           serverInformation: true,

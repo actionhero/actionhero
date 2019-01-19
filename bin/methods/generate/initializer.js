@@ -12,14 +12,14 @@ module.exports = class GenerateInitializer extends ActionHero.CLI {
     this.description = 'generate a new initializer'
     this.example = 'actionhero generate initializer --name=[name] --loadPriority=[p] --startPriority=[p] --stopPriority=[p]'
     this.inputs = {
-      name: {required: true},
-      loadPriority: {required: true, default: 1000},
-      startPriority: {required: true, default: 1000},
-      stopPriority: {required: true, default: 1000}
+      name: { required: true },
+      loadPriority: { required: true, default: 1000 },
+      startPriority: { required: true, default: 1000 },
+      stopPriority: { required: true, default: 1000 }
     }
   }
 
-  run ({params}) {
+  run ({ params }) {
     let template = fs.readFileSync(path.join(__dirname, '/../../templates/initializer.js'))
     template = String(template);
 

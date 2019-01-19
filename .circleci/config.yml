@@ -8,7 +8,7 @@ refrences:
         - gh-pages
 
   cache-options: &cache-options
-    key: package-cache-{{ checksum "package.json" }}
+    key: package-cache-{{ .Branch }}-{{ .Revision }}
 
   shared-test-steps: &shared-test-steps
     steps:
@@ -25,23 +25,24 @@ refrences:
           name: display-npm-version
           command: npm --version
       - run:
+          name: test-log-setup
+          command: mkdir -p ./log
+      - run:
           name: test-reporter-setup
           command: mkdir ./junit
       - run:
-          name: linter
-          command: ./node_modules/.bin/standard
-      - run:
           name: test
-          command: ./node_modules/.bin/mocha test --reporter mocha-junit-reporter
+          command: ./node_modules/.bin/jest --ci --testResultsProcessor="jest-junit" --runInBand
           environment:
-            MOCHA_FILE: ./junit/mocha.xml
             NODE_ENV: test
+            SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
+            JEST_JUNIT_OUTPUT: reports/junit/jest.xml
             maxMemoryAlloted: 500
           when: always
       - store_test_results:
-          path: ./junit
+          path: ./reports/junit/
       - store_artifacts:
-          path: ./junit
+          path: ./reports/junit/
 
 # Test the common workflow on multiple versions of node
 jobs:
@@ -57,22 +58,42 @@ jobs:
           command: npm install
       - run:
           name: test-reporter-setup
-          command: npm install mocha-junit-reporter --no-save
+          command: npm install jest-junit --no-save
       - save_cache:
           <<: *cache-options
           paths:
             - ./node_modules
 
+  linter:
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - restore_cache:
+          <<: *cache-options
+      - run:
+          name: linter
+          command: ./node_modules/.bin/standard
+
   test-node-v8:
     docker:
       - image: circleci/node:8
       - image: redis:4
+      - image: selenium/standalone-chrome:latest
     <<: *shared-test-steps
 
   test-node-v9:
     docker:
       - image: circleci/node:9
       - image: redis:4
+      - image: selenium/standalone-chrome:latest
+    <<: *shared-test-steps
+
+  test-node-v10:
+    docker:
+      - image: circleci/node:10
+      - image: redis:4
+      - image: selenium/standalone-chrome:latest
     <<: *shared-test-steps
 
   deploy-docs-website:
@@ -98,17 +119,29 @@ workflows:
           filters:
             <<: *ignored-branches
 
-      - test-node-v8:
-          requires:
-            - build
+      - linter:
           filters:
             <<: *ignored-branches
+          requires:
+            - build
+
+      - test-node-v8:
+          filters:
+            <<: *ignored-branches
+          requires:
+            - linter
 
       - test-node-v9:
           filters:
             <<: *ignored-branches
           requires:
-            - build
+            - linter
+
+      - test-node-v10:
+          filters:
+            <<: *ignored-branches
+          requires:
+            - linter
 
       - deploy-docs-website:
           filters:
@@ -118,3 +151,4 @@ workflows:
           requires:
             - test-node-v8
             - test-node-v9
+            - test-node-v10

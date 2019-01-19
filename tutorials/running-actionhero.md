@@ -142,7 +142,7 @@ ActionHero is not designed to function when installed globally.  Do not install 
     "start" : "actionhero start",
     "help" : "actionhero help",
     "pretest": "standard",
-    "test" : "cross-env NODE_ENV=test mocha"
+    "test" : "jest"
   }
 }
 

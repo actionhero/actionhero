@@ -69,7 +69,7 @@ await api.redis.publish(payload)
         if (!Array.isArray(args)) { args = [args] }
         if (method) {
           let response = await method.apply(null, args)
-          await api.redis.respondCluster(message.requestId, response)
+          await api.redis.respondCluster(message.messageId, response)
         } else {
           api.log('RPC method `' + cmdParts.join('.') + '` not found', 'warning')
         }
@@ -77,11 +77,11 @@ await api.redis.publish(payload)
     }
 
     api.redis.subscriptionHandlers.doResponse = function (message) {
-      if (api.redis.rpcCallbacks[message.requestId]) {
-        let {resolve, timer} = api.redis.rpcCallbacks[message.requestId]
+      if (api.redis.rpcCallbacks[message.messageId]) {
+        let { resolve, timer } = api.redis.rpcCallbacks[message.messageId]
         clearTimeout(timer)
         resolve(message.response)
-        delete api.redis.rpcCallbacks[message.requestId]
+        delete api.redis.rpcCallbacks[message.messageId]
       }
     }
 
@@ -97,35 +97,43 @@ await api.redis.publish(payload)
      */
     api.redis.doCluster = async (method, args, connectionId, waitForResponse) => {
       if (waitForResponse === undefined || waitForResponse === null) { waitForResponse = false }
-      const requestId = uuid.v4()
+      const messageId = uuid.v4()
       const payload = {
         messageType: 'do',
         serverId: api.id,
         serverToken: api.config.general.serverToken,
-        requestId: requestId,
+        messageId: messageId,
         method: method,
         connectionId: connectionId,
         args: args // [1,2,3]
       }
 
-      await api.redis.publish(payload)
-
+      // we need to be sure that we build the response-handling promise before sending the request to Redis
+      // it is possible for another node to get and work the request before we resolve our write
+      // see https://github.com/actionhero/actionhero/issues/1244 for more information
       if (waitForResponse) {
-        let response = await new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
           let timer = setTimeout(() => reject(new Error('RPC Timeout')), api.config.general.rpcTimeout)
-          api.redis.rpcCallbacks[requestId] = {timer, resolve, reject}
+          api.redis.rpcCallbacks[messageId] = { timer, resolve, reject }
+          try {
+            await api.redis.publish(payload)
+          } catch (e) {
+            clearTimeout(timer)
+            delete api.redis.rpcCallbacks[messageId]
+            throw e
+          }
         })
-
-        return response
       }
+
+      await api.redis.publish(payload)
     }
 
-    api.redis.respondCluster = async (requestId, response) => {
+    api.redis.respondCluster = async (messageId, response) => {
       const payload = {
         messageType: 'doResponse',
         serverId: api.id,
         serverToken: api.config.general.serverToken,
-        requestId: requestId,
+        messageId: messageId,
         response: response // args to pass back, including error
       }
 
@@ -177,20 +185,20 @@ await api.redis.publish(payload)
   async stop () {
     if (api.config.redis.enabled === false) { return }
 
-    api.redis.doCluster('api.log', [`actionhero member ${api.id} has left the cluster`])
-
     await api.redis.clients.subscriber.unsubscribe()
-    api.redis.status.subscribed = false;
+    api.redis.status.subscribed = false
+    await api.redis.doCluster('api.log', [`actionhero member ${api.id} has left the cluster`])
 
-    ['client', 'subscriber', 'tasks'].forEach((r) => {
-      let client = api.redis.clients[r]
+    const keys = Object.keys(api.redis.clients)
+    for (let i in keys) {
+      let client = api.redis.clients[keys[i]]
       if (typeof client.quit === 'function') {
-        client.quit()
+        await client.quit()
       } else if (typeof client.end === 'function') {
-        client.end()
+        await client.end()
       } else if (typeof client.disconnect === 'function') {
-        client.disconnect()
+        await client.disconnect()
       }
-    })
+    }
   }
 }

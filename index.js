@@ -45,7 +45,7 @@ const path = require('path');
   { klass: 'CLI', file: 'cli.js' },
   { klass: 'ActionProcessor', file: 'actionProcessor.js' },
   { klass: 'Connection', file: 'connection.js' }
-].forEach(({klass, file}) => {
+].forEach(({ klass, file }) => {
   exports[klass] = require(path.join(__dirname, 'classes', file))
 })
 

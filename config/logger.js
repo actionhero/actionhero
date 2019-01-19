@@ -1,60 +1,94 @@
 'use strict'
 
-const fs = require('fs')
 const cluster = require('cluster')
+const winston = require('winston')
+
+// learn more about winston v3 loggers @
+// - https://github.com/winstonjs/winston
+// - https://github.com/winstonjs/winston/blob/master/docs/transports.md
+
+function buildConsoleLogger (level = 'info') {
+  return function (api) {
+    return winston.createLogger({
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.colorize(),
+        winston.format.printf(info => {
+          return `${api.id} @ ${info.timestamp} - ${info.level}: ${info.message} ${stringifyExtraMessagePropertiesForConsole(info)}`
+        })
+      ),
+      level,
+      levels: winston.config.syslog.levels,
+      transports: [ new winston.transports.Console() ]
+    })
+  }
+}
+
+function stringifyExtraMessagePropertiesForConsole (info) {
+  const skpippedProperties = ['message', 'timestamp', 'level']
+  let response = ''
+
+  for (let key in info) {
+    let value = info[key]
+    if (skpippedProperties.includes(key)) { continue }
+    if (value === undefined || value === null) { continue }
+    response += `${key}=${value} `
+  }
+
+  return response
+}
+
+function buildFileLogger (path, level = 'info', maxFiles = undefined, maxsize = 20480) {
+  return function (api) {
+    let filename = `${path}/${api.pids.title}-${api.env}.log`
+
+    return winston.createLogger({
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+      ),
+      level,
+      levels: winston.config.syslog.levels,
+      transports: [ new winston.transports.File({
+        filename,
+        maxsize,
+        maxFiles
+      }) ]
+    })
+  }
+}
 
 exports['default'] = {
   logger: (api) => {
-    let logger = {transports: []}
+    let loggers = []
 
-    // console logger
     if (cluster.isMaster) {
-      logger.transports.push(function (api, winston) {
-        return new (winston.transports.Console)({
-          colorize: true,
-          level: 'info',
-          timestamp: function () { return api.id + ' @ ' + new Date().toISOString() }
-        })
-      })
+      loggers.push(buildConsoleLogger())
     }
 
-    // file logger
-    logger.transports.push(function (api, winston) {
-      if (api.config.general.paths.log.length === 1) {
-        const logDirectory = api.config.general.paths.log[0]
-        try {
-          fs.mkdirSync(logDirectory)
-        } catch (e) {
-          if (e.code !== 'EEXIST') {
-            throw (new Error('Cannot create log directory @ ' + logDirectory))
-          }
-        }
-      }
-
-      return new (winston.transports.File)({
-        filename: api.config.general.paths.log[0] + '/' + api.pids.title + '.log',
-        level: 'info',
-        timestamp: function () { return api.id + ' @ ' + new Date().toISOString() }
-      })
+    api.config.general.paths.log.forEach((p) => {
+      loggers.push(buildFileLogger(p))
     })
 
-    // the maximum length of param to log (we will truncate)
-    logger.maxLogStringLength = 100
+    return {
+      loggers,
 
-    // you can optionally set custom log levels
-    // logger.levels = {good: 0, bad: 1};
-
-    // you can optionally set custom log colors
-    // logger.colors = {good: 'blue', bad: 'red'};
-
-    return logger
+      // the maximum length of param to log (we will truncate)
+      maxLogStringLength: 100
+    }
   }
 }
 
 exports.test = {
   logger: (api) => {
+    let loggers = []
+
+    api.config.general.paths.log.forEach((p) => {
+      loggers.push(buildFileLogger(p, 'debug', 1))
+    })
+
     return {
-      transports: null
+      loggers
     }
   }
 }
