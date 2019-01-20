@@ -136,12 +136,13 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
     }
 
     /**
-     * A special connection usable in tests.  Create via `new api.specHelper.Connection()`
+     * A special connection usable in tests.  Create via `await api.specHelper.Connection.createAsync()`
      *
      * @type {Class}
      * @memberof api.specHelper
      */
     api.specHelper.Connection = class {
+      /*
       constructor () {
         let id = uuid.v4()
         api.servers.servers.testServer.buildConnection({
@@ -150,7 +151,18 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
           remoteAddress: 'testServer',
           remotePort: 0
         })
+        return api.connections.connections[id]
+      }
+      */
 
+      static async createAsync (data) {
+        let id = uuid.v4()
+        await api.servers.servers.testServer.buildConnection({
+          id: id,
+          rawConnection: {},
+          remoteAddress: 'testServer',
+          remotePort: 0
+        })
         return api.connections.connections[id]
       }
     }
@@ -160,7 +172,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  actionName The name of the action to run.
-     * @param  {Object}  input      You can provide either a pre-build connection `new api.specHelper.Connection()`, or just a Object with params for your action.
+     * @param  {Object}  input      You can provide either a pre-build connection `api.specHelper.Connection.createAsync()`, or just a Object with params for your action.
      * @return {Promise<Object>}    The `response` from the action.
      */
     api.specHelper.runAction = async (actionName, input) => {
@@ -169,7 +181,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
       if (input.id && input.type === 'testServer') {
         connection = input
       } else {
-        connection = new api.specHelper.Connection()
+        connection = await api.specHelper.Connection.createAsync()
         connection.params = input
       }
 
@@ -192,7 +204,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
      * @return {Promise<Object>} The body contents and metadata of the file requested.  Conatins: mime, length, body, and more.
      */
     api.specHelper.getStaticFile = async (file) => {
-      let connection = new api.specHelper.Connection()
+      let connection = await api.specHelper.Connection.createAsync()
       connection.params.file = file
 
       connection.messageCount = uuid.v4()
