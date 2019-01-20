@@ -127,7 +127,7 @@ describe('Core: Middleware', () => {
       api.actions.addMiddleware({
         name: 'early test middleware',
         global: true,
-        priority: api.config.general.defaultProcessorPriority - 1,
+        priority: api.config.general.defaultMiddlewarePriority - 1,
         preProcessor: (data) => {
           data.response._processorNoteEarly = 'early'
           data.response._processorNoteLate = 'early'
@@ -149,7 +149,7 @@ describe('Core: Middleware', () => {
       api.actions.addMiddleware({
         name: 'late test middleware',
         global: true,
-        priority: api.config.general.defaultProcessorPriority + 1,
+        priority: api.config.general.defaultMiddlewarePriority + 1,
         preProcessor: (data) => {
           data.response._processorNoteLate = 'late'
         }
@@ -166,7 +166,7 @@ describe('Core: Middleware', () => {
       api.actions.addMiddleware({
         name: 'first test middleware',
         global: true,
-        priority: api.config.general.defaultProcessorPriority - 1,
+        priority: api.config.general.defaultMiddlewarePriority - 1,
         preProcessor: (data) => {
           data.response._processorNoteFirst = 'first'
         }
@@ -175,7 +175,7 @@ describe('Core: Middleware', () => {
       api.actions.addMiddleware({
         name: 'late test middleware',
         global: true,
-        priority: api.config.general.defaultProcessorPriority - 1,
+        priority: api.config.general.defaultMiddlewarePriority - 1,
         preProcessor: (data) => {
           data.response._processorNoteSecond = 'second'
         }
@@ -217,7 +217,7 @@ describe('Core: Middleware', () => {
       api.actions.addMiddleware({
         name: 'early test middleware',
         global: true,
-        priority: api.config.general.defaultProcessorPriority - 1,
+        priority: api.config.general.defaultMiddlewarePriority - 1,
         postProcessor: (data) => {
           data.response._processorNoteEarly = 'early'
           data.response._processorNoteLate = 'early'
@@ -239,7 +239,7 @@ describe('Core: Middleware', () => {
       api.actions.addMiddleware({
         name: 'late test middleware',
         global: true,
-        priority: api.config.general.defaultProcessorPriority + 1,
+        priority: api.config.general.defaultMiddlewarePriority + 1,
         postProcessor: (data) => {
           data.response._processorNoteLate = 'late'
         }
@@ -256,7 +256,7 @@ describe('Core: Middleware', () => {
       api.actions.addMiddleware({
         name: 'first middleware',
         global: true,
-        priority: api.config.general.defaultProcessorPriority - 1,
+        priority: api.config.general.defaultMiddlewarePriority - 1,
         postProcessor: (data) => {
           data.response._processorNoteFirst = 'first'
         }
@@ -265,7 +265,7 @@ describe('Core: Middleware', () => {
       api.actions.addMiddleware({
         name: 'second middleware',
         global: true,
-        priority: api.config.general.defaultProcessorPriority - 1,
+        priority: api.config.general.defaultMiddlewarePriority - 1,
         postProcessor: (data) => {
           data.response._processorNoteSecond = 'second'
         }
@@ -330,7 +330,7 @@ describe('Core: Middleware', () => {
         }
       })
 
-      connection = new api.specHelper.Connection()
+      connection = await api.specHelper.Connection.createAsync()
 
       expect(middlewareRan).toEqual(true)
       expect(connection.touched).toEqual('connect')

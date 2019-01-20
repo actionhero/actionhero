@@ -202,7 +202,7 @@ this.buildConnection({
   remotePort: remotePort
 })
    */
-  buildConnection (data) {
+  async buildConnection (data) {
     const details = {
       type: this.type,
       id: data.id,
@@ -215,7 +215,7 @@ this.buildConnection({
     if (this.attributes.canChat === true) { details.canChat = true }
     if (data.fingerprint) { details.fingerprint = data.fingerprint }
 
-    let connection = new ActionHero.Connection(details)
+    let connection = await ActionHero.Connection.createAsync(details)
 
     connection.sendMessage = (message) => {
       this.sendMessage(connection, message)

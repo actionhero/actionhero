@@ -25,21 +25,66 @@ module.exports = class Connection {
    * @see ActionHero.Server
    *
    * @param  {Object} data The specifics of this connection
+   * @param  {Boolean} syncSetup The specifics of this connection initializing sync or async
    */
-  constructor (data) {
+  constructor (data, syncSetup = true) {
     // Only in files required by `index.js` do we need to delay the loading of the API object
     // This is due to cyclical require issues
     api = require('./../index.js').api
 
     this.setup(data)
 
-    api.connections.connections[this.id] = this
+    if (syncSetup) {
+      this.constructor.bindConnectionCustomMethods(this)
+      this.constructor.callConnectionCreateMethods(this)
+    }
 
-    api.connections.globalMiddleware.forEach((middlewareName) => {
-      if (typeof api.connections.middleware[middlewareName].create === 'function') {
-        api.connections.middleware[middlewareName].create(this)
+    api.connections.connections[this.id] = this
+  }
+
+  /**
+   * TODO!
+   * @param  {[type]}  data [description]
+   * @return {Promise}      [description]
+   */
+  static async createAsync (data) {
+    let connection = new this(data, false)
+
+    this.bindConnectionCustomMethods(connection)
+    await this.callConnectionCreateMethods(connection)
+
+    return connection
+  }
+
+  /**
+   * TODO!
+   * @param  {[type]} connection [description]
+   * @return {[type]}            [description]
+   */
+  static bindConnectionCustomMethods (connection) {
+    let server = api.servers.servers[connection.type]
+    if (server && server.connectionCustomMethods) {
+      for (let name in server.connectionCustomMethods) {
+        connection[name] = async (...args) => {
+          args.unshift(connection)
+          return server.connectionCustomMethods[name].apply(null, args)
+        }
       }
-    })
+    }
+  }
+
+  /**
+   * TODO!
+   * @param  {[type]}  connection [description]
+   * @return {Promise}            [description]
+   */
+  static async callConnectionCreateMethods (connection) {
+    for (let i in api.connections.globalMiddleware) {
+      let middlewareName = api.connections.globalMiddleware[i]
+      if (typeof api.connections.middleware[middlewareName].create === 'function') {
+        await api.connections.middleware[middlewareName].create(connection)
+      }
+    }
   }
 
   setup (data) {
@@ -80,17 +125,6 @@ module.exports = class Connection {
     for (let i in connectionDefaults) {
       if (this[i] === undefined && data[i] !== undefined) { this[i] = data[i] }
       if (this[i] === undefined) { this[i] = connectionDefaults[i] }
-    }
-
-    let connection = this
-    let server = api.servers.servers[connection.type]
-    if (server && server.connectionCustomMethods) {
-      for (let name in server.connectionCustomMethods) {
-        connection[name] = function () {
-          let args = [connection].concat(Array.from(arguments))
-          server.connectionCustomMethods[name].apply(null, args)
-        }
-      }
     }
 
     api.i18n.invokeConnectionLocale(this)
