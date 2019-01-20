@@ -35,7 +35,6 @@ module.exports = class Connection {
     this.setup(data)
 
     if (syncSetup) {
-      this.constructor.bindConnectionCustomMethods(this)
       this.constructor.callConnectionCreateMethods(this)
     }
 
@@ -50,27 +49,9 @@ module.exports = class Connection {
   static async createAsync (data) {
     let connection = new this(data, false)
 
-    this.bindConnectionCustomMethods(connection)
     await this.callConnectionCreateMethods(connection)
 
     return connection
-  }
-
-  /**
-   * TODO!
-   * @param  {[type]} connection [description]
-   * @return {[type]}            [description]
-   */
-  static bindConnectionCustomMethods (connection) {
-    let server = api.servers.servers[connection.type]
-    if (server && server.connectionCustomMethods) {
-      for (let name in server.connectionCustomMethods) {
-        connection[name] = async (...args) => {
-          args.unshift(connection)
-          return server.connectionCustomMethods[name].apply(null, args)
-        }
-      }
-    }
   }
 
   /**
@@ -125,6 +106,17 @@ module.exports = class Connection {
     for (let i in connectionDefaults) {
       if (this[i] === undefined && data[i] !== undefined) { this[i] = data[i] }
       if (this[i] === undefined) { this[i] = connectionDefaults[i] }
+    }
+
+    let connection = this
+    let server = api.servers.servers[connection.type]
+    if (server && server.connectionCustomMethods) {
+      for (let name in server.connectionCustomMethods) {
+        connection[name] = async (...args) => {
+          args.unshift(connection)
+          return server.connectionCustomMethods[name].apply(null, args)
+        }
+      }
     }
 
     api.i18n.invokeConnectionLocale(this)
