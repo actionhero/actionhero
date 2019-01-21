@@ -308,7 +308,7 @@ describe('Core: Middleware', () => {
     })
   })
 
-  describe('connection create/destroy callbacks', () => {
+  describe('connection sync create/destroy callbacks', () => {
     let connection
     beforeEach(() => {
       api.connections.middleware = {}
@@ -348,6 +348,50 @@ describe('Core: Middleware', () => {
 
       connection.destroy()
       expect(middlewareRan).toEqual(true)
+    })
+  })
+
+  describe('connection async create/destroy callbacks', () => {
+    beforeEach(() => {
+      api.connections.middleware = {}
+      api.connections.globalMiddleware = []
+    })
+
+    afterEach(() => {
+      api.connections.middleware = {}
+      api.connections.globalMiddleware = []
+    })
+
+    test('can create async callbacks on connection create/destroy', async () => {
+      let middlewareRan = false
+      let middlewareDestoryRan = false
+
+      api.connections.addMiddleware({
+        name: 'connection middleware',
+        create: async (_connection) => {
+          middlewareRan = true
+          _connection.longProcessResult = await (new Promise(async (resolve) => {
+            await api.utils.sleep(1)
+            resolve(true)
+          }))
+        },
+        destroy: async (_connection) => {
+          middlewareDestoryRan = await (new Promise(async (resolve) => {
+            await api.utils.sleep(1)
+            resolve(true)
+          }))
+        }
+      })
+
+      let connection = await api.specHelper.Connection.createAsync()
+
+      // create
+      expect(middlewareRan).toEqual(true)
+      expect(connection.longProcessResult).toEqual(true)
+
+      // destroy
+      await connection.destroy()
+      expect(middlewareDestoryRan).toEqual(true)
     })
   })
 })

@@ -88,10 +88,10 @@ data = {
 const connectionMiddleware = {
   name: 'connection middleware',
   priority: 1000,
-  create: (connection) => {
+  create: async (connection) => {
     api.log('connection joined')
   },
-  destroy: (connection) => {
+  destroy: async (connection) => {
     api.log('connection left')
   }
 };
@@ -99,9 +99,9 @@ const connectionMiddleware = {
 api.connections.addMiddleware(connectionMiddleware)
 ```
 
-Like the action middleware above, you can also create middleware to react to the creation or destruction of all connections. Unlike action middleware, connection middleware is non-blocking and connection logic will continue as normal regardless of what you do in this type of middleware.
+Like the action middleware above, you can also create middleware to react to the creation or destruction of all connections.
 
-Keep in mind that some connections persist (webSocket, socket) and some only exist for the duration of a single request (web). You will likely want to inspect `connection.type` in this middleware. Again, if you do not provide a priority, the default from `api.config.general.defaultProcessorPriority` will be used.
+Keep in mind that some connections persist (webSocket, socket) and some only exist for the duration of a single request (web). You will likely want to inspect `connection.type` in this middleware. Again, if you do not provide a priority, the default from `api.config.general.defaultMiddlewarePriority` will be used.
 
 Any modification made to the connection at this stage may happen either before or after an action, and may or may not persist to the connection depending on how the server is implemented.
 
