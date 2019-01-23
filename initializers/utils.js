@@ -99,8 +99,10 @@ let responses = await api.utils.asyncWaterfall(jobs)
       let response
 
       for (i in a) {
-        if (api.utils.isPlainObject(a[i]) && Object.keys(a[i]).length > 0) {
-          c[i] = api.utils.hashMerge(c[i], a[i], arg)
+        if (api.utils.isPlainObject(a[i])) {
+          // can't be anded into above condition, or empty objects will overwrite and not merge
+          // also make sure empty objects are created
+          c[i] = Object.keys(a[i]).length > 0 ? api.utils.hashMerge(c[i], a[i], arg) : {}
         } else {
           if (typeof a[i] === 'function') {
             response = a[i](arg)
@@ -110,13 +112,18 @@ let responses = await api.utils.asyncWaterfall(jobs)
               c[i] = response
             }
           } else {
-            c[i] = a[i]
+            // don't create first term if it is undefined or null
+            if(a[i] === undefined || a[i] === null);
+            else c[i] = a[i]
           }
         }
       }
       for (i in b) {
-        if (api.utils.isPlainObject(b[i]) && Object.keys(b[i]).length > 0) {
-          c[i] = api.utils.hashMerge(c[i], b[i], arg)
+        if (api.utils.isPlainObject(b[i])) {
+          // can't be anded into above condition, or empty objects will overwrite and not merge
+          if (Object.keys(b[i]).length > 0) c[i] = api.utils.hashMerge(c[i], b[i], arg)
+          // make sure empty objects are only created, when no key exists yet
+          else if (! (i in c)) c[i] = {}
         } else {
           if (typeof b[i] === 'function') {
             response = b[i](arg)
@@ -126,7 +133,12 @@ let responses = await api.utils.asyncWaterfall(jobs)
               c[i] = response
             }
           } else {
-            c[i] = b[i]
+            // ignore second term if it is undefined
+            if(b[i] === undefined);
+            // delete second term/key if value is null and it already exists
+            else if (b[i] == null && ( i in c)) delete c[i]
+            // normal assignments for everything else
+            else c[i] = b[i]
           }
         }
       }
