@@ -145,7 +145,6 @@ describe('Utils', () => {
       expect(Z.a).toEqual(1)
       expect(Z.b).toEqual(2)
     })
-
   })
 
   describe('eventLoopDelay', () => {
