@@ -206,7 +206,7 @@ module.exports = class Scheduler extends Initializer {
     this.name = 'scheduler'
   }
 
-  initialize (api, next) {
+  initialize () {
     api.scheduledJobs = []
   }
 
