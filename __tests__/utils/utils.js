@@ -82,6 +82,9 @@ describe('Utils', () => {
     let B = { b: -2, c: 3 }
     let C = { a: 1, b: { m: 10, n: 11 } }
     let D = { a: 1, b: { n: 111, o: 22, p: {} } }
+    let E = { b: {} }
+    let N = { b: null }
+    let U = { b: undefined }
 
     test('simple', () => {
       let Z = api.utils.hashMerge(A, B)
@@ -104,6 +107,43 @@ describe('Utils', () => {
       expect(Z.b.n).toEqual(111)
       expect(Z.b.o).toEqual(22)
       expect(Z.b.p).toEqual({})
+    })
+
+    test('empty01', () => {
+      let Z = api.utils.hashMerge(E, D)
+      expect(Z.a).toEqual(1)
+      expect(Z.b.n).toEqual(111)
+      expect(Z.b.o).toEqual(22)
+      expect(Z.b.p).toEqual({})
+    })
+
+    test('empty10', () => {
+      let Z = api.utils.hashMerge(D, E)
+      expect(Z.a).toEqual(1)
+      expect(Z.b.n).toEqual(111)
+      expect(Z.b.o).toEqual(22)
+      expect(Z.b.p).toEqual({})
+    })
+
+    test('chained', () => {
+      let Z = api.utils.hashMerge(api.utils.hashMerge(C, E), D)
+      expect(Z.a).toEqual(1)
+      expect(Z.b.m).toEqual(10)
+      expect(Z.b.n).toEqual(111)
+      expect(Z.b.o).toEqual(22)
+      expect(Z.b.p).toEqual({})
+    })
+
+    test('null', () => {
+      let Z = api.utils.hashMerge(A, N)
+      expect(Z.a).toEqual(1)
+      expect(Z.b).toBeUndefined()
+    })
+
+    test('undefined', () => {
+      let Z = api.utils.hashMerge(A, U)
+      expect(Z.a).toEqual(1)
+      expect(Z.b).toEqual(2)
     })
   })
 
