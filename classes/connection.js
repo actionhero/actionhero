@@ -25,16 +25,16 @@ module.exports = class Connection {
    * @see ActionHero.Server
    *
    * @param  {Object} data The specifics of this connection
-   * @param  {Boolean} syncSetup The specifics of this connection initializing sync or async
+   * @param  {Boolean} callCreateMethods The specifics of this connection will calls create methods in the constructor. This property will exist for backward compatibility. If you want to construct connection and call create methods within async, you can use `await ActionHero.Connection.createAsync(details)` for construction.
    */
-  constructor (data, syncSetup = true) {
+  constructor (data, callCreateMethods = true) {
     // Only in files required by `index.js` do we need to delay the loading of the API object
     // This is due to cyclical require issues
     api = require('./../index.js').api
 
     this.setup(data)
 
-    if (syncSetup) {
+    if (callCreateMethods) {
       this.constructor.callConnectionCreateMethods(this)
     }
 
