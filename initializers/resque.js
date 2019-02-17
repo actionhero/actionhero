@@ -108,8 +108,8 @@ module.exports = class Resque extends ActionHero.Initializer {
         api.resque.multiWorker.on('end', (workerId) => { api.log('[ worker ] ended', api.resque.workerLogging.end, { workerId }) })
         api.resque.multiWorker.on('cleaning_worker', (workerId, worker, pid) => { api.log(`[ worker ] cleaning old worker ${worker}, (${pid})`, api.resque.workerLogging.cleaning_worker) })
         api.resque.multiWorker.on('poll', (workerId, queue) => { api.log(`[ worker ] polling ${queue}`, api.resque.workerLogging.poll, { workerId }) })
-        api.resque.multiWorker.on('job', (workerId, queue, job) => { api.log(`[ worker ] working job ${queue}`, api.resque.workerLogging.job, { workerId, job: { class: job['class'], queue: job.queue } }) })
-        api.resque.multiWorker.on('reEnqueue', (workerId, queue, job, plugin) => { api.log('[ worker ] reEnqueue job', api.resque.workerLogging.reEnqueue, { workerId, plugin: plugin, job: { class: job['class'], queue: job.queue } }) })
+        api.resque.multiWorker.on('job', (workerId, queue, job) => { api.log(`[ worker ] working job ${queue}`, api.resque.workerLogging.job, { workerId, class: job['class'], queue: job.queue }) })
+        api.resque.multiWorker.on('reEnqueue', (workerId, queue, job, plugin) => { api.log('[ worker ] reEnqueue job', api.resque.workerLogging.reEnqueue, { workerId, plugin: plugin, class: job['class'], queue: job.queue }) })
         api.resque.multiWorker.on('pause', (workerId) => { api.log('[ worker ] paused', api.resque.workerLogging.pause, { workerId }) })
 
         api.resque.multiWorker.on('failure', (workerId, queue, job, failure) => { api.exceptionHandlers.task(failure, queue, job, workerId) })
@@ -118,14 +118,12 @@ module.exports = class Resque extends ActionHero.Initializer {
         api.resque.multiWorker.on('success', (workerId, queue, job, result) => {
           let payload = {
             workerId,
-            job: {
-              class: job['class'],
-              queue: job.queue
-            }
+            class: job['class'],
+            queue: job.queue
           }
 
           if (result !== null && result !== undefined) { payload.result = result }
-          api.log(`[ worker ] job success ${queue}`, api.resque.workerLogging.success, payload)
+          api.log(`[ worker ] job success`, api.resque.workerLogging.success, payload)
         })
 
         // multiWorker emitters
