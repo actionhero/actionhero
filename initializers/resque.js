@@ -33,7 +33,9 @@ module.exports = class Resque extends ActionHero.Initializer {
       queue: null,
       multiWorker: null,
       scheduler: null,
-      connectionDetails: { redis: api.redis.clients.tasks },
+      connectionDetails: Object.assign({}, api.config.tasks.connectionOptions.tasks, {
+        redis: api.redis.clients.tasks
+      }),
 
       startQueue: async () => {
         let Queue = NodeResque.Queue
