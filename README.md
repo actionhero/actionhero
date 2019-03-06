@@ -37,7 +37,7 @@ Currently actionhero supports the following out of the box...
 
 - [Web Clients](https://docs.actionherojs.com/tutorial-web-server.html): HTTP, HTTPS
 - [Socket Clients](https://docs.actionherojs.com/tutorial-socket-server.html): TCP (telnet), TLS
-- [Web Socket Clients](https://docs.actionherojs.com/tutorial-web_socket.html): HTTP, HTTPS
+- [Web Socket Clients](https://docs.actionherojs.com/tutorial-websocket-server.html): HTTP, HTTPS
 
 [... and you can also make your own servers and transports.](https://docs.actionherojs.com/ActionHero.Server.html)
 

@@ -46,6 +46,9 @@ exports['default'] = {
         queue: null,
         multiWorker: null,
         scheduler: null
+      },
+      connectionOptions: {
+        tasks: {}
       }
     }
   }
