@@ -25,21 +25,52 @@ module.exports = class Connection {
    * @see ActionHero.Server
    *
    * @param  {Object} data The specifics of this connection
+   * @param  {Boolean} callCreateMethods The specifics of this connection will calls create methods in the constructor. This property will exist for backward compatibility. If you want to construct connection and call create methods within async, you can use `await ActionHero.Connection.createAsync(details)` for construction.
    */
-  constructor (data) {
+  constructor (data, callCreateMethods = true) {
     // Only in files required by `index.js` do we need to delay the loading of the API object
     // This is due to cyclical require issues
     api = require('./../index.js').api
 
     this.setup(data)
 
-    api.connections.connections[this.id] = this
+    if (callCreateMethods) {
+      this.constructor.callConnectionCreateMethods(this)
+    }
 
-    api.connections.globalMiddleware.forEach((middlewareName) => {
+    api.connections.connections[this.id] = this
+  }
+
+  /**
+   * @async
+   * @static
+   * @function createAsync
+   * @memberof ActionHero.Connection
+   * @param  {Object}  data The specifics of this connection
+   */
+  static async createAsync (data) {
+    let connection = new this(data, false)
+
+    await this.callConnectionCreateMethods(connection)
+
+    return connection
+  }
+
+  /**
+   * @private
+   * @async
+   * @static
+   * @function callConnectionCreateMethods
+   * @memberof ActionHero.Connection
+   * @param  {Object}  connection ActionHero.Connection
+   */
+  static async callConnectionCreateMethods (connection) {
+    for (let i in api.connections.globalMiddleware) {
+      let middlewareName = api.connections.globalMiddleware[i]
       if (typeof api.connections.middleware[middlewareName].create === 'function') {
-        api.connections.middleware[middlewareName].create(this)
+        await api.connections.middleware[middlewareName].create(connection)
       }
-    })
+    }
   }
 
   setup (data) {
@@ -86,9 +117,9 @@ module.exports = class Connection {
     let server = api.servers.servers[connection.type]
     if (server && server.connectionCustomMethods) {
       for (let name in server.connectionCustomMethods) {
-        connection[name] = function () {
-          let args = [connection].concat(Array.from(arguments))
-          server.connectionCustomMethods[name].apply(null, args)
+        connection[name] = async (...args) => {
+          args.unshift(connection)
+          return server.connectionCustomMethods[name].apply(null, args)
         }
       }
     }
@@ -201,90 +232,68 @@ module.exports = class Connection {
     if (server && allowedVerbs.indexOf(verb) >= 0) {
       server.log('verb', 'debug', { verb: verb, to: this.remoteIP, params: JSON.stringify(words) })
 
-      // TODO: make this a case statement
       // TODO: investigate allowedVerbs being an array of Constatnts or Symbols
 
-      if (verb === 'quit' || verb === 'exit') {
-        return this.destroy()
-      }
+      switch (verb) {
+        case 'quit':
+        case 'exit':
+          return this.destroy()
+        case 'paramAdd':
+          key = words[0]
+          value = words[1]
+          if ((words[0]) && (words[0].indexOf('=') >= 0)) {
+            let parts = words[0].split('=')
+            key = parts[0]
+            value = parts[1]
+          }
 
-      if (verb === 'paramAdd') {
-        key = words[0]
-        value = words[1]
-        if ((words[0]) && (words[0].indexOf('=') >= 0)) {
-          let parts = words[0].split('=')
-          key = parts[0]
-          value = parts[1]
-        }
-
-        if (api.config.general.disableParamScrubbing || api.params.postVariables.indexOf(key) >= 0) {
-          this.params[key] = value
-        }
-        return
-      }
-
-      if (verb === 'paramDelete') {
-        key = words[0]
-        delete this.params[key]
-        return
-      }
-
-      if (verb === 'paramView') {
-        key = words[0]
-        return this.params[key]
-      }
-
-      if (verb === 'paramsView') {
-        return this.params
-      }
-
-      if (verb === 'paramsDelete') {
-        for (let i in this.params) { delete this.params[i] }
-        return
-      }
-
-      if (verb === 'roomAdd') {
-        room = words[0]
-        return api.chatRoom.addMember(this.id, room)
-      }
-
-      if (verb === 'roomLeave') {
-        room = words[0]
-        return api.chatRoom.removeMember(this.id, room)
-      }
-
-      if (verb === 'roomView') {
-        room = words[0]
-        if (this.rooms.indexOf(room) >= 0) {
-          return api.chatRoom.roomStatus(room)
-        }
-
-        let error = new Error(await api.config.errors.connectionNotInRoom(this, room))
-        throw error
-      }
-
-      if (verb === 'detailsView') {
-        return {
-          id: this.id,
-          fingerprint: this.fingerprint,
-          remoteIP: this.remoteIP,
-          remotePort: this.remotePort,
-          params: this.params,
-          connectedAt: this.connectedAt,
-          rooms: this.rooms,
-          totalActions: this.totalActions,
-          pendingActions: this.pendingActions
-        }
-      }
-
-      if (verb === 'documentation') {
-        return api.documentation.documentation
-      }
-
-      if (verb === 'say') {
-        room = words.shift()
-        await api.chatRoom.broadcast(this, room, words.join(' '))
-        return
+          if (api.config.general.disableParamScrubbing || api.params.postVariables.indexOf(key) >= 0) {
+            this.params[key] = value
+          }
+          return
+        case 'paramDelete':
+          key = words[0]
+          delete this.params[key]
+          return
+        case 'paramView':
+          key = words[0]
+          return this.params[key]
+        case 'paramsView':
+          return this.params
+        case 'paramsDelete':
+          for (let i in this.params) { delete this.params[i] }
+          return
+        case 'roomAdd':
+          room = words[0]
+          return api.chatRoom.addMember(this.id, room)
+        case 'roomLeave':
+          room = words[0]
+          return api.chatRoom.removeMember(this.id, room)
+        case 'roomView':
+          room = words[0]
+          if (this.rooms.indexOf(room) >= 0) {
+            return api.chatRoom.roomStatus(room)
+          }
+          let error = new Error(await api.config.errors.connectionNotInRoom(this, room))
+          throw error
+        case 'detailsView':
+          return {
+            id: this.id,
+            fingerprint: this.fingerprint,
+            remoteIP: this.remoteIP,
+            remotePort: this.remotePort,
+            params: this.params,
+            connectedAt: this.connectedAt,
+            rooms: this.rooms,
+            totalActions: this.totalActions,
+            pendingActions: this.pendingActions
+          }
+        case 'documentation':
+          return api.documentation.documentation
+        case 'say':
+          room = words.shift()
+          await api.chatRoom.broadcast(this, room, words.join(' '))
+          return
       }
 
       let error = new Error(await api.config.errors.verbNotFound(this, verb))
