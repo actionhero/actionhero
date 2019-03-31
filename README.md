@@ -6,6 +6,8 @@
   <img src="https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png" alt="ActionHero Logo" />
 </div>
 
+<br />
+
 <div align="center" class="topLinks">
 
 **[NPM](https://npmjs.org/package/actionhero) |
@@ -16,6 +18,8 @@
 [Twitter](https://twitter.com/actionherojs)**
 
 </div>
+
+<br />
 
 <div align="center" class="topBadges">
 
