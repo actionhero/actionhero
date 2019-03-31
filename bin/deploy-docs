@@ -16,16 +16,16 @@ function build_branch() {
 }
 
 ## git config
-REMOTE=$(git config remote.origin.url)
-git config --global user.email "admin@actionherojs.com"
-git config --global user.name "CircleCI for ActionHero"
+GIT_REMOTE=$(git config remote.origin.url)
+GIT_USER_NAME='CircleCI for ActionHero'
+GIT_USER_EMAIL='admin@actionherojs.com'
 
 ## Configure a new direcotry to hold the site
 rm -rf gh-pages-branch
 mkdir gh-pages-branch
 cd gh-pages-branch
 git init
-git remote add --fetch origin "$REMOTE"
+git remote add --fetch origin "$GIT_REMOTE"
 if git rev-parse --verify origin/gh-pages > /dev/null 2>&1
 then
     git checkout gh-pages
@@ -62,7 +62,7 @@ echo 'docs.actionherojs.com' >> gh-pages-branch/CNAME
 ## push it
 cd gh-pages-branch
 git add -A
-git commit --allow-empty -m "deploy docs site @ $(date)"
+git -c user.name="$GIT_USER_NAME" -c user.email="$GIT_USER_EMAIL" commit --allow-empty -m "deploy static site @ $(date)"
 git push --force origin gh-pages
 cd ..
 
