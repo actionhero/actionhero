@@ -39,7 +39,7 @@ describe('Core: Action Cluster', () => {
     test(
       'can call remote methods only on one other cluster who holds a specific connectionId',
       async () => {
-        let client = new api.specHelper.Connection()
+        let client = await api.specHelper.Connection.createAsync()
         let data = {}
         api.rpcTestMethod = (arg1, arg2) => { data[1] = [arg1, arg2] }
 
@@ -55,7 +55,7 @@ describe('Core: Action Cluster', () => {
     test(
       'can get information about connections connected to other servers',
       async () => {
-        let client = new api.specHelper.Connection()
+        let client = await api.specHelper.Connection.createAsync()
 
         let { id, type, canChat } = await api.connections.apply(client.id)
         expect(id).toEqual(client.id)
@@ -67,7 +67,7 @@ describe('Core: Action Cluster', () => {
     test(
       'can call remote methods on/about connections connected to other servers',
       async () => {
-        let client = new api.specHelper.Connection()
+        let client = await api.specHelper.Connection.createAsync()
         expect(client.auth).toBeUndefined()
 
         let connection = await api.connections.apply(client.id, 'set', ['auth', true])
@@ -80,7 +80,7 @@ describe('Core: Action Cluster', () => {
     test(
       'can send arbitraty messages to connections connected to other servers',
       async () => {
-        let client = new api.specHelper.Connection()
+        let client = await api.specHelper.Connection.createAsync()
 
         let connection = await api.connections.apply(client.id, 'sendMessage', { message: 'hi' })
         let message = connection.messages[(connection.messages.length - 1)]
