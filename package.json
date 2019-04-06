@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "browser_fingerprint": "^1.0.4",
-    "dot-prop": "^4.2.0",
+    "dot-prop": "^5.0.0",
     "etag": "^1.8.1",
     "formidable": "^1.2.1",
     "glob": "^7.1.3",
