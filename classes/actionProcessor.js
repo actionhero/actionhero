@@ -100,7 +100,7 @@ module.exports = class ActionProcessor {
     if (error) {
       // If the error is a custom error that specifies a response code, pass that through
       if (error.responseHttpCode && this.connection.rawConnection) {
-        this.connection.rawConnection.responseHttpCode = error.responseHttpCode;
+        this.connection.rawConnection.responseHttpCode = error.responseHttpCode
       }
 
       if (error instanceof Error) {
