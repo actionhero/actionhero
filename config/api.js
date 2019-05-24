@@ -57,6 +57,9 @@ exports['default'] = {
         'plugin': [path.join(__dirname, '/../node_modules')],
         'locale': [path.join(__dirname, '/../locales')]
       },
+      // file glob that will be considered when looking at the paths for actionhero resources
+      // relative to paths defined above
+      fileGlob: '**/*.js',
       // hash containing chat rooms you wish to be created at server boot
       startingChatRooms: {
         // format is {roomName: {authKey, authValue}}
