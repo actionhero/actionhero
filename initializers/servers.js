@@ -27,22 +27,22 @@ module.exports = class Servers extends ActionHero.Initializer {
     }
 
     let serverFolders = [
-      path.resolve(path.join(__dirname, '..', 'servers'))
+      path.resolve(path.join(__dirname, '..', 'servers', '**', '*.js'))
     ]
 
-    api.config.general.paths.server.forEach((p) => {
+    api.config.general.filePaths.server.forEach((p) => {
       p = path.resolve(p)
       if (serverFolders.indexOf(p) < 0) { serverFolders.push(p) }
     })
 
     for (let i in serverFolders) {
       let p = serverFolders[i]
-      let files = glob.sync(path.join(p, api.config.fileGlob))
+      let files = glob.sync(p)
 
       for (let pluginName in api.config.plugins) {
         if (api.config.plugins[pluginName].servers !== false) {
           let pluginPath = api.config.plugins[pluginName].path
-          files = files.concat(glob.sync(path.join(pluginPath, 'servers', api.config.fileGlob)))
+          files = files.concat(glob.sync(path.join(pluginPath, 'servers', '**', '*.js')))
         }
       }
 

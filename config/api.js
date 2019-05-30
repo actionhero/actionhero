@@ -46,20 +46,24 @@ exports['default'] = {
       cliIncludeInternal: true,
       // configuration for your actionhero project structure
       paths: {
-        'action': [path.join(__dirname, '/../actions')],
-        'task': [path.join(__dirname, '/../tasks')],
+        'initializer': [path.join(__dirname, '/../initializers')], // generate path
+        'action': [path.join(__dirname, '/../actions')], // generate path
+        'server': [path.join(__dirname, '/../servers')], // generate path
+        'task': [path.join(__dirname, '/../tasks')], // generate path
+        'cli': [path.join(__dirname, '/../bin')],
         'public': [path.join(__dirname, '/../public')],
         'pid': [path.join(__dirname, '/../pids')],
         'log': [path.join(__dirname, '/../log')],
-        'server': [path.join(__dirname, '/../servers')],
-        'cli': [path.join(__dirname, '/../bin')],
-        'initializer': [path.join(__dirname, '/../initializers')],
         'plugin': [path.join(__dirname, '/../node_modules')],
         'locale': [path.join(__dirname, '/../locales')]
       },
-      // file glob that will be considered when looking at the paths for actionhero resources
-      // relative to paths defined above
-      fileGlob: '**/*.js',
+      // files will be loaded from these locations
+      filePaths: {
+        'initializer': [path.join(__dirname, '/../initializers', '**', '*.js')],
+        'action': [path.join(__dirname, '/../actions', '**', '*.js')],
+        'server': [path.join(__dirname, '/../servers', '**', '*.js')],
+        'task': [path.join(__dirname, '/../tasks', '**', '*.js')]
+      },
       // hash containing chat rooms you wish to be created at server boot
       startingChatRooms: {
         // format is {roomName: {authKey, authValue}}

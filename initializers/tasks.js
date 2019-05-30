@@ -546,8 +546,8 @@ module.exports = class Tasks extends ActionHero.Initializer {
     }
 
     api.tasks.loadTasks = (reload) => {
-      api.config.general.paths.task.forEach((p) => {
-        glob.sync(path.join(p, api.config.fileGlob)).forEach((f) => {
+      api.config.general.filePaths.task.forEach((p) => {
+        glob.sync(p).forEach((f) => {
           api.tasks.loadFile(f, reload)
         })
       })
@@ -555,7 +555,7 @@ module.exports = class Tasks extends ActionHero.Initializer {
       for (let pluginName in api.config.plugins) {
         if (api.config.plugins[pluginName].tasks !== false) {
           let pluginPath = api.config.plugins[pluginName].path
-          glob.sync(path.join(pluginPath, 'tasks', api.config.fileGlob)).forEach((f) => {
+          glob.sync(path.join(pluginPath, 'tasks', '*.js')).forEach((f) => {
             api.tasks.loadFile(f, reload)
           })
         }

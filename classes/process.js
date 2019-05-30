@@ -83,8 +83,8 @@ module.exports = class Process {
     initializerFiles = initializerFiles.concat(glob.sync(path.join(__dirname, '..', 'initializers', '**', '*.js')))
 
     // load initializers from project
-    api.config.general.paths.initializer.forEach((startPath) => {
-      initializerFiles = initializerFiles.concat(glob.sync(path.join(startPath, '**', '*.js')))
+    api.config.general.filePaths.initializer.forEach((filePath) => {
+      initializerFiles = initializerFiles.concat(glob.sync(filePath))
     })
 
     // load initializers from plugins
