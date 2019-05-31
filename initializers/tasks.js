@@ -555,7 +555,7 @@ module.exports = class Tasks extends ActionHero.Initializer {
       for (let pluginName in api.config.plugins) {
         if (api.config.plugins[pluginName].tasks !== false) {
           let pluginPath = api.config.plugins[pluginName].path
-          glob.sync(path.join(pluginPath, 'tasks', '*.js')).forEach((f) => {
+          glob.sync(path.join(pluginPath, 'tasks', '**', '*.js')).forEach((f) => {
             api.tasks.loadFile(f, reload)
           })
         }
