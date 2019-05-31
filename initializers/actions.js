@@ -141,7 +141,7 @@ module.exports = class Actions extends ActionHero.Initializer {
     for (let pluginName in api.config.plugins) {
       if (api.config.plugins[pluginName].actions !== false) {
         let pluginPath = api.config.plugins[pluginName].path
-        let files = glob.sync(path.join(pluginPath, 'actions', '*.js'))
+        let files = glob.sync(path.join(pluginPath, 'actions', '**', '*.js'))
         for (let j in files) { await api.actions.loadFile(files[j]) }
       }
     }
