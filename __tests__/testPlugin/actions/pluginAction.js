@@ -8,7 +8,7 @@ module.exports = class PluginAction extends ActionHero.Action {
     this.outputExample = {}
   }
 
-  async run ({response}) {
+  async run ({ response }) {
     response.cool = true
   }
 }

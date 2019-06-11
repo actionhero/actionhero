@@ -2,6 +2,7 @@
 
 const net = require('net')
 const tls = require('tls')
+const uuid = require('uuid')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api
 
@@ -60,7 +61,7 @@ module.exports = class SocketServer extends ActionHero.Server {
     this.on('actionComplete', (data) => {
       if (data.toRender === true) {
         data.response.context = 'response'
-        this.sendMessage(data.connection, data.response, data.messageCount)
+        this.sendMessage(data.connection, data.response, data.messageId)
       }
     })
   }
@@ -69,19 +70,16 @@ module.exports = class SocketServer extends ActionHero.Server {
     await this.gracefulShutdown()
   }
 
-  async sendMessage (connection, message, messageCount) {
+  async sendMessage (connection, message, messageId) {
     if (message.error) {
       message.error = await api.config.errors.serializers.servers.socket(message.error)
     }
 
-    if (connection.respondingTo) {
-      message.messageCount = messageCount
-      connection.respondingTo = null
-    } else if (message.context === 'response') {
-      if (messageCount) {
-        message.messageCount = messageCount
+    if (message.context === 'response') {
+      if (messageId) {
+        message.messageId = messageId
       } else {
-        message.messageCount = connection.messageCount
+        message.messageId = connection.messageId
       }
     }
 
@@ -94,15 +92,15 @@ module.exports = class SocketServer extends ActionHero.Server {
 
   goodbye (connection) {
     try {
-      connection.rawConnection.end(JSON.stringify({status: connection.localize('actionhero.goodbyeMessage'), context: 'api'}) + '\r\n')
+      connection.rawConnection.end(JSON.stringify({ status: connection.localize('actionhero.goodbyeMessage'), context: 'api' }) + '\r\n')
     } catch (e) {}
   }
 
   sendFile (connection, error, fileStream) {
     if (error) {
-      this.sendMessage(connection, error, connection.messageCount)
+      this.sendMessage(connection, error, connection.messageId)
     } else {
-      fileStream.pipe(connection.rawConnection, {end: false})
+      fileStream.pipe(connection.rawConnection, { end: false })
     }
   }
 
@@ -141,7 +139,6 @@ module.exports = class SocketServer extends ActionHero.Server {
 
     connection.rawConnection.on('end', () => {
       if (connection.destroyed !== true) {
-        try { connection.rawConnection.end() } catch (e) {}
         connection.destroy()
       }
     })
@@ -161,14 +158,11 @@ module.exports = class SocketServer extends ActionHero.Server {
       if (blen > this.config.maxDataLength) {
         let error = await api.config.errors.dataLengthTooLarge(this.config.maxDataLength, blen)
         this.log(error, 'error')
-        return this.sendMessage(connection, {status: 'error', error: error, context: 'response'})
+        return this.sendMessage(connection, { status: 'error', error: error, context: 'response' })
       }
     }
 
     if (line.length > 0) {
-      // increment at the start of the request so that responses can be caught in order on the client
-      // this is not handled by the GenericServer
-      connection.messageCount++
       this.parseRequest(connection, line)
     }
   }
@@ -176,6 +170,7 @@ module.exports = class SocketServer extends ActionHero.Server {
   async parseRequest (connection, line) {
     let words = line.split(' ')
     let verb = words.shift()
+    connection.messageId = connection.params.messageId || uuid.v4()
 
     if (verb === 'file') {
       if (words.length > 0) { connection.params.file = words[0] }
@@ -185,9 +180,9 @@ module.exports = class SocketServer extends ActionHero.Server {
     if (this.attributes.verbs.indexOf(verb) >= 0) {
       try {
         let data = await connection.verbs(verb, words)
-        return this.sendMessage(connection, {status: 'OK', context: 'response', data: data})
+        return this.sendMessage(connection, { status: 'OK', context: 'response', data: data }, connection.messageId)
       } catch (error) {
-        return this.sendMessage(connection, {error: error, context: 'response'})
+        return this.sendMessage(connection, { error: error, context: 'response' }, connection.messageId)
       }
     }
 
@@ -201,6 +196,9 @@ module.exports = class SocketServer extends ActionHero.Server {
       }
       if (requestHash.action) {
         connection.params.action = requestHash.action
+      }
+      if (connection.params.messageId) {
+        connection.messageId = connection.params.messageId
       }
     } catch (e) {
       connection.params.action = verb

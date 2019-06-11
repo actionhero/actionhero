@@ -49,9 +49,9 @@ describe('Utils', () => {
       }
 
       let jobs = [
-        {method: sleepyFunc, args: ['a']},
-        {method: sleepyFunc, args: ['b']},
-        {method: sleepyFunc, args: ['c']}
+        { method: sleepyFunc, args: ['a'] },
+        { method: sleepyFunc, args: ['b'] },
+        { method: sleepyFunc, args: ['c'] }
       ]
 
       let start = (new Date()).getTime()
@@ -65,23 +65,26 @@ describe('Utils', () => {
 
   describe('utils.collapseObjectToArray', () => {
     test('fails with numerical keys', () => {
-      let o = {0: 'a', 1: 'b'}
+      let o = { 0: 'a', 1: 'b' }
       let response = api.utils.collapseObjectToArray(o)
       expect(response).toEqual(['a', 'b'])
     })
 
     test('fails with non-numerical keys', () => {
-      let o = {a: 1}
+      let o = { a: 1 }
       let response = api.utils.collapseObjectToArray(o)
       expect(response).toEqual(false)
     })
   })
 
   describe('utils.hashMerge', () => {
-    let A = {a: 1, b: 2}
-    let B = {b: -2, c: 3}
-    let C = {a: 1, b: {m: 10, n: 11}}
-    let D = {a: 1, b: {n: 111, o: 22}}
+    let A = { a: 1, b: 2 }
+    let B = { b: -2, c: 3 }
+    let C = { a: 1, b: { m: 10, n: 11 } }
+    let D = { a: 1, b: { n: 111, o: 22, p: {} } }
+    let E = { b: {} }
+    let N = { b: null }
+    let U = { b: undefined }
 
     test('simple', () => {
       let Z = api.utils.hashMerge(A, B)
@@ -103,6 +106,44 @@ describe('Utils', () => {
       expect(Z.b.m).toEqual(10)
       expect(Z.b.n).toEqual(111)
       expect(Z.b.o).toEqual(22)
+      expect(Z.b.p).toEqual({})
+    })
+
+    test('empty01', () => {
+      let Z = api.utils.hashMerge(E, D)
+      expect(Z.a).toEqual(1)
+      expect(Z.b.n).toEqual(111)
+      expect(Z.b.o).toEqual(22)
+      expect(Z.b.p).toEqual({})
+    })
+
+    test('empty10', () => {
+      let Z = api.utils.hashMerge(D, E)
+      expect(Z.a).toEqual(1)
+      expect(Z.b.n).toEqual(111)
+      expect(Z.b.o).toEqual(22)
+      expect(Z.b.p).toEqual({})
+    })
+
+    test('chained', () => {
+      let Z = api.utils.hashMerge(api.utils.hashMerge(C, E), D)
+      expect(Z.a).toEqual(1)
+      expect(Z.b.m).toEqual(10)
+      expect(Z.b.n).toEqual(111)
+      expect(Z.b.o).toEqual(22)
+      expect(Z.b.p).toEqual({})
+    })
+
+    test('null', () => {
+      let Z = api.utils.hashMerge(A, N)
+      expect(Z.a).toEqual(1)
+      expect(Z.b).toBeUndefined()
+    })
+
+    test('undefined', () => {
+      let Z = api.utils.hashMerge(A, U)
+      expect(Z.a).toEqual(1)
+      expect(Z.b).toEqual(2)
     })
   })
 
@@ -178,6 +219,46 @@ describe('Utils', () => {
       let parts = api.utils.parseIPv6URI(uri)
       expect(parts.host).toEqual('fe80::1ff:fe23:4567:890a%eth2')
       expect(parts.port).toEqual(8080)
+    })
+  })
+
+  describe('utils.arrayStartingMatch', () => {
+    test('finds matching arrays', () => {
+      const a = [1, 2, 3]
+      const b = [1, 2, 3, 4, 5]
+      const numberResult = api.utils.arrayStartingMatch(a, b)
+      expect(numberResult).toBe(true)
+
+      const c = ['a', 'b', 'c']
+      const d = ['a', 'b', 'c', 'd', 'e']
+      const stringResult = api.utils.arrayStartingMatch(c, d)
+      expect(stringResult).toBe(true)
+    })
+
+    test('finds non-matching arrays', () => {
+      const a = [1, 3]
+      const b = [1, 2, 3, 4, 5]
+      const numberResult = api.utils.arrayStartingMatch(a, b)
+      expect(numberResult).toBe(false)
+
+      const c = ['a', 'b', 'c']
+      const d = ['a', 'b', 'd', 'e']
+      const stringResult = api.utils.arrayStartingMatch(c, d)
+      expect(stringResult).toBe(false)
+    })
+
+    test('does not pass with empty arrays; first', () => {
+      const a = []
+      const b = [1, 2, 3, 4, 5]
+      const result = api.utils.arrayStartingMatch(a, b)
+      expect(result).toBe(false)
+    })
+
+    test('does not pass with empty arrays; second', () => {
+      const a = [1, 2, 3, 4, 5]
+      const b = []
+      const result = api.utils.arrayStartingMatch(a, b)
+      expect(result).toBe(false)
     })
   })
 

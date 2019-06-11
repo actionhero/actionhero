@@ -1,5 +1,5 @@
 'use strict'
-const {Action, api} = require('./../index.js')
+const { Action, api } = require('./../index.js')
 
 module.exports = class CacheTest extends Action {
   constructor () {
@@ -50,7 +50,7 @@ module.exports = class CacheTest extends Action {
     }
   }
 
-  async run ({params, response}) {
+  async run ({ params, response }) {
     const key = 'cacheTest_' + params.key
     const value = params.value
 

@@ -121,10 +121,10 @@ describe('Server: Web Socket', () => {
       expect(clientA.rooms).toEqual(['defaultRoom'])
     })
 
-    test('properly responds with messageCount', async () => {
+    test('properly responds with messageId', async () => {
       let aTime
       let bTime
-      let startingMessageCount = clientA.messageCount
+      let startingMessageId = clientA.messageId
       awaitRoom(clientA, 'roomAdd', 'defaultRoom') // fast
       let responseA = awaitAction(clientA, 'sleepTest') // slow
       awaitRoom(clientA, 'roomAdd', 'defaultRoom') // fast
@@ -142,9 +142,14 @@ describe('Server: Web Socket', () => {
 
       await api.utils.sleep(2001)
 
-      expect(responseA.messageCount).toEqual(startingMessageCount + 2)
-      expect(responseB.messageCount).toEqual(startingMessageCount + 4)
+      expect(responseA.messageId).toEqual(startingMessageId + 2)
+      expect(responseB.messageId).toEqual(startingMessageId + 4)
       expect(aTime.getTime()).toBeGreaterThan(bTime.getTime())
+    })
+
+    test('messageId can be configurable', async () => {
+      let response = await awaitAction(clientA, 'randomNumber', { messageId: 'aaa' })
+      expect(response.messageId).toBe('aaa')
     })
 
     test('can run actions properly without params', async () => {
@@ -154,13 +159,13 @@ describe('Server: Web Socket', () => {
     })
 
     test('can run actions properly with params', async () => {
-      let response = await awaitAction(clientA, 'cacheTest', {key: 'test key', value: 'test value'})
+      let response = await awaitAction(clientA, 'cacheTest', { key: 'test key', value: 'test value' })
       expect(response.error).toBeUndefined()
       expect(response.cacheTestResults).toBeTruthy()
     })
 
     test('does not have sticky params', async () => {
-      let response = await awaitAction(clientA, 'cacheTest', {key: 'test key', value: 'test value'})
+      let response = await awaitAction(clientA, 'cacheTest', { key: 'test key', value: 'test value' })
       expect(response.cacheTestResults.loadResp.key).toEqual('cacheTest_test key')
       expect(response.cacheTestResults.loadResp.value).toEqual('test value')
       let responseAgain = await awaitAction(clientA, 'cacheTest')
@@ -169,12 +174,12 @@ describe('Server: Web Socket', () => {
 
     test('will limit how many simultaneous connections I can have', async () => {
       let responses = []
-      clientA.action('sleepTest', {sleepDuration: 100}, (response) => { responses.push(response) })
-      clientA.action('sleepTest', {sleepDuration: 200}, (response) => { responses.push(response) })
-      clientA.action('sleepTest', {sleepDuration: 300}, (response) => { responses.push(response) })
-      clientA.action('sleepTest', {sleepDuration: 400}, (response) => { responses.push(response) })
-      clientA.action('sleepTest', {sleepDuration: 500}, (response) => { responses.push(response) })
-      clientA.action('sleepTest', {sleepDuration: 600}, (response) => { responses.push(response) })
+      clientA.action('sleepTest', { sleepDuration: 100 }, (response) => { responses.push(response) })
+      clientA.action('sleepTest', { sleepDuration: 200 }, (response) => { responses.push(response) })
+      clientA.action('sleepTest', { sleepDuration: 300 }, (response) => { responses.push(response) })
+      clientA.action('sleepTest', { sleepDuration: 400 }, (response) => { responses.push(response) })
+      clientA.action('sleepTest', { sleepDuration: 500 }, (response) => { responses.push(response) })
+      clientA.action('sleepTest', { sleepDuration: 600 }, (response) => { responses.push(response) })
 
       await api.utils.sleep(1000)
 
@@ -294,7 +299,7 @@ describe('Server: Web Socket', () => {
           }
 
           clientB.say = (room, message) => {
-            clientB.send({message: message, room: room, event: 'say'})
+            clientB.send({ message: message, room: room, event: 'say' })
           }
 
           clientA.on('say', listener)
@@ -483,6 +488,19 @@ describe('Server: Web Socket', () => {
 
           expect(messagesReceived).toEqual(3)
         })
+
+        test('blocking middleware return an error', async () => {
+          api.chatRoom.addMiddleware({
+            name: 'blocking chat middleware',
+            join: (connection, room) => {
+              throw new Error('joining rooms blocked')
+            }
+          })
+
+          const joinResponse = await awaitRoom(clientA, 'roomAdd', 'otherRoom')
+          expect(joinResponse.error).toEqual('Error: joining rooms blocked')
+          expect(joinResponse.status).toEqual('Error: joining rooms blocked')
+        })
       })
 
       describe('custom room member data', () => {
@@ -574,7 +592,7 @@ describe('Server: Web Socket', () => {
 
           sleeps.forEach((sleep) => {
             started++
-            clientA.action('sleepTest', {sleepDuration: sleep}, (response) => { toComplete(sleep, response) })
+            clientA.action('sleepTest', { sleepDuration: sleep }, (response) => { toComplete(sleep, response) })
           })
         })
       })

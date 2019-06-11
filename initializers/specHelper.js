@@ -52,18 +52,19 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
 
       goodbye () {}
 
-      sendMessage (connection, message, messageCount) {
+      sendMessage (connection, message, messageId) {
         process.nextTick(() => {
           connection.messages.push(message)
-          if (typeof connection.actionCallbacks[messageCount] === 'function') {
-            connection.actionCallbacks[messageCount](message, connection)
-            delete connection.actionCallbacks[messageCount]
+          if (typeof connection.actionCallbacks[messageId] === 'function') {
+            connection.actionCallbacks[messageId](message, connection)
+            delete connection.actionCallbacks[messageId]
           }
         })
       }
 
       sendFile (connection, error, fileStream, mime, length) {
         let content = ''
+        const messageId = connection.messageId
         let response = {
           content: null,
           mime: mime,
@@ -77,14 +78,14 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
             fileStream.on('data', (d) => { content += d })
             fileStream.on('end', () => {
               response.content = content
-              this.sendMessage(connection, response, connection.messageCount)
+              this.sendMessage(connection, response, messageId)
             })
           } else {
-            this.sendMessage(connection, response, connection.messageCount)
+            this.sendMessage(connection, response, messageId)
           }
         } catch (e) {
           this.log(e, 'warning')
-          this.sendMessage(connection, response, connection.messageCount)
+          this.sendMessage(connection, response, messageId)
         }
       }
 
@@ -104,7 +105,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
           }
 
           if (api.specHelper.returnMetadata) {
-            data.response.messageCount = data.messageCount
+            data.response.messageId = data.messageId
 
             data.response.serverInformation = {
               serverName: api.config.general.serverName,
@@ -124,7 +125,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
         }
 
         if (data.toRender === true) {
-          this.sendMessage(data.connection, data.response, data.messageCount)
+          this.sendMessage(data.connection, data.response, data.messageId)
         }
       }
     }
@@ -135,12 +136,13 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
     }
 
     /**
-     * A special connection usable in tests.  Create via `new api.specHelper.Connection()`
+     * A special connection usable in tests.  Create via `await api.specHelper.Connection.createAsync()`
      *
      * @type {Class}
      * @memberof api.specHelper
      */
     api.specHelper.Connection = class {
+      /*
       constructor () {
         let id = uuid.v4()
         api.servers.servers.testServer.buildConnection({
@@ -149,7 +151,18 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
           remoteAddress: 'testServer',
           remotePort: 0
         })
+        return api.connections.connections[id]
+      }
+      */
 
+      static async createAsync (data) {
+        let id = uuid.v4()
+        await api.servers.servers.testServer.buildConnection({
+          id: id,
+          rawConnection: {},
+          remoteAddress: 'testServer',
+          remotePort: 0
+        })
         return api.connections.connections[id]
       }
     }
@@ -159,7 +172,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  actionName The name of the action to run.
-     * @param  {Object}  input      You can provide either a pre-build connection `new api.specHelper.Connection()`, or just a Object with params for your action.
+     * @param  {Object}  input      You can provide either a pre-build connection `api.specHelper.Connection.createAsync()`, or just a Object with params for your action.
      * @return {Promise<Object>}    The `response` from the action.
      */
     api.specHelper.runAction = async (actionName, input) => {
@@ -168,16 +181,16 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
       if (input.id && input.type === 'testServer') {
         connection = input
       } else {
-        connection = new api.specHelper.Connection()
+        connection = await api.specHelper.Connection.createAsync()
         connection.params = input
       }
 
       connection.params.action = actionName
 
-      connection.messageCount++
+      connection.messageId = connection.params.messageId || uuid.v4()
       let response = await new Promise((resolve) => {
         api.servers.servers.testServer.processAction(connection)
-        connection.actionCallbacks[(connection.messageCount)] = resolve
+        connection.actionCallbacks[(connection.messageId)] = resolve
       })
 
       return response
@@ -191,13 +204,13 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
      * @return {Promise<Object>} The body contents and metadata of the file requested.  Conatins: mime, length, body, and more.
      */
     api.specHelper.getStaticFile = async (file) => {
-      let connection = new api.specHelper.Connection()
+      let connection = await api.specHelper.Connection.createAsync()
       connection.params.file = file
 
-      connection.messageCount++
+      connection.messageCount = uuid.v4()
       let response = await new Promise((resolve) => {
         api.servers.servers.testServer.processFile(connection)
-        connection.actionCallbacks[(connection.messageCount)] = resolve
+        connection.actionCallbacks[(connection.messageId)] = resolve
       })
 
       return response

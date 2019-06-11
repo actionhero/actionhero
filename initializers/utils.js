@@ -99,8 +99,10 @@ let responses = await api.utils.asyncWaterfall(jobs)
       let response
 
       for (i in a) {
-        if (api.utils.isPlainObject(a[i]) && Object.keys(a[i]).length > 0) {
-          c[i] = api.utils.hashMerge(c[i], a[i], arg)
+        if (api.utils.isPlainObject(a[i])) {
+          // can't be anded into above condition, or empty objects will overwrite and not merge
+          // also make sure empty objects are created
+          c[i] = Object.keys(a[i]).length > 0 ? api.utils.hashMerge(c[i], a[i], arg) : {}
         } else {
           if (typeof a[i] === 'function') {
             response = a[i](arg)
@@ -110,13 +112,18 @@ let responses = await api.utils.asyncWaterfall(jobs)
               c[i] = response
             }
           } else {
-            c[i] = a[i]
+            // don't create first term if it is undefined or null
+            if (a[i] === undefined || a[i] === null);
+            else c[i] = a[i]
           }
         }
       }
       for (i in b) {
-        if (api.utils.isPlainObject(b[i]) && Object.keys(b[i]).length > 0) {
-          c[i] = api.utils.hashMerge(c[i], b[i], arg)
+        if (api.utils.isPlainObject(b[i])) {
+          // can't be anded into above condition, or empty objects will overwrite and not merge
+          if (Object.keys(b[i]).length > 0) c[i] = api.utils.hashMerge(c[i], b[i], arg)
+          // make sure empty objects are only created, when no key exists yet
+          else if (!(i in c)) c[i] = {}
         } else {
           if (typeof b[i] === 'function') {
             response = b[i](arg)
@@ -126,7 +133,12 @@ let responses = await api.utils.asyncWaterfall(jobs)
               c[i] = response
             }
           } else {
-            c[i] = b[i]
+            // ignore second term if it is undefined
+            if (b[i] === undefined);
+            // delete second term/key if value is null and it already exists
+            else if (b[i] == null && (i in c)) delete c[i]
+            // normal assignments for everything else
+            else c[i] = b[i]
           }
         }
       }
@@ -311,7 +323,7 @@ let responses = await api.utils.asyncWaterfall(jobs)
       } else {
         host = addr
       }
-      return {host: host, port: parseInt(port, 10)}
+      return { host: host, port: parseInt(port, 10) }
     }
 
     /**
@@ -394,6 +406,25 @@ let responses = await api.utils.asyncWaterfall(jobs)
     }
 
     /**
+    Compare the first n elements of an array with another, logner array
+
+    @param {Array} a The first sorted array, the shorter one
+    @param {Array} b The second sorted array, the longer one
+    */
+    api.utils.arrayStartingMatch = (a, b) => {
+      if (a.length === 0) { return false }
+      if (b.length === 0) { return false }
+
+      let matching = true
+      let i = 0
+      while (i < a.length) {
+        if (a[i] !== b[i]) { matching = false }
+        i++
+      }
+      return matching
+    }
+
+    /**
     Sleep with a Promise
 
     @param {Number} time The number of ms to sleep
@@ -437,7 +468,9 @@ let responses = await api.utils.asyncWaterfall(jobs)
      */
     api.utils.createDirSafely = (dir) => {
       if (api.utils.dirExists(dir)) {
-        throw new Error(`directory '${path.normalize(dir)}' already exists`)
+        let error = new Error(`directory '${path.normalize(dir)}' already exists`)
+        error.code = 'EEXIST'
+        throw error
       } else {
         fs.mkdirSync(path.normalize(dir), '0766')
         return `created directory '${path.normalize(dir)}'`
@@ -455,7 +488,9 @@ let responses = await api.utils.asyncWaterfall(jobs)
      */
     api.utils.createFileSafely = (file, data, overwrite) => {
       if (api.utils.fileExists(file) && !overwrite) {
-        throw new Error(`file '${path.normalize(file)}' already exists`)
+        let error = new Error(`file '${path.normalize(file)}' already exists`)
+        error.code = 'EEXIST'
+        throw error
       } else {
         let message = `wrote file '${path.normalize(file)}'`
         if (overwrite && api.utils.fileExists(file)) { message = ` - overwritten file '${path.normalize(file)}'` }
@@ -475,7 +510,9 @@ let responses = await api.utils.asyncWaterfall(jobs)
      */
     api.utils.createLinkfileSafely = (filePath, type, refrence) => {
       if (api.utils.fileExists(filePath)) {
-        throw new Error(`link file '${filePath}' already exists`)
+        let error = new Error(`link file '${filePath}' already exists`)
+        error.code = 'EEXIST'
+        throw error
       } else {
         fs.writeFileSync(filePath, type)
         return `creating linkfile '${filePath}'`
@@ -493,7 +530,9 @@ let responses = await api.utils.asyncWaterfall(jobs)
      */
     api.utils.removeLinkfileSafely = (filePath, type, refrence) => {
       if (!api.utils.fileExists(filePath)) {
-        throw new Error(`link file '${filePath}' doesn't exist`)
+        let error = new Error(`link file '${filePath}' doesn't exist`)
+        error.code = 'ENOEXIST'
+        throw error
       } else {
         fs.unlinkSync(filePath)
         return `removing linkfile '${filePath}'`
@@ -510,7 +549,9 @@ let responses = await api.utils.asyncWaterfall(jobs)
      */
     api.utils.createSymlinkSafely = (destination, source) => {
       if (api.utils.dirExists(destination)) {
-        throw new Error(`symbolic link '${destination}' already exists`)
+        let error = new Error(`symbolic link '${destination}' already exists`)
+        error.code = 'EEXIST'
+        throw error
       } else {
         fs.symlinkSync(source, destination, 'dir')
         return `creating symbolic link '${destination}' => '${source}'`

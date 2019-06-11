@@ -13,35 +13,50 @@ let client3
 
 let client2Details = {}
 
-const makeSocketRequest = async (thisClient, message, delimiter) => {
-  let lines = []
-  if (!delimiter) { delimiter = '\r\n' }
+const makeSocketRequest = async (thisClient, message = '', delimiter = '\r\n') => {
+  let data = ''
+  let response
+  return new Promise(async (resolve) => {
+    const onData = (d) => {
+      data += d
+      let lines = data.split(delimiter)
+      while (lines.length > 0) {
+        let attemptedLine = lines.pop()
+        try {
+          response = JSON.parse(attemptedLine)
+          thisClient.removeAllListeners('data')
+          return resolve(response)
+        } catch (error) {
+          // keep trying
+        }
+      }
+    }
 
-  let onData = (d) => {
-    d.split(delimiter).forEach((l) => {
-      if (l.length > 0) { lines.push(l) }
+    thisClient.write(message + delimiter)
+    thisClient.on('data', onData)
+  })
+}
+
+const buildClient = () => {
+  return new Promise((resolve) => {
+    const conn = net.connect(api.config.servers.socket.port)
+    conn.data = ''
+    conn.on('connect', () => {
+      conn.setEncoding('utf8')
+      return resolve(conn)
     })
-    lines.push()
-  }
-
-  thisClient.on('data', onData)
-  thisClient.write(message + delimiter)
-
-  await api.utils.sleep(100)
-  thisClient.removeListener('data', onData)
-
-  let lastLine = lines[(lines.length - 1)]
-  let parsed = null
-  try { parsed = JSON.parse(lastLine) } catch (e) {}
-  return parsed
+  })
 }
 
 const connectClients = async () => {
-  client = net.connect(api.config.servers.socket.port, () => { client.setEncoding('utf8') })
-  client2 = net.connect(api.config.servers.socket.port, () => { client2.setEncoding('utf8') })
-  client3 = net.connect(api.config.servers.socket.port, () => { client3.setEncoding('utf8') })
+  client = await buildClient()
+  client2 = await buildClient()
+  client3 = await buildClient()
 
-  await api.utils.sleep(1000)
+  // wait for welcome messages
+  await makeSocketRequest(client)
+  await makeSocketRequest(client2)
+  await makeSocketRequest(client3)
 }
 
 describe('Server: Socket', () => {
@@ -53,9 +68,9 @@ describe('Server: Socket', () => {
   })
 
   afterAll(async () => {
-    client.write('quit\r\n')
-    client2.write('quit\r\n')
-    client3.write('quit\r\n')
+    client.end()
+    client2.end()
+    client3.end()
     await actionhero.stop()
   })
 
@@ -72,7 +87,7 @@ describe('Server: Socket', () => {
   })
 
   test('stringified JSON can also be sent as actions', async () => {
-    let response = await makeSocketRequest(client, JSON.stringify({action: 'status', params: {something: 'else'}}))
+    let response = await makeSocketRequest(client, JSON.stringify({ action: 'status', params: { something: 'else' } }))
     expect(response).toBeInstanceOf(Object)
     expect(response.id).toEqual(`test-server-${process.env.JEST_WORKER_ID || 0}`)
   })
@@ -89,6 +104,12 @@ describe('Server: Socket', () => {
     let response = await makeSocketRequest(client, JSON.stringify(msg))
     expect(response.cacheTestResults.loadResp.key).toEqual('cacheTest_' + msg.params.key)
     expect(response.cacheTestResults.loadResp.value).toEqual(msg.params.value)
+  })
+
+  test('I can get my ip', async () => {
+    let response = await makeSocketRequest(client, 'detailsView')
+    expect(response.status).toEqual('OK')
+    expect(response.data.remoteIP).toEqual('127.0.0.1')
   })
 
   test('I can get my details', async () => {
@@ -154,8 +175,45 @@ describe('Server: Socket', () => {
   })
 
   test('only params sent in a JSON block are used', async () => {
-    let response = await makeSocketRequest(client, JSON.stringify({action: 'cacheTest', params: {key: 'someOtherValue'}}))
+    let response = await makeSocketRequest(client, JSON.stringify({ action: 'cacheTest', params: { key: 'someOtherValue' } }))
     expect(response.error).toEqual('value is a required parameter for this action')
+  })
+
+  test('messageId is unique', async () => {
+    let responseA = await makeSocketRequest(client, 'randomNumber')
+    let responseB = await makeSocketRequest(client, 'randomNumber')
+    expect(responseA.messageId).not.toEqual(responseB.messageId)
+  })
+
+  test('messageId is configurable (sticky params)', async () => {
+    await makeSocketRequest(client, 'paramAdd messageId=aaaaaa')
+    let response = await makeSocketRequest(client, 'randomNumber')
+    expect(response.messageId).toEqual('aaaaaa')
+    await makeSocketRequest(client, 'paramDelete messageId')
+  })
+
+  test('messageId is configurable (json)', async () => {
+    let response = await makeSocketRequest(client, JSON.stringify({ action: 'randomNumber', params: { messageId: 'abc123' } }))
+    expect(response.messageId).toEqual('abc123')
+  })
+
+  test('asking to quit will disconnect', async () => {
+    const newClient = await buildClient()
+    await makeSocketRequest(newClient) // welcome message
+
+    expect(newClient.readable).toEqual(true)
+    expect(newClient.writable).toEqual(true)
+    let response = await makeSocketRequest(newClient, 'detailsView')
+    expect(response.status).toEqual('OK')
+
+    await new Promise((resolve) => {
+      newClient.on('close', () => { return resolve() })
+      newClient.write('quit\n')
+    })
+
+    expect(newClient.readable).toEqual(false)
+    expect(newClient.writable).toEqual(false)
+    newClient.end() // needed to ensure socket closed in test
   })
 
   test('will limit how many simultaneous connections I can have', async () => {
@@ -164,7 +222,7 @@ describe('Server: Socket', () => {
     let i = 0
 
     while (i <= api.config.general.simultaneousActions) {
-      msg += `${JSON.stringify({action: 'sleepTest', sleepDuration: 100})} \r\n`
+      msg += `${JSON.stringify({ action: 'sleepTest', sleepDuration: 100 })} \r\n`
       i++
     }
 
@@ -217,48 +275,26 @@ describe('Server: Socket', () => {
   })
 
   describe('custom data delimiter', () => {
-    afterAll(() => { api.config.servers.socket.delimiter = '\n' })
+    afterEach(() => { api.config.servers.socket.delimiter = '\n' })
 
-    test('will parse /newline data delimiter', async () => {
-      api.config.servers.socket.delimiter = '\n'
-      let response = await makeSocketRequest(client, JSON.stringify({action: 'status'}), '\n')
+    test('will parse custom newline data delimiter', async () => {
+      api.config.servers.socket.delimiter = 'xXxXxX'
+      let response = await makeSocketRequest(client, JSON.stringify({ action: 'status' }), 'xXxXxX')
       expect(response.context).toEqual('response')
     })
 
     test('will parse custom `^]` data delimiter', async () => {
       api.config.servers.socket.delimiter = '^]'
-      let response = await makeSocketRequest(client, JSON.stringify({action: 'status'}), '^]')
+      let response = await makeSocketRequest(client, JSON.stringify({ action: 'status' }), '^]')
       expect(response.context).toEqual('response')
     })
   })
 
   describe('chat', () => {
-    beforeAll(() => {
-      api.chatRoom.addMiddleware({
-        name: 'join chat middleware',
-        join: async (connection, room) => {
-          await api.chatRoom.broadcast({}, room, `I have entered the room: ${connection.id}`)
-        }
-      })
-
-      api.chatRoom.addMiddleware({
-        name: 'leave chat middleware',
-        leave: async (connection, room) => {
-          await api.chatRoom.broadcast({}, room, `I have left the room: ${connection.id}`)
-        }
-      })
-    })
-
-    afterAll(() => {
-      api.chatRoom.middleware = {}
-      api.chatRoom.globalMiddleware = []
-    })
-
     beforeEach(async () => {
       await makeSocketRequest(client, 'roomAdd defaultRoom')
       await makeSocketRequest(client2, 'roomAdd defaultRoom')
       await makeSocketRequest(client3, 'roomAdd defaultRoom')
-      await api.utils.sleep(250)
     })
 
     afterEach(async () => {
@@ -267,7 +303,6 @@ describe('Server: Socket', () => {
         await makeSocketRequest(client2, 'roomLeave ' + room)
         await makeSocketRequest(client3, 'roomLeave ' + room)
       }
-      await api.utils.sleep(250)
     })
 
     test('clients are in the default room', async () => {
@@ -314,30 +349,67 @@ describe('Server: Socket', () => {
       })
     })
 
-    test('folks not in my room no not hear what I say', async () => {
-      await makeSocketRequest(client, 'roomLeave defaultRoom')
+    describe('chat middleware', () => {
+      beforeAll(() => {
+        api.chatRoom.addMiddleware({
+          name: 'join chat middleware',
+          join: async (connection, room) => {
+            await api.chatRoom.broadcast({}, room, `I have entered the room: ${connection.id}`)
+          }
+        })
 
-      await new Promise(async (resolve) => {
-        makeSocketRequest(client2, 'say defaultRoom you should not hear this' + '\r\n')
-        let response = await makeSocketRequest(client, '')
-        expect(response).toBeNull()
-        resolve()
+        api.chatRoom.addMiddleware({
+          name: 'leave chat middleware',
+          leave: async (connection, room) => {
+            await api.chatRoom.broadcast({}, room, `I have left the room: ${connection.id}`)
+          }
+        })
       })
 
-      await new Promise(async (resolve) => {
-        makeSocketRequest(client, 'say defaultRoom I should not hear myself' + '\r\n')
+      beforeEach(async () => {
+        await api.utils.sleep(100) // wait sufficently long for other room ops to complete
+      })
+
+      afterAll(() => {
+        api.chatRoom.middleware = {}
+        api.chatRoom.globalMiddleware = []
+      })
+
+      test('Folks are notified when I join a room', async () => {
+        await makeSocketRequest(client, 'roomAdd otherRoom')
+        await api.utils.sleep(100) // wait sufficently long for other room ops to complete
+        makeSocketRequest(client2, 'roomAdd otherRoom')
         let response = await makeSocketRequest(client, '')
-        // there will be the say response, but no message
-        expect(response.room).toBeUndefined()
-        resolve()
+        expect(response.message).toEqual('I have entered the room: ' + client2Details.id)
+        expect(response.from).toEqual(0)
+      })
+
+      test('Folks are notified when I leave a room', async () => {
+        makeSocketRequest(client2, 'roomLeave defaultRoom\r\n')
+        let response = await makeSocketRequest(client, '')
+        expect(response.message).toEqual('I have left the room: ' + client2Details.id)
+        expect(response.from).toEqual(0)
       })
     })
 
-    test('I can get my id', async () => {
-      let response = await makeSocketRequest(client, 'detailsView')
-      expect(response.status).toEqual('OK')
-      expect(response.data.remoteIP).toEqual('127.0.0.1')
-    })
+    // test('folks not in my room do not hear what I say', async () => {
+    //   await makeSocketRequest(client, 'roomLeave defaultRoom')
+    //
+    //   await new Promise(async (resolve) => {
+    //     makeSocketRequest(client2, 'say defaultRoom you should not hear this' + '\r\n')
+    //     let response = await makeSocketRequest(client, '')
+    //     expect(response).toBeUndefined()
+    //     resolve()
+    //   })
+    //
+    //   await new Promise(async (resolve) => {
+    //     makeSocketRequest(client, 'say defaultRoom I should not hear myself' + '\r\n')
+    //     let response = await makeSocketRequest(client, '')
+    //     // there will be the say response, but no message
+    //     expect(response.room).toBeUndefined()
+    //     resolve()
+    //   })
+    // })
 
     describe('custom room member data', () => {
       let currentSanitize
@@ -393,21 +465,6 @@ describe('Server: Socket', () => {
         await makeSocketRequest(client2, 'roomLeave defaultRoom')
       })
     })
-
-    test('Folks are notified when I join a room', async () => {
-      await makeSocketRequest(client, 'roomAdd otherRoom')
-      makeSocketRequest(client2, 'roomAdd otherRoom')
-      let response = await makeSocketRequest(client, '')
-      expect(response.message).toEqual('I have entered the room: ' + client2Details.id)
-      expect(response.from).toEqual(0)
-    })
-
-    test('Folks are notified when I leave a room', async () => {
-      makeSocketRequest(client2, 'roomLeave defaultRoom\r\n')
-      let response = await makeSocketRequest(client, '')
-      expect(response.message).toEqual('I have left the room: ' + client2Details.id)
-      expect(response.from).toEqual(0)
-    })
   })
 
   describe('disconnect', () => {
@@ -423,7 +480,9 @@ describe('Server: Socket', () => {
         api.connections.connections[id].destroy()
       }
 
-      await api.utils.sleep(100)
+      await new Promise((resolve) => {
+        client.on('close', () => { return resolve() })
+      })
 
       expect(client.readable).toEqual(false)
       expect(client.writable).toEqual(false)

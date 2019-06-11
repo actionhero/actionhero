@@ -95,4 +95,4 @@ When creating plugins, you may find yourself wanting to do things which could no
 
 ## Published
 
-You can view a list of plugins maintained by [@l0oky](https://github.com/l0oky) via [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/l0oky/awesome-actionhero)
+You can view a list of plugins maintained by at [www.actionherojs.com/plugins](https://www.actionherojs.com/plugins)

@@ -1,5 +1,4 @@
-# local actionhero files
-
+# ActionHero files
 pids/*
 tmp/*
 log/*
@@ -11,7 +10,7 @@ public/javascript/ActionheroWebsocketClient.js
 public/javascript/ActionheroWebsocketClient.min.js
 
 #JSDoc
-docs
+/docs
 gh-pages-branch
 
 # Node / NPM
@@ -27,3 +26,4 @@ cache.dump
 # Editor-specific
 /nbproject/*
 /.idea/*
+.vscode

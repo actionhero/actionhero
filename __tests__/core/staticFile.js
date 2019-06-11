@@ -11,7 +11,7 @@ async function exec (command) {
   return new Promise((resolve, reject) => {
     require('child_process').exec(command, (error, stdout, stderr) => {
       if (error) { return reject(error) }
-      return resolve({stdout, stderr})
+      return resolve({ stdout, stderr })
     })
   })
 }
@@ -53,13 +53,13 @@ describe('Core', () => {
     })
 
     test('should send back the cache-control header', async () => {
-      let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
+      let response = await request.get(url + '/simple.html', { resolveWithFullResponse: true })
       expect(response.statusCode).toEqual(200)
       expect(response.headers['cache-control']).toBeTruthy()
     })
 
     test('should send back the etag header', async () => {
-      let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
+      let response = await request.get(url + '/simple.html', { resolveWithFullResponse: true })
       expect(response.statusCode).toEqual(200)
       expect(response.headers['etag']).toBeTruthy()
     })
@@ -67,7 +67,7 @@ describe('Core', () => {
     test(
       'should send back a 304 if the header "if-modified-since" is present and condition matches',
       async () => {
-        let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
+        let response = await request.get(url + '/simple.html', { resolveWithFullResponse: true })
         expect(response.statusCode).toEqual(200)
 
         try {
@@ -83,7 +83,7 @@ describe('Core', () => {
     )
 
     test('should send back a 304 if the ETAG header is present', async () => {
-      let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
+      let response = await request.get(url + '/simple.html', { resolveWithFullResponse: true })
       expect(response.statusCode).toEqual(200)
       expect(response.body).toEqual('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
       expect(response.headers['etag']).toBeTruthy()
@@ -103,12 +103,12 @@ describe('Core', () => {
     })
 
     test('should send a different etag for other files', async () => {
-      let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
+      let response = await request.get(url + '/simple.html', { resolveWithFullResponse: true })
       expect(response.statusCode).toEqual(200)
       expect(response.headers['etag']).toBeTruthy()
       let etag = response.headers['etag']
 
-      let secondResponse = await request.get(url + '/index.html', {resolveWithFullResponse: true})
+      let secondResponse = await request.get(url + '/index.html', { resolveWithFullResponse: true })
       expect(secondResponse.statusCode).toEqual(200)
       expect(secondResponse.headers['etag']).toBeTruthy()
       let etagTwo = secondResponse.headers['etag']
@@ -118,13 +118,13 @@ describe('Core', () => {
     test(
       'should send back the file if the header "if-modified-since" is present but condition does not match',
       async () => {
-        let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
+        let response = await request.get(url + '/simple.html', { resolveWithFullResponse: true })
         expect(response.statusCode).toEqual(200)
         let lastModified = new Date(response.headers['last-modified'])
         let delay = 24 * 1000 * 3600
 
         let secondResponse = await request(url + '/simple.html', {
-          headers: {'If-Modified-Since': new Date(lastModified.getTime() - delay).toUTCString()},
+          headers: { 'If-Modified-Since': new Date(lastModified.getTime() - delay).toUTCString() },
           resolveWithFullResponse: true
         })
 
@@ -148,7 +148,7 @@ describe('Core', () => {
         'should respect accept-encoding header priority with gzip as first in a list of encodings',
         async () => {
           let response = await request.get(url + '/simple.html', {
-            headers: {'Accept-Encoding': 'gzip, deflate, sdch, br'},
+            headers: { 'Accept-Encoding': 'gzip, deflate, sdch, br' },
             resolveWithFullResponse: true
           })
 
@@ -161,7 +161,7 @@ describe('Core', () => {
         'should respect accept-encoding header priority with deflate as second in a list of encodings',
         async () => {
           let response = await request.get(url + '/simple.html', {
-            headers: {'Accept-Encoding': 'br, deflate, gzip'},
+            headers: { 'Accept-Encoding': 'br, deflate, gzip' },
             resolveWithFullResponse: true
           })
 
@@ -174,7 +174,7 @@ describe('Core', () => {
         'should respect accept-encoding header priority with gzip as only option',
         async () => {
           let response = await request.get(url + '/simple.html', {
-            headers: {'Accept-Encoding': 'gzip'},
+            headers: { 'Accept-Encoding': 'gzip' },
             resolveWithFullResponse: true
           })
 
@@ -187,7 +187,7 @@ describe('Core', () => {
         'should not encode content without a valid a supported value in accept-encoding header',
         async () => {
           let response = await request.get(url + '/simple.html', {
-            headers: {'Accept-Encoding': 'sdch, br'},
+            headers: { 'Accept-Encoding': 'sdch, br' },
             resolveWithFullResponse: true
           })
 
@@ -211,27 +211,27 @@ describe('Core', () => {
     } else {
       describe('do not leave open file descriptors ', () => {
         const lsofChk = async () => {
-          const {stdout} = await exec('lsof -n -P|grep "/simple.html"|wc -l')
+          const { stdout } = await exec('lsof -n -P|grep "/simple.html"|wc -l')
           return stdout.trim()
         }
 
         test('closes all descriptors on statusCode 200 responses', async () => {
-          let response = await request.get(url + '/simple.html', {resolveWithFullResponse: true})
+          let response = await request.get(url + '/simple.html', { resolveWithFullResponse: true })
           expect(response.statusCode).toEqual(200)
           await api.utils.sleep(100)
           expect(await lsofChk()).toEqual('0')
-        }, 10000)
+        }, 30000)
 
         test('closes all descriptors on statusCode 304 responses', async () => {
           try {
-            await request.get(url + '/simple.html', {headers: {'if-none-match': '*'}, resolveWithFullResponse: true})
+            await request.get(url + '/simple.html', { headers: { 'if-none-match': '*' }, resolveWithFullResponse: true })
             throw new Error('should return 304')
           } catch (error) {
             expect(error.statusCode).toEqual(304)
             await api.utils.sleep(100)
             expect(await lsofChk()).toEqual('0')
           }
-        }, 10000)
+        }, 30000)
       })
     }
   })

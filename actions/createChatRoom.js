@@ -13,8 +13,8 @@ module.exports = class CreateChatRoom extends ActionHero.Action {
     }
   }
 
-  async run ({params, response}) {
-    const {chatRoom} = ActionHero.api
+  async run ({ params, response }) {
+    const { chatRoom } = ActionHero.api
     response.didCreate = await chatRoom.add(params.name)
   }
 }

@@ -24,7 +24,8 @@ exports['default'] = {
           'X-Powered-By': api.config.general.serverName,
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE',
-          'Access-Control-Allow-Headers': 'Content-Type'
+          'Access-Control-Allow-Headers': 'Content-Type',
+          'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
         },
         // Route that actions will be served from; secondary route against this route will be treated as actions,
         //  IE: /api/?action=test == /api/test/
@@ -66,7 +67,8 @@ exports['default'] = {
         formOptions: {
           uploadDir: os.tmpdir(),
           keepExtensions: false,
-          maxFieldsSize: 1024 * 1024 * 100
+          maxFieldsSize: 1024 * 1024 * 20,
+          maxFileSize: 1024 * 1024 * 200
         },
         // Should we pad JSON responses with whitespace to make them more human-readable?
         // set to null to disable

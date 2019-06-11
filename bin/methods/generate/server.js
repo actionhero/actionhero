@@ -12,11 +12,11 @@ module.exports = class GenerateServer extends ActionHero.CLI {
     this.description = 'generate a new server'
     this.example = 'actionhero generate server --name=[name]'
     this.inputs = {
-      name: {required: true}
+      name: { required: true }
     }
   }
 
-  run ({params}) {
+  run ({ params }) {
     let template = fs.readFileSync(path.join(__dirname, '/../../templates/server.js'))
     template = String(template);
 

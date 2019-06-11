@@ -9,7 +9,7 @@ module.exports = class RandomNumber extends Action {
     this.outputExample = { randomNumber: 0.123 }
   }
 
-  async run ({connection, response}) {
+  async run ({ connection, response }) {
     response.randomNumber = Math.random()
     response.stringRandomNumber = connection.localize(['Your random number is {{randomNumber}}', response])
   }

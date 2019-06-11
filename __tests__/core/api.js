@@ -82,7 +82,7 @@ describe('Core', () => {
             run: async (data) => {
               data.response.version = 3
               data.response.error = {
-                'a': {'complex': 'error'}
+                'a': { 'complex': 'error' }
               }
             }
           }
@@ -104,9 +104,9 @@ describe('Core', () => {
 
       test('can specify an apiVersion', async () => {
         let response
-        response = await api.specHelper.runAction('versionedAction', {apiVersion: 1})
+        response = await api.specHelper.runAction('versionedAction', { apiVersion: 1 })
         expect(response.requesterInformation.receivedParams.apiVersion).toEqual(1)
-        response = await api.specHelper.runAction('versionedAction', {apiVersion: 2})
+        response = await api.specHelper.runAction('versionedAction', { apiVersion: 2 })
         expect(response.requesterInformation.receivedParams.apiVersion).toEqual(2)
       })
 
@@ -116,12 +116,12 @@ describe('Core', () => {
       })
 
       test('will fail on a missing action + version', async () => {
-        let response = await api.specHelper.runAction('versionedAction', {apiVersion: 10})
+        let response = await api.specHelper.runAction('versionedAction', { apiVersion: 10 })
         expect(response.error).toEqual('Error: unknown action or invalid apiVersion')
       })
 
       test('can return complex error responses', async () => {
-        let response = await api.specHelper.runAction('versionedAction', {apiVersion: 3})
+        let response = await api.specHelper.runAction('versionedAction', { apiVersion: 3 })
         expect(response.error.a.complex).toEqual('error')
       })
     })
@@ -171,8 +171,8 @@ describe('Core', () => {
             description: 'this action has some required params',
             version: 1,
             inputs: {
-              requiredParam: {required: true},
-              optionalParam: {required: false},
+              requiredParam: { required: true },
+              optionalParam: { required: false },
               fancyParam: {
                 required: false,
                 default: () => { return 'abc123' },
@@ -201,15 +201,15 @@ describe('Core', () => {
         'correct params that are falsey (false, []) should be allowed',
         async () => {
           let response
-          response = await api.specHelper.runAction('testAction', {requiredParam: false})
+          response = await api.specHelper.runAction('testAction', { requiredParam: false })
           expect(response.params.requiredParam).toEqual(false)
-          response = await api.specHelper.runAction('testAction', {requiredParam: []})
+          response = await api.specHelper.runAction('testAction', { requiredParam: [] })
           expect(response.params.requiredParam).toHaveLength(0)
         }
       )
 
       test('will fail for missing or empty string params', async () => {
-        let response = await api.specHelper.runAction('testAction', {requiredParam: ''})
+        let response = await api.specHelper.runAction('testAction', { requiredParam: '' })
         expect(response.error).toContain('required parameter for this action')
         response = await api.specHelper.runAction('testAction', {})
         expect(response.error).toMatch(/requiredParam is a required parameter for this action/)
@@ -218,41 +218,41 @@ describe('Core', () => {
       test('correct params respect config options', async () => {
         let response
         api.config.general.missingParamChecks = [undefined]
-        response = await api.specHelper.runAction('testAction', {requiredParam: ''})
+        response = await api.specHelper.runAction('testAction', { requiredParam: '' })
         expect(response.params.requiredParam).toEqual('')
-        response = await api.specHelper.runAction('testAction', {requiredParam: null})
+        response = await api.specHelper.runAction('testAction', { requiredParam: null })
         expect(response.params.requiredParam).toBeNull()
       })
 
       test('will set a default when params are not provided', async () => {
-        let response = await api.specHelper.runAction('testAction', {requiredParam: true})
+        let response = await api.specHelper.runAction('testAction', { requiredParam: true })
         expect(response.params.fancyParam).toEqual('abc123')
       })
 
       test('will use validator if provided', async () => {
-        let response = await api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123})
+        let response = await api.specHelper.runAction('testAction', { requiredParam: true, fancyParam: 123 })
         expect(response.error).toMatch(/Error: fancyParam should be "abc123"/)
       })
 
       test('validator will have the API object in scope as this', async () => {
-        let response = await api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123})
+        let response = await api.specHelper.runAction('testAction', { requiredParam: true, fancyParam: 123 })
         expect(response.error).toMatch(new RegExp(api.id))
       })
 
       test('will use formatter if provided (and still use validator)', async () => {
-        let response = await api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 123})
+        let response = await api.specHelper.runAction('testAction', { requiredParam: true, fancyParam: 123 })
         expect(response.requesterInformation.receivedParams.fancyParam).toEqual('123')
       })
 
       test('succeeds a validator which returns no response', async () => {
-        let response = await api.specHelper.runAction('testAction', {requiredParam: true, fancyParam: 'abc123'})
+        let response = await api.specHelper.runAction('testAction', { requiredParam: true, fancyParam: 'abc123' })
         expect(response.error).toBeUndefined()
       })
 
       test(
         'will filter params not set in the target action or global safelist',
         async () => {
-          let response = await api.specHelper.runAction('testAction', {requiredParam: true, sleepDuration: true})
+          let response = await api.specHelper.runAction('testAction', { requiredParam: true, sleepDuration: true })
           expect(response.requesterInformation.receivedParams.requiredParam).toBeTruthy()
           expect(response.requesterInformation.receivedParams.sleepDuration).toBeUndefined()
         }
@@ -270,8 +270,8 @@ describe('Core', () => {
             inputs: {
               schemaParam: {
                 schema: {
-                  requiredParam: {required: true},
-                  optionalParam: {required: false},
+                  requiredParam: { required: true },
+                  optionalParam: { required: false },
                   fancyParam: {
                     required: false,
                     default: () => { return 'abc123' },
@@ -302,54 +302,54 @@ describe('Core', () => {
         'correct params that are falsey (false, []) should be allowed',
         async () => {
           let response
-          response = await api.specHelper.runAction('testAction', {schemaParam: {requiredParam: false}})
+          response = await api.specHelper.runAction('testAction', { schemaParam: { requiredParam: false } })
           expect(response.params.schemaParam.requiredParam).toEqual(false)
-          response = await api.specHelper.runAction('testAction', {schemaParam: {requiredParam: []}})
+          response = await api.specHelper.runAction('testAction', { schemaParam: { requiredParam: [] } })
           expect(response.params.schemaParam.requiredParam).toHaveLength(0)
         }
       )
 
       test('will fail for missing or empty string params', async () => {
         let response
-        response = await api.specHelper.runAction('testAction', {schemaParam: {requiredParam: ''}})
+        response = await api.specHelper.runAction('testAction', { schemaParam: { requiredParam: '' } })
         expect(response.error).toContain('schemaParam.requiredParam is a required parameter for this action')
-        response = await api.specHelper.runAction('testAction', {schemaParam: {}})
+        response = await api.specHelper.runAction('testAction', { schemaParam: {} })
         expect(response.error).toContain('schemaParam.requiredParam is a required parameter for this action')
       })
 
       test('correct params respect config options', async () => {
         let response
         api.config.general.missingParamChecks = [undefined]
-        response = await api.specHelper.runAction('testAction', {schemaParam: {requiredParam: ''}})
+        response = await api.specHelper.runAction('testAction', { schemaParam: { requiredParam: '' } })
         expect(response.params.schemaParam.requiredParam).toEqual('')
-        response = await api.specHelper.runAction('testAction', {schemaParam: {requiredParam: null}})
+        response = await api.specHelper.runAction('testAction', { schemaParam: { requiredParam: null } })
         expect(response.params.schemaParam.requiredParam).toBeNull()
       })
 
       test('will set a default when params are not provided', async () => {
-        let response = await api.specHelper.runAction('testAction', {schemaParam: {requiredParam: true}})
+        let response = await api.specHelper.runAction('testAction', { schemaParam: { requiredParam: true } })
         expect(response.params.schemaParam.fancyParam).toEqual('abc123')
       })
 
       test('will use validator if provided', async () => {
-        let response = await api.specHelper.runAction('testAction', {schemaParam: {requiredParam: true, fancyParam: 123}})
+        let response = await api.specHelper.runAction('testAction', { schemaParam: { requiredParam: true, fancyParam: 123 } })
         expect(response.error).toMatch(/Error: fancyParam should be "abc123"/)
       })
 
       test('validator will have the API object in scope as this', async () => {
-        let response = await api.specHelper.runAction('testAction', {schemaParam: {requiredParam: true, fancyParam: 123}})
+        let response = await api.specHelper.runAction('testAction', { schemaParam: { requiredParam: true, fancyParam: 123 } })
         expect(response.error).toMatch(new RegExp(api.id))
       })
 
       test('will use formatter if provided (and still use validator)', async () => {
-        let response = await api.specHelper.runAction('testAction', {schemaParam: {requiredParam: true, fancyParam: 123}})
+        let response = await api.specHelper.runAction('testAction', { schemaParam: { requiredParam: true, fancyParam: 123 } })
         expect(response.requesterInformation.receivedParams.schemaParam.fancyParam).toEqual('123')
       })
 
       test(
         'will filter params not set in the target action or global safelist',
         async () => {
-          let response = await api.specHelper.runAction('testAction', {schemaParam: {requiredParam: true, sleepDuration: true}})
+          let response = await api.specHelper.runAction('testAction', { schemaParam: { requiredParam: true, sleepDuration: true } })
           expect(response.requesterInformation.receivedParams.schemaParam.requiredParam).toBeTruthy()
           expect(response.requesterInformation.receivedParams.schemaParam.sleepDuration).toBeUndefined()
         }
@@ -391,17 +391,17 @@ describe('Core', () => {
       })
 
       test('runs validator arrays in the proper order', async () => {
-        let response = await api.specHelper.runAction('testAction', {a: 6})
+        let response = await api.specHelper.runAction('testAction', { a: 6 })
         expect(response.error).toEqual('Error: only strings')
       })
 
       test('runs more than 1 validator', async () => {
-        let response = await api.specHelper.runAction('testAction', {a: 'hello'})
+        let response = await api.specHelper.runAction('testAction', { a: 'hello' })
         expect(response.error).toEqual('Error: that is not correct')
       })
 
       test('succeeds multiple validators', async () => {
-        let response = await api.specHelper.runAction('testAction', {a: 'correct'})
+        let response = await api.specHelper.runAction('testAction', { a: 'correct' })
         expect(response.error).toBeUndefined()
       })
     })
@@ -441,7 +441,7 @@ describe('Core', () => {
       })
 
       test('runs formatter arrays in the proper order', async () => {
-        let response = await api.specHelper.runAction('testAction', {a: 6})
+        let response = await api.specHelper.runAction('testAction', { a: 6 })
         expect(response.a).toEqual('~*6*~')
       })
     })
@@ -454,9 +454,9 @@ describe('Core', () => {
             name: 'testAction',
             description: 'I am a test',
             inputs: {
-              a: {required: true}
+              a: { required: true }
             },
-            run: async ({params, response}) => {
+            run: async ({ params, response }) => {
               params.a = 'changed!'
               response.a = params.a
             }
@@ -470,7 +470,7 @@ describe('Core', () => {
       })
 
       test('prevents data.params from being modified', async () => {
-        let response = await api.specHelper.runAction('testAction', {a: 'original'})
+        let response = await api.specHelper.runAction('testAction', { a: 'original' })
         expect(response.a).toBeUndefined()
         expect(response.error).toMatch(/Cannot assign to read only property 'a' of object/)
       })

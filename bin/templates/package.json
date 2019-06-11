@@ -9,7 +9,8 @@
   "dependencies" : {
     "actionhero" : "%%versionNumber%%",
     "ws" : "latest",
-    "ioredis" : "latest"
+    "ioredis" : "latest",
+    "winston" : "latest"
   },
   "devDependencies" : {
     "jest": "latest",
@@ -34,5 +35,8 @@
       "afterEach",
       "expect"
     ]
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }

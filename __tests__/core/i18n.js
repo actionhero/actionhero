@@ -49,7 +49,7 @@ describe('Core', () => {
     test(
       'should create localization files by default, and strings from actions should be included',
       async () => {
-        let {randomNumber} = await api.specHelper.runAction('randomNumber')
+        let { randomNumber } = await api.specHelper.runAction('randomNumber')
         expect(randomNumber).toBeLessThan(1)
         expect(randomNumber).toBeGreaterThanOrEqual(0)
 

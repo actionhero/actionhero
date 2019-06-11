@@ -22,7 +22,7 @@ let connectClient = async (query) => {
     })
   })
 
-  return {client, connectResponse}
+  return { client, connectResponse }
 }
 
 describe('Integration: Web Server + Websocket Socket shared fingerprint', () => {
@@ -35,10 +35,10 @@ describe('Integration: Web Server + Websocket Socket shared fingerprint', () => 
   afterAll(async () => { await actionhero.stop() })
 
   test('should exist when web server been called', async () => {
-    let body = await request.get({uri: url + '/api/randomNumber', json: true})
+    let body = await request.get({ uri: url + '/api/randomNumber', json: true })
     fingerprint = body.requesterInformation.fingerprint
     let query = `${api.config.servers.web.fingerprintOptions.cookieKey}=${fingerprint}`
-    let {client, connectResponse} = await connectClient(query)
+    let { client, connectResponse } = await connectClient(query)
     expect(connectResponse.status).toEqual('OK')
     expect(connectResponse.data.id).toBeTruthy()
     let id = connectResponse.data.id
@@ -47,7 +47,7 @@ describe('Integration: Web Server + Websocket Socket shared fingerprint', () => 
   })
 
   test('should not exist when web server has not been called', async () => {
-    let {client, connectResponse} = await connectClient()
+    let { client, connectResponse } = await connectClient()
     expect(connectResponse.status).toEqual('OK')
     expect(connectResponse.data.id).toBeTruthy()
     let id = connectResponse.data.id
@@ -57,7 +57,7 @@ describe('Integration: Web Server + Websocket Socket shared fingerprint', () => 
 
   test('should exist as long as cookie is passed', async () => {
     let query = `${api.config.servers.web.fingerprintOptions.cookieKey}=dummyValue`
-    let {client, connectResponse} = await connectClient(query)
+    let { client, connectResponse } = await connectClient(query)
     expect(connectResponse.status).toEqual('OK')
     expect(connectResponse.data.id).toBeTruthy()
     let id = connectResponse.data.id

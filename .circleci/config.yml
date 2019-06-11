@@ -8,7 +8,7 @@ refrences:
         - gh-pages
 
   cache-options: &cache-options
-    key: package-cache-{{ checksum "package.json" }}
+    key: package-cache-{{ .Branch }}-{{ .Revision }}
 
   shared-test-steps: &shared-test-steps
     steps:
@@ -25,11 +25,14 @@ refrences:
           name: display-npm-version
           command: npm --version
       - run:
+          name: test-log-setup
+          command: mkdir -p ./log
+      - run:
           name: test-reporter-setup
           command: mkdir ./junit
       - run:
           name: test
-          command: ./node_modules/.bin/jest tests --ci --testResultsProcessor="jest-junit" --runInBand
+          command: ./node_modules/.bin/jest --ci --testResultsProcessor="jest-junit" --runInBand
           environment:
             NODE_ENV: test
             SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
@@ -88,7 +91,14 @@ jobs:
 
   test-node-v10:
     docker:
-      - image: circleci/node:latest
+      - image: circleci/node:10
+      - image: redis:4
+      - image: selenium/standalone-chrome:latest
+    <<: *shared-test-steps
+
+  test-node-v11:
+    docker:
+      - image: circleci/node:11
       - image: redis:4
       - image: selenium/standalone-chrome:latest
     <<: *shared-test-steps
@@ -140,6 +150,12 @@ workflows:
           requires:
             - linter
 
+      - test-node-v11:
+          filters:
+            <<: *ignored-branches
+          requires:
+            - linter
+
       - deploy-docs-website:
           filters:
             branches:
@@ -149,3 +165,4 @@ workflows:
             - test-node-v8
             - test-node-v9
             - test-node-v10
+            - test-node-v11

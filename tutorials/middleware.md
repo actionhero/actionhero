@@ -49,7 +49,7 @@ const middleware = {
       throw new Error('All actions require a userId')
     }
   },
-  postProcessor (data) => {
+  postProcessor: (data) => {
     if(data.thing.stuff == false){ data.toRender = false }
   }
 }
@@ -74,7 +74,7 @@ data = {
   connection: {},
   action: 'randomNumber',
   toRender: true,
-  messageCount: 1,
+  messageId: 1,
   params: { action: 'randomNumber', apiVersion: 1 },
   actionStartTime: 1429531553417,
   actionTemplate: {}, // the actual object action definition
@@ -88,10 +88,10 @@ data = {
 const connectionMiddleware = {
   name: 'connection middleware',
   priority: 1000,
-  create: (connection) => {
+  create: async (connection) => {
     api.log('connection joined')
   },
-  destroy: (connection) => {
+  destroy: async (connection) => {
     api.log('connection left')
   }
 };
@@ -99,9 +99,9 @@ const connectionMiddleware = {
 api.connections.addMiddleware(connectionMiddleware)
 ```
 
-Like the action middleware above, you can also create middleware to react to the creation or destruction of all connections. Unlike action middleware, connection middleware is non-blocking and connection logic will continue as normal regardless of what you do in this type of middleware.
+Like the action middleware above, you can also create middleware to react to the creation or destruction of all connections.
 
-Keep in mind that some connections persist (webSocket, socket) and some only exist for the duration of a single request (web). You will likely want to inspect `connection.type` in this middleware. Again, if you do not provide a priority, the default from `api.config.general.defaultProcessorPriority` will be used.
+Keep in mind that some connections persist (webSocket, socket) and some only exist for the duration of a single request (web). You will likely want to inspect `connection.type` in this middleware. Again, if you do not provide a priority, the default from `api.config.general.defaultMiddlewarePriority` will be used.
 
 Any modification made to the connection at this stage may happen either before or after an action, and may or may not persist to the connection depending on how the server is implemented.
 
@@ -202,22 +202,22 @@ module.exports = new Class extends Initializer {
       name: 'timer',
       global: true,
       priority: 90,
-      preProcessor: async () => {
+      preProcessor: async function () {
         const worker = this.worker
         worker.startTime = process.hrtime()
       },
-      postProcessor: async () => {
+      postProcessor: async function () {
         const worker = this.worker
         const elapsed = process.hrtime(worker.startTime)
         const seconds = elapsed[0]
         const millis = elapsed[1] / 1000000
         api.log(worker.job.class + ' done in ' + seconds + ' s and ' + millis + ' ms.', 'info')
       },
-      preEnqueue: async () => {
+      preEnqueue: async function () {
         const arg = this.args[0]
         return (arg === 'ok') // returing `false` will prevent the task from enqueing
       },
-      postEnqueue: async () => {
+      postEnqueue: async function () {
         api.log("Task successfully enqueued!")
       }
     }

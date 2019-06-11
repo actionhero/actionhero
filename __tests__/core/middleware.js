@@ -26,7 +26,7 @@ describe('Core: Middleware', () => {
           }
         })
 
-        let {_preProcessorNote, error} = await api.specHelper.runAction('randomNumber')
+        let { _preProcessorNote, error } = await api.specHelper.runAction('randomNumber')
         expect(error).toBeUndefined()
         expect(_preProcessorNote).toEqual('note')
       }
@@ -44,7 +44,7 @@ describe('Core: Middleware', () => {
           }
         })
 
-        let {_preProcessorNote, error} = await api.specHelper.runAction('randomNumber')
+        let { _preProcessorNote, error } = await api.specHelper.runAction('randomNumber')
         expect(error).toBeUndefined()
         expect(_preProcessorNote).toEqual('slept')
       }
@@ -61,7 +61,7 @@ describe('Core: Middleware', () => {
           }
         })
 
-        let {_preProcessorNote, error} = await api.specHelper.runAction('randomNumber')
+        let { _preProcessorNote, error } = await api.specHelper.runAction('randomNumber')
         expect(error).toBeUndefined()
         expect(_preProcessorNote).toBeUndefined()
       }
@@ -127,7 +127,7 @@ describe('Core: Middleware', () => {
       api.actions.addMiddleware({
         name: 'early test middleware',
         global: true,
-        priority: api.config.general.defaultProcessorPriority - 1,
+        priority: api.config.general.defaultMiddlewarePriority - 1,
         preProcessor: (data) => {
           data.response._processorNoteEarly = 'early'
           data.response._processorNoteLate = 'early'
@@ -149,7 +149,7 @@ describe('Core: Middleware', () => {
       api.actions.addMiddleware({
         name: 'late test middleware',
         global: true,
-        priority: api.config.general.defaultProcessorPriority + 1,
+        priority: api.config.general.defaultMiddlewarePriority + 1,
         preProcessor: (data) => {
           data.response._processorNoteLate = 'late'
         }
@@ -166,7 +166,7 @@ describe('Core: Middleware', () => {
       api.actions.addMiddleware({
         name: 'first test middleware',
         global: true,
-        priority: api.config.general.defaultProcessorPriority - 1,
+        priority: api.config.general.defaultMiddlewarePriority - 1,
         preProcessor: (data) => {
           data.response._processorNoteFirst = 'first'
         }
@@ -175,7 +175,7 @@ describe('Core: Middleware', () => {
       api.actions.addMiddleware({
         name: 'late test middleware',
         global: true,
-        priority: api.config.general.defaultProcessorPriority - 1,
+        priority: api.config.general.defaultMiddlewarePriority - 1,
         preProcessor: (data) => {
           data.response._processorNoteSecond = 'second'
         }
@@ -217,7 +217,7 @@ describe('Core: Middleware', () => {
       api.actions.addMiddleware({
         name: 'early test middleware',
         global: true,
-        priority: api.config.general.defaultProcessorPriority - 1,
+        priority: api.config.general.defaultMiddlewarePriority - 1,
         postProcessor: (data) => {
           data.response._processorNoteEarly = 'early'
           data.response._processorNoteLate = 'early'
@@ -239,7 +239,7 @@ describe('Core: Middleware', () => {
       api.actions.addMiddleware({
         name: 'late test middleware',
         global: true,
-        priority: api.config.general.defaultProcessorPriority + 1,
+        priority: api.config.general.defaultMiddlewarePriority + 1,
         postProcessor: (data) => {
           data.response._processorNoteLate = 'late'
         }
@@ -256,7 +256,7 @@ describe('Core: Middleware', () => {
       api.actions.addMiddleware({
         name: 'first middleware',
         global: true,
-        priority: api.config.general.defaultProcessorPriority - 1,
+        priority: api.config.general.defaultMiddlewarePriority - 1,
         postProcessor: (data) => {
           data.response._processorNoteFirst = 'first'
         }
@@ -265,7 +265,7 @@ describe('Core: Middleware', () => {
       api.actions.addMiddleware({
         name: 'second middleware',
         global: true,
-        priority: api.config.general.defaultProcessorPriority - 1,
+        priority: api.config.general.defaultMiddlewarePriority - 1,
         postProcessor: (data) => {
           data.response._processorNoteSecond = 'second'
         }
@@ -285,7 +285,7 @@ describe('Core: Middleware', () => {
         }
       })
 
-      let {randomNumber, error} = await api.specHelper.runAction('randomNumber')
+      let { randomNumber, error } = await api.specHelper.runAction('randomNumber')
       expect(error).toEqual('Error: BLOCKED')
       expect(randomNumber).toBeUndefined()
     })
@@ -308,7 +308,7 @@ describe('Core: Middleware', () => {
     })
   })
 
-  describe('connection create/destroy callbacks', () => {
+  describe('connection sync create/destroy callbacks', () => {
     let connection
     beforeEach(() => {
       api.connections.middleware = {}
@@ -330,7 +330,7 @@ describe('Core: Middleware', () => {
         }
       })
 
-      connection = new api.specHelper.Connection()
+      connection = await api.specHelper.Connection.createAsync()
 
       expect(middlewareRan).toEqual(true)
       expect(connection.touched).toEqual('connect')
@@ -348,6 +348,50 @@ describe('Core: Middleware', () => {
 
       connection.destroy()
       expect(middlewareRan).toEqual(true)
+    })
+  })
+
+  describe('connection async create/destroy callbacks', () => {
+    beforeEach(() => {
+      api.connections.middleware = {}
+      api.connections.globalMiddleware = []
+    })
+
+    afterEach(() => {
+      api.connections.middleware = {}
+      api.connections.globalMiddleware = []
+    })
+
+    test('can create async callbacks on connection create/destroy', async () => {
+      let middlewareRan = false
+      let middlewareDestoryRan = false
+
+      api.connections.addMiddleware({
+        name: 'connection middleware',
+        create: async (_connection) => {
+          middlewareRan = true
+          _connection.longProcessResult = await (new Promise(async (resolve) => {
+            await api.utils.sleep(1)
+            resolve(true)
+          }))
+        },
+        destroy: async (_connection) => {
+          middlewareDestoryRan = await (new Promise(async (resolve) => {
+            await api.utils.sleep(1)
+            resolve(true)
+          }))
+        }
+      })
+
+      let connection = await api.specHelper.Connection.createAsync()
+
+      // create
+      expect(middlewareRan).toEqual(true)
+      expect(connection.longProcessResult).toEqual(true)
+
+      // destroy
+      await connection.destroy()
+      expect(middlewareDestoryRan).toEqual(true)
     })
   })
 })

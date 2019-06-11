@@ -198,7 +198,7 @@ Assuming you are running ActionHero across multiple machines, you will need to e
 // file: initializers/node_schedule.js
 
 const schedule = require('node-schedule')
-const {api, Initializer} = require('node-schedule')
+const { api, Initializer } = require('actionhero')
 
 module.exports = class Scheduler extends Initializer {
   constructor () {
@@ -206,27 +206,27 @@ module.exports = class Scheduler extends Initializer {
     this.name = 'scheduler'
   }
 
-  initialize (api, next) {
-    api.scheduledJobs = [];
-  },
+  initialize () {
+    api.scheduledJobs = []
+  }
 
   start () {
     // do this job every 10 seconds, cron style
-    const job = schedule.scheduleJob('0,10,20,30,40,50 * * * * *', () => {
+    const job = schedule.scheduleJob('0,10,20,30,40,50 * * * * *', async () => {
       // we want to ensure that only one instance of this job is scheduled in our environment at once,
       // no matter how many schedulers we have running
-      if(api.resque.scheduler && api.resque.scheduler.master){
-        await api.tasks.enqueue('sayHello', {time: new Date().toString()}, 'default')
+      if (api.resque.scheduler && api.resque.scheduler.master) {
+        await api.tasks.enqueue('sayHello', { time: new Date().toString() }, 'default')
       }
     })
 
     api.scheduledJobs.push(job)
-  },
+  }
 
-  stop: () => {
+  stop () {
     api.scheduledJobs.forEach((job) => { job.cancel() })
   }
-};
+}
 ```
 
 Be sure to have the scheduler enabled on at least one of your ActionHero servers!
