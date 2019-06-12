@@ -58,6 +58,7 @@ module.exports = class Generate extends ActionHero.CLI {
     documents.packageJson = String(fs.readFileSync(path.join(__dirname, '/../templates/package.json')))
     documents.packageJson = documents.packageJson.replace('%%versionNumber%%', AHversionNumber)
     documents.readmeMd = String(fs.readFileSync(path.join(__dirname, '/../templates/README.md')))
+    documents.bootJs = String(fs.readFileSync(path.join(__dirname, '/../templates/boot.js')))
 
     console.log('Generating a new actionhero project...');
 
@@ -109,7 +110,8 @@ module.exports = class Generate extends ActionHero.CLI {
       '/README.md': 'readmeMd',
       '/__tests__/example.js': 'exampleTest',
       '/locales/en.json': 'enLocale',
-      '/.gitignore': 'gitignore'
+      '/.gitignore': 'gitignore',
+      '/boot.js': 'bootJs'
     }
 
     for (let file in newFileMap) {
