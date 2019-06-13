@@ -147,12 +147,12 @@ module.exports = class Tasks extends ActionHero.Initializer {
         perform: async function () {
           let combinedArgs = [].concat(Array.prototype.slice.call(arguments))
           combinedArgs.push(this)
-          let response = null;
+          let response = null
           try {
             response = await task.run.apply(task, combinedArgs)
             await api.tasks.enqueueRecurrentTask(taskName)
           } catch (error) {
-            if(task.reEnqueuePeriodicTaskIfException){
+            if (task.reEnqueuePeriodicTaskIfException) {
               await api.tasks.enqueueRecurrentTask(taskName)
             }
             throw error
