@@ -213,7 +213,8 @@ describe('Core: CLI', () => {
 
     test('can ensure a custom boot.js runs before everything else', async () => {
       let origBootjs = String(fs.readFileSync(`${testDir}/boot.js`))
-      fs.writeFileSync(`${testDir}/boot.js`, `module.exports = function() {
+      fs.writeFileSync(`${testDir}/boot.js`, `module.exports = async function() {
+        await new Promise((resolve)=> setTimeout(resolve,500))
         console.log('BOOTING')
       }`)
 

@@ -7,5 +7,5 @@
 
 // include high-level requires here.
 
-module.exports = function () {
+module.exports = async function () {
 }
