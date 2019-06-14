@@ -56,7 +56,7 @@ module.exports = class SayHello extends Task {
       frequency: 0,
       queue: 'default',
       middleware: [],
-      reEnqueuePeriodicTaskIfException: false
+      reEnqueuePeriodicTaskIfException: true
     }
   }
 
