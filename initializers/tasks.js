@@ -152,7 +152,7 @@ module.exports = class Tasks extends ActionHero.Initializer {
             response = await task.run.apply(task, combinedArgs)
             await api.tasks.enqueueRecurrentTask(taskName)
           } catch (error) {
-            if (task.reEnqueuePeriodicTaskIfException) {
+            if (task.frequency > 0 && task.reEnqueuePeriodicTaskIfException) {
               await api.tasks.enqueueRecurrentTask(taskName)
             }
             throw error
