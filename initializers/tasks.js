@@ -75,7 +75,6 @@ module.exports = class Tasks extends ActionHero.Initializer {
   }
 
   initialize () {
-
     api.tasks = {
       tasks: {},
       jobs: {},
