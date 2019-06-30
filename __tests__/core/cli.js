@@ -124,7 +124,8 @@ describe('Core: CLI', () => {
         'tasks',
         '__tests__',
         '__tests__/example.js',
-        '.gitignore'
+        '.gitignore',
+        'boot.js'
       ].forEach((f) => {
         expect(fs.existsSync(testDir + '/' + f)).toEqual(true)
       })
@@ -197,6 +198,31 @@ describe('Core: CLI', () => {
       expect(data).toMatch(/async initialize \(\) {/)
       expect(data).toMatch(/async start \(\) {/)
       expect(data).toMatch(/async stop \(\) {/)
+    })
+
+    test('can ensure no boot.js does not break, will console.log message', async () => {
+      let origBootjs = String(fs.readFileSync(`${testDir}/boot.js`))
+      await doCommand(`rm ${testDir}/boot.js`, false)
+
+      let { stdout } = await doCommand(`${binary} version`)
+      expect(stdout).toContain(pacakgeJSON.version)
+      expect({ stdout, start: stdout.startsWith('No boot.js specified. Skipping.') }).toEqual({ stdout, start: true })
+      // replace with orig boot.js
+      fs.writeFileSync(`${testDir}/boot.js`, origBootjs)
+    })
+
+    test('can ensure a custom boot.js runs before everything else', async () => {
+      let origBootjs = String(fs.readFileSync(`${testDir}/boot.js`))
+      fs.writeFileSync(`${testDir}/boot.js`, `module.exports = async function() {
+        await new Promise((resolve)=> setTimeout(resolve,500))
+        console.log('BOOTING')
+      }`)
+
+      let { stdout } = await doCommand(`${binary} version`)
+      expect({ stdout, start: stdout.startsWith('BOOTING') }).toEqual({ stdout, start: true })
+      expect(stdout).toContain(pacakgeJSON.version)
+      // replace with orig boot.js
+      fs.writeFileSync(`${testDir}/boot.js`, origBootjs)
     })
 
     test('can call npm test in the new project and not fail', async () => {
