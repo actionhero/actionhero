@@ -88,8 +88,14 @@ module.exports = class Tasks extends ActionHero.Initializer {
     api.tasks.loadFile = (fullFilePath, reload) => {
       if (!reload) { reload = false }
 
-      api.watchFileAndAct(fullFilePath, () => {
-        api.tasks.loadFile(fullFilePath, true)
+      api.watchFileAndAct(fullFilePath, async () => {
+        if (!api.config.general.developmentModeForceRestart) {
+          // reload by updating in-memory copy of our task
+          api.tasks.loadFile(fullFilePath, true)
+        } else {
+          api.log(`*** Rebooting due to task change (${fullFilePath}) ***`, 'info')
+          await api.commands.restart()
+        }
       })
 
       let task

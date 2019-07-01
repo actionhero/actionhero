@@ -96,10 +96,16 @@ module.exports = class Actions extends ActionHero.Initializer {
         }
       }
 
-      api.watchFileAndAct(fullFilePath, () => {
-        api.actions.loadFile(fullFilePath, true)
-        api.params.buildPostVariables()
-        api.routes.loadRoutes()
+      api.watchFileAndAct(fullFilePath, async () => {
+        if (!api.config.general.developmentModeForceRestart) {
+          // reload by updating in-memory copy of our action
+          api.actions.loadFile(fullFilePath, true)
+          api.params.buildPostVariables()
+          api.routes.loadRoutes()
+        } else {
+          api.log(`*** Rebooting due to action change (${fullFilePath}) ***`, 'info')
+          await api.commands.restart()
+        }
       })
 
       let action
