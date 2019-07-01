@@ -112,7 +112,7 @@ module.exports = class Tasks extends ActionHero.Initializer {
 
         api.tasks.tasks[task.name] = task
         api.tasks.jobs[task.name] = api.tasks.jobWrapper(task.name)
-        api.log(`task ${(reload ? '(re)' : '')} loaded: ${task.name}, ${fullFilePath}`, 'debug')
+        api.log(`task ${(reload ? '(re)' : '')} loaded: ${task.name}, ${fullFilePath}`, (reload ? 'info' : 'debug'))
       }
     }
 
