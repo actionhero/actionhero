@@ -90,7 +90,7 @@ module.exports = class Actions extends ActionHero.Initializer {
 
       const loadMessage = (action) => {
         if (reload) {
-          api.log(`action reloaded: ${action.name} @ v${action.version}, ${fullFilePath}`, 'debug')
+          api.log(`action reloaded: ${action.name} @ v${action.version}, ${fullFilePath}`, 'info')
         } else {
           api.log(`action loaded: ${action.name} @ v${action.version}, ${fullFilePath}`, 'debug')
         }

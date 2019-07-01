@@ -43,7 +43,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
       }
 
       start (api) {
-        api.log('loading the testServer', 'warning')
+        api.log('loading the testServer', 'info')
         this.on('connection', (connection) => { this.handleConnection(connection) })
         this.on('actionComplete', (data) => { this.actionComplete(data) })
       }

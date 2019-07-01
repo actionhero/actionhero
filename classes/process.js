@@ -140,7 +140,7 @@ module.exports = class Process {
           } catch (error) {
             let message = `Exception occured in initializer \`${initializer.name}\` during load`
             try {
-              api.log(message, 'warning', error.toString())
+              api.log(message, 'emerg', error.toString())
             } catch (_error) {
               console.error(message)
             }
@@ -156,7 +156,7 @@ module.exports = class Process {
             await initializer.start()
             api.log(`Started initializer: ${initializer.name}`, 'debug', file)
           } catch (error) {
-            api.log(`Exception occured in initializer: ${initializer.name} during start`, 'warning', error.toString())
+            api.log(`Exception occured in initializer \`${initializer.name}\` during start`, 'emerg', error.toString())
             throw error
           }
         }
@@ -169,7 +169,7 @@ module.exports = class Process {
             await initializer.stop()
             api.log(`Stopped initializer: ${initializer.name}`, 'debug', file)
           } catch (error) {
-            api.log(`Exception occured in initializer: ${initializer.name} during stop`, 'warning', error.toString())
+            api.log(`Exception occured in initializer \`${initializer.name}\` during stop`, 'emerg', error.toString())
             throw error
           }
         }
@@ -208,15 +208,15 @@ module.exports = class Process {
     }
 
     api.running = true
-    api.log('*** Starting ActionHero ***', 'notice')
+    api.log('*** Starting ActionHero ***', 'info')
 
     this.startInitializers.push(() => {
       api.bootTime = new Date().getTime()
       if (this.startCount === 0) {
-        api.log('*** ActionHero Started ***', 'alert')
+        api.log('*** ActionHero Started ***', 'notice')
         this.startCount++
       } else {
-        api.log('*** ActionHero Restarted ***', 'alert')
+        api.log('*** ActionHero Restarted ***', 'notice')
       }
     })
 
@@ -239,8 +239,7 @@ module.exports = class Process {
 
       this.stopInitializers.push(async () => {
         api.pids.clearPidFile()
-        api.log('*** ActionHero Stopped ***', 'alert')
-        api.log('***', 'debug')
+        api.log('*** ActionHero Stopped ***', 'notice')
         delete api.shuttingDown
         // reset initializers to prevent duplicate check on restart
         this.initializers = {}
@@ -284,7 +283,7 @@ module.exports = class Process {
         api.log(`Error with initializer step: ${type}`, 'emerg')
         errors.forEach((error) => { api.log(error.stack, 'emerg') })
       } else {
-        console.error('Error with initializer step: ' + type)
+        console.error(`Error with initializer step: ${type}`)
         errors.forEach((error) => { console.error(error.stack) })
       }
       await api.commands.stop.call(api)

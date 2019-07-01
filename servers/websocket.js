@@ -166,8 +166,7 @@ module.exports = class WebSocketServer extends ActionHero.Server {
         fs.writeFileSync(clientJSFullPath + '.min.js', this.renderClientJS(true))
         api.log(`wrote ${clientJSFullPath}.min.js`, 'debug')
       } catch (e) {
-        api.log('Cannot write client-side JS for websocket server:', 'warning')
-        api.log(e, 'warning')
+        api.log('Cannot write client-side JS for websocket server:', 'warning', e)
         throw e
       }
     }
