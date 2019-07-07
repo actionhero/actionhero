@@ -31,6 +31,7 @@
 [![Build Status](https://circleci.com/gh/actionhero/actionhero.png)](https://circleci.com/gh/actionhero/actionhero)
 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/l0oky/awesome-actionhero)
 [![Chat](https://slack.actionherojs.com/badge.svg)](http://slack.actionherojs.com)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Factionhero%2Factionhero.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Factionhero%2Factionhero?ref=badge_shield)
 
 </div>
 
@@ -115,3 +116,6 @@ Or deploy a free API server now:
 ## License
 
 [Apache 2.0](https://github.com/actionhero/actionhero/blob/master/LICENSE.txt)
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Factionhero%2Factionhero.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Factionhero%2Factionhero?ref=badge_large)
