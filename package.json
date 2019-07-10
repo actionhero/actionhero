@@ -36,7 +36,7 @@
     "formidable": "^1.2.1",
     "glob": "^7.1.4",
     "i18n": "^0.8.3",
-    "ioredis": "^4.10.0",
+    "ioredis": "^4.11.1",
     "is-running": "^2.1.0",
     "mime": "^2.4.4",
     "node-resque": "^5.5.4",
@@ -46,7 +46,7 @@
     "uglify-js": "^3.6.0",
     "uuid": "^3.3.2",
     "winston": "^3.2.1",
-    "ws": "^7.0.1"
+    "ws": "^7.1.0"
   },
   "devDependencies": {
     "docdash": "1.1.1",
