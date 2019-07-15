@@ -27,7 +27,7 @@ module.exports = class ID extends ActionHero.Initializer {
     } else if (!api.config.general.id) {
       let externalIP = api.utils.getExternalIPAddress()
       if (externalIP === false) {
-        let message = ' * Error fetching this hosts external IP address; setting id base to \'actionhero\''
+        const message = ' * Error fetching this hosts external IP address; setting id base to \'actionhero\''
         try {
           api.log(message, 'crit')
         } catch (e) {

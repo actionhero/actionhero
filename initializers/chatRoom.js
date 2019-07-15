@@ -179,7 +179,7 @@ class ChatRoom extends ActionHero.Initializer {
     api.chatRoom.incomingMessage = (message) => {
       const messagePayload = api.chatRoom.generateMessagePayload(message)
       Object.keys(api.connections.connections).forEach((connetionId) => {
-        let connection = api.connections.connections[connetionId]
+        const connection = api.connections.connections[connetionId]
         // we can parallize this, no need to await
         api.chatRoom.incomingMessagePerConnection(connection, messagePayload)
       })
@@ -218,7 +218,7 @@ class ChatRoom extends ActionHero.Initializer {
      * @see api.chatRoom.destroy
      */
     api.chatRoom.add = async (room) => {
-      let found = await api.chatRoom.exists(room)
+      const found = await api.chatRoom.exists(room)
       if (found === false) {
         return api.redis.clients.client.sadd(api.chatRoom.keys.rooms, room)
       } else {
@@ -235,12 +235,12 @@ class ChatRoom extends ActionHero.Initializer {
      * @see api.chatRoom.add
      */
     api.chatRoom.destroy = async (room) => {
-      let found = await api.chatRoom.exists(room)
+      const found = await api.chatRoom.exists(room)
       if (found === true) {
         await api.chatRoom.broadcast({}, room, await api.config.errors.connectionRoomHasBeenDeleted(room))
-        let membersHash = await api.redis.clients.client.hgetall(api.chatRoom.keys.members + room)
+        const membersHash = await api.redis.clients.client.hgetall(api.chatRoom.keys.members + room)
 
-        for (let id in membersHash) {
+        for (const id in membersHash) {
           await api.chatRoom.removeMember(id, room, false)
         }
 
@@ -259,7 +259,7 @@ class ChatRoom extends ActionHero.Initializer {
      * @return {Promise<Boolean>}
      */
     api.chatRoom.exists = async (room) => {
-      let bool = await api.redis.clients.client.sismember(api.chatRoom.keys.rooms, room)
+      const bool = await api.redis.clients.client.sismember(api.chatRoom.keys.rooms, room)
       let found = false
       if (bool === 1 || bool === true) { found = true }
       return found
@@ -288,14 +288,14 @@ class ChatRoom extends ActionHero.Initializer {
      */
     api.chatRoom.roomStatus = async (room) => {
       if (room) {
-        let found = await api.chatRoom.exists(room)
+        const found = await api.chatRoom.exists(room)
         if (found === true) {
           const key = api.chatRoom.keys.members + room
-          let members = await api.redis.clients.client.hgetall(key)
-          let cleanedMembers = {}
+          const members = await api.redis.clients.client.hgetall(key)
+          const cleanedMembers = {}
           let count = 0
 
-          for (let id in members) {
+          for (const id in members) {
             const data = JSON.parse(members[id])
             cleanedMembers[id] = api.chatRoom.sanitizeMemberDetails(data)
             count++
@@ -339,7 +339,7 @@ class ChatRoom extends ActionHero.Initializer {
      * @see api.chatRoom.removeMember
      */
     api.chatRoom.addMember = async (connectionId, room) => {
-      let connection = api.connections.connections[connectionId]
+      const connection = api.connections.connections[connectionId]
       if (!connection) {
         return api.redis.doCluster('api.chatRoom.addMember', [connectionId, room], connectionId, true)
       }
@@ -349,7 +349,7 @@ class ChatRoom extends ActionHero.Initializer {
       }
 
       if (connection.rooms.indexOf(room) < 0) {
-        let found = await api.chatRoom.exists(room)
+        const found = await api.chatRoom.exists(room)
         if (!found) {
           throw new Error(await api.config.errors.connectionRoomNotExist(room))
         }
@@ -360,7 +360,7 @@ class ChatRoom extends ActionHero.Initializer {
       }
 
       if (connection.rooms.indexOf(room) < 0) {
-        let memberDetails = api.chatRoom.generateMemberDetails(connection)
+        const memberDetails = api.chatRoom.generateMemberDetails(connection)
         connection.rooms.push(room)
         await api.redis.clients.client.hset(api.chatRoom.keys.members + room, connection.id, JSON.stringify(memberDetails))
       }
@@ -380,7 +380,7 @@ class ChatRoom extends ActionHero.Initializer {
      */
     api.chatRoom.removeMember = async (connectionId, room, toWaitRemote) => {
       if (toWaitRemote === undefined || toWaitRemote === null) { toWaitRemote = true }
-      let connection = api.connections.connections[connectionId]
+      const connection = api.connections.connections[connectionId]
       if (!connection) {
         return api.redis.doCluster('api.chatRoom.removeMember', [connectionId, room], connectionId, toWaitRemote)
       }
@@ -390,7 +390,7 @@ class ChatRoom extends ActionHero.Initializer {
       }
 
       if (connection.rooms.indexOf(room) >= 0) {
-        let found = await api.chatRoom.exists(room)
+        const found = await api.chatRoom.exists(room)
         if (!found) {
           throw new Error(await api.config.errors.connectionRoomNotExist(room))
         }
@@ -401,7 +401,7 @@ class ChatRoom extends ActionHero.Initializer {
       }
 
       if (connection.rooms.indexOf(room) >= 0) {
-        let index = connection.rooms.indexOf(room)
+        const index = connection.rooms.indexOf(room)
         connection.rooms.splice(index, 1)
         await api.redis.clients.client.hdel(api.chatRoom.keys.members + room, connection.id)
       }
@@ -416,11 +416,11 @@ class ChatRoom extends ActionHero.Initializer {
       let newMessagePayload
       if (messagePayload) { newMessagePayload = Object.assign({}, messagePayload) }
 
-      for (let name of api.chatRoom.globalMiddleware) {
+      for (const name of api.chatRoom.globalMiddleware) {
         const m = api.chatRoom.middleware[name]
         if (typeof m[direction] === 'function') {
           if (messagePayload) {
-            let data = await m[direction](connection, room, newMessagePayload)
+            const data = await m[direction](connection, room, newMessagePayload)
             if (data) { newMessagePayload = data }
           } else {
             await m[direction](connection, room)
@@ -439,8 +439,8 @@ class ChatRoom extends ActionHero.Initializer {
     }
 
     if (api.config.general.startingChatRooms) {
-      let rooms = Object.keys(api.config.general.startingChatRooms)
-      for (let room of rooms) {
+      const rooms = Object.keys(api.config.general.startingChatRooms)
+      for (const room of rooms) {
         api.log(`ensuring the existence of the chatRoom: ${room}`)
         try {
           await api.chatRoom.add(room)

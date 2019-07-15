@@ -65,7 +65,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
       sendFile (connection, error, fileStream, mime, length) {
         let content = ''
         const messageId = connection.messageId
-        let response = {
+        const response = {
           content: null,
           mime: mime,
           length: length
@@ -118,7 +118,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
               receivedParams: {}
             }
 
-            for (let k in data.params) {
+            for (const k in data.params) {
               data.response.requesterInformation.receivedParams[k] = data.params[k]
             }
           }
@@ -156,7 +156,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
       */
 
       static async createAsync (data) {
-        let id = uuid.v4()
+        const id = uuid.v4()
         await api.servers.servers.testServer.buildConnection({
           id: id,
           rawConnection: {},
@@ -188,7 +188,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
       connection.params.action = actionName
 
       connection.messageId = connection.params.messageId || uuid.v4()
-      let response = await new Promise((resolve) => {
+      const response = await new Promise((resolve) => {
         api.servers.servers.testServer.processAction(connection)
         connection.actionCallbacks[(connection.messageId)] = resolve
       })
@@ -204,11 +204,11 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
      * @return {Promise<Object>} The body contents and metadata of the file requested.  Conatins: mime, length, body, and more.
      */
     api.specHelper.getStaticFile = async (file) => {
-      let connection = await api.specHelper.Connection.createAsync()
+      const connection = await api.specHelper.Connection.createAsync()
       connection.params.file = file
 
       connection.messageCount = uuid.v4()
-      let response = await new Promise((resolve) => {
+      const response = await new Promise((resolve) => {
         api.servers.servers.testServer.processFile(connection)
         connection.actionCallbacks[(connection.messageId)] = resolve
       })
@@ -250,7 +250,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
 
       try {
         await worker.connect()
-        let result = await worker.performInline(taskName, params)
+        const result = await worker.performInline(taskName, params)
         await worker.end()
         return result
       } catch (error) {
@@ -265,7 +265,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
   async start () {
     if (!this.enabled) { return }
 
-    let server = new api.specHelper.Server()
+    const server = new api.specHelper.Server()
     server.config = { enabled: true }
     await server.start(api)
     api.servers.servers.testServer = server

@@ -19,7 +19,7 @@ function buildConsoleLogger (level = 'info') {
       ),
       level,
       levels: winston.config.syslog.levels,
-      transports: [ new winston.transports.Console() ]
+      transports: [new winston.transports.Console()]
     })
   }
 }
@@ -28,8 +28,8 @@ function stringifyExtraMessagePropertiesForConsole (info) {
   const skpippedProperties = ['message', 'timestamp', 'level']
   let response = ''
 
-  for (let key in info) {
-    let value = info[key]
+  for (const key in info) {
+    const value = info[key]
     if (skpippedProperties.includes(key)) { continue }
     if (value === undefined || value === null) { continue }
     response += `${key}=${value} `
@@ -40,7 +40,7 @@ function stringifyExtraMessagePropertiesForConsole (info) {
 
 function buildFileLogger (path, level = 'info', maxFiles = undefined, maxsize = 20480) {
   return function (api) {
-    let filename = `${path}/${api.pids.title}-${api.env}.log`
+    const filename = `${path}/${api.pids.title}-${api.env}.log`
 
     return winston.createLogger({
       format: winston.format.combine(
@@ -49,18 +49,18 @@ function buildFileLogger (path, level = 'info', maxFiles = undefined, maxsize = 
       ),
       level,
       levels: winston.config.syslog.levels,
-      transports: [ new winston.transports.File({
+      transports: [new winston.transports.File({
         filename,
         maxsize,
         maxFiles
-      }) ]
+      })]
     })
   }
 }
 
 exports['default'] = {
   logger: (api) => {
-    let loggers = []
+    const loggers = []
 
     if (cluster.isMaster) {
       loggers.push(buildConsoleLogger())
@@ -81,7 +81,7 @@ exports['default'] = {
 
 exports.test = {
   logger: (api) => {
-    let loggers = []
+    const loggers = []
 
     api.config.general.paths.log.forEach((p) => {
       loggers.push(buildFileLogger(p, 'debug', 1))

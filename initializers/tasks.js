@@ -101,7 +101,7 @@ module.exports = class Tasks extends ActionHero.Initializer {
       let task
       let collection = require(fullFilePath)
       if (typeof collection === 'function') { collection = [collection] }
-      for (let i in collection) {
+      for (const i in collection) {
         const TaskClass = collection[i]
         task = new TaskClass()
         task.validate()
@@ -122,9 +122,9 @@ module.exports = class Tasks extends ActionHero.Initializer {
     api.tasks.jobWrapper = (taskName) => {
       const task = api.tasks.tasks[taskName]
 
-      let middleware = task.middleware || []
-      let plugins = task.plugins || []
-      let pluginOptions = task.pluginOptions || []
+      const middleware = task.middleware || []
+      const plugins = task.plugins || []
+      const pluginOptions = task.pluginOptions || []
 
       if (task.frequency > 0) {
         if (plugins.indexOf('JobLock') < 0) { plugins.push('JobLock') }
@@ -151,7 +151,7 @@ module.exports = class Tasks extends ActionHero.Initializer {
         plugins: plugins,
         pluginOptions: pluginOptions,
         perform: async function () {
-          let combinedArgs = [].concat(Array.prototype.slice.call(arguments))
+          const combinedArgs = [].concat(Array.prototype.slice.call(arguments))
           combinedArgs.push(this)
           let response = null
           try {
@@ -495,14 +495,14 @@ module.exports = class Tasks extends ActionHero.Initializer {
      * @see api.tasks.enqueueRecurrentTask
      */
     api.tasks.enqueueAllRecurrentTasks = async () => {
-      let jobs = []
-      let loadedTasks = []
+      const jobs = []
+      const loadedTasks = []
 
       Object.keys(api.tasks.tasks).forEach((taskName) => {
         const task = api.tasks.tasks[taskName]
         if (task.frequency > 0) {
           jobs.push(async () => {
-            let toRun = await api.tasks.enqueue(taskName)
+            const toRun = await api.tasks.enqueue(taskName)
             if (toRun === true) {
               api.log(`enqueuing periodic task: ${taskName}`, api.config.tasks.schedulerLogging.enqueue)
               loadedTasks.push(taskName)
@@ -528,9 +528,9 @@ module.exports = class Tasks extends ActionHero.Initializer {
       const task = api.tasks.tasks[taskName]
       if (task.frequency > 0) {
         let removedCount = 0
-        let count = await api.tasks.del(task.queue, task.name, {}, 1)
+        const count = await api.tasks.del(task.queue, task.name, {}, 1)
         removedCount = removedCount + count
-        let timestamps = await api.tasks.delDelayed(task.queue, task.name, {})
+        const timestamps = await api.tasks.delDelayed(task.queue, task.name, {})
         removedCount = removedCount + timestamps.length
         return removedCount
       }
@@ -544,15 +544,15 @@ module.exports = class Tasks extends ActionHero.Initializer {
      * @return {Promise<Object>} Details about the task system.
      */
     api.tasks.details = async () => {
-      let details = { 'queues': {}, 'workers': {} }
+      const details = { queues: {}, workers: {} }
 
       details.workers = await api.tasks.allWorkingOn()
       details.stats = await api.tasks.stats()
-      let queues = await api.resque.queue.queues()
+      const queues = await api.resque.queue.queues()
 
-      for (let i in queues) {
-        let queue = queues[i]
-        let length = await api.resque.queue.length(queue)
+      for (const i in queues) {
+        const queue = queues[i]
+        const length = await api.resque.queue.length(queue)
         details.queues[queue] = { length: length }
       }
 
@@ -566,9 +566,9 @@ module.exports = class Tasks extends ActionHero.Initializer {
         })
       })
 
-      for (let pluginName in api.config.plugins) {
+      for (const pluginName in api.config.plugins) {
         if (api.config.plugins[pluginName].tasks !== false) {
-          let pluginPath = api.config.plugins[pluginName].path
+          const pluginPath = api.config.plugins[pluginName].path
           glob.sync(path.join(pluginPath, 'tasks', '**', '*.js')).forEach((f) => {
             api.tasks.loadFile(f, reload)
           })

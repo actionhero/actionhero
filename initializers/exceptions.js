@@ -26,16 +26,16 @@ module.exports = class Exceptions extends ActionHero.Initializer {
     api.exceptionHandlers.reporters = []
 
     const consoleReporter = (error, type, name, objects, severity) => {
-      let extraMessages = []
+      const extraMessages = []
 
       if (type === 'loader') {
         extraMessages.push('! Failed to load ' + objects.fullFilePath)
       } else if (type === 'action') {
         extraMessages.push('! uncaught error from action: ' + name)
         extraMessages.push('! connection details:')
-        let relevantDetails = this.relevantDetails()
-        for (let i in relevantDetails) {
-          let relevantDetail = relevantDetails[i]
+        const relevantDetails = this.relevantDetails()
+        for (const i in relevantDetails) {
+          const relevantDetail = relevantDetails[i]
           if (
             objects.connection[relevantDetail] !== null &&
             objects.connection[relevantDetail] !== undefined &&
@@ -56,7 +56,7 @@ module.exports = class Exceptions extends ActionHero.Initializer {
         extraMessages.push('!     Data: ' + JSON.stringify(objects))
       }
 
-      for (let m in extraMessages) {
+      for (const m in extraMessages) {
         api.log(extraMessages[m], severity)
       }
       let lines
@@ -65,8 +65,8 @@ module.exports = class Exceptions extends ActionHero.Initializer {
       } catch (e) {
         lines = new Error(error).stack.split(os.EOL)
       }
-      for (let l in lines) {
-        let line = lines[l]
+      for (const l in lines) {
+        const line = lines[l]
         api.log('! ' + line, severity)
       }
       api.log('*', severity)
@@ -76,13 +76,13 @@ module.exports = class Exceptions extends ActionHero.Initializer {
 
     api.exceptionHandlers.report = (error, type, name, objects, severity) => {
       if (!severity) { severity = 'error' }
-      for (let i in api.exceptionHandlers.reporters) {
+      for (const i in api.exceptionHandlers.reporters) {
         api.exceptionHandlers.reporters[i](error, type, name, objects, severity)
       }
     }
 
     api.exceptionHandlers.loader = (fullFilePath, error) => {
-      let name = 'loader:' + fullFilePath
+      const name = 'loader:' + fullFilePath
       api.exceptionHandlers.report(error, 'loader', name, { fullFilePath: fullFilePath }, 'alert')
     }
 
@@ -93,7 +93,7 @@ module.exports = class Exceptions extends ActionHero.Initializer {
       } catch (e) {
         simpleName = error.message
       }
-      let name = 'action:' + simpleName
+      const name = 'action:' + simpleName
       api.exceptionHandlers.report(error, 'action', name, { connection: data.connection }, 'error')
       data.connection.response = {} // no partial responses
       if (typeof next === 'function') { next() }
@@ -106,7 +106,7 @@ module.exports = class Exceptions extends ActionHero.Initializer {
       } catch (e) {
         simpleName = error.message
       }
-      let name = 'task:' + simpleName
+      const name = 'task:' + simpleName
       api.exceptionHandlers.report(error, 'task', name, { task: task, queue: queue, workerId: workerId }, api.config.tasks.workerLogging.failure)
     }
   }

@@ -24,7 +24,7 @@ module.exports = class TaskEnqueue extends ActionHero.CLI {
     if (params.params) { args = JSON.parse(params.params) }
 
     await api.resque.startQueue()
-    let toRun = await api.tasks.enqueue(params.name, args)
+    const toRun = await api.tasks.enqueue(params.name, args)
     api.log('response', 'info', toRun)
     return true
   }

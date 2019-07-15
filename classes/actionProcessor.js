@@ -88,7 +88,7 @@ module.exports = class ActionProcessor {
       logLevel = this.actionTemplate.logLevel
     }
 
-    let filteredParams = api.utils.filterObjectForLogging(this.params)
+    const filteredParams = api.utils.filterObjectForLogging(this.params)
 
     const logLine = {
       to: this.connection.remoteIP,
@@ -113,14 +113,14 @@ module.exports = class ActionProcessor {
   }
 
   async preProcessAction () {
-    let processorNames = api.actions.globalMiddleware.slice(0)
+    const processorNames = api.actions.globalMiddleware.slice(0)
 
     if (this.actionTemplate.middleware) {
       this.actionTemplate.middleware.forEach(function (m) { processorNames.push(m) })
     }
 
-    for (let i in processorNames) {
-      let name = processorNames[i]
+    for (const i in processorNames) {
+      const name = processorNames[i]
       if (typeof api.actions.middleware[name].preProcessor === 'function') {
         await api.actions.middleware[name].preProcessor(this)
       }
@@ -128,14 +128,14 @@ module.exports = class ActionProcessor {
   }
 
   async postProcessAction () {
-    let processorNames = api.actions.globalMiddleware.slice(0)
+    const processorNames = api.actions.globalMiddleware.slice(0)
 
     if (this.actionTemplate.middleware) {
       this.actionTemplate.middleware.forEach((m) => { processorNames.push(m) })
     }
 
-    for (let i in processorNames) {
-      let name = processorNames[i]
+    for (const i in processorNames) {
+      const name = processorNames[i]
       if (typeof api.actions.middleware[name].postProcessor === 'function') {
         await api.actions.middleware[name].postProcessor(this)
       }
@@ -150,9 +150,9 @@ module.exports = class ActionProcessor {
       params = this.params[schemaKey]
     }
 
-    let inputNames = Object.keys(inputs) || []
+    const inputNames = Object.keys(inputs) || []
     if (api.config.general.disableParamScrubbing !== true) {
-      for (let p in params) {
+      for (const p in params) {
         if (api.params.globalSafeParams.indexOf(p) < 0 && inputNames.indexOf(p) < 0) {
           delete params[p]
         }
@@ -181,8 +181,8 @@ module.exports = class ActionProcessor {
     if (params[key] !== undefined && props.formatter !== undefined) {
       if (!Array.isArray(props.formatter)) { props.formatter = [props.formatter] }
 
-      for (let i in props.formatter) {
-        let formatter = props.formatter[i]
+      for (const i in props.formatter) {
+        const formatter = props.formatter[i]
         if (typeof formatter === 'function') {
           params[key] = await formatter.call(api, params[key], this)
         } else {
@@ -196,8 +196,8 @@ module.exports = class ActionProcessor {
     if (params[key] !== undefined && props.validator !== undefined) {
       if (!Array.isArray(props.validator)) { props.validator = [props.validator] }
 
-      for (let j in props.validator) {
-        let validator = props.validator[j]
+      for (const j in props.validator) {
+        const validator = props.validator[j]
         let validatorResponse
         try {
           if (typeof validator === 'function') {
@@ -245,7 +245,7 @@ module.exports = class ActionProcessor {
       params = this.params[schemaKey]
     }
 
-    for (let key in inputs) {
+    for (const key in inputs) {
       const props = inputs[key]
       await this.validateParam(props, params, key, schemaKey)
 

@@ -27,7 +27,7 @@ module.exports = class ClusterWorker {
     this.worker.on('exit', () => {
       this.parent.log(this.logPrefix() + 'exited', 'info')
 
-      for (let i in this.parent.workers) {
+      for (const i in this.parent.workers) {
         if (this.parent.workers[i].id === this.id) {
           this.parent.workers.splice(i, 1)
           break

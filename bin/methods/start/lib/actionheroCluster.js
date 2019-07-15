@@ -16,7 +16,7 @@ module.exports = class ActionHeroCluster {
     this.flapCount = 0
 
     this.options = this.defaults()
-    for (let i in this.options) {
+    for (const i in this.options) {
       if (args[i] !== null && args[i] !== undefined) {
         this.options[i] = args[i]
       }
@@ -30,9 +30,9 @@ module.exports = class ActionHeroCluster {
         winston.format.json()
       ),
       levels: winston.config.syslog.levels,
-      transports: [ new winston.transports.File({
+      transports: [new winston.transports.File({
         filename: `${this.options.logPath}/${this.options.logFile}`
-      }) ]
+      })]
     }))
 
     if (cluster.isMaster && args.silent !== true) {
@@ -45,7 +45,7 @@ module.exports = class ActionHeroCluster {
           })
         ),
         levels: winston.config.syslog.levels,
-        transports: [ new winston.transports.Console() ]
+        transports: [new winston.transports.Console()]
       }))
     }
   }
@@ -151,7 +151,7 @@ module.exports = class ActionHeroCluster {
     process.on('SIGHUP', async () => {
       this.log('Signal: SIGHUP', 'info')
       this.log('reload all workers now', 'info')
-      for (let worker of this.workers) {
+      for (const worker of this.workers) {
         await worker.restart()
       }
     })
@@ -228,7 +228,7 @@ module.exports = class ActionHeroCluster {
     let worker
     let workerId
     this.sortWorkers()
-    let stateCounts = {}
+    const stateCounts = {}
 
     this.workers.forEach((w) => {
       if (!stateCounts[w.state]) { stateCounts[w.state] = 0 }
@@ -256,7 +256,7 @@ module.exports = class ActionHeroCluster {
       })
 
       this.log('starting worker #' + workerId, 'info')
-      let env = this.buildEnv(workerId)
+      const env = this.buildEnv(workerId)
       worker = new ClusterWorker(this, workerId, env)
       worker.start()
       this.workers.push(worker)

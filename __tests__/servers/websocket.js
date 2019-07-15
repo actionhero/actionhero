@@ -14,11 +14,11 @@ const connectClients = async () => {
   // get ActionheroWebsocketClient in scope
   const ActionheroWebsocketClient = eval(api.servers.servers.websocket.compileActionheroWebsocketClientJS()) // eslint-disable-line
 
-  let S = api.servers.servers.websocket.server.Socket
+  const S = api.servers.servers.websocket.server.Socket
   url = 'http://localhost:' + api.config.servers.web.port
-  let clientAsocket = new S(url)
-  let clientBsocket = new S(url)
-  let clientCsocket = new S(url)
+  const clientAsocket = new S(url)
+  const clientBsocket = new S(url)
+  const clientCsocket = new S(url)
 
   clientA = new ActionheroWebsocketClient({}, clientAsocket) // eslint-disable-line
   clientB = new ActionheroWebsocketClient({}, clientBsocket) // eslint-disable-line
@@ -74,21 +74,21 @@ describe('Server: Web Socket', () => {
   afterAll(async () => { await actionhero.stop() })
 
   test('socket client connections should work: client 1', async () => {
-    let data = await awaitMethod(clientA, 'connect', true)
+    const data = await awaitMethod(clientA, 'connect', true)
     expect(data.context).toEqual('response')
     expect(data.data.totalActions).toEqual(0)
     expect(clientA.welcomeMessage).toEqual('Hello! Welcome to the actionhero api')
   })
 
   test('socket client connections should work: client 2', async () => {
-    let data = await awaitMethod(clientB, 'connect', true)
+    const data = await awaitMethod(clientB, 'connect', true)
     expect(data.context).toEqual('response')
     expect(data.data.totalActions).toEqual(0)
     expect(clientB.welcomeMessage).toEqual('Hello! Welcome to the actionhero api')
   })
 
   test('socket client connections should work: client 3', async () => {
-    let data = await awaitMethod(clientC, 'connect', true)
+    const data = await awaitMethod(clientC, 'connect', true)
     expect(data.context).toEqual('response')
     expect(data.data.totalActions).toEqual(0)
     expect(clientC.welcomeMessage).toEqual('Hello! Welcome to the actionhero api')
@@ -102,13 +102,13 @@ describe('Server: Web Socket', () => {
     })
 
     test('I can get my connection details', async () => {
-      let response = await awaitMethod(clientA, 'detailsView')
+      const response = await awaitMethod(clientA, 'detailsView')
       expect(response.data.connectedAt).toBeLessThan(new Date().getTime())
       expect(response.data.remoteIP).toEqual('127.0.0.1')
     })
 
     test('can run actions with errors', async () => {
-      let response = await awaitAction(clientA, 'cacheTest')
+      const response = await awaitAction(clientA, 'cacheTest')
       expect(response.error).toEqual('key is a required parameter for this action')
     })
 
@@ -124,7 +124,7 @@ describe('Server: Web Socket', () => {
     test('properly responds with messageId', async () => {
       let aTime
       let bTime
-      let startingMessageId = clientA.messageId
+      const startingMessageId = clientA.messageId
       awaitRoom(clientA, 'roomAdd', 'defaultRoom') // fast
       let responseA = awaitAction(clientA, 'sleepTest') // slow
       awaitRoom(clientA, 'roomAdd', 'defaultRoom') // fast
@@ -148,32 +148,32 @@ describe('Server: Web Socket', () => {
     })
 
     test('messageId can be configurable', async () => {
-      let response = await awaitAction(clientA, 'randomNumber', { messageId: 'aaa' })
+      const response = await awaitAction(clientA, 'randomNumber', { messageId: 'aaa' })
       expect(response.messageId).toBe('aaa')
     })
 
     test('can run actions properly without params', async () => {
-      let response = await awaitAction(clientA, 'randomNumber')
+      const response = await awaitAction(clientA, 'randomNumber')
       expect(response.error).toBeUndefined()
       expect(response.randomNumber).toBeTruthy()
     })
 
     test('can run actions properly with params', async () => {
-      let response = await awaitAction(clientA, 'cacheTest', { key: 'test key', value: 'test value' })
+      const response = await awaitAction(clientA, 'cacheTest', { key: 'test key', value: 'test value' })
       expect(response.error).toBeUndefined()
       expect(response.cacheTestResults).toBeTruthy()
     })
 
     test('does not have sticky params', async () => {
-      let response = await awaitAction(clientA, 'cacheTest', { key: 'test key', value: 'test value' })
+      const response = await awaitAction(clientA, 'cacheTest', { key: 'test key', value: 'test value' })
       expect(response.cacheTestResults.loadResp.key).toEqual('cacheTest_test key')
       expect(response.cacheTestResults.loadResp.value).toEqual('test value')
-      let responseAgain = await awaitAction(clientA, 'cacheTest')
+      const responseAgain = await awaitAction(clientA, 'cacheTest')
       expect(responseAgain.error).toEqual('key is a required parameter for this action')
     })
 
     test('will limit how many simultaneous connections I can have', async () => {
-      let responses = []
+      const responses = []
       clientA.action('sleepTest', { sleepDuration: 100 }, (response) => { responses.push(response) })
       clientA.action('sleepTest', { sleepDuration: 200 }, (response) => { responses.push(response) })
       clientA.action('sleepTest', { sleepDuration: 300 }, (response) => { responses.push(response) })
@@ -184,8 +184,8 @@ describe('Server: Web Socket', () => {
       await api.utils.sleep(1000)
 
       expect(responses).toHaveLength(6)
-      for (let i in responses) {
-        let response = responses[i]
+      for (const i in responses) {
+        const response = responses[i]
         if (i === 0 || i === '0') {
           expect(response.error).toEqual('you have too many pending requests')
         } else {
@@ -196,7 +196,7 @@ describe('Server: Web Socket', () => {
 
     describe('files', () => {
       test('can request file data', async () => {
-        let data = await awaitFile(clientA, 'simple.html')
+        const data = await awaitFile(clientA, 'simple.html')
         expect(data.error).toBeUndefined()
         expect(data.content).toEqual('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
         expect(data.mime).toEqual('text/html')
@@ -204,7 +204,7 @@ describe('Server: Web Socket', () => {
       })
 
       test('missing files', async () => {
-        let data = await awaitFile(clientA, 'missing.html')
+        const data = await awaitFile(clientA, 'missing.html')
         expect(data.error).toEqual('That file is not found')
         expect(data.mime).toEqual('text/html')
         expect(data.content).toBeNull()
@@ -252,24 +252,24 @@ describe('Server: Web Socket', () => {
 
       test('can change rooms and get room details', async () => {
         await awaitRoom(clientA, 'roomAdd', 'otherRoom')
-        let response = await awaitMethod(clientA, 'detailsView')
+        const response = await awaitMethod(clientA, 'detailsView')
         expect(response.error).toBeUndefined()
         expect(response.data.rooms[0]).toEqual('defaultRoom')
         expect(response.data.rooms[1]).toEqual('otherRoom')
 
-        let roomResponse = await awaitRoom(clientA, 'roomView', 'otherRoom')
+        const roomResponse = await awaitRoom(clientA, 'roomView', 'otherRoom')
         expect(roomResponse.data.membersCount).toEqual(1)
       })
 
       test('will update client room info when they change rooms', async () => {
         expect(clientA.rooms[0]).toEqual('defaultRoom')
         expect(clientA.rooms[1]).toBeUndefined()
-        let response = await awaitRoom(clientA, 'roomAdd', 'otherRoom')
+        const response = await awaitRoom(clientA, 'roomAdd', 'otherRoom')
         expect(response.error).toBeUndefined()
         expect(clientA.rooms[0]).toEqual('defaultRoom')
         expect(clientA.rooms[1]).toEqual('otherRoom')
 
-        let leaveResponse = await awaitRoom(clientA, 'roomLeave', 'defaultRoom')
+        const leaveResponse = await awaitRoom(clientA, 'roomLeave', 'defaultRoom')
         expect(leaveResponse.error).toBeUndefined()
         expect(clientA.rooms[0]).toEqual('otherRoom')
         expect(clientA.rooms[1]).toBeUndefined()
@@ -277,7 +277,7 @@ describe('Server: Web Socket', () => {
 
       test('clients can talk to each other', async () => {
         await new Promise((resolve) => {
-          let listener = (response) => {
+          const listener = (response) => {
             clientA.removeListener('say', listener)
             expect(response.context).toEqual('user')
             expect(response.message).toEqual('hello from client 2')
@@ -291,7 +291,7 @@ describe('Server: Web Socket', () => {
 
       test('The client say method does not rely on argument order', async () => {
         await new Promise((resolve) => {
-          let listener = (response) => {
+          const listener = (response) => {
             clientA.removeListener('say', listener)
             expect(response.context).toEqual('user')
             expect(response.message).toEqual('hello from client 2')
@@ -309,7 +309,7 @@ describe('Server: Web Socket', () => {
 
       test('connections are notified when I join a room', async () => {
         await new Promise((resolve) => {
-          let listener = (response) => {
+          const listener = (response) => {
             clientA.removeListener('say', listener)
             expect(response.context).toEqual('user')
             expect(response.message).toEqual('I have entered the room: ' + clientB.id)
@@ -325,7 +325,7 @@ describe('Server: Web Socket', () => {
 
       test('connections are notified when I leave a room', async () => {
         await new Promise((resolve) => {
-          let listener = (response) => {
+          const listener = (response) => {
             clientA.removeListener('say', listener)
             expect(response.context).toEqual('user')
             expect(response.message).toEqual('I have left the room: ' + clientB.id)
@@ -337,34 +337,32 @@ describe('Server: Web Socket', () => {
         })
       })
 
-      test('will not get messages for rooms I am not in', async () => {
-        let response = await awaitRoom(clientB, 'roomAdd', 'otherRoom')
+      test('will not get messages for rooms I am not in', async (done) => {
+        const response = await awaitRoom(clientB, 'roomAdd', 'otherRoom')
         expect(response.error).toBeUndefined()
         expect(clientB.rooms.length).toEqual(2)
         expect(clientC.rooms.length).toEqual(1)
 
-        await new Promise(async (resolve, reject) => {
-          let listener = (response) => {
-            clientC.removeListener('say', listener)
-            reject(new Error('should not get here'))
-          }
-
-          clientC.on('say', listener)
-
-          clientB.say('otherRoom', 'you should not hear this')
-          await api.utils.sleep(1000)
+        const listener = (response) => {
           clientC.removeListener('say', listener)
-          resolve()
-        })
+          throw new Error('should not get here')
+        }
+
+        clientC.on('say', listener)
+
+        clientB.say('otherRoom', 'you should not hear this')
+        await api.utils.sleep(1000)
+        clientC.removeListener('say', listener)
+        done()
       })
 
       test(
         'connections can see member counts changing within rooms as folks join and leave',
         async () => {
-          let response = await awaitRoom(clientA, 'roomView', 'defaultRoom')
+          const response = await awaitRoom(clientA, 'roomView', 'defaultRoom')
           expect(response.data.membersCount).toEqual(3)
           await awaitRoom(clientB, 'roomLeave', 'defaultRoom')
-          let responseAgain = await awaitRoom(clientA, 'roomView', 'defaultRoom')
+          const responseAgain = await awaitRoom(clientA, 'roomView', 'defaultRoom')
           expect(responseAgain.data.membersCount).toEqual(2)
         }
       )
@@ -385,19 +383,19 @@ describe('Server: Web Socket', () => {
             }
           })
 
-          let listenerA = (response) => {
+          const listenerA = (response) => {
             messagesReceived++
             clientA.removeListener('say', listenerA)
             expect(response.message).toEqual('Test Message - To: ' + clientA.id) // clientA.id (Receiever)
           }
 
-          let listenerB = (response) => {
+          const listenerB = (response) => {
             messagesReceived++
             clientB.removeListener('say', listenerB)
             expect(response.message).toEqual('Test Message - To: ' + clientB.id) // clientB.id (Receiever)
           }
 
-          let listenerC = (response) => {
+          const listenerC = (response) => {
             messagesReceived++
             clientC.removeListener('say', listenerC)
             expect(response.message).toEqual('Test Message - To: ' + clientC.id) // clientC.id (Receiever)
@@ -426,17 +424,17 @@ describe('Server: Web Socket', () => {
           })
 
           let messagesReceived = 0
-          let listenerA = () => {
+          const listenerA = () => {
             clientA.removeListener('say', listenerA)
             messagesReceived += 1
           }
 
-          let listenerB = () => {
+          const listenerB = () => {
             clientB.removeListener('say', listenerB)
             messagesReceived += 2
           }
 
-          let listenerC = () => {
+          const listenerC = () => {
             clientC.removeListener('say', listenerC)
             messagesReceived += 4
           }
@@ -461,19 +459,19 @@ describe('Server: Web Socket', () => {
             }
           })
 
-          let listenerA = (response) => {
+          const listenerA = (response) => {
             messagesReceived++
             clientA.removeListener('say', listenerA)
             expect(response.message).toEqual('Test Message - To: ' + clientB.id) // clientB.id (Sender)
           }
 
-          let listenerB = (response) => {
+          const listenerB = (response) => {
             messagesReceived++
             clientB.removeListener('say', listenerB)
             expect(response.message).toEqual('Test Message - To: ' + clientB.id) // clientB.id (Sender)
           }
 
-          let listenerC = (response) => {
+          const listenerC = (response) => {
             messagesReceived++
             clientC.removeListener('say', listenerC)
             expect(response.message).toEqual('Test Message - To: ' + clientB.id) // clientB.id (Sender)
@@ -510,10 +508,10 @@ describe('Server: Web Socket', () => {
         beforeAll(async () => {
           // Ensure that default behavior works
           await awaitRoom(clientA, 'roomAdd', 'defaultRoom')
-          let response = await awaitRoom(clientA, 'roomView', 'defaultRoom')
+          const response = await awaitRoom(clientA, 'roomView', 'defaultRoom')
           expect(response.data.room).toEqual('defaultRoom')
 
-          for (let key in response.data.members) {
+          for (const key in response.data.members) {
             expect(response.data.members[key].type).toBeUndefined()
           }
 
@@ -553,10 +551,10 @@ describe('Server: Web Socket', () => {
 
         test('should view non-default member data when overwritten', async () => {
           await awaitRoom(clientA, 'roomAdd', 'defaultRoom')
-          let response = await awaitRoom(clientA, 'roomView', 'defaultRoom')
+          const response = await awaitRoom(clientA, 'roomView', 'defaultRoom')
           expect(response.data.room).toEqual('defaultRoom')
 
-          for (let key in response.data.members) {
+          for (const key in response.data.members) {
             expect(response.data.members[key].type).toEqual('websocket')
             expect(response.data.members[key].fromSanitize).toEqual(true)
           }
@@ -581,10 +579,10 @@ describe('Server: Web Socket', () => {
       test('will not have param colisions', async () => {
         let completed = 0
         let started = 0
-        let sleeps = [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110]
+        const sleeps = [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110]
 
         await new Promise((resolve) => {
-          let toComplete = (sleep, response) => {
+          const toComplete = (sleep, response) => {
             expect(sleep).toEqual(response.sleepDuration)
             completed++
             if (completed === started) { resolve() }
@@ -626,11 +624,11 @@ describe('Server: Web Socket', () => {
       })
 
       test('can be sent disconnect events from the server', async () => {
-        let response = await awaitMethod(clientA, 'detailsView')
+        const response = await awaitMethod(clientA, 'detailsView')
         expect(response.data.remoteIP).toEqual('127.0.0.1')
 
         let count = 0
-        for (let id in api.connections.connections) {
+        for (const id in api.connections.connections) {
           count++
           api.connections.connections[id].destroy()
         }

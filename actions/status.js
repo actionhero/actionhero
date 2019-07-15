@@ -15,9 +15,9 @@ module.exports = class RandomNumber extends ActionHero.Action {
     this.name = 'status'
     this.description = 'I will return some basic information about the API'
     this.outputExample = {
-      'id': '192.168.2.11',
-      'actionheroVersion': '9.4.1',
-      'uptime': 10469
+      id: '192.168.2.11',
+      actionheroVersion: '9.4.1',
+      uptime: 10469
     }
   }
 
@@ -32,7 +32,7 @@ module.exports = class RandomNumber extends ActionHero.Action {
 
   async checkEventLoop (data) {
     const api = ActionHero.api
-    let eventLoopDelay = await api.utils.eventLoopDelay(10000)
+    const eventLoopDelay = await api.utils.eventLoopDelay(10000)
     data.response.eventLoopDelay = eventLoopDelay
     if (eventLoopDelay > maxEventLoopDelay) {
       data.response.nodeStatus = data.connection.localize('Node Unhealthy')
@@ -42,7 +42,7 @@ module.exports = class RandomNumber extends ActionHero.Action {
 
   async checkResqueQueues (data) {
     const api = ActionHero.api
-    let details = await api.tasks.details()
+    const details = await api.tasks.details()
     let length = 0
     Object.keys(details.queues).forEach((q) => {
       length += details.queues[q].length

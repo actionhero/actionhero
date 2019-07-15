@@ -124,13 +124,13 @@ module.exports = class SocketServer extends ActionHero.Server {
         // Replace all carriage returns with newlines.
         connection.rawConnection.socketDataString += chunk.toString('utf-8').replace(/\r/g, '\n')
         let index
-        let d = String(this.config.delimiter)
+        const d = String(this.config.delimiter)
 
         while ((index = connection.rawConnection.socketDataString.indexOf(d)) > -1) {
-          let data = connection.rawConnection.socketDataString.slice(0, index)
+          const data = connection.rawConnection.socketDataString.slice(0, index)
           connection.rawConnection.socketDataString = connection.rawConnection.socketDataString.slice(index + d.length)
-          let lines = data.split(d)
-          for (let i in lines) {
+          const lines = data.split(d)
+          for (const i in lines) {
             await this.parseLine(connection, lines[i])
           }
         }
@@ -154,9 +154,9 @@ module.exports = class SocketServer extends ActionHero.Server {
 
   async parseLine (connection, line) {
     if (this.config.maxDataLength > 0) {
-      let blen = Buffer.byteLength(line, 'utf8')
+      const blen = Buffer.byteLength(line, 'utf8')
       if (blen > this.config.maxDataLength) {
-        let error = await api.config.errors.dataLengthTooLarge(this.config.maxDataLength, blen)
+        const error = await api.config.errors.dataLengthTooLarge(this.config.maxDataLength, blen)
         this.log(error, 'error')
         return this.sendMessage(connection, { status: 'error', error: error, context: 'response' })
       }
@@ -168,8 +168,8 @@ module.exports = class SocketServer extends ActionHero.Server {
   }
 
   async parseRequest (connection, line) {
-    let words = line.split(' ')
-    let verb = words.shift()
+    const words = line.split(' ')
+    const verb = words.shift()
     connection.messageId = connection.params.messageId || uuid.v4()
 
     if (verb === 'file') {
@@ -179,7 +179,7 @@ module.exports = class SocketServer extends ActionHero.Server {
 
     if (this.attributes.verbs.indexOf(verb) >= 0) {
       try {
-        let data = await connection.verbs(verb, words)
+        const data = await connection.verbs(verb, words)
         return this.sendMessage(connection, { status: 'OK', context: 'response', data: data }, connection.messageId)
       } catch (error) {
         return this.sendMessage(connection, { error: error, context: 'response' }, connection.messageId)
@@ -187,10 +187,10 @@ module.exports = class SocketServer extends ActionHero.Server {
     }
 
     try {
-      let requestHash = JSON.parse(line)
+      const requestHash = JSON.parse(line)
       if (requestHash.params !== undefined) {
         connection.params = {}
-        for (let v in requestHash.params) {
+        for (const v in requestHash.params) {
           connection.params[v] = requestHash.params[v]
         }
       }
@@ -210,7 +210,7 @@ module.exports = class SocketServer extends ActionHero.Server {
 
   checkBreakChars (chunk) {
     let found = false
-    let hexChunk = chunk.toString('hex', 0, chunk.length)
+    const hexChunk = chunk.toString('hex', 0, chunk.length)
     if (hexChunk === 'fff4fffd06') {
       found = true // CTRL + C
     } else if (hexChunk === '04') {

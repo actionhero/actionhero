@@ -6,7 +6,7 @@ const actionhero = new ActionHero.Process()
 let api
 
 let taskOutput = []
-let queue = 'testQueue'
+const queue = 'testQueue'
 
 describe('Core: Tasks', () => {
   beforeAll(async () => {
@@ -109,10 +109,11 @@ describe('Core: Tasks', () => {
         this.queue = queue
         this.frequency = 0
       }
+
       async run (params) {}
     }
 
-    let task = new BadTask()
+    const task = new BadTask()
 
     try {
       task.validate()
@@ -132,11 +133,13 @@ describe('Core: Tasks', () => {
           this.description = 'freqFuncTask'
           this.queue = queue
         }
+
         frequency () { return 1 + 2 + 3 }
+
         run (params) { return 'yay' }
       }
 
-      let task = new FreqFuncTask()
+      const task = new FreqFuncTask()
       task.validate() // should not throw
       expect(task.name).toEqual('freqFuncTask')
       expect(task.frequency).toEqual(6)
@@ -150,18 +153,18 @@ describe('Core: Tasks', () => {
   })
 
   test('all queues should start empty', async () => {
-    let length = await api.resque.queue.length()
+    const length = await api.resque.queue.length()
     expect(length).toEqual(0)
   })
 
   test('can run a task manually', async () => {
-    let response = await api.specHelper.runTask('regularTask', { word: 'theWord' })
+    const response = await api.specHelper.runTask('regularTask', { word: 'theWord' })
     expect(response).toEqual('theWord')
     expect(taskOutput[0]).toEqual('theWord')
   })
 
   test('can run a task fully', async () => {
-    let response = await api.specHelper.runFullTask('regularTask', { word: 'theWord' })
+    const response = await api.specHelper.runFullTask('regularTask', { word: 'theWord' })
     expect(response).toEqual('theWord')
     expect(taskOutput[0]).toEqual('theWord')
   })
@@ -174,13 +177,16 @@ describe('Core: Tasks', () => {
         this.description = 'task with additional methods to execute in run'
         this.queue = queue
       }
+
       async stepOne () {
         await api.utils.sleep(100)
         taskOutput.push('one')
       }
+
       stepTwo () {
         taskOutput.push('two')
       }
+
       async run () {
         await this.stepOne()
         this.stepTwo()
@@ -197,20 +203,20 @@ describe('Core: Tasks', () => {
   })
 
   test('no delayed tasks should be scheduled', async () => {
-    let timestamps = await api.resque.queue.scheduledAt(queue, 'periodicTask', {})
+    const timestamps = await api.resque.queue.scheduledAt(queue, 'periodicTask', {})
     expect(timestamps).toHaveLength(0)
   })
 
   test('all periodic tasks can be enqueued at boot', async () => {
     await api.tasks.enqueueAllRecurrentTasks()
-    let length = await api.resque.queue.length(queue)
+    const length = await api.resque.queue.length(queue)
     expect(length).toEqual(1)
   })
 
   test('re-enqueuing a periodic task should not enqueue it again', async () => {
-    let tryOne = await api.tasks.enqueue('periodicTask')
-    let tryTwo = await api.tasks.enqueue('periodicTask')
-    let length = await api.resque.queue.length(queue)
+    const tryOne = await api.tasks.enqueue('periodicTask')
+    const tryTwo = await api.tasks.enqueue('periodicTask')
+    const length = await api.resque.queue.length(queue)
     expect(tryOne).toEqual(true)
     expect(tryTwo).toEqual(false)
     expect(length).toEqual(1)
@@ -218,17 +224,17 @@ describe('Core: Tasks', () => {
 
   test('can add a normal job', async () => {
     await api.tasks.enqueue('regularTask', { word: 'first' })
-    let length = await api.resque.queue.length(queue)
+    const length = await api.resque.queue.length(queue)
     expect(length).toEqual(1)
   })
 
   test('can add a delayed job', async () => {
-    let time = new Date().getTime() + 1000
+    const time = new Date().getTime() + 1000
     await api.tasks.enqueueAt(time, 'regularTask', { word: 'first' })
-    let timestamps = await api.resque.queue.scheduledAt(queue, 'regularTask', { word: 'first' })
+    const timestamps = await api.resque.queue.scheduledAt(queue, 'regularTask', { word: 'first' })
     expect(timestamps).toHaveLength(1)
 
-    let completeTime = Math.floor(time / 1000)
+    const completeTime = Math.floor(time / 1000)
     expect(Number(timestamps[0])).toBeGreaterThanOrEqual(completeTime)
     expect(Number(timestamps[0])).toBeLessThan(completeTime + 2)
   })
@@ -236,19 +242,19 @@ describe('Core: Tasks', () => {
   test(
     'can see enqueued timestmps & see jobs within those timestamps (single + batch)',
     async () => {
-      let time = new Date().getTime() + 1000
-      let roundedTime = Math.round(time / 1000) * 1000
+      const time = new Date().getTime() + 1000
+      const roundedTime = Math.round(time / 1000) * 1000
 
       await api.tasks.enqueueAt(time, 'regularTask', { word: 'first' })
-      let timestamps = await api.tasks.timestamps()
+      const timestamps = await api.tasks.timestamps()
       expect(timestamps).toHaveLength(1)
       expect(timestamps[0]).toEqual(roundedTime)
 
-      let { tasks } = await api.tasks.delayedAt(roundedTime)
+      const { tasks } = await api.tasks.delayedAt(roundedTime)
       expect(tasks).toHaveLength(1)
       expect(tasks[0]['class']).toEqual('regularTask')
 
-      let allTasks = await api.tasks.allDelayed()
+      const allTasks = await api.tasks.allDelayed()
       expect(Object.keys(allTasks)).toHaveLength(1)
       expect(Object.keys(allTasks)[0]).toEqual(String(roundedTime))
       expect(allTasks[roundedTime][0]['class']).toEqual('regularTask')
@@ -257,26 +263,26 @@ describe('Core: Tasks', () => {
 
   test('I can remove an enqueued job', async () => {
     await api.tasks.enqueue('regularTask', { word: 'first' })
-    let length = await api.resque.queue.length(queue)
+    const length = await api.resque.queue.length(queue)
     expect(length).toEqual(1)
 
-    let count = await api.tasks.del(queue, 'regularTask', { word: 'first' })
+    const count = await api.tasks.del(queue, 'regularTask', { word: 'first' })
     expect(count).toEqual(1)
 
-    let lengthAgain = await api.resque.queue.length()
+    const lengthAgain = await api.resque.queue.length()
     expect(lengthAgain).toEqual(0)
   })
 
   test('I can remove a delayed job', async () => {
     await api.tasks.enqueueIn(1000, 'regularTask', { word: 'first' })
-    let timestamps = await api.resque.queue.scheduledAt(queue, 'regularTask', { word: 'first' })
+    const timestamps = await api.resque.queue.scheduledAt(queue, 'regularTask', { word: 'first' })
     expect(timestamps).toHaveLength(1)
 
-    let timestampsDeleted = await api.tasks.delDelayed(queue, 'regularTask', { word: 'first' })
+    const timestampsDeleted = await api.tasks.delDelayed(queue, 'regularTask', { word: 'first' })
     expect(timestampsDeleted).toHaveLength(1)
     expect(timestampsDeleted).toEqual(timestamps)
 
-    let timestampsDeletedAgain = await api.tasks.delDelayed(queue, 'regularTask', { word: 'first' })
+    const timestampsDeletedAgain = await api.tasks.delDelayed(queue, 'regularTask', { word: 'first' })
     expect(timestampsDeletedAgain).toHaveLength(0)
   })
 
@@ -285,7 +291,7 @@ describe('Core: Tasks', () => {
     await api.tasks.enqueue('periodicTask')
     await api.tasks.enqueueIn(1000, 'periodicTask')
 
-    let count = await api.tasks.stopRecurrentTask('periodicTask')
+    const count = await api.tasks.stopRecurrentTask('periodicTask')
     expect(count).toEqual(2)
   })
 
@@ -341,7 +347,7 @@ describe('Core: Tasks', () => {
           priority: 1000,
           global: false,
           preProcessor: function () {
-            let params = this.args[0]
+            const params = this.args[0]
 
             if (params.stop === true) { return false }
             if (params.throw === true) { throw new Error('thown!') }
@@ -367,7 +373,7 @@ describe('Core: Tasks', () => {
           middleware: ['test-middleware'],
           run: function (params, worker) {
             expect(params.test).toEqual(true)
-            let result = worker.result
+            const result = worker.result
             result.run = true
             return result
           }
@@ -400,7 +406,7 @@ describe('Core: Tasks', () => {
       })
 
       test('can prevent the running of a task with return value', async () => {
-        let result = await api.specHelper.runFullTask('middlewareTask', { stop: true })
+        const result = await api.specHelper.runFullTask('middlewareTask', { stop: true })
         expect(result).toBeUndefined()
       })
     })
@@ -415,12 +421,12 @@ describe('Core: Tasks', () => {
 
       await api.utils.sleep(2000)
 
-      let details = await api.tasks.details()
+      const details = await api.tasks.details()
 
       expect(Object.keys(details.queues)).toEqual(['testQueue'])
       expect(details.queues.testQueue).toHaveLength(0)
       expect(Object.keys(details.workers)).toHaveLength(1)
-      let workerName = Object.keys(details.workers)[0]
+      const workerName = Object.keys(details.workers)[0]
       expect(details.workers[workerName].queue).toEqual('testQueue')
       expect(details.workers[workerName].payload.args).toEqual([{ a: 1 }])
       expect(details.workers[workerName].payload['class']).toEqual('slowTask')
@@ -474,25 +480,23 @@ describe('Core: Tasks', () => {
 
     test(
       'trying to run an unknown job will return a failure, but not crash the server',
-      async () => {
+      async (done) => {
         api.config.tasks.queues = ['*']
 
-        await new Promise(async (resolve) => {
-          let listener = async (workerId, queue, job, f) => {
-            expect(queue).toEqual(queue)
-            expect(job['class']).toEqual('someCrazyTask')
-            expect(job.queue).toEqual('testQueue')
-            expect(String(f)).toEqual('Error: No job defined for class "someCrazyTask"')
-            api.resque.multiWorker.removeListener('failure', listener)
-            await api.resque.multiWorker.stop()
-            resolve()
-          }
+        const listener = async (workerId, queue, job, f) => {
+          expect(queue).toEqual(queue)
+          expect(job['class']).toEqual('someCrazyTask')
+          expect(job.queue).toEqual('testQueue')
+          expect(String(f)).toEqual('Error: No job defined for class "someCrazyTask"')
+          api.resque.multiWorker.removeListener('failure', listener)
+          await api.resque.multiWorker.stop()
+          return done()
+        }
 
-          api.resque.multiWorker.on('failure', listener)
+        api.resque.multiWorker.on('failure', listener)
 
-          await api.resque.queue.enqueue(queue, 'someCrazyTask')
-          api.resque.multiWorker.start()
-        })
+        await api.resque.queue.enqueue(queue, 'someCrazyTask')
+        api.resque.multiWorker.start()
       }
     )
   })

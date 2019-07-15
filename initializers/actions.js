@@ -113,7 +113,7 @@ module.exports = class Actions extends ActionHero.Initializer {
       try {
         let collection = require(fullFilePath)
         if (typeof collection === 'function') { collection = [collection] }
-        for (let i in collection) {
+        for (const i in collection) {
           action = new collection[i]()
           await action.validate(api)
           if (!api.actions.actions[action.name]) { api.actions.actions[action.name] = {} }
@@ -138,17 +138,17 @@ module.exports = class Actions extends ActionHero.Initializer {
       }
     }
 
-    for (let i in api.config.general.paths.action) {
-      let p = api.config.general.paths.action[i]
-      let files = glob.sync(path.join(p, '**', '*.js'))
-      for (let j in files) { await api.actions.loadFile(files[j]) }
+    for (const i in api.config.general.paths.action) {
+      const p = api.config.general.paths.action[i]
+      const files = glob.sync(path.join(p, '**', '*.js'))
+      for (const j in files) { await api.actions.loadFile(files[j]) }
     }
 
-    for (let pluginName in api.config.plugins) {
+    for (const pluginName in api.config.plugins) {
       if (api.config.plugins[pluginName].actions !== false) {
-        let pluginPath = api.config.plugins[pluginName].path
-        let files = glob.sync(path.join(pluginPath, 'actions', '**', '*.js'))
-        for (let j in files) { await api.actions.loadFile(files[j]) }
+        const pluginPath = api.config.plugins[pluginName].path
+        const files = glob.sync(path.join(pluginPath, 'actions', '**', '*.js'))
+        for (const j in files) { await api.actions.loadFile(files[j]) }
       }
     }
   }

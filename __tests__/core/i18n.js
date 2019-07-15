@@ -8,9 +8,9 @@ let api
 let originalDetermineConnectionLocale
 
 const readLocaleFile = (locale) => {
-  let file = api.config.general.paths.locale[0] + '/' + locale + '.json'
-  let contents = String(fs.readFileSync(file))
-  let json = JSON.parse(contents)
+  const file = api.config.general.paths.locale[0] + '/' + locale + '.json'
+  const contents = String(fs.readFileSync(file))
+  const json = JSON.parse(contents)
   return json
 }
 
@@ -32,7 +32,7 @@ describe('Core', () => {
       api = await actionhero.start()
       originalDetermineConnectionLocale = api.i18n.determineConnectionLocale
 
-      let options = api.config.i18n
+      const options = api.config.i18n
       options.directory = api.config.general.paths.locale[0]
       options.locales = ['test-env-en', 'test-env-es']
       options.defaultLocale = 'test-env-en'
@@ -49,11 +49,11 @@ describe('Core', () => {
     test(
       'should create localization files by default, and strings from actions should be included',
       async () => {
-        let { randomNumber } = await api.specHelper.runAction('randomNumber')
+        const { randomNumber } = await api.specHelper.runAction('randomNumber')
         expect(randomNumber).toBeLessThan(1)
         expect(randomNumber).toBeGreaterThanOrEqual(0)
 
-        let content = readLocaleFile('test-env-en');
+        const content = readLocaleFile('test-env-en');
 
         [
           'Your random number is {{randomNumber}}'
@@ -112,7 +112,7 @@ describe('Core', () => {
         return 'test-env-es'
       }
 
-      let response = await api.specHelper.getStaticFile('missing-file.html')
+      const response = await api.specHelper.getStaticFile('missing-file.html')
       expect(response.error).toMatch(/actionhero.errors.fileNotFound/) // should this have worked, it would have been in Spanish
     })
   })

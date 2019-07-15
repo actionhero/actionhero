@@ -13,7 +13,7 @@ module.exports = class Generate extends ActionHero.CLI {
   }
 
   run () {
-    let documents = {}
+    const documents = {}
 
     documents.projectMap = fs.readFileSync(path.join(__dirname, '/../templates/projectMap.txt'))
 
@@ -42,10 +42,10 @@ module.exports = class Generate extends ActionHero.CLI {
       gitignore: '/bin/templates/gitignore'
     }
 
-    for (let name in oldFileMap) {
-      let localPath = oldFileMap[name]
-      let source = path.join(__dirname, '/../../', localPath)
-      let extension = (localPath.split('.'))[1]
+    for (const name in oldFileMap) {
+      const localPath = oldFileMap[name]
+      const source = path.join(__dirname, '/../../', localPath)
+      const extension = (localPath.split('.'))[1]
       documents[name] = fs.readFileSync(source)
       if (extension === 'js' || extension === 'json') {
         documents[name] = documents[name].toString()
@@ -80,7 +80,7 @@ module.exports = class Generate extends ActionHero.CLI {
       '/__tests__'
     ].forEach((dir) => {
       try {
-        let message = api.utils.createDirSafely(api.projectRoot + dir)
+        const message = api.utils.createDirSafely(api.projectRoot + dir)
         console.log(message)
       } catch (error) {
         console.log(error.toString())
@@ -114,9 +114,9 @@ module.exports = class Generate extends ActionHero.CLI {
       '/boot.js': 'bootJs'
     }
 
-    for (let file in newFileMap) {
+    for (const file in newFileMap) {
       try {
-        let message = api.utils.createFileSafely(api.projectRoot + file, documents[newFileMap[file]])
+        const message = api.utils.createFileSafely(api.projectRoot + file, documents[newFileMap[file]])
         console.log(message)
       } catch (error) {
         console.log(error.toString())

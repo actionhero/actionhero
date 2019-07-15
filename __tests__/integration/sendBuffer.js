@@ -19,13 +19,13 @@ describe('Server: sendBuffer', () => {
   beforeAll(() => {
     api.actions.versions.sendBufferTest = [1]
     api.actions.actions.sendBufferTest = {
-      '1': {
+      1: {
         name: 'sendBufferTest',
         description: 'sendBufferTest',
         version: 1,
         run: async (data) => {
           const buffer = 'Example of data buffer'
-          let bufferStream = new stream.PassThrough()
+          const bufferStream = new stream.PassThrough()
           data.connection.rawConnection.responseHeaders.push(['Content-Disposition', 'attachment; filename=test.csv'])
           api.servers.servers.web.sendFile(data.connection, null, bufferStream, 'text/csv', buffer.length, new Date())
           data.toRender = false
@@ -36,12 +36,12 @@ describe('Server: sendBuffer', () => {
 
     api.actions.versions.sendUnknownLengthBufferTest = [1]
     api.actions.actions.sendUnknownLengthBufferTest = {
-      '1': {
+      1: {
         name: 'sendUnknownLengthBufferTest',
         description: 'sendUnknownLengthBufferTest',
         version: 1,
         run: (data) => {
-          let bufferStream = new stream.PassThrough()
+          const bufferStream = new stream.PassThrough()
           api.servers.servers.web.sendFile(data.connection, null, bufferStream, 'text/plain', null, new Date())
           const buffer = 'Example of unknown length data buffer'
           data.toRender = false
@@ -62,12 +62,12 @@ describe('Server: sendBuffer', () => {
   })
 
   test('Server should sendBuffer', async () => {
-    let body = await request.get(url + '/api/sendBufferTest')
+    const body = await request.get(url + '/api/sendBufferTest')
     expect(body).toEqual('Example of data buffer')
   })
 
   test('Server should send a stream with no specified length', async () => {
-    let { body, headers } = await request.get({
+    const { body, headers } = await request.get({
       uri: url + '/api/sendUnknownLengthBufferTest',
       resolveWithFullResponse: true
     })

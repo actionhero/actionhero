@@ -43,9 +43,9 @@ describe('browser integration tests', () => {
     })
 
     test('documentation is loaded', async () => {
-      let actionNameElements = await browser.findElements(by.tagName('h3'))
-      let actionNames = []
-      for (let i in actionNameElements) {
+      const actionNameElements = await browser.findElements(by.tagName('h3'))
+      const actionNames = []
+      for (const i in actionNameElements) {
         actionNames.push(await actionNameElements[i].getText())
       }
 
@@ -101,7 +101,7 @@ describe('browser integration tests', () => {
       })
 
       test('has the same fingerprint', async () => {
-        let thisSessionID = await browser.manage().getCookie('sessionID')
+        const thisSessionID = await browser.manage().getCookie('sessionID')
         expect(thisSessionID.value).toEqual(sessionIDCookie.value)
         const fingerprintFromWebSocket = await browser.findElement(by.id('fingerprint')).getText()
         expect(fingerprintFromWebSocket).toEqual(sessionIDCookie.value)

@@ -131,8 +131,8 @@ module.exports = class Connections extends ActionHero.Initializer {
        * @private
        */
       cleanConnection: (connection) => {
-        let clean = {}
-        for (let i in connection) {
+        const clean = {}
+        for (const i in connection) {
           if (i !== 'rawConnection' && i !== 'api') {
             try {
               JSON.stringify(connection[i])

@@ -45,9 +45,9 @@ module.exports = class Process {
 
     api._startingParams = params
 
-    let loadInitializerRankings = {}
-    let startInitializerRankings = {}
-    let stopInitializerRankings = {}
+    const loadInitializerRankings = {}
+    const startInitializerRankings = {}
+    const stopInitializerRankings = {}
     let initializerFiles = []
 
     this.loadInitializers = []
@@ -55,11 +55,11 @@ module.exports = class Process {
     this.stopInitializers = []
 
     // we need to load the utils & config first
-    let files = [
+    const files = [
       path.resolve(__dirname, '..', 'initializers', 'utils.js'),
       path.resolve(__dirname, '..', 'initializers', 'config.js')
     ]
-    for (let file of files) {
+    for (const file of files) {
       delete require.cache[require.resolve(file)]
       let initializer
 
@@ -88,9 +88,9 @@ module.exports = class Process {
     })
 
     // load initializers from plugins
-    for (let pluginName in api.config.plugins) {
+    for (const pluginName in api.config.plugins) {
       if (api.config.plugins[pluginName] !== false) {
-        let pluginPath = api.config.plugins[pluginName].path
+        const pluginPath = api.config.plugins[pluginName].path
         initializerFiles = initializerFiles.concat(glob.sync(path.join(pluginPath, 'initializers', '**', '*.js')))
       }
     }
@@ -98,9 +98,9 @@ module.exports = class Process {
     initializerFiles = api.utils.arrayUniqueify(initializerFiles)
 
     initializerFiles.forEach((f) => {
-      let file = path.normalize(f)
-      let fileParts = file.split('.')
-      let ext = fileParts[(fileParts.length - 1)]
+      const file = path.normalize(f)
+      const fileParts = file.split('.')
+      const ext = fileParts[(fileParts.length - 1)]
       if (ext !== 'js') { return }
 
       delete require.cache[require.resolve(file)]
@@ -119,14 +119,14 @@ module.exports = class Process {
         file !== path.resolve(__dirname, '..', 'initializers', 'utils.js') &&
         file !== path.resolve(__dirname, '..', 'initializers', 'config.js')
       ) {
-        let warningMessage = `an existing intializer with the same name \`${initializer.name}\` will be overridden by the file ${file}`
+        const warningMessage = `an existing intializer with the same name \`${initializer.name}\` will be overridden by the file ${file}`
         if (api.log) { api.log(warningMessage, 'warning') } else { console.warn(warningMessage) }
       } else {
         initializer.validate()
         this.initializers[initializer.name] = initializer
       }
 
-      let initializeFunction = async () => {
+      const initializeFunction = async () => {
         api.watchFileAndAct(file, async () => {
           api.log(`*** Rebooting due to initializer change (${file}) ***`, 'info')
           await api.commands.restart()
@@ -138,7 +138,7 @@ module.exports = class Process {
             await initializer.initialize()
             try { api.log(`Loaded initializer: ${initializer.name}`, 'debug', file) } catch (e) { }
           } catch (error) {
-            let message = `Exception occured in initializer \`${initializer.name}\` during load`
+            const message = `Exception occured in initializer \`${initializer.name}\` during load`
             try {
               api.log(message, 'emerg', error.toString())
             } catch (_error) {
@@ -149,7 +149,7 @@ module.exports = class Process {
         }
       }
 
-      let startFunction = async () => {
+      const startFunction = async () => {
         if (typeof initializer.start === 'function') {
           if (typeof api.log === 'function') { api.log(`Starting initializer: ${initializer.name}`, 'debug', file) }
           try {
@@ -162,7 +162,7 @@ module.exports = class Process {
         }
       }
 
-      let stopFunction = async () => {
+      const stopFunction = async () => {
         if (typeof initializer.stop === 'function') {
           if (typeof api.log === 'function') { api.log(`Stopping initializer: ${initializer.name}`, 'debug', file) }
           try {
@@ -254,7 +254,7 @@ module.exports = class Process {
     } else if (api.shuttingDown === true) {
       // double sigterm; ignore it
     } else {
-      let message = 'Cannot shut down actionhero, not running'
+      const message = 'Cannot shut down actionhero, not running'
       if (api.log) {
         api.log(message, 'error')
       } else {
@@ -292,9 +292,9 @@ module.exports = class Process {
   }
 
   flattenOrderedInitialzer (collection) {
-    let output = []
-    let keys = []
-    for (let key in collection) {
+    const output = []
+    const keys = []
+    for (const key in collection) {
       keys.push(parseInt(key))
     }
     keys.sort(sortNumber)

@@ -75,7 +75,7 @@ module.exports = class StaticFile extends ActionHero.Initializer {
       if (file.indexOf(path.normalize(api.staticFile.searchPath(connection, counter))) !== 0) {
         return api.staticFile.get(connection, counter + 1)
       } else {
-        let { exists, truePath } = await api.staticFile.checkExistence(file)
+        const { exists, truePath } = await api.staticFile.checkExistence(file)
         if (exists) {
           return api.staticFile.sendFile(truePath, connection)
         } else {
@@ -97,13 +97,13 @@ module.exports = class StaticFile extends ActionHero.Initializer {
       let lastModified
 
       try {
-        let stats = await asyncStats(file)
-        let mime = Mime.getType(file)
-        let length = stats.size
-        let start = new Date().getTime()
+        const stats = await asyncStats(file)
+        const mime = Mime.getType(file)
+        const length = stats.size
+        const start = new Date().getTime()
         lastModified = stats.mtime
 
-        let fileStream = fs.createReadStream(file)
+        const fileStream = fs.createReadStream(file)
         api.staticFile.fileLogger(fileStream, connection, start, file, length)
 
         await new Promise((resolve) => {
@@ -118,7 +118,7 @@ module.exports = class StaticFile extends ActionHero.Initializer {
 
     api.staticFile.fileLogger = (fileStream, connection, start, file, length) => {
       fileStream.on('end', () => {
-        let duration = new Date().getTime() - start
+        const duration = new Date().getTime() - start
         api.staticFile.logRequest(file, connection, length, duration, true)
       })
 
@@ -140,10 +140,10 @@ module.exports = class StaticFile extends ActionHero.Initializer {
 
     api.staticFile.checkExistence = async (file) => {
       try {
-        let stats = await asyncStats(file)
+        const stats = await asyncStats(file)
 
         if (stats.isDirectory()) {
-          let indexPath = file + '/' + api.config.general.directoryFileType
+          const indexPath = file + '/' + api.config.general.directoryFileType
           return api.staticFile.checkExistence(indexPath)
         }
 
@@ -182,9 +182,9 @@ module.exports = class StaticFile extends ActionHero.Initializer {
     }
 
     // source the public directories from plugins
-    for (let pluginName in api.config.plugins) {
+    for (const pluginName in api.config.plugins) {
       if (api.config.plugins[pluginName].public !== false) {
-        let pluginPublicPath = path.join(api.config.plugins[pluginName].path, 'public')
+        const pluginPublicPath = path.join(api.config.plugins[pluginName].path, 'public')
         if (fs.existsSync(pluginPublicPath) && api.staticFile.searchLoactions.indexOf(pluginPublicPath) < 0) {
           api.staticFile.searchLoactions.push(pluginPublicPath)
         }

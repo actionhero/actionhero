@@ -47,7 +47,7 @@ describe('Core', () => {
       test(
         'all connections can join the default room and client #1 can see them',
         async () => {
-          let { room, membersCount } = await client1.verbs('roomView', 'defaultRoom')
+          const { room, membersCount } = await client1.verbs('roomView', 'defaultRoom')
           expect(room).toEqual('defaultRoom')
           expect(membersCount).toEqual(3)
         }
@@ -56,7 +56,7 @@ describe('Core', () => {
       test(
         'all connections can join the default room and client #2 can see them',
         async () => {
-          let { room, membersCount } = await client2.verbs('roomView', 'defaultRoom')
+          const { room, membersCount } = await client2.verbs('roomView', 'defaultRoom')
           expect(room).toEqual('defaultRoom')
           expect(membersCount).toEqual(3)
         }
@@ -65,7 +65,7 @@ describe('Core', () => {
       test(
         'all connections can join the default room and client #3 can see them',
         async () => {
-          let { room, membersCount } = await client3.verbs('roomView', 'defaultRoom')
+          const { room, membersCount } = await client3.verbs('roomView', 'defaultRoom')
           expect(room).toEqual('defaultRoom')
           expect(membersCount).toEqual(3)
         }
@@ -75,7 +75,7 @@ describe('Core', () => {
         await client1.verbs('say', ['defaultRoom', 'Hi', 'from', 'client', '1'])
         await api.utils.sleep(100)
 
-        let { message, room, from } = client2.messages[(client2.messages.length - 1)]
+        const { message, room, from } = client2.messages[(client2.messages.length - 1)]
         expect(message).toEqual('Hi from client 1')
         expect(room).toEqual('defaultRoom')
         expect(from).toEqual(client1.id)
@@ -92,17 +92,17 @@ describe('Core', () => {
       })
 
       test('can check if rooms exist', async () => {
-        let found = await api.chatRoom.exists('defaultRoom')
+        const found = await api.chatRoom.exists('defaultRoom')
         expect(found).toEqual(true)
       })
 
       test('can check if a room does not exist', async () => {
-        let found = await api.chatRoom.exists('missingRoom')
+        const found = await api.chatRoom.exists('missingRoom')
         expect(found).toEqual(false)
       })
 
       test('server can create new room', async () => {
-        let room = 'newRoom'
+        const room = 'newRoom'
         let found
         found = await api.chatRoom.exists(room)
         expect(found).toEqual(false)
@@ -122,7 +122,7 @@ describe('Core', () => {
 
       test('can enumerate all the rooms in the system', async () => {
         await api.chatRoom.add('newRoom')
-        let rooms = await api.chatRoom.list()
+        const rooms = await api.chatRoom.list()
         expect(rooms).toHaveLength(3);
         ['defaultRoom', 'newRoom', 'otherRoom'].forEach((r) => {
           expect(rooms.indexOf(r)).toBeGreaterThan(-1)
@@ -130,16 +130,16 @@ describe('Core', () => {
       })
 
       test('server can add connections to a LOCAL room', async () => {
-        let client = await api.specHelper.Connection.createAsync()
+        const client = await api.specHelper.Connection.createAsync()
         expect(client.rooms).toHaveLength(0)
-        let didAdd = await api.chatRoom.addMember(client.id, 'defaultRoom')
+        const didAdd = await api.chatRoom.addMember(client.id, 'defaultRoom')
         expect(didAdd).toEqual(true)
         expect(client.rooms[0]).toEqual('defaultRoom')
         client.destroy()
       })
 
       test('will not re-add a member to a room', async () => {
-        let client = await api.specHelper.Connection.createAsync()
+        const client = await api.specHelper.Connection.createAsync()
         expect(client.rooms).toHaveLength(0)
         let didAdd = await api.chatRoom.addMember(client.id, 'defaultRoom')
         expect(didAdd).toEqual(true)
@@ -153,7 +153,7 @@ describe('Core', () => {
       })
 
       test('will not add a member to a non-existant room', async () => {
-        let client = await api.specHelper.Connection.createAsync()
+        const client = await api.specHelper.Connection.createAsync()
         expect(client.rooms).toHaveLength(0)
         try {
           await api.chatRoom.addMember(client.id, 'crazyRoom')
@@ -165,7 +165,7 @@ describe('Core', () => {
       })
 
       test('server will not remove a member not in a room', async () => {
-        let client = await api.specHelper.Connection.createAsync()
+        const client = await api.specHelper.Connection.createAsync()
         try {
           await api.chatRoom.removeMember(client.id, 'defaultRoom')
           throw new Error('should not get here')
@@ -176,10 +176,10 @@ describe('Core', () => {
       })
 
       test('server can remove connections to a room', async () => {
-        let client = await api.specHelper.Connection.createAsync()
-        let didAdd = await api.chatRoom.addMember(client.id, 'defaultRoom')
+        const client = await api.specHelper.Connection.createAsync()
+        const didAdd = await api.chatRoom.addMember(client.id, 'defaultRoom')
         expect(didAdd).toEqual(true)
-        let didRemove = await api.chatRoom.removeMember(client.id, 'defaultRoom')
+        const didRemove = await api.chatRoom.removeMember(client.id, 'defaultRoom')
         expect(didRemove).toEqual(true)
         client.destroy()
       })
@@ -190,9 +190,9 @@ describe('Core', () => {
           await api.chatRoom.destroy('newRoom')
         } catch (error) { }
 
-        let client = await api.specHelper.Connection.createAsync()
+        const client = await api.specHelper.Connection.createAsync()
         await api.chatRoom.add('newRoom')
-        let didAdd = await api.chatRoom.addMember(client.id, 'newRoom')
+        const didAdd = await api.chatRoom.addMember(client.id, 'newRoom')
         expect(didAdd).toEqual(true)
         expect(client.rooms[0]).toEqual('newRoom')
 
@@ -207,11 +207,11 @@ describe('Core', () => {
       })
 
       test('can get a list of room members', async () => {
-        let client = await api.specHelper.Connection.createAsync()
+        const client = await api.specHelper.Connection.createAsync()
         expect(client.rooms).toHaveLength(0)
         await api.chatRoom.add('newRoom')
         await api.chatRoom.addMember(client.id, 'newRoom')
-        let { room, membersCount } = await api.chatRoom.roomStatus('newRoom')
+        const { room, membersCount } = await api.chatRoom.roomStatus('newRoom')
         expect(room).toEqual('newRoom')
         expect(membersCount).toEqual(1)
         client.destroy()
@@ -252,7 +252,7 @@ describe('Core', () => {
           await clientB.verbs('roomAdd', 'defaultRoom')
           await clientA.verbs('say', ['defaultRoom', 'hi there'])
           await api.utils.sleep(100)
-          let message = clientB.messages[(clientB.messages.length - 1)]
+          const message = clientB.messages[(clientB.messages.length - 1)]
           expect(message.thing).toEqual('stuff')
           expect(message.message).toBeUndefined()
         })
@@ -295,7 +295,7 @@ describe('Core', () => {
           await clientB.verbs('say', ['defaultRoom', 'something', 'awesome'])
           await api.utils.sleep(100)
 
-          let lastMessage = clientA.messages[(clientA.messages.length - 1)]
+          const lastMessage = clientA.messages[(clientA.messages.length - 1)]
           expect(lastMessage.message).toEqual('something else')
         })
 
@@ -325,7 +325,7 @@ describe('Core', () => {
             await clientB.verbs('say', ['defaultRoom', 'something', 'awesome'])
             await api.utils.sleep(100)
 
-            let lastMessage = clientA.messages[(clientA.messages.length - 1)]
+            const lastMessage = clientA.messages[(clientA.messages.length - 1)]
             expect(lastMessage.message).toEqual('MIDDLEWARE 1 MIDDLEWARE 2')
           }
         )
@@ -373,7 +373,7 @@ describe('Core', () => {
             }
           })
 
-          let didJoin = await clientA.verbs('roomAdd', 'defaultRoom')
+          const didJoin = await clientA.verbs('roomAdd', 'defaultRoom')
           expect(didJoin).toEqual(true)
           expect(clientA.rooms).toHaveLength(1)
           expect(clientA.rooms[0]).toEqual('defaultRoom')
@@ -399,7 +399,7 @@ describe('Core', () => {
           await clientB.verbs('roomAdd', 'defaultRoom')
           await clientB.verbs('say', ['defaultRoom', 'something', 'awesome'])
           await api.utils.sleep(100)
-          let lastMessage = clientA.messages[(clientA.messages.length - 1)]
+          const lastMessage = clientA.messages[(clientA.messages.length - 1)]
           expect(lastMessage.message).toEqual('something else')
         })
 
@@ -429,7 +429,7 @@ describe('Core', () => {
             await clientB.verbs('say', ['defaultRoom', 'something', 'awesome'])
             await api.utils.sleep(100)
 
-            let lastMessage = clientA.messages[(clientA.messages.length - 1)]
+            const lastMessage = clientA.messages[(clientA.messages.length - 1)]
             expect(lastMessage.message).toEqual('MIDDLEWARE 1 MIDDLEWARE 2')
           }
         )
@@ -477,7 +477,7 @@ describe('Core', () => {
             }
           })
 
-          let didJoin = await clientA.verbs('roomAdd', 'defaultRoom')
+          const didJoin = await clientA.verbs('roomAdd', 'defaultRoom')
           expect(didJoin).toEqual(true)
           expect(clientA.rooms).toHaveLength(1)
           expect(clientA.rooms[0]).toEqual('defaultRoom')
