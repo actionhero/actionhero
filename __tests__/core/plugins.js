@@ -22,7 +22,7 @@ describe('Core: Plugins', () => {
     beforeAll(async () => {
       configChanges = {
         plugins: {
-          'testPlugin': { path: path.join(__dirname, '..', 'testPlugin') }
+          testPlugin: { path: path.join(__dirname, '..', 'testPlugin') }
         }
       }
 
@@ -32,7 +32,7 @@ describe('Core: Plugins', () => {
     afterAll(async () => { await actionhero.stop() })
 
     test('can load an action from a plugin', async () => {
-      let response = await api.specHelper.runAction('pluginAction')
+      const response = await api.specHelper.runAction('pluginAction')
       expect(response.error).toBeUndefined()
       expect(response.cool).toEqual(true)
     })
@@ -49,20 +49,20 @@ describe('Core: Plugins', () => {
     // test('can load a server from a plugin')
 
     test('can serve static files from a plugin', async () => {
-      let file = await api.specHelper.getStaticFile('plugin.html')
+      const file = await api.specHelper.getStaticFile('plugin.html')
       expect(file.content).toEqual('<h1>PLUGIN!<h1>\n')
       expect(file.mime).toEqual('text/html')
     })
 
     test('can load CLI command from a plugin', async () => {
-      let env = Object.assign({}, process.env)
+      const env = Object.assign({}, process.env)
       env.configChanges = JSON.stringify(configChanges)
 
-      let { stdout: helpResponse, stderr: error1 } = await exec('./bin/actionhero help', { env })
+      const { stdout: helpResponse, stderr: error1 } = await exec('./bin/actionhero help', { env })
       expect(error1).toEqual('')
       expect(helpResponse).toContain('hello')
 
-      let { stdout: helloResponse, stderr: error2 } = await exec('./bin/actionhero hello', { env })
+      const { stdout: helloResponse, stderr: error2 } = await exec('./bin/actionhero hello', { env })
       expect(error2).toEqual('')
       expect(helloResponse).toContain('hello')
     })
@@ -72,7 +72,7 @@ describe('Core: Plugins', () => {
     beforeAll(async () => {
       configChanges = {
         plugins: {
-          'testPlugin': {
+          testPlugin: {
             path: path.join(__dirname, '..', 'testPlugin'),
             actions: false,
             tasks: false,
@@ -90,7 +90,7 @@ describe('Core: Plugins', () => {
     afterAll(async () => { await actionhero.stop() })
 
     test('will not load an action from an un-loaded plugin', async () => {
-      let response = await api.specHelper.runAction('pluginAction')
+      const response = await api.specHelper.runAction('pluginAction')
       expect(response.error).toMatch(/unknown action or invalid apiVersion/)
     })
 
@@ -106,15 +106,15 @@ describe('Core: Plugins', () => {
     // test('will not load a server from an un-loaded plugin')
 
     test('will not serve static files from an un-loaded plugin', async () => {
-      let file = await api.specHelper.getStaticFile('plugin.html')
+      const file = await api.specHelper.getStaticFile('plugin.html')
       expect(file.error).toMatch(/file is not found/)
     })
 
     test('will not load CLI command from an un-loaded plugin', async () => {
-      let env = Object.assign({}, process.env)
+      const env = Object.assign({}, process.env)
       env.configChanges = JSON.stringify(configChanges)
 
-      let { stdout: helpResponse, stderr: error1 } = await exec('./bin/actionhero help', { env })
+      const { stdout: helpResponse, stderr: error1 } = await exec('./bin/actionhero help', { env })
       expect(error1).toEqual('')
       expect(helpResponse).not.toContain('hello')
 
@@ -132,7 +132,7 @@ describe('Core: Plugins', () => {
     afterAll(async () => { await actionhero.stop() })
 
     test('will not load an action from an un-loaded plugin', async () => {
-      let response = await api.specHelper.runAction('pluginAction')
+      const response = await api.specHelper.runAction('pluginAction')
       expect(response.error).toMatch(/unknown action or invalid apiVersion/)
     })
 
@@ -148,12 +148,12 @@ describe('Core: Plugins', () => {
     // test('will not load a server from an un-loaded plugin')
 
     test('will not serve static files from an un-loaded plugin', async () => {
-      let file = await api.specHelper.getStaticFile('plugin.html')
+      const file = await api.specHelper.getStaticFile('plugin.html')
       expect(file.error).toMatch(/file is not found/)
     })
 
     test('will not load CLI command from an un-loaded plugin', async () => {
-      let { stdout: helpResponse, stderr: error1 } = await exec('./bin/actionhero help')
+      const { stdout: helpResponse, stderr: error1 } = await exec('./bin/actionhero help')
       expect(error1).toEqual('')
       expect(helpResponse).not.toContain('hello')
 

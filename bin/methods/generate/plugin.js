@@ -19,7 +19,7 @@ module.exports = class GeneratePlugin extends ActionHero.CLI {
     let template = fs.readFileSync(path.join(__dirname, '/../../templates/package-plugin.json'))
     template = String(template)
 
-    let regex = new RegExp('%%versionNumber%%', 'g')
+    const regex = new RegExp('%%versionNumber%%', 'g')
     template = template.replace(regex, PackageJSON.version);
 
     [
@@ -32,14 +32,14 @@ module.exports = class GeneratePlugin extends ActionHero.CLI {
       'public'
     ].forEach((type) => {
       try {
-        let message = api.utils.createDirSafely(path.join(process.cwd(), type), template)
+        const message = api.utils.createDirSafely(path.join(process.cwd(), type), template)
         console.info(message)
       } catch (error) {
         console.log(error.toString())
       }
     })
 
-    let message = api.utils.createFileSafely(path.join(process.cwd(), 'package.json'), template)
+    const message = api.utils.createFileSafely(path.join(process.cwd(), 'package.json'), template)
     console.info(message)
 
     return true

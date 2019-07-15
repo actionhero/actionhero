@@ -16,12 +16,12 @@ let client2Details = {}
 const makeSocketRequest = async (thisClient, message = '', delimiter = '\r\n') => {
   let data = ''
   let response
-  return new Promise(async (resolve) => {
+  return new Promise((resolve) => {
     const onData = (d) => {
       data += d
-      let lines = data.split(delimiter)
+      const lines = data.split(delimiter)
       while (lines.length > 0) {
-        let attemptedLine = lines.pop()
+        const attemptedLine = lines.pop()
         try {
           response = JSON.parse(attemptedLine)
           thisClient.removeAllListeners('data')
@@ -63,7 +63,7 @@ describe('Server: Socket', () => {
   beforeAll(async () => {
     api = await actionhero.start()
     await connectClients()
-    let result = await makeSocketRequest(client2, 'detailsView')
+    const result = await makeSocketRequest(client2, 'detailsView')
     client2Details = result.data
   })
 
@@ -75,25 +75,25 @@ describe('Server: Socket', () => {
   })
 
   test('socket connections should be able to connect and get JSON', async () => {
-    let response = await makeSocketRequest(client, 'hello')
+    const response = await makeSocketRequest(client, 'hello')
     expect(response).toBeInstanceOf(Object)
     expect(response.error).toEqual('unknown action or invalid apiVersion')
   })
 
   test('single string message are treated as actions', async () => {
-    let response = await makeSocketRequest(client, 'status')
+    const response = await makeSocketRequest(client, 'status')
     expect(response).toBeInstanceOf(Object)
     expect(response.id).toEqual(`test-server-${process.env.JEST_WORKER_ID || 0}`)
   })
 
   test('stringified JSON can also be sent as actions', async () => {
-    let response = await makeSocketRequest(client, JSON.stringify({ action: 'status', params: { something: 'else' } }))
+    const response = await makeSocketRequest(client, JSON.stringify({ action: 'status', params: { something: 'else' } }))
     expect(response).toBeInstanceOf(Object)
     expect(response.id).toEqual(`test-server-${process.env.JEST_WORKER_ID || 0}`)
   })
 
   test('really long messages are OK', async () => {
-    let msg = {
+    const msg = {
       action: 'cacheTest',
       params: {
         key: uuid.v4(),
@@ -101,20 +101,20 @@ describe('Server: Socket', () => {
       }
     }
 
-    let response = await makeSocketRequest(client, JSON.stringify(msg))
+    const response = await makeSocketRequest(client, JSON.stringify(msg))
     expect(response.cacheTestResults.loadResp.key).toEqual('cacheTest_' + msg.params.key)
     expect(response.cacheTestResults.loadResp.value).toEqual(msg.params.value)
   })
 
   test('I can get my ip', async () => {
-    let response = await makeSocketRequest(client, 'detailsView')
+    const response = await makeSocketRequest(client, 'detailsView')
     expect(response.status).toEqual('OK')
     expect(response.data.remoteIP).toEqual('127.0.0.1')
   })
 
   test('I can get my details', async () => {
-    let response = await makeSocketRequest(client2, 'detailsView')
-    let now = new Date().getTime()
+    const response = await makeSocketRequest(client2, 'detailsView')
+    const now = new Date().getTime()
     expect(response.status).toEqual('OK')
     expect(response.data).toBeInstanceOf(Object)
     expect(response.data.params).toBeInstanceOf(Object)
@@ -125,9 +125,9 @@ describe('Server: Socket', () => {
   })
 
   test('params can be updated', async () => {
-    let response = await makeSocketRequest(client, 'paramAdd key=otherKey')
+    const response = await makeSocketRequest(client, 'paramAdd key=otherKey')
     expect(response.status).toEqual('OK')
-    let responseAgain = await makeSocketRequest(client, 'paramsView')
+    const responseAgain = await makeSocketRequest(client, 'paramsView')
     expect(responseAgain.data.key).toEqual('otherKey')
   })
 
@@ -135,65 +135,65 @@ describe('Server: Socket', () => {
     'actions will fail without proper params set to the connection',
     async () => {
       await makeSocketRequest(client, 'paramDelete key')
-      let response = await makeSocketRequest(client, 'cacheTest')
+      const response = await makeSocketRequest(client, 'cacheTest')
       expect(response.error).toEqual('key is a required parameter for this action')
     }
   )
 
   test('a new param can be added and viewed', async () => {
-    let response = await makeSocketRequest(client, 'paramAdd key=socketTestKey')
+    const response = await makeSocketRequest(client, 'paramAdd key=socketTestKey')
     expect(response.status).toEqual('OK')
-    let viewResponse = await makeSocketRequest(client, 'paramView key')
+    const viewResponse = await makeSocketRequest(client, 'paramView key')
     expect(viewResponse.data).toEqual('socketTestKey')
   })
 
   test('another new param can be added and viewed', async () => {
-    let response = await makeSocketRequest(client, 'paramAdd value=abc123')
+    const response = await makeSocketRequest(client, 'paramAdd value=abc123')
     expect(response.status).toEqual('OK')
-    let viewResponse = await makeSocketRequest(client, 'paramView value')
+    const viewResponse = await makeSocketRequest(client, 'paramView value')
     expect(viewResponse.data).toEqual('abc123')
   })
 
   test('actions will work once all the needed params are added', async () => {
     await makeSocketRequest(client, 'paramAdd key=socketTestKey')
     await makeSocketRequest(client, 'paramAdd value=abc123')
-    let response = await makeSocketRequest(client, 'cacheTest')
+    const response = await makeSocketRequest(client, 'cacheTest')
     expect(response.cacheTestResults.saveResp).toEqual(true)
   })
 
   test('params are sticky between actions', async () => {
     await makeSocketRequest(client, 'paramAdd key=socketTestKey')
     await makeSocketRequest(client, 'paramAdd value=abc123')
-    let response = await makeSocketRequest(client, 'cacheTest')
+    const response = await makeSocketRequest(client, 'cacheTest')
     expect(response.error).toBeUndefined()
     expect(response.cacheTestResults.loadResp.key).toEqual('cacheTest_socketTestKey')
     expect(response.cacheTestResults.loadResp.value).toEqual('abc123')
 
-    let responseAgain = await makeSocketRequest(client, 'cacheTest')
+    const responseAgain = await makeSocketRequest(client, 'cacheTest')
     expect(responseAgain.cacheTestResults.loadResp.key).toEqual('cacheTest_socketTestKey')
     expect(responseAgain.cacheTestResults.loadResp.value).toEqual('abc123')
   })
 
   test('only params sent in a JSON block are used', async () => {
-    let response = await makeSocketRequest(client, JSON.stringify({ action: 'cacheTest', params: { key: 'someOtherValue' } }))
+    const response = await makeSocketRequest(client, JSON.stringify({ action: 'cacheTest', params: { key: 'someOtherValue' } }))
     expect(response.error).toEqual('value is a required parameter for this action')
   })
 
   test('messageId is unique', async () => {
-    let responseA = await makeSocketRequest(client, 'randomNumber')
-    let responseB = await makeSocketRequest(client, 'randomNumber')
+    const responseA = await makeSocketRequest(client, 'randomNumber')
+    const responseB = await makeSocketRequest(client, 'randomNumber')
     expect(responseA.messageId).not.toEqual(responseB.messageId)
   })
 
   test('messageId is configurable (sticky params)', async () => {
     await makeSocketRequest(client, 'paramAdd messageId=aaaaaa')
-    let response = await makeSocketRequest(client, 'randomNumber')
+    const response = await makeSocketRequest(client, 'randomNumber')
     expect(response.messageId).toEqual('aaaaaa')
     await makeSocketRequest(client, 'paramDelete messageId')
   })
 
   test('messageId is configurable (json)', async () => {
-    let response = await makeSocketRequest(client, JSON.stringify({ action: 'randomNumber', params: { messageId: 'abc123' } }))
+    const response = await makeSocketRequest(client, JSON.stringify({ action: 'randomNumber', params: { messageId: 'abc123' } }))
     expect(response.messageId).toEqual('abc123')
   })
 
@@ -203,7 +203,7 @@ describe('Server: Socket', () => {
 
     expect(newClient.readable).toEqual(true)
     expect(newClient.writable).toEqual(true)
-    let response = await makeSocketRequest(newClient, 'detailsView')
+    const response = await makeSocketRequest(newClient, 'detailsView')
     expect(response.status).toEqual('OK')
 
     await new Promise((resolve) => {
@@ -217,7 +217,7 @@ describe('Server: Socket', () => {
   })
 
   test('will limit how many simultaneous connections I can have', async () => {
-    let responses = []
+    const responses = []
     let msg = ''
     let i = 0
 
@@ -234,8 +234,8 @@ describe('Server: Socket', () => {
 
         if (responses.length >= (api.config.general.simultaneousActions + 1)) {
           client.removeListener('data', checkResponses)
-          for (let i in responses) {
-            let response = responses[i]
+          for (const i in responses) {
+            const response = responses[i]
             if (i === '0') {
               expect(response.error).toEqual('you have too many pending requests')
             } else {
@@ -259,7 +259,7 @@ describe('Server: Socket', () => {
     test(
       'will error If received data length is bigger then maxDataLength',
       async () => {
-        let msg = {
+        const msg = {
           action: 'cacheTest',
           params: {
             key: uuid.v4(),
@@ -267,7 +267,7 @@ describe('Server: Socket', () => {
           }
         }
 
-        let response = await makeSocketRequest(client, JSON.stringify(msg))
+        const response = await makeSocketRequest(client, JSON.stringify(msg))
         expect(response.status).toEqual('error')
         expect(response.error).toEqual('data length is too big (64 received/449 max)')
       }
@@ -279,13 +279,13 @@ describe('Server: Socket', () => {
 
     test('will parse custom newline data delimiter', async () => {
       api.config.servers.socket.delimiter = 'xXxXxX'
-      let response = await makeSocketRequest(client, JSON.stringify({ action: 'status' }), 'xXxXxX')
+      const response = await makeSocketRequest(client, JSON.stringify({ action: 'status' }), 'xXxXxX')
       expect(response.context).toEqual('response')
     })
 
     test('will parse custom `^]` data delimiter', async () => {
       api.config.servers.socket.delimiter = '^]'
-      let response = await makeSocketRequest(client, JSON.stringify({ action: 'status' }), '^]')
+      const response = await makeSocketRequest(client, JSON.stringify({ action: 'status' }), '^]')
       expect(response.context).toEqual('response')
     })
   })
@@ -298,7 +298,7 @@ describe('Server: Socket', () => {
     })
 
     afterEach(async () => {
-      for (let room of ['defaultRoom', 'otherRoom']) {
+      for (const room of ['defaultRoom', 'otherRoom']) {
         await makeSocketRequest(client, 'roomLeave ' + room)
         await makeSocketRequest(client2, 'roomLeave ' + room)
         await makeSocketRequest(client3, 'roomLeave ' + room)
@@ -306,28 +306,28 @@ describe('Server: Socket', () => {
     })
 
     test('clients are in the default room', async () => {
-      let response = await makeSocketRequest(client, 'roomView defaultRoom')
+      const response = await makeSocketRequest(client, 'roomView defaultRoom')
       expect(response.data.room).toEqual('defaultRoom')
     })
 
     test('clients can view additional info about rooms they are in', async () => {
-      let response = await makeSocketRequest(client, 'roomView defaultRoom')
+      const response = await makeSocketRequest(client, 'roomView defaultRoom')
       expect(response.data.membersCount).toEqual(3)
     })
 
     test(
       'clients see an appropriate error when viewing rooms they are not in',
       async () => {
-        let response = await makeSocketRequest(client, 'roomView notARoom')
+        const response = await makeSocketRequest(client, 'roomView notARoom')
         expect(response.error).toMatch(/connection not in this room/)
       }
     )
 
     test('rooms can be changed', async () => {
       await makeSocketRequest(client, 'roomAdd otherRoom')
-      let response = await makeSocketRequest(client, 'roomLeave defaultRoom')
+      const response = await makeSocketRequest(client, 'roomLeave defaultRoom')
       expect(response.status).toEqual('OK')
-      let responseAgain = await makeSocketRequest(client, 'roomView otherRoom')
+      const responseAgain = await makeSocketRequest(client, 'roomView otherRoom')
       expect(responseAgain.data.room).toEqual('otherRoom')
       expect(responseAgain.data.membersCount).toEqual(1)
     })
@@ -335,18 +335,15 @@ describe('Server: Socket', () => {
     test('connections in the first room see the count go down', async () => {
       await makeSocketRequest(client, 'roomAdd   otherRoom')
       await makeSocketRequest(client, 'roomLeave defaultRoom')
-      let response = await makeSocketRequest(client2, 'roomView defaultRoom')
+      const response = await makeSocketRequest(client2, 'roomView defaultRoom')
       expect(response.data.room).toEqual('defaultRoom')
       expect(response.data.membersCount).toEqual(2)
     })
 
     test('folks in my room hear what I say (and say works)', async () => {
-      await new Promise(async (resolve) => {
-        makeSocketRequest(client2, 'say defaultRoom hello?' + '\r\n')
-        let response = await makeSocketRequest(client3, '')
-        expect(response.message).toEqual('hello?')
-        resolve()
-      })
+      makeSocketRequest(client2, 'say defaultRoom hello?' + '\r\n')
+      const response = await makeSocketRequest(client3, '')
+      expect(response.message).toEqual('hello?')
     })
 
     describe('chat middleware', () => {
@@ -379,14 +376,14 @@ describe('Server: Socket', () => {
         await makeSocketRequest(client, 'roomAdd otherRoom')
         await api.utils.sleep(100) // wait sufficently long for other room ops to complete
         makeSocketRequest(client2, 'roomAdd otherRoom')
-        let response = await makeSocketRequest(client, '')
+        const response = await makeSocketRequest(client, '')
         expect(response.message).toEqual('I have entered the room: ' + client2Details.id)
         expect(response.from).toEqual(0)
       })
 
       test('Folks are notified when I leave a room', async () => {
         makeSocketRequest(client2, 'roomLeave defaultRoom\r\n')
-        let response = await makeSocketRequest(client, '')
+        const response = await makeSocketRequest(client, '')
         expect(response.message).toEqual('I have left the room: ' + client2Details.id)
         expect(response.from).toEqual(0)
       })
@@ -418,9 +415,9 @@ describe('Server: Socket', () => {
       beforeAll(async () => {
         // Ensure that default behavior works
         await makeSocketRequest(client2, 'roomAdd defaultRoom')
-        let response = await makeSocketRequest(client2, 'roomView defaultRoom')
+        const response = await makeSocketRequest(client2, 'roomView defaultRoom')
         expect(response.data.room).toEqual('defaultRoom')
-        for (let key in response.data.members) {
+        for (const key in response.data.members) {
           expect(response.data.members[key].type).toBeUndefined()
         }
         await makeSocketRequest(client2, 'roomLeave defaultRoom')
@@ -457,9 +454,9 @@ describe('Server: Socket', () => {
 
       test('should view non-default member data', async () => {
         await makeSocketRequest(client2, 'roomAdd defaultRoom')
-        let response = await makeSocketRequest(client2, 'roomView defaultRoom')
+        const response = await makeSocketRequest(client2, 'roomView defaultRoom')
         expect(response.data.room).toEqual('defaultRoom')
-        for (let key in response.data.members) {
+        for (const key in response.data.members) {
           expect(response.data.members[key].type).toEqual('socket')
         }
         await makeSocketRequest(client2, 'roomLeave defaultRoom')
@@ -471,12 +468,12 @@ describe('Server: Socket', () => {
     afterAll(async () => { await connectClients() })
 
     test('server can disconnect a client', async () => {
-      let response = await makeSocketRequest(client, 'status')
+      const response = await makeSocketRequest(client, 'status')
       expect(response.id).toEqual(`test-server-${process.env.JEST_WORKER_ID || 0}`)
       expect(client.readable).toEqual(true)
       expect(client.writable).toEqual(true)
 
-      for (let id in api.connections.connections) {
+      for (const id in api.connections.connections) {
         api.connections.connections[id].destroy()
       }
 

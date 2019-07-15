@@ -39,8 +39,8 @@ module.exports = class RandomNumber extends Action {
     // This is due to cyclical require issues
     api = require('./../index.js').api
 
-    let coreProperties = this.coreProperties()
-    for (let key in coreProperties) {
+    const coreProperties = this.coreProperties()
+    for (const key in coreProperties) {
       if (!this[key]) { this[key] = coreProperties[key] }
       if (typeof this[key] === 'function') { this[key] = this[key]() }
     }

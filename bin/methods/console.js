@@ -12,7 +12,7 @@ module.exports = class Console extends ActionHero.CLI {
   }
 
   async run () {
-    for (let i in api.config.servers) { api.config.servers[i].enabled = false }
+    for (const i in api.config.servers) { api.config.servers[i].enabled = false }
     api.config.general.developmentMode = false
     api.config.tasks.scheduler = false
     api.config.tasks.queues = []
@@ -22,7 +22,7 @@ module.exports = class Console extends ActionHero.CLI {
     await api.commands.start.call(api._context)
     await api.utils.sleep(500)
 
-    await new Promise(async (resolve, reject) => {
+    await new Promise((resolve, reject) => {
       const repl = REPL.start({
         prompt: '[ AH::' + api.env + ' ] >> ',
         input: process.stdin,

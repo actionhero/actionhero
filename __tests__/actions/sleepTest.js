@@ -11,12 +11,12 @@ describe('Action', () => {
     afterAll(async () => { await actionhero.stop() })
 
     test('will return data from an async action', async () => {
-      let { sleepDuration } = await api.specHelper.runAction('sleepTest')
+      const { sleepDuration } = await api.specHelper.runAction('sleepTest')
       expect(sleepDuration).toEqual(1000)
     })
 
     test('can change sleepDuration', async () => {
-      let { sleepDuration } = await api.specHelper.runAction('sleepTest', { sleepDuration: 100 })
+      const { sleepDuration } = await api.specHelper.runAction('sleepTest', { sleepDuration: 100 })
       expect(sleepDuration).toEqual(100)
     })
   })

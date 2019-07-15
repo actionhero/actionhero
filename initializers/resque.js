@@ -118,7 +118,7 @@ module.exports = class Resque extends ActionHero.Initializer {
         api.resque.multiWorker.on('error', (error, workerId, queue, job) => { api.exceptionHandlers.task(error, queue, job, workerId) })
 
         api.resque.multiWorker.on('success', (workerId, queue, job, result) => {
-          let payload = {
+          const payload = {
             workerId,
             class: job['class'],
             queue: job.queue

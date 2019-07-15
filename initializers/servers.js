@@ -26,7 +26,7 @@ module.exports = class Servers extends ActionHero.Initializer {
       servers: {}
     }
 
-    let serverFolders = [
+    const serverFolders = [
       path.resolve(path.join(__dirname, '..', 'servers'))
     ]
 
@@ -35,21 +35,21 @@ module.exports = class Servers extends ActionHero.Initializer {
       if (serverFolders.indexOf(p) < 0) { serverFolders.push(p) }
     })
 
-    for (let i in serverFolders) {
-      let p = serverFolders[i]
+    for (const i in serverFolders) {
+      const p = serverFolders[i]
       let files = glob.sync(path.join(p, '**', '*.js'))
 
-      for (let pluginName in api.config.plugins) {
+      for (const pluginName in api.config.plugins) {
         if (api.config.plugins[pluginName].servers !== false) {
-          let pluginPath = api.config.plugins[pluginName].path
+          const pluginPath = api.config.plugins[pluginName].path
           files = files.concat(glob.sync(path.join(pluginPath, 'servers', '**', '*.js')))
         }
       }
 
-      for (let j in files) {
-        let filename = files[j]
-        let ServerClass = require(filename)
-        let server = new ServerClass()
+      for (const j in files) {
+        const filename = files[j]
+        const ServerClass = require(filename)
+        const server = new ServerClass()
         server.config = api.config.servers[server.type] // shorthand access
         if (server.config && server.config.enabled === true) {
           await server.initialize()
@@ -72,9 +72,9 @@ module.exports = class Servers extends ActionHero.Initializer {
 
   async start () {
     const serverNames = Object.keys(api.servers.servers)
-    for (let i in serverNames) {
-      let serverName = serverNames[i]
-      let server = api.servers.servers[serverName]
+    for (const i in serverNames) {
+      const serverName = serverNames[i]
+      const server = api.servers.servers[serverName]
       if (server && server.config.enabled === true) {
         let message = ''
         message += `Starting server: \`${serverName}\``
@@ -93,9 +93,9 @@ module.exports = class Servers extends ActionHero.Initializer {
 
   async stop () {
     const serverNames = Object.keys(api.servers.servers)
-    for (let i in serverNames) {
-      let serverName = serverNames[i]
-      let server = api.servers.servers[serverName]
+    for (const i in serverNames) {
+      const serverName = serverNames[i]
+      const server = api.servers.servers[serverName]
       if ((server && server.config.enabled === true) || !server) {
         api.log(`Stopping server: ${serverName}`, 'notice')
         await server.stop()

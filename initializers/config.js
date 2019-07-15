@@ -69,7 +69,7 @@ module.exports = class Config extends ActionHero.Initializer {
     }
 
     api.unWatchAllFiles = () => {
-      for (let file in api.watchedFiles) {
+      for (const file in api.watchedFiles) {
         api.watchedFiles[file].watcher.close()
         delete api.watchedFiles[file]
       }
@@ -85,7 +85,7 @@ module.exports = class Config extends ActionHero.Initializer {
     // you wish to use both, you need to re-specify "config", e.g. "--config=config,local-config". Also, note that
     // specifying multiple --config options on the command line does exactly the same thing as using one parameter with
     // comma separators, however the environment variable method only supports the comma-delimited syntax.
-    let configPaths = []
+    const configPaths = []
 
     function addConfigPath (pathToCheck, alreadySplit) {
       if (typeof pathToCheck === 'string') {
@@ -123,7 +123,7 @@ module.exports = class Config extends ActionHero.Initializer {
     }
 
     const loadConfigFile = (f) => {
-      let localConfig = require(f)
+      const localConfig = require(f)
       if (f.includes('routes.js')) {
         let localRoutes = { routes: {} }
 

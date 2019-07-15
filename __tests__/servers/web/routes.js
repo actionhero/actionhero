@@ -31,7 +31,7 @@ describe('Server: Web', () => {
       originalRoutes = api.routes.routes
       api.actions.versions.mimeTestAction = [1]
       api.actions.actions.mimeTestAction = {
-        '1': {
+        1: {
           name: 'mimeTestAction',
           description: 'I am a test',
           matchExtensionMimeType: true,
@@ -48,7 +48,7 @@ describe('Server: Web', () => {
 
       api.actions.versions.login = [1, 2]
       api.actions.actions.login = {
-        '1': {
+        1: {
           name: 'login',
           description: 'login',
           matchExtensionMimeType: true,
@@ -61,7 +61,7 @@ describe('Server: Web', () => {
           }
         },
 
-        '2': {
+        2: {
           name: 'login',
           description: 'login',
           matchExtensionMimeType: true,
@@ -133,7 +133,7 @@ describe('Server: Web', () => {
         })
 
         test('can ask for nested URL actions', async () => {
-          let response = await request.get(url + '/namespace/actions/randomNumber', { resolveWithFullResponse: true })
+          const response = await request.get(url + '/namespace/actions/randomNumber', { resolveWithFullResponse: true })
           expect(response.statusCode).toEqual(200)
         })
 
@@ -147,18 +147,18 @@ describe('Server: Web', () => {
         })
 
         test('can ask for nested URL files', async () => {
-          let response = await request.get(url + '/namespace/files/simple.html', { resolveWithFullResponse: true })
+          const response = await request.get(url + '/namespace/files/simple.html', { resolveWithFullResponse: true })
           expect(response.statusCode).toEqual(200)
           expect(response.body).toEqual('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
         })
 
         test('can ask for nested URL files with depth', async () => {
-          let response = await request.get(url + '/namespace/files/css/cosmo.css', { resolveWithFullResponse: true })
+          const response = await request.get(url + '/namespace/files/css/cosmo.css', { resolveWithFullResponse: true })
           expect(response.statusCode).toEqual(200)
         })
 
         test('root route files still work', async () => {
-          let response = await request.get(url + '/simple.html', { resolveWithFullResponse: true })
+          const response = await request.get(url + '/simple.html', { resolveWithFullResponse: true })
           expect(response.statusCode).toEqual(200)
           expect(response.body).toEqual('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
         })
@@ -185,7 +185,7 @@ describe('Server: Web', () => {
         })
 
         test('can ask for nested URL actions', async () => {
-          let response = await request.get(url + '/craz/y/action/path/randomNumber', { resolveWithFullResponse: true })
+          const response = await request.get(url + '/craz/y/action/path/randomNumber', { resolveWithFullResponse: true })
           expect(response.statusCode).toEqual(200)
         })
 
@@ -199,18 +199,18 @@ describe('Server: Web', () => {
         })
 
         test('can ask for nested URL files', async () => {
-          let response = await request.get(url + '/a/b/c/simple.html', { resolveWithFullResponse: true })
+          const response = await request.get(url + '/a/b/c/simple.html', { resolveWithFullResponse: true })
           expect(response.statusCode).toEqual(200)
           expect(response.body).toEqual('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
         })
 
         test('can ask for nested URL files with depth', async () => {
-          let response = await request.get(url + '/a/b/c/css/cosmo.css', { resolveWithFullResponse: true })
+          const response = await request.get(url + '/a/b/c/css/cosmo.css', { resolveWithFullResponse: true })
           expect(response.statusCode).toEqual(200)
         })
 
         test('root route files still work', async () => {
-          let response = await request.get(url + '/simple.html', { resolveWithFullResponse: true })
+          const response = await request.get(url + '/simple.html', { resolveWithFullResponse: true })
           expect(response.statusCode).toEqual(200)
           expect(response.body).toEqual('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
         })
@@ -219,8 +219,8 @@ describe('Server: Web', () => {
 
     test('\'all\' routes are duplicated properly', () => {
       api.routes.registerRoute('all', '/other-login', 'login')
-      let loaded = {}
-      let registered = {}
+      const loaded = {}
+      const registered = {}
       api.routes.verbs.forEach((verb) => {
         api.routes.routes[verb].forEach((route) => {
           if (!loaded[verb]) loaded[verb] = route.action === 'user' && route.path === '/user/:userID'
@@ -237,7 +237,7 @@ describe('Server: Web', () => {
         throw new Error('should not get here')
       } catch (error) {
         expect(error.statusCode).toEqual(404)
-        let body = await toJson(error.response.body)
+        const body = await toJson(error.response.body)
         expect(body.error).toEqual('unknown action or invalid apiVersion')
       }
     })
@@ -245,7 +245,7 @@ describe('Server: Web', () => {
     test(
       'explicit action declarations still override routed actions, if the defined action is real',
       async () => {
-        let body = await request.get(url + '/api/user/123?action=randomNumber').then(toJson)
+        const body = await request.get(url + '/api/user/123?action=randomNumber').then(toJson)
         expect(body.requesterInformation.receivedParams.action).toEqual('randomNumber')
       }
     )
@@ -258,7 +258,7 @@ describe('Server: Web', () => {
           throw new Error('should not get here')
         } catch (error) {
           expect(error.statusCode).toEqual(404)
-          let body = await toJson(error.response.body)
+          const body = await toJson(error.response.body)
           expect(body.requesterInformation.receivedParams.action).toEqual('user')
         }
       }
@@ -267,9 +267,9 @@ describe('Server: Web', () => {
     test(
       'returns application/json when the mime type cannot be determined for an action',
       async () => {
-        let response = await request.get(url + '/api/mimeTestAction/thing.bogus', { resolveWithFullResponse: true })
+        const response = await request.get(url + '/api/mimeTestAction/thing.bogus', { resolveWithFullResponse: true })
         expect(response.headers['content-type']).toMatch(/json/)
-        let body = JSON.parse(response.body)
+        const body = JSON.parse(response.body)
         expect(body.matchedRoute.path).toEqual('/mimeTestAction/:key')
         expect(body.matchedRoute.action).toEqual('mimeTestAction')
       }
@@ -278,14 +278,14 @@ describe('Server: Web', () => {
     test(
       'route actions have the matched route availalbe to the action',
       async () => {
-        let body = await request.get(url + '/api/mimeTestAction/thing.json').then(toJson)
+        const body = await request.get(url + '/api/mimeTestAction/thing.json').then(toJson)
         expect(body.matchedRoute.path).toEqual('/mimeTestAction/:key')
         expect(body.matchedRoute.action).toEqual('mimeTestAction')
       }
     )
 
     test('Routes should recognize apiVersion as default param', async () => {
-      let body = await request.get(url + '/api/old_login?user_id=7').then(toJson)
+      const body = await request.get(url + '/api/old_login?user_id=7').then(toJson)
       expect(body.user_id).toEqual('7')
       expect(body.requesterInformation.receivedParams.action).toEqual('login')
     })
@@ -296,7 +296,7 @@ describe('Server: Web', () => {
         throw new Error('should not get here')
       } catch (error) {
         expect(error.statusCode).toEqual(404)
-        let body = await toJson(error.response.body)
+        const body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).toEqual('usersList')
       }
     })
@@ -307,7 +307,7 @@ describe('Server: Web', () => {
         throw new Error('should not get here')
       } catch (error) {
         expect(error.statusCode).toEqual(404)
-        let body = await toJson(error.response.body)
+        const body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).toEqual('user')
         expect(body.requesterInformation.receivedParams.userID).toEqual('1234')
       }
@@ -319,7 +319,7 @@ describe('Server: Web', () => {
         throw new Error('should not get here')
       } catch (error) {
         expect(error.statusCode).toEqual(404)
-        let body = await toJson(error.response.body)
+        const body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).toEqual('user')
         expect(body.requesterInformation.receivedParams.userID).toEqual('1234')
         expect(body.requesterInformation.receivedParams.key).toEqual('value')
@@ -332,7 +332,7 @@ describe('Server: Web', () => {
         throw new Error('should not get here')
       } catch (error) {
         expect(error.statusCode).toEqual(404)
-        let body = await toJson(error.response.body)
+        const body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).toEqual('user')
         expect(body.requesterInformation.receivedParams.userID).toEqual('1234')
         expect(body.requesterInformation.receivedParams.key).toEqual('value')
@@ -345,7 +345,7 @@ describe('Server: Web', () => {
         throw new Error('should not get here')
       } catch (error) {
         expect(error.statusCode).toEqual(404)
-        let body = await toJson(error.response.body)
+        const body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).toEqual('user')
         expect(body.requesterInformation.receivedParams.userID).toEqual('1234')
         expect(body.requesterInformation.receivedParams.key).toEqual('value')
@@ -358,7 +358,7 @@ describe('Server: Web', () => {
         throw new Error('should not get here')
       } catch (error) {
         expect(error.statusCode).toEqual(404)
-        let body = await toJson(error.response.body)
+        const body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).toEqual('user')
         expect(body.requesterInformation.receivedParams.userID).toEqual('1')
       }
@@ -370,7 +370,7 @@ describe('Server: Web', () => {
         throw new Error('should not get here')
       } catch (error) {
         expect(error.statusCode).toEqual(404)
-        let body = await toJson(error.response.body)
+        const body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).toEqual('thing')
       }
 
@@ -379,17 +379,17 @@ describe('Server: Web', () => {
         throw new Error('should not get here')
       } catch (error) {
         expect(error.statusCode).toEqual(404)
-        let body = await toJson(error.response.body)
+        const body = await toJson(error.response.body)
         expect(body.requesterInformation.receivedParams.action).toEqual('thingStuff')
       }
     })
 
     test('regexp matches will provide proper variables', async () => {
-      let body = await request.post(url + '/api/login/123').then(toJson)
+      const body = await request.post(url + '/api/login/123').then(toJson)
       expect(body.requesterInformation.receivedParams.action).toEqual('login')
       expect(body.requesterInformation.receivedParams.userID).toEqual('123')
 
-      let bodyAgain = await request.post(url + '/api/login/admin').then(toJson)
+      const bodyAgain = await request.post(url + '/api/login/admin').then(toJson)
       expect(bodyAgain.requesterInformation.receivedParams.action).toEqual('login')
       expect(bodyAgain.requesterInformation.receivedParams.userID).toEqual('admin')
     })
@@ -397,7 +397,7 @@ describe('Server: Web', () => {
     test(
       'regexp matches will still work with params with periods and other wacky chars',
       async () => {
-        let body = await request.get(url + '/api/c/key/log_me-in.com$123.').then(toJson)
+        const body = await request.get(url + '/api/c/key/log_me-in.com$123.').then(toJson)
         expect(body.requesterInformation.receivedParams.action).toEqual('cacheTest')
         expect(body.requesterInformation.receivedParams.value).toEqual('log_me-in.com$123.')
       }
@@ -409,7 +409,7 @@ describe('Server: Web', () => {
         throw new Error('should not get here')
       } catch (error) {
         expect(error.statusCode).toEqual(404)
-        let body = await toJson(error.response.body)
+        const body = await toJson(error.response.body)
         expect(body.error).toEqual('unknown action or invalid apiVersion')
         expect(body.requesterInformation.receivedParams.userID).toBeUndefined()
       }
@@ -419,7 +419,7 @@ describe('Server: Web', () => {
       test(
         'will change header information based on extension (when active)',
         async () => {
-          let response = await request.get(url + '/api/mimeTestAction/val.png', { resolveWithFullResponse: true })
+          const response = await request.get(url + '/api/mimeTestAction/val.png', { resolveWithFullResponse: true })
           expect(response.headers['content-type']).toEqual('image/png')
         }
       )
@@ -432,7 +432,7 @@ describe('Server: Web', () => {
             throw new Error('should not get here')
           } catch (error) {
             expect(error.statusCode).toEqual(422)
-            let body = await toJson(error.response.body)
+            const body = await toJson(error.response.body)
             expect(error.response.headers['content-type']).toEqual('application/json; charset=utf-8')
             expect(body.error).toEqual('key is a required parameter for this action')
           }
@@ -440,7 +440,7 @@ describe('Server: Web', () => {
       )
 
       test('works with with matchTrailingPathParts', async () => {
-        let body = await request.get(url + '/api/a/wild/theKey/and/some/more/path').then(toJson)
+        const body = await request.get(url + '/api/a/wild/theKey/and/some/more/path').then(toJson)
         expect(body.requesterInformation.receivedParams.action).toEqual('mimeTestAction')
         expect(body.requesterInformation.receivedParams.path).toEqual('and/some/more/path')
         expect(body.requesterInformation.receivedParams.key).toEqual('theKey')
@@ -448,11 +448,11 @@ describe('Server: Web', () => {
     })
 
     describe('spaces in URL with public files', () => {
-      let source = path.join(__dirname, '/../../../public/logo/actionhero.png')
+      const source = path.join(__dirname, '/../../../public/logo/actionhero.png')
 
       beforeAll(async () => {
-        let tmpDir = os.tmpdir()
-        let readStream = fs.createReadStream(source)
+        const tmpDir = os.tmpdir()
+        const readStream = fs.createReadStream(source)
         api.staticFile.searchLoactions.push(tmpDir)
 
         await new Promise((resolve) => {
@@ -469,7 +469,7 @@ describe('Server: Web', () => {
       test(
         'will decode %20 or plus sign to a space so that file system can read',
         async () => {
-          let response = await request.get(url + '/actionhero%20with%20space.png', { resolveWithFullResponse: true })
+          const response = await request.get(url + '/actionhero%20with%20space.png', { resolveWithFullResponse: true })
           expect(response.statusCode).toEqual(200)
           expect(response.body).toMatch(/PNG/)
           expect(response.headers['content-type']).toEqual('image/png')
@@ -496,12 +496,12 @@ describe('Server: Web', () => {
 
     test('it remembers manually loaded routes', async () => {
       api.routes.registerRoute('get', '/a-custom-route', 'randomNumber')
-      let response = await request.get(url + '/api/a-custom-route', { resolveWithFullResponse: true })
+      const response = await request.get(url + '/api/a-custom-route', { resolveWithFullResponse: true })
       expect(response.statusCode).toEqual(200)
 
       api.routes.loadRoutes()
 
-      let responseAgain = await request.get(url + '/api/a-custom-route', { resolveWithFullResponse: true })
+      const responseAgain = await request.get(url + '/api/a-custom-route', { resolveWithFullResponse: true })
       expect(responseAgain.statusCode).toEqual(200)
     })
   })

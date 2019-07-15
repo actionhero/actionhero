@@ -7,10 +7,10 @@ module.exports = class CacheTest extends ActionHero.Action {
     this.name = 'sleepTest'
     this.description = 'I will sleep and then return'
     this.outputExample = {
-      'sleepStarted': 1420953571322,
-      'sleepEnded': 1420953572327,
-      'sleepDelta': 1005,
-      'sleepDuration': 1000
+      sleepStarted: 1420953571322,
+      sleepEnded: 1420953572327,
+      sleepDelta: 1005,
+      sleepDuration: 1000
     }
   }
 
@@ -25,12 +25,12 @@ module.exports = class CacheTest extends ActionHero.Action {
   }
 
   async run ({ response, params }) {
-    let sleepDuration = params.sleepDuration
-    let sleepStarted = new Date().getTime()
+    const sleepDuration = params.sleepDuration
+    const sleepStarted = new Date().getTime()
 
     await ActionHero.api.utils.sleep(sleepDuration)
-    let sleepEnded = new Date().getTime()
-    let sleepDelta = sleepEnded - sleepStarted
+    const sleepEnded = new Date().getTime()
+    const sleepDelta = sleepEnded - sleepStarted
 
     response.sleepStarted = sleepStarted
     response.sleepEnded = sleepEnded

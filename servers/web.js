@@ -38,7 +38,7 @@ module.exports = class WebServer extends ActionHero.Server {
       },
 
       pipe: (connection, buffer, headers) => {
-        for (let k in headers) { connection.setHeader(k, headers[k]) }
+        for (const k in headers) { connection.setHeader(k, headers[k]) }
         if (typeof buffer === 'string') { buffer = Buffer.from(buffer) }
         connection.rawConnection.res.end(buffer)
       }
@@ -87,7 +87,7 @@ module.exports = class WebServer extends ActionHero.Server {
     })
 
     this.on('connection', async (connection) => {
-      let requestMode = await this.determineRequestParams(connection)
+      const requestMode = await this.determineRequestParams(connection)
       if (requestMode === 'api') {
         this.processAction(connection)
       } else if (requestMode === 'file') {
@@ -122,7 +122,6 @@ module.exports = class WebServer extends ActionHero.Server {
   async sendFile (connection, error, fileStream, mime, length, lastModified) {
     let foundCacheControl = false
     let ifModifiedSince
-    let reqHeaders
 
     connection.rawConnection.responseHeaders.forEach((pair) => {
       if (pair[0].toLowerCase() === 'cache-control') { foundCacheControl = true }
@@ -140,10 +139,10 @@ module.exports = class WebServer extends ActionHero.Server {
 
     this.cleanHeaders(connection)
     const headers = connection.rawConnection.responseHeaders
-    reqHeaders = connection.rawConnection.req.headers
+    const reqHeaders = connection.rawConnection.req.headers
 
     const sendRequestResult = () => {
-      let responseHttpCode = parseInt(connection.rawConnection.responseHttpCode, 10)
+      const responseHttpCode = parseInt(connection.rawConnection.responseHttpCode, 10)
       if (error) {
         this.sendWithCompression(connection, responseHttpCode, headers, String(error))
       } else if (responseHttpCode !== 304) {
@@ -169,7 +168,7 @@ module.exports = class WebServer extends ActionHero.Server {
     }
 
     if (this.config.enableEtag && fileStream && fileStream.path) {
-      let filestats = await new Promise((resolve) => {
+      const filestats = await new Promise((resolve) => {
         fs.stat(fileStream.path, (error, filestats) => {
           if (error || !filestats) { this.log('Error receving file statistics: ' + String(error), 'error') }
           return resolve(filestats)
@@ -181,7 +180,7 @@ module.exports = class WebServer extends ActionHero.Server {
       const fileEtag = etag(filestats, { weak: true })
       connection.rawConnection.responseHeaders.push(['ETag', fileEtag])
       let noneMatchHeader = reqHeaders['if-none-match']
-      let cacheCtrlHeader = reqHeaders['cache-control']
+      const cacheCtrlHeader = reqHeaders['cache-control']
       let noCache = false
       let etagMatches
       // check for no-cache cache request directive
@@ -215,8 +214,8 @@ module.exports = class WebServer extends ActionHero.Server {
     // https://nodejs.org/api/zlib.html#zlib_zlib_createinflate_options
     // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
     if (this.config.compress === true) {
-      let gzipMatch = acceptEncoding.match(/\bgzip\b/)
-      let deflateMatch = acceptEncoding.match(/\bdeflate\b/)
+      const gzipMatch = acceptEncoding.match(/\bgzip\b/)
+      const deflateMatch = acceptEncoding.match(/\bdeflate\b/)
       if ((gzipMatch && !deflateMatch) || (gzipMatch && deflateMatch && gzipMatch.index < deflateMatch.index)) {
         headers.push(['Content-Encoding', 'gzip'])
         compressor = zlib.createGzip()
@@ -264,12 +263,15 @@ module.exports = class WebServer extends ActionHero.Server {
   }
 
   handleRequest (req, res) {
-    let { fingerprint, headersHash } = this.fingerprinter.fingerprint(req)
-    let responseHeaders = []
-    let cookies = api.utils.parseCookies(req)
-    let responseHttpCode = 200
-    let method = req.method.toUpperCase()
-    let parsedURL = url.parse(req.url, true)
+    const { fingerprint, headersHash } = this.fingerprinter.fingerprint(req)
+    const responseHeaders = []
+    const cookies = api.utils.parseCookies(req)
+    const responseHttpCode = 200
+    const method = req.method.toUpperCase()
+
+    // waiting until URL() can handle relative paths
+    // https://github.com/nodejs/node/issues/12682
+    const parsedURL = url.parse(req.url, true) //eslint-disable-line
     let i
     for (i in headersHash) {
       responseHeaders.push([i, headersHash[i]])
@@ -287,9 +289,9 @@ module.exports = class WebServer extends ActionHero.Server {
     if (this.config.allowedRequestHosts && this.config.allowedRequestHosts.length > 0) {
       let guess = 'http://'
       if (this.config.secure) { guess = 'https://' }
-      let fullRequestHost = (req.headers['x-forwarded-proto'] ? req.headers['x-forwarded-proto'] + '://' : guess) + req.headers.host
+      const fullRequestHost = (req.headers['x-forwarded-proto'] ? req.headers['x-forwarded-proto'] + '://' : guess) + req.headers.host
       if (this.config.allowedRequestHosts.indexOf(fullRequestHost) < 0) {
-        let newHost = this.config.allowedRequestHosts[0]
+        const newHost = this.config.allowedRequestHosts[0]
         res.statusCode = 302
         res.setHeader('Location', newHost + req.url)
         return res.end(`You are being redirected to ${newHost + req.url}\r\n`)
@@ -365,7 +367,7 @@ module.exports = class WebServer extends ActionHero.Server {
         api.actions.actions[data.params.action][data.params.apiVersion].matchExtensionMimeType === true &&
         data.connection.extension
     ) {
-      let mime = Mime.getType(data.connection.extension)
+      const mime = Mime.getType(data.connection.extension)
       if (mime) { data.connection.rawConnection.responseHeaders.push(['Content-Type', mime]) }
     }
 
@@ -422,8 +424,8 @@ module.exports = class WebServer extends ActionHero.Server {
   async determineRequestParams (connection) {
     // determine file or api request
     let requestMode = this.config.rootEndpointType
-    let pathname = connection.rawConnection.parsedURL.pathname
-    let pathParts = pathname.split('/')
+    const pathname = connection.rawConnection.parsedURL.pathname
+    const pathParts = pathname.split('/')
     let i
 
     while (pathParts[0] === '') { pathParts.shift() }
@@ -449,7 +451,7 @@ module.exports = class WebServer extends ActionHero.Server {
       for (i = 0; i < (urlPathForFilesParts.length); i++) { pathParts.shift() }
     }
 
-    let extensionParts = connection.rawConnection.parsedURL.pathname.split('.')
+    const extensionParts = connection.rawConnection.parsedURL.pathname.split('.')
     if (extensionParts.length > 1) {
       connection.extension = extensionParts[(extensionParts.length - 1)]
     }
@@ -494,7 +496,7 @@ module.exports = class WebServer extends ActionHero.Server {
           })
         }
 
-        let { fields, files } = await new Promise((resolve) => {
+        const { fields, files } = await new Promise((resolve) => {
           connection.rawConnection.form.parse(connection.rawConnection.req, (error, fields, files) => {
             if (error) {
               this.log('error processing form: ' + String(error), 'error')
@@ -540,19 +542,19 @@ module.exports = class WebServer extends ActionHero.Server {
 
   fillParamsFromWebRequest (connection, varsHash) {
     // helper for JSON posts
-    let collapsedVarsHash = api.utils.collapseObjectToArray(varsHash)
+    const collapsedVarsHash = api.utils.collapseObjectToArray(varsHash)
     if (collapsedVarsHash !== false) {
       varsHash = { payload: collapsedVarsHash } // post was an array, lets call it "payload"
     }
 
-    for (let v in varsHash) {
+    for (const v in varsHash) {
       connection.params[v] = varsHash[v]
     }
   }
 
   transformHeaders (headersArray) {
     return headersArray.reduce((headers, currentHeader) => {
-      let currentHeaderKey = currentHeader[0].toLowerCase()
+      const currentHeaderKey = currentHeader[0].toLowerCase()
       // we have a set-cookie, let's see what we have to do
       if (currentHeaderKey === 'set-cookie') {
         if (headers[currentHeaderKey]) {
@@ -569,7 +571,7 @@ module.exports = class WebServer extends ActionHero.Server {
   }
 
   buildRequesterInformation (connection) {
-    let requesterInformation = {
+    const requesterInformation = {
       id: connection.id,
       fingerprint: connection.fingerprint,
       messageId: connection.messageId,
@@ -577,7 +579,7 @@ module.exports = class WebServer extends ActionHero.Server {
       receivedParams: {}
     }
 
-    for (let p in connection.params) {
+    for (const p in connection.params) {
       if (api.config.general.disableParamScrubbing === true || api.params.postVariables.indexOf(p) >= 0) {
         requesterInformation.receivedParams[p] = connection.params[p]
       }
@@ -588,11 +590,11 @@ module.exports = class WebServer extends ActionHero.Server {
 
   cleanHeaders (connection) {
     const originalHeaders = connection.rawConnection.responseHeaders.reverse()
-    let foundHeaders = []
-    let cleanedHeaders = []
-    for (let i in originalHeaders) {
-      let key = originalHeaders[i][0]
-      let value = originalHeaders[i][1]
+    const foundHeaders = []
+    const cleanedHeaders = []
+    for (const i in originalHeaders) {
+      const key = originalHeaders[i][0]
+      const value = originalHeaders[i][1]
       if (foundHeaders.indexOf(key.toLowerCase()) >= 0 && key.toLowerCase().indexOf('set-cookie') < 0) {
         // ignore, it's a duplicate
       } else if (connection.rawConnection.method === 'HEAD' && key === 'Transfer-Encoding') {

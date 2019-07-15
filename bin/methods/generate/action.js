@@ -25,11 +25,11 @@ module.exports = class GenerateAction extends ActionHero.CLI {
       'name',
       'description'
     ].forEach((v) => {
-      let regex = new RegExp('%%' + v + '%%', 'g')
+      const regex = new RegExp('%%' + v + '%%', 'g')
       template = template.replace(regex, params[v])
     })
 
-    let message = api.utils.createFileSafely(api.config.general.paths.action[0] + '/' + params.name + '.js', template)
+    const message = api.utils.createFileSafely(api.config.general.paths.action[0] + '/' + params.name + '.js', template)
     console.info(message)
 
     return true

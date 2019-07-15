@@ -64,7 +64,7 @@ describe('Core: config folders', () => {
   })
 
   test('can call a route in the normal config/route.js', async () => {
-    let { id, problems, name, error } = await request.get({ uri: url + '/api/api-status', json: true })
+    const { id, problems, name, error } = await request.get({ uri: url + '/api/api-status', json: true })
     expect(error).toBeUndefined()
     expect(problems).toHaveLength(0)
     expect(id).toEqual(`test-server-${process.env.JEST_WORKER_ID || 0}`)
@@ -72,7 +72,7 @@ describe('Core: config folders', () => {
   })
 
   test('can call a different route in the new config/route.js (on same verb)', async () => {
-    let { randomNumber } = await request.get({ uri: url + '/api/random-number', json: true })
+    const { randomNumber } = await request.get({ uri: url + '/api/random-number', json: true })
     expect(randomNumber).toBeGreaterThan(0)
     expect(randomNumber).toBeLessThan(1)
   })

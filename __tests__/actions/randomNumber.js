@@ -13,14 +13,14 @@ describe('Action', () => {
     let firstNumber = null
 
     test('generates random numbers', async () => {
-      let { randomNumber } = await api.specHelper.runAction('randomNumber')
+      const { randomNumber } = await api.specHelper.runAction('randomNumber')
       expect(randomNumber).toBeGreaterThan(0)
       expect(randomNumber).toBeLessThan(1)
       firstNumber = randomNumber
     })
 
     test('is unique / random', async () => {
-      let { randomNumber } = await api.specHelper.runAction('randomNumber')
+      const { randomNumber } = await api.specHelper.runAction('randomNumber')
       expect(randomNumber).toBeGreaterThan(0)
       expect(randomNumber).toBeLessThan(1)
       expect(randomNumber).not.toEqual(firstNumber)

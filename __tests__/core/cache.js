@@ -20,13 +20,13 @@ describe('Core', () => {
     })
 
     test('cache.save', async () => {
-      let resp = await api.cache.save('testKey', 'abc123')
+      const resp = await api.cache.save('testKey', 'abc123')
       expect(resp).toEqual(true)
     })
 
     test('cache.load', async () => {
       await api.cache.save('testKey', 'abc123')
-      let { value } = await api.cache.load('testKey')
+      const { value } = await api.cache.load('testKey')
       expect(value).toEqual('abc123')
     })
 
@@ -40,22 +40,22 @@ describe('Core', () => {
     })
 
     test('cache.destroy', async () => {
-      let resp = await api.cache.destroy('testKey')
+      const resp = await api.cache.destroy('testKey')
       expect(resp).toEqual(true)
     })
 
     test('cache.destroy failure', async () => {
-      let resp = await api.cache.destroy('testKey')
+      const resp = await api.cache.destroy('testKey')
       expect(resp).toEqual(false)
     })
 
     test('cache.save with expire time', async () => {
-      let resp = await api.cache.save('testKey', 'abc123', 10)
+      const resp = await api.cache.save('testKey', 'abc123', 10)
       expect(resp).toEqual(true)
     })
 
     test('cache.load with expired items should not return them', async () => {
-      let saveResp = await api.cache.save('testKey_slow', 'abc123', 10)
+      const saveResp = await api.cache.save('testKey_slow', 'abc123', 10)
       expect(saveResp).toEqual(true)
       await api.utils.sleep(20)
       try {
@@ -67,7 +67,7 @@ describe('Core', () => {
     })
 
     test('cache.load with negative expire times will never load', async () => {
-      let saveResp = await api.cache.save('testKeyInThePast', 'abc123', -1)
+      const saveResp = await api.cache.save('testKeyInThePast', 'abc123', -1)
       expect(saveResp).toEqual(true)
       try {
         await api.cache.load('testKeyInThePast')
@@ -78,18 +78,18 @@ describe('Core', () => {
     })
 
     test('cache.save does not need to pass expireTime', async () => {
-      let saveResp = await api.cache.save('testKeyForNullExpireTime', 'abc123')
+      const saveResp = await api.cache.save('testKeyForNullExpireTime', 'abc123')
       expect(saveResp).toEqual(true)
-      let { value } = await api.cache.load('testKeyForNullExpireTime')
+      const { value } = await api.cache.load('testKeyForNullExpireTime')
       expect(value).toEqual('abc123')
     })
 
     test(
       'cache.load without changing the expireTime will re-apply the redis expire',
       async () => {
-        let key = 'testKey'
+        const key = 'testKey'
         await api.cache.save(key, 'val', 1000)
-        let loadResp = await api.cache.load(key)
+        const loadResp = await api.cache.load(key)
         expect(loadResp.value).toEqual('val')
         await api.utils.sleep(1001)
         try {
@@ -105,11 +105,11 @@ describe('Core', () => {
     test(
       'cache.load with options that extending expireTime should return cached item',
       async () => {
-        let expireTime = 400
-        let timeout = 200
+        const expireTime = 400
+        const timeout = 200
 
         // save the initial key
-        let saveResp = await api.cache.save('testKey_slow', 'abc123', expireTime)
+        const saveResp = await api.cache.save('testKey_slow', 'abc123', expireTime)
         expect(saveResp).toEqual(true)
 
         // wait for `timeout` and try to load the key
@@ -137,21 +137,21 @@ describe('Core', () => {
     )
 
     test('cache.save works with arrays', async () => {
-      let saveResp = await api.cache.save('array_key', [1, 2, 3])
+      const saveResp = await api.cache.save('array_key', [1, 2, 3])
       expect(saveResp).toEqual(true)
-      let { value } = await api.cache.load('array_key')
+      const { value } = await api.cache.load('array_key')
       expect(value[0]).toEqual(1)
       expect(value[1]).toEqual(2)
       expect(value[2]).toEqual(3)
     })
 
     test('cache.save works with objects', async () => {
-      let data = {}
+      const data = {}
       data.thing = 'stuff'
       data.otherThing = [1, 2, 3]
-      let saveResp = await api.cache.save('obj_key', data)
+      const saveResp = await api.cache.save('obj_key', data)
       expect(saveResp).toEqual(true)
-      let { value } = await api.cache.load('obj_key')
+      const { value } = await api.cache.load('obj_key')
       expect(value.thing).toEqual('stuff')
       expect(value.otherThing[0]).toEqual(1)
       expect(value.otherThing[1]).toEqual(2)
@@ -160,7 +160,7 @@ describe('Core', () => {
 
     test('can read the cache size', async () => {
       await api.cache.save('thingA')
-      let count = await api.cache.size()
+      const count = await api.cache.size()
       expect(count > 0).toEqual(true)
     })
 
@@ -191,24 +191,24 @@ describe('Core', () => {
       })
 
       test('will return undefined if the list is empty', async () => {
-        let data = await api.cache.pop('emptyListKey')
+        const data = await api.cache.pop('emptyListKey')
         expect(data).toBeNull()
       })
 
       test('can get the length of an array when full', async () => {
         await api.cache.push('testListKey2', 'a string')
-        let length = await api.cache.listLength('testListKey2')
+        const length = await api.cache.listLength('testListKey2')
         expect(length).toEqual(1)
       })
 
       test('will return 0 length when the key does not exist', async () => {
-        let length = await api.cache.listLength('testListKey3')
+        const length = await api.cache.listLength('testListKey3')
         expect(length).toEqual(0)
       })
     })
 
     describe('locks', () => {
-      let key = 'testKey'
+      const key = 'testKey'
 
       afterEach(async () => {
         api.cache.lockName = api.id
@@ -228,23 +228,23 @@ describe('Core', () => {
       test(
         'locks have a TTL and the default will be assumed from config',
         async () => {
-          let lockOk = await api.cache.lock(key, null)
+          const lockOk = await api.cache.lock(key, null)
           expect(lockOk).toEqual(true)
-          let ttl = await api.redis.clients.client.ttl(api.cache.lockPrefix + key)
+          const ttl = await api.redis.clients.client.ttl(api.cache.lockPrefix + key)
           expect(ttl >= 9).toEqual(true)
           expect(ttl <= 10).toEqual(true)
         }
       )
 
       test('you can save an item if you do hold the lock', async () => {
-        let lockOk = await api.cache.lock(key, null)
+        const lockOk = await api.cache.lock(key, null)
         expect(lockOk).toEqual(true)
-        let success = await api.cache.save(key, 'value')
+        const success = await api.cache.save(key, 'value')
         expect(success).toEqual(true)
       })
 
       test('you cannot save a locked item if you do not hold the lock', async () => {
-        let lockOk = await api.cache.lock(key, null)
+        const lockOk = await api.cache.lock(key, null)
         expect(lockOk).toEqual(true)
         api.cache.lockName = 'otherId'
         try {
@@ -258,7 +258,7 @@ describe('Core', () => {
       test(
         'you cannot destroy a locked item if you do not hold the lock',
         async () => {
-          let lockOk = await api.cache.lock(key, null)
+          const lockOk = await api.cache.lock(key, null)
           expect(lockOk).toEqual(true)
           api.cache.lockName = 'otherId'
           try {
@@ -273,7 +273,7 @@ describe('Core', () => {
       test(
         'you can opt to retry to obtain a lock if a lock is held (READ)',
         async () => {
-          let success = await api.cache.save(key, 'value')
+          const success = await api.cache.save(key, 'value')
           expect(success).toEqual(true)
           let lockOk = await api.cache.lock(key, 1) // will be rounded up to 1s
           expect(lockOk).toEqual(true)
@@ -282,10 +282,10 @@ describe('Core', () => {
           lockOk = await api.cache.checkLock(key, null)
           expect(lockOk).toEqual(false)
 
-          let start = new Date().getTime()
-          let { value } = await api.cache.load(key, { retry: 2000 })
+          const start = new Date().getTime()
+          const { value } = await api.cache.load(key, { retry: 2000 })
           expect(value).toEqual('value')
-          let delta = new Date().getTime() - start
+          const delta = new Date().getTime() - start
           expect(delta >= 1000).toEqual(true)
         }
       )
@@ -297,7 +297,7 @@ describe('Core', () => {
         afterAll(() => { api.cache.lockName = originalLockName })
 
         test('locks are actually blocking', async () => {
-          let key = 'test'
+          const key = 'test'
           let lockOk
 
           api.cache.lockName = `test-name-pass-${1}`
@@ -315,7 +315,7 @@ describe('Core', () => {
         })
 
         test('locks are actually blocking (using setnx value)', async () => {
-          let key = 'test-setnx'
+          const key = 'test-setnx'
           let lockOk
 
           api.cache.lockName = `test-setnx-name-pass-${1}`
@@ -334,23 +334,23 @@ describe('Core', () => {
     })
 
     describe('cache dump files', () => {
-      let file = os.tmpdir() + path.sep + 'cacheDump'
+      const file = os.tmpdir() + path.sep + 'cacheDump'
 
       test('can read write the cache to a dump file', async () => {
         await api.cache.clear()
         await api.cache.save('thingA', 123)
-        let count = await api.cache.dumpWrite(file)
+        const count = await api.cache.dumpWrite(file)
         expect(count).toEqual(1)
-        let body = JSON.parse(String(fs.readFileSync(file)))
-        let content = JSON.parse(body['actionhero:cache:thingA'])
+        const body = JSON.parse(String(fs.readFileSync(file)))
+        const content = JSON.parse(body['actionhero:cache:thingA'])
         expect(content.value).toEqual(123)
       })
 
       test('can load the cache from a dump file', async () => {
         await api.cache.clear()
-        let count = await api.cache.dumpRead(file)
+        const count = await api.cache.dumpRead(file)
         expect(count).toEqual(1)
-        let { value } = await api.cache.load('thingA')
+        const { value } = await api.cache.load('thingA')
         expect(value).toEqual(123)
       })
     })

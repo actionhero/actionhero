@@ -21,20 +21,20 @@ describe('Core', () => {
     })
 
     test('returns string errors properly', async () => {
-      let { error } = await api.specHelper.runAction('notARealAction')
+      const { error } = await api.specHelper.runAction('notARealAction')
       expect(error).toEqual('Error: unknown action or invalid apiVersion')
     })
 
     test('returns Error object properly', async () => {
       api.config.errors.unknownAction = () => { return new Error('error test') }
-      let { error } = await api.specHelper.runAction('notARealAction')
+      const { error } = await api.specHelper.runAction('notARealAction')
       expect(error).toEqual('Error: error test')
     })
 
     test('returns generic object properly', async () => {
       api.config.errors.unknownAction = () => { return { code: 'error111', reason: 'busted' } }
 
-      let { error } = await api.specHelper.runAction('notARealAction')
+      const { error } = await api.specHelper.runAction('notARealAction')
       expect(error.code).toEqual('error111')
       expect(error.reason).toEqual('busted')
     })
@@ -46,19 +46,19 @@ describe('Core', () => {
         })
       }
 
-      let { error } = await api.specHelper.runAction('notARealAction')
+      const { error } = await api.specHelper.runAction('notARealAction')
       expect(error.sleepy).toEqual(true)
     })
   })
 
   describe('Core: Errors: Custom Error Decoration', () => {
-    let errorMsg = 'worst action ever!'
+    const errorMsg = 'worst action ever!'
     beforeAll(async () => {
       api = await actionhero.start()
       originalGenericError = api.config.errors.genericError
       api.actions.versions.errorAction = [1]
       api.actions.actions.errorAction = {
-        '1': {
+        1: {
           name: 'errorAction',
           description: 'this action throws errors',
           version: 1,
@@ -78,7 +78,7 @@ describe('Core', () => {
     })
 
     test('will return an actions error', async () => {
-      let response = await api.specHelper.runAction('errorAction')
+      const response = await api.specHelper.runAction('errorAction')
       expect(response.error).toEqual('Error: worst action ever!')
       expect(response.requestId).toBeUndefined()
     })
@@ -88,7 +88,7 @@ describe('Core', () => {
         data.response.requestId = 'id-12345'
         return error
       }
-      let response = await api.specHelper.runAction('errorAction')
+      const response = await api.specHelper.runAction('errorAction')
       expect(response.error).toEqual('Error: worst action ever!')
       expect(response.requestId).toEqual('id-12345')
     })

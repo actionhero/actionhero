@@ -14,7 +14,7 @@ module.exports = class Help extends ActionHero.CLI {
 
   run () {
     let files = []
-    let methods = {}
+    const methods = {}
 
     // CLI commands included with ActionHero
     if (api.config.general.cliIncludeInternal !== false) {
@@ -28,7 +28,7 @@ module.exports = class Help extends ActionHero.CLI {
 
     // CLI commands from plugins
     Object.keys(api.config.plugins).forEach((pluginName) => {
-      let plugin = api.config.plugins[pluginName]
+      const plugin = api.config.plugins[pluginName]
       if (plugin.cli !== false) {
         glob.sync(path.join(plugin.path, 'bin', '**', '*.js')).forEach((f) => { files.push(f) })
       }
@@ -38,8 +38,8 @@ module.exports = class Help extends ActionHero.CLI {
 
     files.forEach((f) => {
       try {
-        let ReqClass = require(f)
-        let req = new ReqClass()
+        const ReqClass = require(f)
+        const req = new ReqClass()
         if (req.name && req.name !== '%%name%%' && req.description && typeof req.run === 'function') {
           if (methods[req.name]) { throw new Error(`${req.name} is already defined`) }
           methods[req.name] = req
@@ -47,7 +47,7 @@ module.exports = class Help extends ActionHero.CLI {
       } catch (e) { }
     })
 
-    let methodNames = Object.keys(methods).sort()
+    const methodNames = Object.keys(methods).sort()
 
     console.log('ActionHero - The reusable, scalable, and quick node.js API server for stateless and stateful applications')
     console.log('Learn more @ www.actionherojs.com')
@@ -58,7 +58,7 @@ module.exports = class Help extends ActionHero.CLI {
     })
 
     methodNames.forEach((methodName) => {
-      let m = methods[methodName]
+      const m = methods[methodName]
       this.highlightWord(`actionhero ${m.name}`)
       console.log(`description: ${m.description}`)
 
@@ -70,7 +70,7 @@ module.exports = class Help extends ActionHero.CLI {
       if (Object.keys(m.inputs).length > 0) {
         console.log(`inputs:`)
         Object.keys(m.inputs).forEach((inputName) => {
-          let i = m.inputs[inputName]
+          const i = m.inputs[inputName]
           console.log(`  [${inputName}] ${(i.required ? '' : '(optional)')}`)
           if (i.note) { console.log(`    note: ${i.note}`) }
           if (i.default) { console.log(`    default: ${i.default}`) }

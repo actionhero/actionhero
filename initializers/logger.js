@@ -49,7 +49,7 @@ api.log('OH NO, something went wrong', 'warning', { error: new Error('things are
     api.log = (message, severity, data) => {
       api.loggers.map((logger) => {
         if (severity === undefined || severity === null || logger.levels[severity] === undefined) { severity = 'info' }
-        let args = [severity, message]
+        const args = [severity, message]
         if (data !== null && data !== undefined) { args.push(data) }
         return logger.log.apply(logger, args)
       })

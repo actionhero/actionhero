@@ -10,16 +10,16 @@ module.exports = class ActionsList extends ActionHero.CLI {
   }
 
   run () {
-    for (let actionName in api.actions.actions) {
+    for (const actionName in api.actions.actions) {
       console.log(`\r\n--- ${actionName} ---`)
-      let collection = api.actions.actions[actionName]
+      const collection = api.actions.actions[actionName]
 
-      for (let version in collection) {
-        let action = collection[version]
+      for (const version in collection) {
+        const action = collection[version]
         console.info(`  version: ${version}`)
         console.info(`    ${action.description}`)
         console.info(`    inputs:`)
-        for (let input in action.inputs) {
+        for (const input in action.inputs) {
           console.info(`      ${input}: ${JSON.stringify(action.inputs[input])}`)
         }
       }

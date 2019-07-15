@@ -49,7 +49,7 @@ module.exports = class Connection {
    * @param  {Object}  data The specifics of this connection
    */
   static async createAsync (data) {
-    let connection = new this(data, false)
+    const connection = new this(data, false)
 
     await this.callConnectionCreateMethods(connection)
 
@@ -65,8 +65,8 @@ module.exports = class Connection {
    * @param  {Object}  connection ActionHero.Connection
    */
   static async callConnectionCreateMethods (connection) {
-    for (let i in api.connections.globalMiddleware) {
-      let middlewareName = api.connections.globalMiddleware[i]
+    for (const i in api.connections.globalMiddleware) {
+      const middlewareName = api.connections.globalMiddleware[i]
       if (typeof api.connections.middleware[middlewareName].create === 'function') {
         await api.connections.middleware[middlewareName].create(connection)
       }
@@ -108,15 +108,15 @@ module.exports = class Connection {
       canChat: false
     }
 
-    for (let i in connectionDefaults) {
+    for (const i in connectionDefaults) {
       if (this[i] === undefined && data[i] !== undefined) { this[i] = data[i] }
       if (this[i] === undefined) { this[i] = connectionDefaults[i] }
     }
 
-    let connection = this
-    let server = api.servers.servers[connection.type]
+    const connection = this
+    const server = api.servers.servers[connection.type]
     if (server && server.connectionCustomMethods) {
-      for (let name in server.connectionCustomMethods) {
+      for (const name in server.connectionCustomMethods) {
         connection[name] = async (...args) => {
           args.unshift(connection)
           return server.connectionCustomMethods[name].apply(null, args)
@@ -172,17 +172,17 @@ module.exports = class Connection {
   async destroy () {
     this.destroyed = true
 
-    for (let i in api.connections.globalMiddleware) {
-      let middlewareName = api.connections.globalMiddleware[i]
+    for (const i in api.connections.globalMiddleware) {
+      const middlewareName = api.connections.globalMiddleware[i]
       if (typeof api.connections.middleware[middlewareName].destroy === 'function') {
         await api.connections.middleware[middlewareName].destroy(this)
       }
     }
 
     if (this.canChat === true) {
-      let promises = []
-      for (let i in this.rooms) {
-        let room = this.rooms[i]
+      const promises = []
+      for (const i in this.rooms) {
+        const room = this.rooms[i]
         promises.push(api.chatRoom.removeMember(this.id, room))
       }
       await Promise.all(promises)
@@ -242,7 +242,7 @@ module.exports = class Connection {
           key = words[0]
           value = words[1]
           if ((words[0]) && (words[0].indexOf('=') >= 0)) {
-            let parts = words[0].split('=')
+            const parts = words[0].split('=')
             key = parts[0]
             value = parts[1]
           }
@@ -261,7 +261,7 @@ module.exports = class Connection {
         case 'paramsView':
           return this.params
         case 'paramsDelete':
-          for (let i in this.params) { delete this.params[i] }
+          for (const i in this.params) { delete this.params[i] }
           return
         case 'roomAdd':
           room = words[0]
@@ -274,7 +274,7 @@ module.exports = class Connection {
           if (this.rooms.indexOf(room) >= 0) {
             return api.chatRoom.roomStatus(room)
           }
-          let error = new Error(await api.config.errors.connectionNotInRoom(this, room))
+          const error = new Error(await api.config.errors.connectionNotInRoom(this, room))
           throw error
         case 'detailsView':
           return {
@@ -296,11 +296,11 @@ module.exports = class Connection {
           return
       }
 
-      let error = new Error(await api.config.errors.verbNotFound(this, verb))
+      const error = new Error(await api.config.errors.verbNotFound(this, verb))
       error.verbNotFound = true
       throw error
     } else {
-      let error = new Error(await api.config.errors.verbNotAllowed(this, verb))
+      const error = new Error(await api.config.errors.verbNotAllowed(this, verb))
       error.verbNotFound = true
       throw error
     }

@@ -33,11 +33,11 @@ module.exports = class I18N extends ActionHero.Initializer {
       },
 
       invokeConnectionLocale: (connection) => {
-        let cmdParts = api.config.i18n.determineConnectionLocale.split('.')
-        let cmd = cmdParts.shift()
+        const cmdParts = api.config.i18n.determineConnectionLocale.split('.')
+        const cmd = cmdParts.shift()
         if (cmd !== 'api') { throw new Error('cannot operate on a method outside of the api object') }
-        let method = api.utils.dotProp.get(api, cmdParts.join('.'))
-        let locale = method(connection)
+        const method = api.utils.dotProp.get(api, cmdParts.join('.'))
+        const locale = method(connection)
         api.i18n.setLocale(connection, locale)
       },
 
