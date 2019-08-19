@@ -1,6 +1,6 @@
 'use strict'
 
-exports['default'] = {
+exports.default = {
   servers: {
     socket: (api) => {
       return {

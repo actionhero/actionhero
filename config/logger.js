@@ -58,7 +58,7 @@ function buildFileLogger (path, level = 'info', maxFiles = undefined, maxsize = 
   }
 }
 
-exports['default'] = {
+exports.default = {
   logger: (api) => {
     const loggers = []
 

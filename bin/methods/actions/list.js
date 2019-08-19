@@ -18,7 +18,7 @@ module.exports = class ActionsList extends ActionHero.CLI {
         const action = collection[version]
         console.info(`  version: ${version}`)
         console.info(`    ${action.description}`)
-        console.info(`    inputs:`)
+        console.info('    inputs:')
         for (const input in action.inputs) {
           console.info(`      ${input}: ${JSON.stringify(action.inputs[input])}`)
         }

@@ -106,10 +106,12 @@ module.exports = class Start extends ActionHero.CLI {
         } catch (e) {
           stack = [error]
         }
-        process.send({ uncaughtException: {
-          message: error.message,
-          stack: stack
-        } })
+        process.send({
+          uncaughtException: {
+            message: error.message,
+            stack: stack
+          }
+        })
 
         process.nextTick(process.exit)
       })
@@ -121,10 +123,12 @@ module.exports = class Start extends ActionHero.CLI {
         } catch (e) {
           stack = [rejection]
         }
-        process.send({ unhandledRejection: {
-          message: rejection.message,
-          stack: stack
-        } })
+        process.send({
+          unhandledRejection: {
+            message: rejection.message,
+            stack: stack
+          }
+        })
 
         process.nextTick(process.exit)
       })

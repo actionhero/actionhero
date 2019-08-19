@@ -2,7 +2,7 @@
 
 const os = require('os')
 
-exports['default'] = {
+exports.default = {
   servers: {
     web: (api) => {
       return {

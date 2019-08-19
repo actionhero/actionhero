@@ -13,7 +13,7 @@ module.exports = class GenerateAction extends ActionHero.CLI {
     this.example = 'actionhero generate action --name=[name] --description=[description]'
     this.inputs = {
       name: { required: true },
-      description: { required: true, default: `an actionhero action` }
+      description: { required: true, default: 'an actionhero action' }
     }
   }
 

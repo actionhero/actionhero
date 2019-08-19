@@ -127,7 +127,7 @@ module.exports = class Config extends ActionHero.Initializer {
       if (f.includes('routes.js')) {
         let localRoutes = { routes: {} }
 
-        if (localConfig['default']) { localRoutes = api.utils.hashMerge(localRoutes, localConfig['default'], api) }
+        if (localConfig.default) { localRoutes = api.utils.hashMerge(localRoutes, localConfig.default, api) }
         if (localConfig[api.env]) { localRoutes = api.utils.hashMerge(localRoutes, localConfig[api.env], api) }
 
         Object.keys(localRoutes.routes).forEach((v) => {
@@ -142,7 +142,7 @@ module.exports = class Config extends ActionHero.Initializer {
           }
         })
       } else {
-        if (localConfig['default']) { api.config = api.utils.hashMerge(api.config, localConfig['default'], api) }
+        if (localConfig.default) { api.config = api.utils.hashMerge(api.config, localConfig.default, api) }
         if (localConfig[api.env]) { api.config = api.utils.hashMerge(api.config, localConfig[api.env], api) }
       }
     }

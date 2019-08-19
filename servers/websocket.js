@@ -144,13 +144,13 @@ module.exports = class WebSocketServer extends ActionHero.Server {
   }
 
   writeClientJS () {
-    if (!api.config.general.paths['public'] || api.config.general.paths['public'].length === 0) {
+    if (!api.config.general.paths.public || api.config.general.paths.public.length === 0) {
       return
     }
 
     if (this.config.clientJsPath && this.config.clientJsName) {
       const clientJSPath = path.normalize(
-        api.config.general.paths['public'][0] +
+        api.config.general.paths.public[0] +
         path.sep +
         this.config.clientJsPath +
         path.sep

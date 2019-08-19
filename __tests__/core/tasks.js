@@ -252,12 +252,12 @@ describe('Core: Tasks', () => {
 
       const { tasks } = await api.tasks.delayedAt(roundedTime)
       expect(tasks).toHaveLength(1)
-      expect(tasks[0]['class']).toEqual('regularTask')
+      expect(tasks[0].class).toEqual('regularTask')
 
       const allTasks = await api.tasks.allDelayed()
       expect(Object.keys(allTasks)).toHaveLength(1)
       expect(Object.keys(allTasks)[0]).toEqual(String(roundedTime))
-      expect(allTasks[roundedTime][0]['class']).toEqual('regularTask')
+      expect(allTasks[roundedTime][0].class).toEqual('regularTask')
     }
   )
 
@@ -429,7 +429,7 @@ describe('Core: Tasks', () => {
       const workerName = Object.keys(details.workers)[0]
       expect(details.workers[workerName].queue).toEqual('testQueue')
       expect(details.workers[workerName].payload.args).toEqual([{ a: 1 }])
-      expect(details.workers[workerName].payload['class']).toEqual('slowTask')
+      expect(details.workers[workerName].payload.class).toEqual('slowTask')
 
       await api.resque.multiWorker.stop()
     }, 10000)
@@ -485,7 +485,7 @@ describe('Core: Tasks', () => {
 
         const listener = async (workerId, queue, job, f) => {
           expect(queue).toEqual(queue)
-          expect(job['class']).toEqual('someCrazyTask')
+          expect(job.class).toEqual('someCrazyTask')
           expect(job.queue).toEqual('testQueue')
           expect(String(f)).toEqual('Error: No job defined for class "someCrazyTask"')
           api.resque.multiWorker.removeListener('failure', listener)

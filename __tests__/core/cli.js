@@ -83,7 +83,7 @@ describe('Core: CLI', () => {
 
     test('can call npm install in the new project', async () => {
       try {
-        await doCommand(`npm install`)
+        await doCommand('npm install')
       } catch (error) {
         // we might get warnings about package.json locks, etc.  we want to ignore them
         if (error.toString().indexOf('npm') < 0) { throw error }
@@ -226,7 +226,7 @@ describe('Core: CLI', () => {
     })
 
     test('can call npm test in the new project and not fail', async () => {
-      await doCommand(`npm test`)
+      await doCommand('npm test')
     }, 120000)
 
     describe('can run a single server', () => {
@@ -282,7 +282,7 @@ describe('Core: CLI', () => {
       })
 
       test('should be running the cluster with 2 nodes', async () => {
-        const { stdout } = await doCommand(`ps awx`)
+        const { stdout } = await doCommand('ps awx')
         const parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
         const children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).toEqual(1)
@@ -296,7 +296,7 @@ describe('Core: CLI', () => {
         await doCommand(`kill -s TTIN ${clusterPid}`)
         await sleep(2500)
 
-        const { stdout } = await doCommand(`ps awx`)
+        const { stdout } = await doCommand('ps awx')
         const parents = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start cluster') >= 0 })
         const children = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).toEqual(1)
@@ -307,7 +307,7 @@ describe('Core: CLI', () => {
         await doCommand(`kill -s TTOU ${clusterPid}`)
         await sleep(2500)
 
-        const { stdout } = await doCommand(`ps awx`)
+        const { stdout } = await doCommand('ps awx')
         const parents = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start cluster') >= 0 })
         const children = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).toEqual(1)
@@ -318,7 +318,7 @@ describe('Core: CLI', () => {
         await doCommand(`kill -s USR2 ${clusterPid}`)
         await sleep(2000)
 
-        const { stdout } = await doCommand(`ps awx`)
+        const { stdout } = await doCommand('ps awx')
         const parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
         const children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).toEqual(1)
@@ -332,7 +332,7 @@ describe('Core: CLI', () => {
         await doCommand(`kill -s WINCH ${clusterPid}`)
         await sleep(2000)
 
-        const { stdout } = await doCommand(`ps awx`)
+        const { stdout } = await doCommand('ps awx')
         const parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
         const children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).toEqual(1)
@@ -346,7 +346,7 @@ describe('Core: CLI', () => {
         await doCommand(`kill ${clusterPid}`)
         await sleep(2000)
 
-        const { stdout } = await doCommand(`ps awx`)
+        const { stdout } = await doCommand('ps awx')
         const parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
         const children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).toEqual(0)

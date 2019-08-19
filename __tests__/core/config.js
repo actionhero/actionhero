@@ -15,8 +15,8 @@ const newConfigFolderPaths = [
   path.join(__dirname, 'second_config')
 ]
 const routeFilesContent = [
-  `exports['default'] = {\n  routes: (api) => {\n    return {\n\n      get: [\n        { path: '/api-status', action: 'status' }\n      ]\n\n    }\n  }\n}\n`,
-  `exports['default'] = {\n  routes: (api) => {\n    return {\n\n      get: [\n        { path: '/random-number', action: 'randomNumber' }\n      ]\n\n    }\n  }\n}\n`
+  'exports[\'default\'] = {\n  routes: (api) => {\n    return {\n\n      get: [\n        { path: \'/api-status\', action: \'status\' }\n      ]\n\n    }\n  }\n}\n',
+  'exports[\'default\'] = {\n  routes: (api) => {\n    return {\n\n      get: [\n        { path: \'/random-number\', action: \'randomNumber\' }\n      ]\n\n    }\n  }\n}\n'
 ]
 
 const createRouteFile = async (newConfigFolderPath, routeFileContent) => {

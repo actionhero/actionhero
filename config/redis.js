@@ -10,7 +10,7 @@ if (process.env.REDIS_URL) {
   port = parseInt(process.env.REDIS_URL.match(/redis:\/\/.*:.*@.*:(\d*)$/i)[1])
 }
 
-exports['default'] = {
+exports.default = {
   redis: (api) => {
     // konstructor: The redis client constructor method.  All redis methods must be promises
     // args: The arguments to pass to the constructor

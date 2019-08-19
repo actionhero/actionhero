@@ -274,8 +274,7 @@ module.exports = class Connection {
           if (this.rooms.indexOf(room) >= 0) {
             return api.chatRoom.roomStatus(room)
           }
-          const error = new Error(await api.config.errors.connectionNotInRoom(this, room))
-          throw error
+          throw new Error(await api.config.errors.connectionNotInRoom(this, room))
         case 'detailsView':
           return {
             id: this.id,

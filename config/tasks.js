@@ -1,4 +1,4 @@
-exports['default'] = {
+exports.default = {
   tasks: (api) => {
     return {
       // Should this node run a scheduler to promote delayed tasks?

@@ -58,7 +58,7 @@ await api.redis.publish(payload)
       return api.redis.clients.client.publish(channel, JSON.stringify(payload))
     }
 
-    api.redis.subscriptionHandlers['do'] = async (message) => {
+    api.redis.subscriptionHandlers.do = async (message) => {
       if (!message.connectionId || (api.connections && api.connections.connections[message.connectionId])) {
         const cmdParts = message.method.split('.')
         const cmd = cmdParts.shift()

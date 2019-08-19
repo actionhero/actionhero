@@ -176,7 +176,7 @@ module.exports = class StaticFile extends ActionHero.Initializer {
 
     // load in the explicit public paths first
     if (api.config.general.paths !== undefined) {
-      api.config.general.paths['public'].forEach(function (p) {
+      api.config.general.paths.public.forEach(function (p) {
         api.staticFile.searchLoactions.push(path.normalize(p))
       })
     }

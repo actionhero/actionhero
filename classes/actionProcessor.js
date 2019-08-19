@@ -169,11 +169,11 @@ module.exports = class ActionProcessor {
 
   async validateParam (props, params, key, schemaKey) {
     // default
-    if (params[key] === undefined && props['default'] !== undefined) {
-      if (typeof props['default'] === 'function') {
-        params[key] = await props['default'].call(api, params[key], this)
+    if (params[key] === undefined && props.default !== undefined) {
+      if (typeof props.default === 'function') {
+        params[key] = await props.default.call(api, params[key], this)
       } else {
-        params[key] = props['default']
+        params[key] = props.default
       }
     }
 

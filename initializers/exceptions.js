@@ -102,7 +102,7 @@ module.exports = class Exceptions extends ActionHero.Initializer {
     api.exceptionHandlers.task = (error, queue, task, workerId) => {
       let simpleName
       try {
-        simpleName = task['class']
+        simpleName = task.class
       } catch (e) {
         simpleName = error.message
       }

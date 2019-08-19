@@ -1,7 +1,7 @@
 'use strict'
 
 // error messages can be strings of objects
-exports['default'] = {
+exports.default = {
   errors: (api) => {
     return {
       _toExpand: false,

@@ -68,7 +68,7 @@ module.exports = class Help extends ActionHero.CLI {
 
       if (!m.inputs) { m.inputs = {} }
       if (Object.keys(m.inputs).length > 0) {
-        console.log(`inputs:`)
+        console.log('inputs:')
         Object.keys(m.inputs).forEach((inputName) => {
           const i = m.inputs[inputName]
           console.log(`  [${inputName}] ${(i.required ? '' : '(optional)')}`)

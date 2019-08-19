@@ -61,7 +61,7 @@ describe('Core', () => {
     test('should send back the etag header', async () => {
       const response = await request.get(url + '/simple.html', { resolveWithFullResponse: true })
       expect(response.statusCode).toEqual(200)
-      expect(response.headers['etag']).toBeTruthy()
+      expect(response.headers.etag).toBeTruthy()
     })
 
     test(
@@ -86,9 +86,9 @@ describe('Core', () => {
       const response = await request.get(url + '/simple.html', { resolveWithFullResponse: true })
       expect(response.statusCode).toEqual(200)
       expect(response.body).toEqual('<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />')
-      expect(response.headers['etag']).toBeTruthy()
+      expect(response.headers.etag).toBeTruthy()
 
-      const etag = response.headers['etag']
+      const etag = response.headers.etag
       const options = {
         headers: { 'If-None-Match': etag },
         resolveWithFullResponse: true
@@ -105,13 +105,13 @@ describe('Core', () => {
     test('should send a different etag for other files', async () => {
       const response = await request.get(url + '/simple.html', { resolveWithFullResponse: true })
       expect(response.statusCode).toEqual(200)
-      expect(response.headers['etag']).toBeTruthy()
-      const etag = response.headers['etag']
+      expect(response.headers.etag).toBeTruthy()
+      const etag = response.headers.etag
 
       const secondResponse = await request.get(url + '/index.html', { resolveWithFullResponse: true })
       expect(secondResponse.statusCode).toEqual(200)
-      expect(secondResponse.headers['etag']).toBeTruthy()
-      const etagTwo = secondResponse.headers['etag']
+      expect(secondResponse.headers.etag).toBeTruthy()
+      const etagTwo = secondResponse.headers.etag
       expect(etagTwo).not.toEqual(etag)
     })
 

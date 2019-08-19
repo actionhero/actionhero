@@ -2,7 +2,7 @@
 
 const path = require('path')
 
-exports['default'] = {
+exports.default = {
   general: (api) => {
     const packageJSON = require(api.projectRoot + path.sep + 'package.json')
 
