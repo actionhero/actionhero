@@ -55,7 +55,7 @@
     "jsdoc": "^3.6.3",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
-    "standard": "^13.1.0"
+    "standard": "^14.0.0"
   },
   "optionalDependencies": {},
   "bin": {
