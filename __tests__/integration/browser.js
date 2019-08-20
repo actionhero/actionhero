@@ -32,7 +32,7 @@ describe('browser integration tests', () => {
 
     test('loads the page', async () => {
       const title = await browser.findElement(by.tagName('h1')).getText()
-      expect(title).toEqual('Your ActionHero Server is working.')
+      expect(title).toEqual('Your Actionhero Server is working.')
     })
 
     test('server status is loaded', async () => {
@@ -50,13 +50,13 @@ describe('browser integration tests', () => {
       }
 
       const expextedActions = [
-        'cacheTest (v1)',
-        'createChatRoom (v1)',
-        'randomNumber (v1)',
-        'showDocumentation (v1)',
-        'sleepTest (v1)',
-        'status (v1)',
-        'validationTest (v1)'
+        'cacheTest v1',
+        'createChatRoom v1',
+        'randomNumber v1',
+        'showDocumentation v1',
+        'sleepTest v1',
+        'status v1',
+        'validationTest v1'
       ]
 
       expect(actionNames).toEqual(expect.arrayContaining(expextedActions))
