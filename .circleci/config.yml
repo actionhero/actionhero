@@ -32,7 +32,7 @@ refrences:
           command: mkdir ./junit
       - run:
           name: test
-          command: ./node_modules/.bin/jest --ci --testResultsProcessor="jest-junit" --runInBand
+          command: ./node_modules/.bin/jest --ci --reporters="jest-junit" --reporters="default"
           environment:
             NODE_ENV: test
             SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
