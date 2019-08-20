@@ -1,141 +1,144 @@
 <html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta http-equiv="content-language" content="en" />
-    <meta name="description" content="actionhero.js" />
-    <link href='/public/css/cosmo.css' rel='stylesheet' type='text/css'>
-    <link rel="icon" href="/public/favicon.ico">
-    <title>actionhero.js</title>
 
-    <script type="text/javascript" src="/public/javascript/ActionheroWebsocketClient.min.js"></script>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta name="description" content="actionhero.js" />
+  <link href='/public/css/cosmo.css' rel='stylesheet' type='text/css'>
+  <link rel="icon" href="/public/favicon.ico">
+  <title>actionhero.js</title>
 
-    <script type="text/javascript">
+  <script type="text/javascript" src="/public/javascript/ActionheroWebsocketClient.min.js"></script>
+</head>
 
-    var client;
-    var boot = function(){
-      client = new ActionheroWebsocketClient();
+<body onload="boot()">
 
-      client.on('connected',    function(){ console.log('connected!') })
-      client.on('disconnected', function(){ console.log('disconnected :(') })
+  <br />
 
-      client.on('error',        function(error){ console.log('error', error.stack) })
-      client.on('reconnect',    function(){ console.log('reconnect') })
-      client.on('reconnecting', function(){ console.log('reconnecting') })
-
-      // client.on('message',      function(message){ console.log(message) })
-
-      client.on('alert',        function(message){ alert( JSON.stringify(message) ) })
-      client.on('api',          function(message){ alert( JSON.stringify(message) ) })
-
-      client.on('welcome',      function(message){ appendMessage(message); })
-      client.on('say',          function(message){ appendMessage(message); })
-
-      client.connect(function(error, details){
-        if (error) {
-          console.error(error);
-        } else {
-          client.action('createChatRoom', {name: 'defaultRoom'}, function(data){
-            client.roomAdd("defaultRoom");
-            document.getElementById("name").innerHTML = "<span style=\"color:#" + intToARGB(hashCode(client.id)) + "\">" + client.id + "</span>";
-            document.getElementById("fingerprint").innerHTML = client.fingerprint;
-          });
-        }
-      });
-
-    }
-
-    var appendMessage = function(message){
-      var s = "";
-      s += "<pre>"
-      if (message.welcome != null){
-        s += "<div align=\"center\">*** " + message.welcome + " ***</div>";
-        s += "<div align=\"center\"><img src=\"/public/logo/actionhero.png\" width=\"100\" /></div>";
-      }else{
-        s += "<span style=\" font-size:10px; color:#" + intToARGB(hashCode(message.from)) + "\">"
-        if(message.me === true){ s += "<strong>"; }
-        s += message.from;
-        if(message.me === true){ s += "</strong>"; }
-        s += "</span>";
-        s += "<span style=\"font-size:10px;\"> @ " + formatTime(message.sentAt);
-        s += "</span>"
-        s += "<br />"
-        s += message.message;
-      }
-      s += "</pre>"
-      var div = document.getElementById("chatBox");
-      div.innerHTML = s + div.innerHTML;
-    }
-
-    var sendMessage = function(){
-      var div = document.getElementById("message");
-      var message = div.value;
-      div.value = "";
-      client.say(client.rooms[0], message);
-    }
-
-    var formatTime = function(timestamp){
-      return new Date(timestamp).toLocaleTimeString()
-    }
-
-    function hashCode(str) { // java String#hashCode
-        var hash = 0;
-        for (var i = 0; i < str.length; i++) {
-           hash = str.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        return hash;
-    }
-
-    function intToARGB(i){
-        var color =
-          ((i>>24)&0xFF).toString(16) +
-          ((i>>16)&0xFF).toString(16) +
-          ((i>> 8)&0xFF).toString(16) +
-          (i&0xFF).toString(16);
-        return color.substring(0, 6);
-    }
-
-    </script>
-
-  </head>
-
-  <body onload="boot()">
-
-    <div class="container">
-      <div class="row">
-
-        <div class="col-md-12">
-          <h1>Real-Time Chat with Actionhero</h1>
-          <a href="/" class="btn btn-warning btn-xs">Back Home</a>
-          <hr />
-        </div>
-
-        <div class="col-md-4">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">Hello,<br /><strong><span id="name"></span></strong></h3>
-              <p style="font-size: 10px"><em>fingerprint: <span id="fingerprint" />)</p>
-            </div>
-            <div class="panel-body">
-              <form id="messageForm" class="form-inline">
-                <div class="form-group">
-                  <input type="text" class="form-control" id="message" placeholder="Your Message">
-                </div>
-                <button id="submitButton" type="submit" class="btn btn-primary">Send Message</button>
-              </form>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-8">
-          <div class="chatBox" id="chatBox"></div>
-        </div>
-
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Real-Time Chat with Actionhero</h1>
+        <hr />
       </div>
     </div>
-  </body>
 
-  <script>
-    document.getElementById('messageForm').addEventListener('submit', function(e){ e.preventDefault(); sendMessage(); }, false);
-  </script>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card border-primary">
+          <div class="card-header">
+            <h3>Hello,<br /><strong><span id="name"></span></strong></h3>
+            <p style="font-size: 10px"><em>fingerprint: <span id="fingerprint" /></em></p>
+          </div>
+          <div class="card-body">
+            <form id="messageForm" class="form-inline">
+              <div class="form-group">
+                <input type="text" class="form-control" id="message" placeholder="Your Message">
+              </div>
+              <button id="submitButton" type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-8">
+        <div class="list-group" id="chatBox" />
+      </div>
+
+    </div>
+  </div>
+</body>
+
+<script>
+  document.getElementById('messageForm').addEventListener('submit', function (e) { e.preventDefault(); sendMessage(); }, false);
+</script>
+
+<script type="text/javascript">
+  var client;
+  var boot = function () {
+    client = new ActionheroWebsocketClient();
+
+    client.on('connected', function () { console.log('connected!') })
+    client.on('disconnected', function () { console.log('disconnected :(') })
+
+    client.on('error', function (error) { console.log('error', error.stack) })
+    client.on('reconnect', function () { console.log('reconnect') })
+    client.on('reconnecting', function () { console.log('reconnecting') })
+
+    // client.on('message',      function(message){ console.log(message) })
+
+    client.on('alert', function (message) { alert(JSON.stringify(message)) })
+    client.on('api', function (message) { alert(JSON.stringify(message)) })
+
+    client.on('welcome', function (message) { appendMessage(message); })
+    client.on('say', function (message) { appendMessage(message); })
+
+    client.connect(function (error, details) {
+      if (error) {
+        console.error(error);
+      } else {
+        client.action('createChatRoom', { name: 'defaultRoom' }, function (data) {
+          client.roomAdd("defaultRoom");
+          document.getElementById("name").innerHTML = "<span style=\"color:#" + intToARGB(hashCode(client.id)) + "\">" + client.id + "</span>";
+          document.getElementById("fingerprint").innerHTML = client.fingerprint;
+        });
+      }
+    });
+
+  }
+
+  var appendMessage = function (message) {
+    var s = "";
+
+    if (message.welcome != null) {
+
+      s += '<br />'
+      s += "<div align=\"center\">*** " + message.welcome + " ***</div>";
+      s += "<div align=\"center\"><img src=\"/public/logo/actionhero.png\" width=\"100\" /></div>";
+
+    } else {
+
+      s += '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">';
+      s += '  <div class="d-flex w-100 justify-content-between">';
+      s += '    <h5 class="mb-1" style="color:#' + intToARGB(hashCode(message.from)) + "\">" + message.from + '</h5>';
+      s += '    <small>' + formatTime(message.sentAt) + '</small>';
+      s += '  </div>';
+      s += '  <p class="mb-1">' + message.message + '</p>';
+      s += '</a >';
+
+    }
+
+    var div = document.getElementById("chatBox");
+    div.innerHTML = s + div.innerHTML;
+  }
+
+  var sendMessage = function () {
+    var div = document.getElementById("message");
+    var message = div.value;
+    div.value = "";
+    client.say(client.rooms[0], message);
+  }
+
+  var formatTime = function (timestamp) {
+    return new Date(timestamp).toLocaleTimeString()
+  }
+
+  function hashCode(str) { // java String#hashCode
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return hash;
+  }
+
+  function intToARGB(i) {
+    var color =
+      ((i >> 24) & 0xFF).toString(16) +
+      ((i >> 16) & 0xFF).toString(16) +
+      ((i >> 8) & 0xFF).toString(16) +
+      (i & 0xFF).toString(16);
+    return color.substring(0, 6);
+  }
+</script>
 
 </html>
