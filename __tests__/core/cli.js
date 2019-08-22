@@ -9,6 +9,7 @@ const spawn = require('child_process').spawn
 const request = require('request-promise-native')
 const isrunning = require('is-running')
 const testDir = os.tmpdir() + path.sep + 'actionheroTestProject'
+console.log({ testDir })
 const binary = './node_modules/.bin/actionhero'
 const pacakgeJSON = require(path.join(__dirname, '/../../package.json'))
 

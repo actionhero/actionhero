@@ -11,7 +11,7 @@ module.exports = class MyInitializer extends ActionHero.Initializer {
   }
 
   async initialize () {
-    ActionHero.api['%%name%%'] = {}
+    ActionHero.api['%%name%%'] = {} //eslint-disable-line
   }
 
   async start () {}
