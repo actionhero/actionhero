@@ -62,6 +62,7 @@ const connectClients = async () => {
 describe('Server: Socket', () => {
   beforeAll(async () => {
     api = await actionhero.start()
+    await api.redis.clients.client.flushdb()
     await connectClients()
     const result = await makeSocketRequest(client2, 'detailsView')
     client2Details = result.data

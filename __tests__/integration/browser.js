@@ -18,6 +18,7 @@ const ensureNoErrors = async () => {
 describe('browser integration tests', () => {
   beforeAll(async () => {
     api = await actionhero.start()
+    await api.redis.clients.client.flushdb()
     url = 'http://localhost:' + api.config.servers.web.port
   })
 

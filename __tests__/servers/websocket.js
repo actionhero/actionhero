@@ -66,6 +66,7 @@ const awaitRoom = async (client, method, room) => {
 describe('Server: Web Socket', () => {
   beforeAll(async () => {
     api = await actionhero.start()
+    await api.redis.clients.client.flushdb()
     url = 'http://localhost:' + api.config.servers.web.port
     api.config.servers.websocket.clientUrl = url
     await connectClients()
