@@ -30,7 +30,7 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "browser_fingerprint": "^1.0.4",
+    "browser_fingerprint": "^1.0.5",
     "dot-prop": "^5.1.0",
     "etag": "^1.8.1",
     "formidable": "^1.2.1",
