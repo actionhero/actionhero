@@ -63,6 +63,9 @@ describe('Server: Socket', () => {
   beforeAll(async () => {
     api = await actionhero.start()
     await api.redis.clients.client.flushdb()
+    await api.chatRoom.add('defaultRoom')
+    await api.chatRoom.add('otherRoom')
+
     await connectClients()
     const result = await makeSocketRequest(client2, 'detailsView')
     client2Details = result.data
