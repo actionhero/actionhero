@@ -18,18 +18,23 @@ module.exports = class GenerateAction extends ActionHero.CLI {
   }
 
   run ({ params }) {
-    let template = fs.readFileSync(path.join(__dirname, '/../../templates/action.js'))
-    template = String(template);
+    let actionTemplate = fs.readFileSync(path.join(__dirname, '../../templates/action.js'))
+    actionTemplate = String(actionTemplate)
+    let testTemplate = fs.readFileSync(path.join(__dirname, '/../../templates/test/action.js'))
+    testTemplate = String(testTemplate);
 
     [
       'name',
       'description'
     ].forEach((v) => {
       const regex = new RegExp('%%' + v + '%%', 'g')
-      template = template.replace(regex, params[v])
+      actionTemplate = actionTemplate.replace(regex, params[v])
+      testTemplate = testTemplate.replace(regex, params[v])
     })
 
-    const message = api.utils.createFileSafely(api.config.general.paths.action[0] + '/' + params.name + '.js', template)
+    let message = api.utils.createFileSafely(api.config.general.paths.action[0] + '/' + params.name + '.js', actionTemplate)
+    console.info(message)
+    message = api.utils.createFileSafely(api.config.general.paths.test[0] + '/actions/' + params.name + '.js', testTemplate)
     console.info(message)
 
     return true

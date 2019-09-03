@@ -77,7 +77,9 @@ module.exports = class Generate extends ActionHero.CLI {
       '/public/css',
       '/public/logo',
       '/tasks',
-      '/__tests__'
+      '/__tests__',
+      '/__tests__/actions',
+      '/__tests__/tasks'
     ].forEach((dir) => {
       try {
         const message = api.utils.createDirSafely(api.projectRoot + dir)
@@ -108,7 +110,7 @@ module.exports = class Generate extends ActionHero.CLI {
       '/public/css/cosmo.css': 'publicCss',
       '/public/logo/actionhero.png': 'publicLogo',
       '/README.md': 'readmeMd',
-      '/__tests__/example.js': 'exampleTest',
+      '/__tests__/actions/status.js': 'exampleTest',
       '/locales/en.json': 'enLocale',
       '/.gitignore': 'gitignore',
       '/boot.js': 'bootJs'

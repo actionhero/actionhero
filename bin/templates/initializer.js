@@ -1,7 +1,7 @@
 'use strict'
-const ActionHero = require('actionhero')
+const { Initializer, api } = require('actionhero')
 
-module.exports = class MyInitializer extends ActionHero.Initializer {
+module.exports = class MyInitializer extends Initializer {
   constructor () {
     super()
     this.name = '%%name%%'
@@ -11,7 +11,7 @@ module.exports = class MyInitializer extends ActionHero.Initializer {
   }
 
   async initialize () {
-    ActionHero.api['%%name%%'] = {} //eslint-disable-line
+    api['%%name%%'] = {} //eslint-disable-line
   }
 
   async start () {}

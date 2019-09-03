@@ -60,7 +60,8 @@ exports.default = {
         cli: [path.join(__dirname, '/../bin')],
         initializer: [path.join(__dirname, '/../initializers')],
         plugin: [path.join(__dirname, '/../node_modules')],
-        locale: [path.join(__dirname, '/../locales')]
+        locale: [path.join(__dirname, '/../locales')],
+        test: [path.join(__dirname, '/../__tests__')]
       },
       // hash containing chat rooms you wish to be created at server boot
       startingChatRooms: {

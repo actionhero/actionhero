@@ -1,7 +1,7 @@
 'use strict'
-const ActionHero = require('actionhero')
+const { Server } = require('actionhero')
 
-module.exports = class MyServer extends ActionHero.Server {
+module.exports = class MyServer extends Server {
   constructor () {
     super()
     this.type = '%%name%%'

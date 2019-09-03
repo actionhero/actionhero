@@ -158,18 +158,24 @@ describe('Core: CLI', () => {
 
     test('can generate an action', async () => {
       await doCommand(`${binary} generate action --name=myAction --description=my_description`)
-      const data = String(fs.readFileSync(`${testDir}/actions/myAction.js`))
-      expect(data).toMatch(/this.name = 'myAction'/)
-      expect(data).toMatch(/this.description = 'my_description'/)
+      const actionData = String(fs.readFileSync(`${testDir}/actions/myAction.js`))
+      expect(actionData).toMatch(/this.name = 'myAction'/)
+      expect(actionData).toMatch(/this.description = 'my_description'/)
+
+      const testData = String(fs.readFileSync(`${testDir}/__tests__/actions/myAction.js`))
+      expect(testData).toMatch("describe('myAction'")
     })
 
     test('can generate a task', async () => {
       await doCommand(`${binary} generate task --name=myTask --description=my_description --queue=my_queue --frequency=12345`)
-      const data = String(fs.readFileSync(`${testDir}/tasks/myTask.js`))
-      expect(data).toMatch(/this.name = 'myTask'/)
-      expect(data).toMatch(/this.description = 'my_description'/)
-      expect(data).toMatch(/this.queue = 'my_queue'/)
-      expect(data).toMatch(/this.frequency = 12345/)
+      const taskData = String(fs.readFileSync(`${testDir}/tasks/myTask.js`))
+      expect(taskData).toMatch(/this.name = 'myTask'/)
+      expect(taskData).toMatch(/this.description = 'my_description'/)
+      expect(taskData).toMatch(/this.queue = 'my_queue'/)
+      expect(taskData).toMatch(/this.frequency = 12345/)
+
+      const testData = String(fs.readFileSync(`${testDir}/__tests__/tasks/myTask.js`))
+      expect(testData).toMatch("describe('myTask'")
     })
 
     test('can generate a CLI command', async () => {
