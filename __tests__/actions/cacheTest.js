@@ -7,11 +7,7 @@ let api
 
 describe('Action', () => {
   describe('Cache', () => {
-    beforeAll(async () => {
-      api = await actionhero.start()
-      await api.redis.clients.client.flushdb()
-    })
-
+    beforeAll(async () => { api = await actionhero.start() })
     afterAll(async () => { await actionhero.stop() })
 
     test('fails with no params', async () => {
