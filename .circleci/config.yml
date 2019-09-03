@@ -37,7 +37,7 @@ refrences:
             NODE_ENV: test
             SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
             JEST_JUNIT_OUTPUT: reports/junit/jest.xml
-            maxMemoryAlloted: 500
+            maxMemoryAlloted: 1000
           when: always
       - store_test_results:
           path: ./reports/junit/
