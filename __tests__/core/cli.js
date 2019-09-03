@@ -124,7 +124,7 @@ describe('Core: CLI', () => {
         'locales/en.json',
         'tasks',
         '__tests__',
-        '__tests__/example.js',
+        '__tests__/actions/status.js',
         '.gitignore',
         'boot.js'
       ].forEach((f) => {
