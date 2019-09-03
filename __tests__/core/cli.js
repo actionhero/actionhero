@@ -40,8 +40,7 @@ const doCommand = async (command, useCwd) => {
     pid = cmd.pid
 
     cmd.on('close', (exitCode) => {
-      // running jest in a sub-shell returns the output as stderr, so we need to filter it
-      if ((stderr.length > 0 && stderr.indexOf('✓') < 0) || exitCode !== 0) {
+      if (stderr.length > 0 || exitCode !== 0) {
         const error = new Error(stderr)
         error.stderr = stderr
         error.stdout = stdout
@@ -233,7 +232,12 @@ describe('Core: CLI', () => {
     })
 
     test('can call npm test in the new project and not fail', async () => {
-      await doCommand('npm test')
+      // jest writes to stderr for some reason, so we need to test for the exit code here
+      try {
+        await doCommand('npm test')
+      } catch (error) {
+        if (error.exitCode !== 0) { throw error }
+      }
     }, 120000)
 
     describe('can run a single server', () => {
