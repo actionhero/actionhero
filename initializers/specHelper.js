@@ -260,6 +260,46 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
         throw error
       }
     }
+
+    /**
+     * Use the specHelper to find enqueued instances of a task
+     * This will return an array of intances of the task which have been enqueued either in the normal queues or delayed queues
+     * If a task is enqued in a delayed queue, it will have a 'timestamp' propery
+     * i.e. [ { class: 'regularTask', queue: 'testQueue', args: [ [Object] ] } ]
+     *
+     * @async
+     * @param  {string}   taskName The name of the task.
+     */
+    api.specHelper.findEnqueuedTasks = async (taskName) => {
+      let found = []
+
+      // normal queues
+      const queues = await api.resque.queue.queues()
+      for (const i in queues) {
+        const q = queues[i]
+        const length = await api.resque.queue.length(q)
+        const batchFound = await api.tasks.queued(q, 0, length + 1)
+        let matches = batchFound.filter(t => t.class === taskName)
+        matches = matches.map(m => {
+          m.timestamp = null
+          return m
+        })
+        found = found.concat(matches)
+      }
+
+      // delayed queues
+      const allDelayed = await api.resque.queue.allDelayed()
+      for (const timestamp in allDelayed) {
+        let matches = (allDelayed[timestamp]).filter(t => t.class === taskName)
+        matches = matches.map(m => {
+          m.timestamp = parseInt(timestamp)
+          return m
+        })
+        found = found.concat(matches)
+      }
+
+      return found
+    }
   }
 
   async start () {

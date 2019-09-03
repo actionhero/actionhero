@@ -169,6 +169,22 @@ describe('Core: Tasks', () => {
     expect(taskOutput[0]).toEqual('theWord')
   })
 
+  test('it can detect that a task was enqueued to run now', async () => {
+    await api.tasks.enqueue('regularTask', { word: 'testing' })
+    const found = await api.specHelper.findEnqueuedTasks('regularTask')
+    expect(found.length).toEqual(1)
+    expect(found[0].args[0].word).toEqual('testing')
+    expect(found[0].timestamp).toBeNull()
+  })
+
+  test('it can detect that a task was enqueued to run in the future', async () => {
+    await api.tasks.enqueueIn(1000, 'regularTask', { word: 'testing' })
+    const found = await api.specHelper.findEnqueuedTasks('regularTask')
+    expect(found.length).toEqual(1)
+    expect(found[0].args[0].word).toEqual('testing')
+    expect(found[0].timestamp).toBeGreaterThan(1)
+  })
+
   test('can call task methods inside the run', async () => {
     class TaskWithMethod extends ActionHero.Task {
       constructor () {
