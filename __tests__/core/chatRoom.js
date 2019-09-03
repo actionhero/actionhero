@@ -9,6 +9,7 @@ describe('Core', () => {
   describe('chatRoom', () => {
     beforeAll(async () => {
       api = await actionhero.start()
+
       for (var room in api.config.general.startingChatRooms) {
         try {
           await api.chatRoom.destroy(room)

@@ -37,7 +37,7 @@ refrences:
             NODE_ENV: test
             SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
             JEST_JUNIT_OUTPUT: reports/junit/jest.xml
-            maxMemoryAlloted: 500
+            maxMemoryAlloted: 1000
           when: always
       - store_test_results:
           path: ./reports/junit/
@@ -96,6 +96,14 @@ jobs:
       - image: selenium/standalone-chrome:latest
     <<: *shared-test-steps
 
+  tests-complete:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - run:
+          name: hooray
+          command: echo "hooray the tests are complete"
+
   deploy-docs-website:
     docker:
       - image: circleci/node:12
@@ -143,12 +151,18 @@ workflows:
           requires:
             - linter
 
+      - tests-complete:
+          filters:
+            <<: *ignored-branches
+          requires:
+            - test-node-v8
+            - test-node-v10
+            - test-node-v12
+
       - deploy-docs-website:
           filters:
             branches:
               only:
                 - master
           requires:
-            - test-node-v8
-            - test-node-v10
-            - test-node-v12
+            - tests-complete
