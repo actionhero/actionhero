@@ -28,6 +28,7 @@ const connectClient = async (query) => {
 describe('Integration: Web Server + Websocket Socket shared fingerprint', () => {
   beforeAll(async () => {
     api = await actionhero.start()
+    await api.redis.clients.client.flushdb()
     url = 'http://localhost:' + api.config.servers.web.port
     ActionheroWebsocketClient = eval(api.servers.servers.websocket.compileActionheroWebsocketClientJS()) // eslint-disable-line
   })

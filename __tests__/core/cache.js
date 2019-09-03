@@ -12,6 +12,10 @@ describe('Core', () => {
     beforeAll(async () => { api = await actionhero.start() })
     afterAll(async () => { await actionhero.stop() })
 
+    beforeAll(async () => {
+      await api.redis.clients.client.flushdb()
+    })
+
     test('cache methods should exist', () => {
       expect(api.cache).toBeInstanceOf(Object)
       expect(api.cache.save).toBeInstanceOf(Function)
