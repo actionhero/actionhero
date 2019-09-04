@@ -1,7 +1,7 @@
 'use strict'
-const ActionHero = require('actionhero')
+const { Action } = require('actionhero')
 
-module.exports = class MyAction extends ActionHero.Action {
+module.exports = class MyAction extends Action {
   constructor () {
     super()
     this.name = '%%name%%'
@@ -11,5 +11,6 @@ module.exports = class MyAction extends ActionHero.Action {
 
   async run (data) {
     // your logic here
+    data.response.ok = true
   }
 }
