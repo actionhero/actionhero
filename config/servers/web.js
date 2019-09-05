@@ -80,6 +80,44 @@ exports.default = {
         },
         // When true, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null.
         // You can also set connection.rawConnection.responseHttpCode to specify a code per request.
+        /**
+         *  To create custom Error objects with custom response code you need to add the responseHttpCode in the error object eg:
+         *  @example
+         *      // Define these custom errors somewhere
+         *      class NotFoundError extends Error {
+         *        constructor (message, extraFields) {
+         *        super()
+         *        this.name = this.constructor.name
+         *        this.message = message || '404: Not FOund'
+         *        this.responseHttpCode = 404
+         *        Object.assign(this, extraFields || {})
+         *         }
+         *       }
+         *
+         *       function SuspiciousActivity (message, extraFields) {
+         *          Error.call(this)
+         *
+         *          this.name = this.constructor.name
+         *          this.message = message || '402: Suspicious activity detected'
+         *          this.responseHttpCode = 402
+         *           Object.assign(this, extraFields || {})
+         *       }
+         *
+         *       // Your action
+         *         {
+         *          ...
+         *          const raiseNotFound = <your-condition>
+         *          if(raiseNotFound) {
+         *            throw NotFoundError(<msg-in-string>)
+         *          }
+         *          ...
+         *          const raiseSuspiciousActivity = <your-condition>
+         *          if(raiseSuspiciousActivity) {
+         *              throw SuspiciousActivity(<msg-in-string>)
+         *          }
+         *          ...
+         *        }
+         *  */
         returnErrorCodes: true,
         // should this node server attempt to gzip responses if the client can accept them?
         // this will slow down the performance of actionhero, and if you need this funcionality, it is recommended that you do this upstream with nginx or your load balancer
