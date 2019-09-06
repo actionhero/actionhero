@@ -677,25 +677,6 @@ describe('Server: Web', () => {
   describe('http returnErrorCodes true', () => {
     let orig
     beforeAll(() => {
-      function SuspiciousActivity (message, extraFields) {
-        Error.call(this)
-
-        this.name = this.constructor.name
-        this.message = message || '402: Suspicious activity detected'
-        this.responseHttpCode = 402
-        Object.assign(this, extraFields || {})
-      }
-
-      class NotFoundError extends Error {
-        constructor (message, extraFields) {
-          super()
-          this.name = this.constructor.name
-          this.message = message || '404: Not FOund'
-          this.responseHttpCode = 404
-          Object.assign(this, extraFields || {})
-        }
-      }
-
       orig = api.config.servers.web.returnErrorCodes
       api.config.servers.web.returnErrorCodes = true
 
@@ -719,7 +700,9 @@ describe('Server: Web', () => {
               const validQueryFilters = ['test', 'search']
               const validQueryParam = validQueryFilters.indexOf(data.params.query) > -1
               if (!validQueryParam) {
-                throw new NotFoundError(`404: Filter '${data.params.query}' not found `)
+                const notFoundError = new Error(`404: Filter '${data.params.query}' not found `)
+                notFoundError.code = 404
+                throw notFoundError
               }
             }
             const hasRandomKey = !!data.params.randomKey
@@ -727,7 +710,9 @@ describe('Server: Web', () => {
               const validRandomKeys = ['key1', 'key2', 'key3']
               const validRandomKey = validRandomKeys.indexOf(data.params.randomKey) > -1
               if (!validRandomKey) {
-                throw new SuspiciousActivity(`402: Suspicious Activity detected with key ${data.params.randomKey}`)
+                const suspiciousError = new Error(`402: Suspicious Activity detected with key ${data.params.randomKey}`)
+                suspiciousError.code = 402
+                throw suspiciousError
               }
             }
             data.response.good = true

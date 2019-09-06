@@ -98,11 +98,6 @@ module.exports = class ActionProcessor {
     }
 
     if (error) {
-      const hasCustomResponseCode = error.responseHttpCode && this.connection.rawConnection
-      if (hasCustomResponseCode) {
-        this.connection.rawConnection.responseHttpCode = error.responseHttpCode
-      }
-
       if (error instanceof Error) {
         logLine.error = String(error)
       } else {
