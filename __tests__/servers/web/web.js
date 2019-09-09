@@ -710,6 +710,11 @@ describe('Server: Web', () => {
               const validRandomKeys = ['key1', 'key2', 'key3']
               const validRandomKey = validRandomKeys.indexOf(data.params.randomKey) > -1
               if (!validRandomKey) {
+                if (data.params.randomKey === 'expired-key') {
+                  const expiredError = new Error(`999: Key '${data.params.randomKey}' is expired`)
+                  expiredError.code = 999
+                  throw expiredError
+                }
                 const suspiciousError = new Error(`402: Suspicious Activity detected with key ${data.params.randomKey}`)
                 suspiciousError.code = 402
                 throw suspiciousError
@@ -802,6 +807,18 @@ describe('Server: Web', () => {
         expect(responseWithKeyAndQuery.statusCode).toEqual(200)
         const receivedBody = await toJson(responseWithKeyAndQuery.body)
         expect(receivedBody.good).toEqual(true)
+      })
+
+      test('should not work for 999 status code set using custom error and default error code, 400 is thrown', async () => {
+        try {
+          await request.post(url + '/api/statusTestAction', { form: { key: 'value', randomKey: 'expired-key' } })
+          throw new Error('should not get here')
+        } catch (error) {
+          expect(error.statusCode).not.toEqual(999)
+          expect(error.statusCode).toEqual(400)
+          const body = await toJson(error.response.body)
+          expect(body.error).toEqual('999: Key \'expired-key\' is expired')
+        }
       })
     })
   })
