@@ -39,7 +39,7 @@
     "ioredis": "^4.14.0",
     "is-running": "^2.1.0",
     "mime": "^2.4.4",
-    "node-resque": "^5.5.5",
+    "node-resque": "^5.5.6",
     "optimist": "^0.6.1",
     "primus": "^7.3.3",
     "qs": "^6.8.0",
