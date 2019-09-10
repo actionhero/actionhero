@@ -686,15 +686,41 @@ describe('Server: Web', () => {
           name: 'statusTestAction',
           description: 'I am a test',
           inputs: {
-            key: { required: true }
+            key: { required: true },
+            query: { required: false },
+            randomKey: { required: false }
           },
           run: (data) => {
             if (data.params.key !== 'value') {
               data.connection.rawConnection.responseHttpCode = 402
               throw new Error('key != value')
-            } else {
-              data.response.good = true
             }
+            const hasQueryParam = !!data.params.query
+            if (hasQueryParam) {
+              const validQueryFilters = ['test', 'search']
+              const validQueryParam = validQueryFilters.indexOf(data.params.query) > -1
+              if (!validQueryParam) {
+                const notFoundError = new Error(`404: Filter '${data.params.query}' not found `)
+                notFoundError.code = 404
+                throw notFoundError
+              }
+            }
+            const hasRandomKey = !!data.params.randomKey
+            if (hasRandomKey) {
+              const validRandomKeys = ['key1', 'key2', 'key3']
+              const validRandomKey = validRandomKeys.indexOf(data.params.randomKey) > -1
+              if (!validRandomKey) {
+                if (data.params.randomKey === 'expired-key') {
+                  const expiredError = new Error(`999: Key '${data.params.randomKey}' is expired`)
+                  expiredError.code = 999
+                  throw expiredError
+                }
+                const suspiciousError = new Error(`402: Suspicious Activity detected with key ${data.params.randomKey}`)
+                suspiciousError.code = 402
+                throw suspiciousError
+              }
+            }
+            data.response.good = true
           }
         }
       }
@@ -742,6 +768,58 @@ describe('Server: Web', () => {
       expect(response.statusCode).toEqual(200)
       const body = await toJson(response.body)
       expect(body.good).toEqual(true)
+    })
+    describe('setting status code using custom errors', () => {
+      test('should work for 404 status code, set using custom error for invalid params', async () => {
+        try {
+          await request.post(url + '/api/statusTestAction', { form: { key: 'value', query: 'guess' } })
+          throw new Error('should not get here')
+        } catch (error) {
+          expect(error.statusCode).toEqual(404)
+          const body = await toJson(error.response.body)
+          expect(body.error).toEqual('404: Filter \'guess\' not found ')
+        }
+      })
+
+      test('should work for 402 status code set using custom error for invalid params', async () => {
+        try {
+          await request.post(url + '/api/statusTestAction', { form: { key: 'value', randomKey: 'guessKey' } })
+          throw new Error('should not get here')
+        } catch (error) {
+          expect(error.statusCode).toEqual(402)
+          const body = await toJson(error.response.body)
+          expect(body.error).toEqual('402: Suspicious Activity detected with key guessKey')
+        }
+      })
+
+      test('should not throw custom error for valid params', async () => {
+        const responseWithQuery = await request.post(url + '/api/statusTestAction', { form: { key: 'value', query: 'test' }, resolveWithFullResponse: true })
+        expect(responseWithQuery.statusCode).toEqual(200)
+        const responseBody = await toJson(responseWithQuery.body)
+        expect(responseBody.good).toEqual(true)
+
+        const responseWithRandomKey = await request.post(url + '/api/statusTestAction', { form: { key: 'value', randomKey: 'key1' }, resolveWithFullResponse: true })
+        expect(responseWithRandomKey.statusCode).toEqual(200)
+        const body = await toJson(responseWithRandomKey.body)
+        expect(body.good).toEqual(true)
+
+        const responseWithKeyAndQuery = await request.post(url + '/api/statusTestAction', { form: { key: 'value', query: 'search', randomKey: 'key2' }, resolveWithFullResponse: true })
+        expect(responseWithKeyAndQuery.statusCode).toEqual(200)
+        const receivedBody = await toJson(responseWithKeyAndQuery.body)
+        expect(receivedBody.good).toEqual(true)
+      })
+
+      test('should not work for 999 status code set using custom error and default error code, 400 is thrown', async () => {
+        try {
+          await request.post(url + '/api/statusTestAction', { form: { key: 'value', randomKey: 'expired-key' } })
+          throw new Error('should not get here')
+        } catch (error) {
+          expect(error.statusCode).not.toEqual(999)
+          expect(error.statusCode).toEqual(400)
+          const body = await toJson(error.response.body)
+          expect(body.error).toEqual('999: Key \'expired-key\' is expired')
+        }
+      })
     })
   })
 
