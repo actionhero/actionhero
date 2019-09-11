@@ -348,7 +348,11 @@ module.exports = class WebServer extends ActionHero.Server {
 
     if (data.response.error) {
       if (this.config.returnErrorCodes === true && data.connection.rawConnection.responseHttpCode === 200) {
-        if (data.actionStatus === 'unknown_action') {
+        const customErrorCode = parseInt(data.response.error.code, 10)
+        const isValidCustomResponseCode = customErrorCode >= 100 && customErrorCode < 600
+        if (isValidCustomResponseCode) {
+          data.connection.rawConnection.responseHttpCode = customErrorCode
+        } else if (data.actionStatus === 'unknown_action') {
           data.connection.rawConnection.responseHttpCode = 404
         } else if (data.actionStatus === 'missing_params') {
           data.connection.rawConnection.responseHttpCode = 422
