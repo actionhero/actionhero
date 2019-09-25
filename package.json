@@ -36,13 +36,13 @@
     "formidable": "^1.2.1",
     "glob": "^7.1.4",
     "i18n": "^0.8.3",
-    "ioredis": "^4.14.0",
+    "ioredis": "^4.14.1",
     "is-running": "^2.1.0",
     "mime": "^2.4.4",
-    "node-resque": "^5.5.6",
+    "node-resque": "^5.5.7",
     "optimist": "^0.6.1",
     "primus": "^7.3.3",
-    "qs": "^6.8.0",
+    "qs": "^6.9.0",
     "uglify-js": "^3.6.0",
     "uuid": "^3.3.3",
     "winston": "^3.2.1",
@@ -55,7 +55,7 @@
     "jsdoc": "^3.6.3",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
-    "standard": "^14.1.0"
+    "standard": "^14.3.1"
   },
   "optionalDependencies": {},
   "bin": {
