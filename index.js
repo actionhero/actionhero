@@ -1,5 +1,5 @@
 const path = require('path')
-const fs = require('fs');
+const fs = require('fs')
 
 /**
  * The top-level for all actionhero methods which can be used within your project.
