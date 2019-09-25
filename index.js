@@ -1,4 +1,5 @@
-const path = require('path');
+const path = require('path')
+const fs = require('fs');
 
 /**
  * The top-level for all actionhero methods which can be used within your project.
@@ -36,6 +37,15 @@ const path = require('path');
  * @class ActionHero
  */
 
+function requireRelative (klass, file) {
+  let fullPath = path.join(process.cwd(), 'node_modules', 'actionhero', 'classes', file)
+  if (!fs.existsSync(fullPath)) {
+    fullPath = path.join(__dirname, 'classes', file)
+  }
+
+  exports[klass] = require(fullPath)
+}
+
 [
   { klass: 'Process', file: 'process.js' },
   { klass: 'Action', file: 'action.js' },
@@ -46,7 +56,7 @@ const path = require('path');
   { klass: 'ActionProcessor', file: 'actionProcessor.js' },
   { klass: 'Connection', file: 'connection.js' }
 ].forEach(({ klass, file }) => {
-  exports[klass] = require(path.join(__dirname, 'classes', file))
+  requireRelative(klass, file)
 })
 
 exports.api = {}
