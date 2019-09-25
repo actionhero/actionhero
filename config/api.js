@@ -51,17 +51,17 @@ exports.default = {
       cliIncludeInternal: true,
       // configuration for your actionhero project structure
       paths: {
-        action: [path.join(__dirname, '/../actions')],
-        task: [path.join(__dirname, '/../tasks')],
-        public: [path.join(__dirname, '/../public')],
-        pid: [path.join(__dirname, '/../pids')],
-        log: [path.join(__dirname, '/../log')],
-        server: [path.join(__dirname, '/../servers')],
-        cli: [path.join(__dirname, '/../bin')],
-        initializer: [path.join(__dirname, '/../initializers')],
-        plugin: [path.join(__dirname, '/../node_modules')],
-        locale: [path.join(__dirname, '/../locales')],
-        test: [path.join(__dirname, '/../__tests__')]
+        action: [path.join(process.cwd(), 'actions')],
+        task: [path.join(process.cwd(), 'tasks')],
+        public: [path.join(process.cwd(), 'public')],
+        pid: [path.join(process.cwd(), 'pids')],
+        log: [path.join(process.cwd(), 'log')],
+        server: [path.join(process.cwd(), 'servers')],
+        cli: [path.join(process.cwd(), 'bin')],
+        initializer: [path.join(process.cwd(), 'initializers')],
+        plugin: [path.join(process.cwd(), 'node_modules')],
+        locale: [path.join(process.cwd(), 'locales')],
+        test: [path.join(process.cwd(), '__tests__')]
       },
       // hash containing chat rooms you wish to be created at server boot
       startingChatRooms: {
