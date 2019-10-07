@@ -26,7 +26,7 @@ describe('Core: Action Cluster', () => {
     test(
       'can call remote methods on all other servers in the cluster',
       async () => {
-        let data = {}
+        const data = {}
         api.rpcTestMethod = (arg1, arg2) => { data[1] = [arg1, arg2] }
         await api.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'])
         await api.utils.sleep(100)
@@ -39,8 +39,8 @@ describe('Core: Action Cluster', () => {
     test(
       'can call remote methods only on one other cluster who holds a specific connectionId',
       async () => {
-        let client = new api.specHelper.Connection()
-        let data = {}
+        const client = await api.specHelper.Connection.createAsync()
+        const data = {}
         api.rpcTestMethod = (arg1, arg2) => { data[1] = [arg1, arg2] }
 
         await api.redis.doCluster('api.rpcTestMethod', ['arg1', 'arg2'], client.id)
@@ -55,9 +55,9 @@ describe('Core: Action Cluster', () => {
     test(
       'can get information about connections connected to other servers',
       async () => {
-        let client = new api.specHelper.Connection()
+        const client = await api.specHelper.Connection.createAsync()
 
-        let { id, type, canChat } = await api.connections.apply(client.id)
+        const { id, type, canChat } = await api.connections.apply(client.id)
         expect(id).toEqual(client.id)
         expect(type).toEqual('testServer')
         expect(canChat).toEqual(true)
@@ -67,10 +67,10 @@ describe('Core: Action Cluster', () => {
     test(
       'can call remote methods on/about connections connected to other servers',
       async () => {
-        let client = new api.specHelper.Connection()
+        const client = await api.specHelper.Connection.createAsync()
         expect(client.auth).toBeUndefined()
 
-        let connection = await api.connections.apply(client.id, 'set', ['auth', true])
+        const connection = await api.connections.apply(client.id, 'set', ['auth', true])
         expect(connection.id).toEqual(client.id)
         expect(client.auth).toEqual(true)
         client.destroy()
@@ -80,10 +80,10 @@ describe('Core: Action Cluster', () => {
     test(
       'can send arbitraty messages to connections connected to other servers',
       async () => {
-        let client = new api.specHelper.Connection()
+        const client = await api.specHelper.Connection.createAsync()
 
-        let connection = await api.connections.apply(client.id, 'sendMessage', { message: 'hi' })
-        let message = connection.messages[(connection.messages.length - 1)]
+        const connection = await api.connections.apply(client.id, 'sendMessage', { message: 'hi' })
+        const message = connection.messages[(connection.messages.length - 1)]
         expect(message.message).toEqual('hi')
       }
     )

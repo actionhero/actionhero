@@ -32,12 +32,12 @@ refrences:
           command: mkdir ./junit
       - run:
           name: test
-          command: ./node_modules/.bin/jest --ci --testResultsProcessor="jest-junit" --runInBand
+          command: ./node_modules/.bin/jest --ci --reporters=jest-junit --reporters=default --runInBand
           environment:
             NODE_ENV: test
             SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
             JEST_JUNIT_OUTPUT: reports/junit/jest.xml
-            maxMemoryAlloted: 500
+            maxMemoryAlloted: 1000
           when: always
       - store_test_results:
           path: ./reports/junit/
@@ -48,7 +48,7 @@ refrences:
 jobs:
   build:
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:12
     steps:
       - checkout
       - restore_cache:
@@ -66,7 +66,7 @@ jobs:
 
   linter:
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:12
     steps:
       - checkout
       - restore_cache:
@@ -82,23 +82,31 @@ jobs:
       - image: selenium/standalone-chrome:latest
     <<: *shared-test-steps
 
-  test-node-v9:
+  test-node-v10:
     docker:
-      - image: circleci/node:9
+      - image: circleci/node:10
       - image: redis:4
       - image: selenium/standalone-chrome:latest
     <<: *shared-test-steps
 
-  test-node-v10:
+  test-node-v12:
     docker:
-      - image: circleci/node:10.0
+      - image: circleci/node:12
       - image: redis:4
       - image: selenium/standalone-chrome:latest
     <<: *shared-test-steps
+
+  tests-complete:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - run:
+          name: hooray
+          command: echo "hooray the tests are complete"
 
   deploy-docs-website:
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:12
     steps:
       - add_ssh_keys:
           fingerprints:
@@ -131,17 +139,25 @@ workflows:
           requires:
             - linter
 
-      - test-node-v9:
-          filters:
-            <<: *ignored-branches
-          requires:
-            - linter
-
       - test-node-v10:
           filters:
             <<: *ignored-branches
           requires:
             - linter
+
+      - test-node-v12:
+          filters:
+            <<: *ignored-branches
+          requires:
+            - linter
+
+      - tests-complete:
+          filters:
+            <<: *ignored-branches
+          requires:
+            - test-node-v8
+            - test-node-v10
+            - test-node-v12
 
       - deploy-docs-website:
           filters:
@@ -149,6 +165,4 @@ workflows:
               only:
                 - master
           requires:
-            - test-node-v8
-            - test-node-v9
-            - test-node-v10
+            - tests-complete

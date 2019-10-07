@@ -90,16 +90,22 @@ module.exports = class Actions extends ActionHero.Initializer {
 
       const loadMessage = (action) => {
         if (reload) {
-          api.log(`action reloaded: ${action.name} @ v${action.version}, ${fullFilePath}`, 'debug')
+          api.log(`action reloaded: ${action.name} @ v${action.version}, ${fullFilePath}`, 'info')
         } else {
           api.log(`action loaded: ${action.name} @ v${action.version}, ${fullFilePath}`, 'debug')
         }
       }
 
-      api.watchFileAndAct(fullFilePath, () => {
-        api.actions.loadFile(fullFilePath, true)
-        api.params.buildPostVariables()
-        api.routes.loadRoutes()
+      api.watchFileAndAct(fullFilePath, async () => {
+        if (!api.config.general.developmentModeForceRestart) {
+          // reload by updating in-memory copy of our action
+          api.actions.loadFile(fullFilePath, true)
+          api.params.buildPostVariables()
+          api.routes.loadRoutes()
+        } else {
+          api.log(`*** Rebooting due to action change (${fullFilePath}) ***`, 'info')
+          await api.commands.restart()
+        }
       })
 
       let action
@@ -107,7 +113,7 @@ module.exports = class Actions extends ActionHero.Initializer {
       try {
         let collection = require(fullFilePath)
         if (typeof collection === 'function') { collection = [collection] }
-        for (let i in collection) {
+        for (const i in collection) {
           action = new collection[i]()
           await action.validate(api)
           if (!api.actions.actions[action.name]) { api.actions.actions[action.name] = {} }
@@ -132,17 +138,17 @@ module.exports = class Actions extends ActionHero.Initializer {
       }
     }
 
-    for (let i in api.config.general.paths.action) {
-      let p = api.config.general.paths.action[i]
-      let files = glob.sync(path.join(p, '**', '*.js'))
-      for (let j in files) { await api.actions.loadFile(files[j]) }
+    for (const i in api.config.general.paths.action) {
+      const p = api.config.general.paths.action[i]
+      const files = glob.sync(path.join(p, '**', '*.js'))
+      for (const j in files) { await api.actions.loadFile(files[j]) }
     }
 
-    for (let pluginName in api.config.plugins) {
+    for (const pluginName in api.config.plugins) {
       if (api.config.plugins[pluginName].actions !== false) {
-        let pluginPath = api.config.plugins[pluginName].path
-        let files = glob.sync(path.join(pluginPath, 'actions', '**', '*.js'))
-        for (let j in files) { await api.actions.loadFile(files[j]) }
+        const pluginPath = api.config.plugins[pluginName].path
+        const files = glob.sync(path.join(pluginPath, 'actions', '**', '*.js'))
+        for (const j in files) { await api.actions.loadFile(files[j]) }
       }
     }
   }

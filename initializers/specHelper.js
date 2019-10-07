@@ -43,7 +43,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
       }
 
       start (api) {
-        api.log('loading the testServer', 'warning')
+        api.log('loading the testServer', 'info')
         this.on('connection', (connection) => { this.handleConnection(connection) })
         this.on('actionComplete', (data) => { this.actionComplete(data) })
       }
@@ -65,7 +65,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
       sendFile (connection, error, fileStream, mime, length) {
         let content = ''
         const messageId = connection.messageId
-        let response = {
+        const response = {
           content: null,
           mime: mime,
           length: length
@@ -118,7 +118,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
               receivedParams: {}
             }
 
-            for (let k in data.params) {
+            for (const k in data.params) {
               data.response.requesterInformation.receivedParams[k] = data.params[k]
             }
           }
@@ -136,12 +136,13 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
     }
 
     /**
-     * A special connection usable in tests.  Create via `new api.specHelper.Connection()`
+     * A special connection usable in tests.  Create via `await api.specHelper.Connection.createAsync()`
      *
      * @type {Class}
      * @memberof api.specHelper
      */
     api.specHelper.Connection = class {
+      /*
       constructor () {
         let id = uuid.v4()
         api.servers.servers.testServer.buildConnection({
@@ -150,7 +151,18 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
           remoteAddress: 'testServer',
           remotePort: 0
         })
+        return api.connections.connections[id]
+      }
+      */
 
+      static async createAsync (data) {
+        const id = uuid.v4()
+        await api.servers.servers.testServer.buildConnection({
+          id: id,
+          rawConnection: {},
+          remoteAddress: 'testServer',
+          remotePort: 0
+        })
         return api.connections.connections[id]
       }
     }
@@ -160,7 +172,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
      *
      * @async
      * @param  {string}  actionName The name of the action to run.
-     * @param  {Object}  input      You can provide either a pre-build connection `new api.specHelper.Connection()`, or just a Object with params for your action.
+     * @param  {Object}  input      You can provide either a pre-build connection `api.specHelper.Connection.createAsync()`, or just a Object with params for your action.
      * @return {Promise<Object>}    The `response` from the action.
      */
     api.specHelper.runAction = async (actionName, input) => {
@@ -169,14 +181,14 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
       if (input.id && input.type === 'testServer') {
         connection = input
       } else {
-        connection = new api.specHelper.Connection()
+        connection = await api.specHelper.Connection.createAsync()
         connection.params = input
       }
 
       connection.params.action = actionName
 
       connection.messageId = connection.params.messageId || uuid.v4()
-      let response = await new Promise((resolve) => {
+      const response = await new Promise((resolve) => {
         api.servers.servers.testServer.processAction(connection)
         connection.actionCallbacks[(connection.messageId)] = resolve
       })
@@ -192,11 +204,11 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
      * @return {Promise<Object>} The body contents and metadata of the file requested.  Conatins: mime, length, body, and more.
      */
     api.specHelper.getStaticFile = async (file) => {
-      let connection = new api.specHelper.Connection()
+      const connection = await api.specHelper.Connection.createAsync()
       connection.params.file = file
 
       connection.messageCount = uuid.v4()
-      let response = await new Promise((resolve) => {
+      const response = await new Promise((resolve) => {
         api.servers.servers.testServer.processFile(connection)
         connection.actionCallbacks[(connection.messageId)] = resolve
       })
@@ -238,7 +250,7 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
 
       try {
         await worker.connect()
-        let result = await worker.performInline(taskName, params)
+        const result = await worker.performInline(taskName, params)
         await worker.end()
         return result
       } catch (error) {
@@ -248,12 +260,52 @@ module.exports = class SpecHelper extends ActionHero.Initializer {
         throw error
       }
     }
+
+    /**
+     * Use the specHelper to find enqueued instances of a task
+     * This will return an array of intances of the task which have been enqueued either in the normal queues or delayed queues
+     * If a task is enqued in a delayed queue, it will have a 'timestamp' propery
+     * i.e. [ { class: 'regularTask', queue: 'testQueue', args: [ [Object] ] } ]
+     *
+     * @async
+     * @param  {string}   taskName The name of the task.
+     */
+    api.specHelper.findEnqueuedTasks = async (taskName) => {
+      let found = []
+
+      // normal queues
+      const queues = await api.resque.queue.queues()
+      for (const i in queues) {
+        const q = queues[i]
+        const length = await api.resque.queue.length(q)
+        const batchFound = await api.tasks.queued(q, 0, length + 1)
+        let matches = batchFound.filter(t => t.class === taskName)
+        matches = matches.map(m => {
+          m.timestamp = null
+          return m
+        })
+        found = found.concat(matches)
+      }
+
+      // delayed queues
+      const allDelayed = await api.resque.queue.allDelayed()
+      for (const timestamp in allDelayed) {
+        let matches = (allDelayed[timestamp]).filter(t => t.class === taskName)
+        matches = matches.map(m => {
+          m.timestamp = parseInt(timestamp)
+          return m
+        })
+        found = found.concat(matches)
+      }
+
+      return found
+    }
   }
 
   async start () {
     if (!this.enabled) { return }
 
-    let server = new api.specHelper.Server()
+    const server = new api.specHelper.Server()
     server.config = { enabled: true }
     await server.start(api)
     api.servers.servers.testServer = server

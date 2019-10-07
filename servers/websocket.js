@@ -81,7 +81,7 @@ module.exports = class WebSocketServer extends ActionHero.Server {
   sendFile (connection, error, fileStream, mime, length, lastModified) {
     const messageId = connection.messageId
     let content = ''
-    let response = {
+    const response = {
       error: error,
       content: null,
       mime: mime,
@@ -111,10 +111,10 @@ module.exports = class WebSocketServer extends ActionHero.Server {
 
   compileActionheroWebsocketClientJS () {
     let ahClientSource = fs.readFileSync(path.join(__dirname, '/../client/ActionheroWebsocketClient.js')).toString()
-    let url = this.config.clientUrl
+    const url = this.config.clientUrl
     ahClientSource = ahClientSource.replace(/%%URL%%/g, url)
-    let defaults = {}
-    for (let i in this.config.client) { defaults[i] = this.config.client[i] }
+    const defaults = {}
+    for (const i in this.config.client) { defaults[i] = this.config.client[i] }
     defaults.url = url
     let defaultsString = util.inspect(defaults)
     defaultsString = defaultsString.replace('\'window.location.origin\'', 'window.location.origin')
@@ -125,7 +125,7 @@ module.exports = class WebSocketServer extends ActionHero.Server {
 
   renderClientJS (minimize) {
     if (!minimize) { minimize = false }
-    let libSource = api.servers.servers.websocket.server.library()
+    const libSource = api.servers.servers.websocket.server.library()
     let ahClientSource = this.compileActionheroWebsocketClientJS()
     ahClientSource =
       ';;;\r\n' +
@@ -144,19 +144,19 @@ module.exports = class WebSocketServer extends ActionHero.Server {
   }
 
   writeClientJS () {
-    if (!api.config.general.paths['public'] || api.config.general.paths['public'].length === 0) {
+    if (!api.config.general.paths.public || api.config.general.paths.public.length === 0) {
       return
     }
 
     if (this.config.clientJsPath && this.config.clientJsName) {
-      let clientJSPath = path.normalize(
-        api.config.general.paths['public'][0] +
+      const clientJSPath = path.normalize(
+        api.config.general.paths.public[0] +
         path.sep +
         this.config.clientJsPath +
         path.sep
       )
-      let clientJSName = this.config.clientJsName
-      let clientJSFullPath = clientJSPath + clientJSName
+      const clientJSName = this.config.clientJsName
+      const clientJSFullPath = clientJSPath + clientJSName
       try {
         if (!fs.existsSync(clientJSPath)) {
           fs.mkdirSync(clientJSPath)
@@ -166,8 +166,7 @@ module.exports = class WebSocketServer extends ActionHero.Server {
         fs.writeFileSync(clientJSFullPath + '.min.js', this.renderClientJS(true))
         api.log(`wrote ${clientJSFullPath}.min.js`, 'debug')
       } catch (e) {
-        api.log('Cannot write client-side JS for websocket server:', 'warning')
-        api.log(e, 'warning')
+        api.log('Cannot write client-side JS for websocket server:', 'warning', e)
         throw e
       }
     }
@@ -175,7 +174,7 @@ module.exports = class WebSocketServer extends ActionHero.Server {
 
   handleConnection (rawConnection) {
     const fingerprint = rawConnection.query[api.config.servers.web.fingerprintOptions.cookieKey]
-    let { ip, port } = api.utils.parseHeadersForClientAddress(rawConnection.headers)
+    const { ip, port } = api.utils.parseHeadersForClientAddress(rawConnection.headers)
 
     this.buildConnection({
       rawConnection: rawConnection,
@@ -187,7 +186,7 @@ module.exports = class WebSocketServer extends ActionHero.Server {
 
   handleDisconnection (rawConnection) {
     const connections = this.connections()
-    for (let i in connections) {
+    for (const i in connections) {
       if (connections[i] && rawConnection.id === connections[i].rawConnection.id) {
         connections[i].destroy()
         break
@@ -204,7 +203,7 @@ module.exports = class WebSocketServer extends ActionHero.Server {
     connection.params = {}
 
     if (verb === 'action') {
-      for (let v in data.params) {
+      for (const v in data.params) {
         connection.params[v] = data.params[v]
       }
       connection.error = null
@@ -219,20 +218,21 @@ module.exports = class WebSocketServer extends ActionHero.Server {
       return this.processFile(connection)
     }
 
-    let words = []
+    const words = []
     let message
     if (data.room) {
       words.push(data.room)
       delete data.room
     }
-    for (let i in data) { words.push(data[i]) }
+    for (const i in data) { words.push(data[i]) }
     const messageId = connection.messageId
     try {
-      let data = await connection.verbs(verb, words)
+      const data = await connection.verbs(verb, words)
       message = { status: 'OK', context: 'response', data: data }
       return this.sendMessage(connection, message, messageId)
     } catch (error) {
-      message = { status: error, context: 'response', data: data }
+      const formattedError = error.toString()
+      message = { status: formattedError, error: formattedError, context: 'response', data: data }
       return this.sendMessage(connection, message, messageId)
     }
   }

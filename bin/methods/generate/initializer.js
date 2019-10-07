@@ -29,11 +29,11 @@ module.exports = class GenerateInitializer extends ActionHero.CLI {
       'startPriority',
       'stopPriority'
     ].forEach((v) => {
-      let regex = new RegExp('%%' + v + '%%', 'g')
+      const regex = new RegExp('%%' + v + '%%', 'g')
       template = template.replace(regex, params[v])
     })
 
-    let message = api.utils.createFileSafely(api.config.general.paths.initializer[0] + '/' + params.name + '.js', template)
+    const message = api.utils.createFileSafely(api.config.general.paths.initializer[0] + '/' + params.name + '.js', template)
     console.log(message)
 
     return true

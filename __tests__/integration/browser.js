@@ -18,6 +18,7 @@ const ensureNoErrors = async () => {
 describe('browser integration tests', () => {
   beforeAll(async () => {
     api = await actionhero.start()
+    await api.redis.clients.client.flushdb()
     url = 'http://localhost:' + api.config.servers.web.port
   })
 
@@ -32,7 +33,7 @@ describe('browser integration tests', () => {
 
     test('loads the page', async () => {
       const title = await browser.findElement(by.tagName('h1')).getText()
-      expect(title).toEqual('Your ActionHero Server is working.')
+      expect(title).toEqual('Your Actionhero Server is working.')
     })
 
     test('server status is loaded', async () => {
@@ -43,20 +44,20 @@ describe('browser integration tests', () => {
     })
 
     test('documentation is loaded', async () => {
-      let actionNameElements = await browser.findElements(by.tagName('h3'))
-      let actionNames = []
-      for (let i in actionNameElements) {
+      const actionNameElements = await browser.findElements(by.tagName('h3'))
+      const actionNames = []
+      for (const i in actionNameElements) {
         actionNames.push(await actionNameElements[i].getText())
       }
 
       const expextedActions = [
-        'cacheTest (v1)',
-        'createChatRoom (v1)',
-        'randomNumber (v1)',
-        'showDocumentation (v1)',
-        'sleepTest (v1)',
-        'status (v1)',
-        'validationTest (v1)'
+        'cacheTest v1',
+        'createChatRoom v1',
+        'randomNumber v1',
+        'showDocumentation v1',
+        'sleepTest v1',
+        'status v1',
+        'validationTest v1'
       ]
 
       expect(actionNames).toEqual(expect.arrayContaining(expextedActions))
@@ -101,7 +102,7 @@ describe('browser integration tests', () => {
       })
 
       test('has the same fingerprint', async () => {
-        let thisSessionID = await browser.manage().getCookie('sessionID')
+        const thisSessionID = await browser.manage().getCookie('sessionID')
         expect(thisSessionID.value).toEqual(sessionIDCookie.value)
         const fingerprintFromWebSocket = await browser.findElement(by.id('fingerprint')).getText()
         expect(fingerprintFromWebSocket).toEqual(sessionIDCookie.value)

@@ -58,17 +58,17 @@ await api.redis.publish(payload)
       return api.redis.clients.client.publish(channel, JSON.stringify(payload))
     }
 
-    api.redis.subscriptionHandlers['do'] = async (message) => {
+    api.redis.subscriptionHandlers.do = async (message) => {
       if (!message.connectionId || (api.connections && api.connections.connections[message.connectionId])) {
-        let cmdParts = message.method.split('.')
-        let cmd = cmdParts.shift()
+        const cmdParts = message.method.split('.')
+        const cmd = cmdParts.shift()
         if (cmd !== 'api') { throw new Error('cannot operate on a method outside of the api object') }
-        let method = api.utils.dotProp.get(api, cmdParts.join('.'))
+        const method = api.utils.dotProp.get(api, cmdParts.join('.'))
         let args = message.args
         if (args === null) { args = [] }
         if (!Array.isArray(args)) { args = [args] }
         if (method) {
-          let response = await method.apply(null, args)
+          const response = await method.apply(null, args)
           await api.redis.respondCluster(message.messageId, response)
         } else {
           api.log('RPC method `' + cmdParts.join('.') + '` not found', 'warning')
@@ -78,7 +78,7 @@ await api.redis.publish(payload)
 
     api.redis.subscriptionHandlers.doResponse = function (message) {
       if (api.redis.rpcCallbacks[message.messageId]) {
-        let { resolve, timer } = api.redis.rpcCallbacks[message.messageId]
+        const { resolve, timer } = api.redis.rpcCallbacks[message.messageId]
         clearTimeout(timer)
         resolve(message.response)
         delete api.redis.rpcCallbacks[message.messageId]
@@ -112,8 +112,8 @@ await api.redis.publish(payload)
       // it is possible for another node to get and work the request before we resolve our write
       // see https://github.com/actionhero/actionhero/issues/1244 for more information
       if (waitForResponse) {
-        return new Promise(async (resolve, reject) => {
-          let timer = setTimeout(() => reject(new Error('RPC Timeout')), api.config.general.rpcTimeout)
+        return new Promise(async (resolve, reject) => { //eslint-disable-line
+          const timer = setTimeout(() => reject(new Error('RPC Timeout')), api.config.general.rpcTimeout)
           api.redis.rpcCallbacks[messageId] = { timer, resolve, reject }
           try {
             await api.redis.publish(payload)
@@ -142,15 +142,15 @@ await api.redis.publish(payload)
 
     const connectionNames = ['client', 'subscriber', 'tasks']
     for (var i in connectionNames) {
-      let r = connectionNames[i]
+      const r = connectionNames[i]
       if (api.config.redis[r].buildNew === true) {
         const args = api.config.redis[r].args
         api.redis.clients[r] = new api.config.redis[r].konstructor(args[0], args[1], args[2]) // eslint-disable-line
-        api.redis.clients[r].on('error', (error) => { api.log(`Redis connection \`${r}\` error`, 'error', error) })
+        api.redis.clients[r].on('error', (error) => { api.log(`Redis connection \`${r}\` error`, 'alert', error) })
         api.redis.clients[r].on('connect', () => { api.log(`Redis connection \`${r}\` connected`, 'debug') })
       } else {
         api.redis.clients[r] = api.config.redis[r].konstructor.apply(null, api.config.redis[r].args)
-        api.redis.clients[r].on('error', (error) => { api.log(`Redis connection \`${r}\` error`, 'error', error) })
+        api.redis.clients[r].on('error', (error) => { api.log(`Redis connection \`${r}\` error`, 'alert', error) })
         api.log(`Redis connection \`${r}\` connected`, 'debug')
       }
 
@@ -190,8 +190,8 @@ await api.redis.publish(payload)
     await api.redis.doCluster('api.log', [`actionhero member ${api.id} has left the cluster`])
 
     const keys = Object.keys(api.redis.clients)
-    for (let i in keys) {
-      let client = api.redis.clients[keys[i]]
+    for (const i in keys) {
+      const client = api.redis.clients[keys[i]]
       if (typeof client.quit === 'function') {
         await client.quit()
       } else if (typeof client.end === 'function') {

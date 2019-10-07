@@ -1,7 +1,7 @@
 'use strict'
-const ActionHero = require('actionhero')
+const { CLI } = require('actionhero')
 
-module.exports = class MyCLICommand extends ActionHero.CLI {
+module.exports = class MyCLICommand extends CLI {
   constructor () {
     super()
     this.name = '%%name%%'

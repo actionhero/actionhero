@@ -6,6 +6,8 @@
   <img src="https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png" alt="ActionHero Logo" />
 </div>
 
+<br />
+
 <div align="center" class="topLinks">
 
 **[NPM](https://npmjs.org/package/actionhero) |
@@ -16,6 +18,8 @@
 [Twitter](https://twitter.com/actionherojs)**
 
 </div>
+
+<br />
 
 <div align="center" class="topBadges">
 
@@ -37,7 +41,7 @@ Currently actionhero supports the following out of the box...
 
 - [Web Clients](https://docs.actionherojs.com/tutorial-web-server.html): HTTP, HTTPS
 - [Socket Clients](https://docs.actionherojs.com/tutorial-socket-server.html): TCP (telnet), TLS
-- [Web Socket Clients](https://docs.actionherojs.com/tutorial-web_socket.html): HTTP, HTTPS
+- [Web Socket Clients](https://docs.actionherojs.com/tutorial-websocket-server.html): HTTP, HTTPS
 
 [... and you can also make your own servers and transports.](https://docs.actionherojs.com/ActionHero.Server.html)
 
@@ -104,6 +108,9 @@ Or deploy a free API server now:
 
 * Many folks [have helped](https://github.com/actionhero/actionhero/graphs/contributors) to make ActionHero a reality.
 * If you want to contribute to actionhero, contribute to the conversation on [github](https://github.com/actionhero/actionhero) and join us on [slack](https://slack.actionherojs.com)
+
+## Contributing
+* Contributing to ActionHero is easy!  [You can learn more about contributing to ActionHero here](https://github.com/actionhero/actionhero/blob/master/.github/CONTRIBUTING.md)
 
 ## License
 

@@ -31,8 +31,8 @@ module.exports = class MyCLICommand extends CLI {
 }
    */
   constructor () {
-    let coreProperties = this.coreProperties()
-    for (let key in coreProperties) {
+    const coreProperties = this.coreProperties()
+    for (const key in coreProperties) {
       if (!this[key]) { this[key] = coreProperties[key] }
       if (typeof this[key] === 'function') { this[key] = this[key]() }
     }

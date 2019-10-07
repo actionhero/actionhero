@@ -2,7 +2,7 @@
 
 const path = require('path')
 
-exports['default'] = {
+exports.default = {
   general: (api) => {
     const packageJSON = require(api.projectRoot + path.sep + 'package.json')
 
@@ -20,8 +20,13 @@ exports['default'] = {
       lockPrefix: 'actionhero:lock:',
       // how long will a lock last before it exipres (ms)?
       lockDuration: 1000 * 10, // 10 seconds
-      // Watch for changes in actions and tasks, and reload/restart them on the fly
+      // Watch for changes in actions, configs, initializers, servers and tasks; and reload/restart them on the fly
       developmentMode: true,
+      // When developmentMode is active, actionhero tries to swap actions and tasks in-memory for their updated version
+      // (without restarting the whole application). If you're having trouble with unwanted side effects after in-memory
+      // reloading, then set this to true to force an application restart on change.
+      // Changes to configs/initializers/servers while in developmentMode will force an application restart in any case.
+      developmentModeForceRestart: false,
       // How many pending actions can a single connection be working on
       simultaneousActions: 5,
       // allow connections to be created without remoteIp and remotePort (they will be set to 0)
@@ -46,16 +51,17 @@ exports['default'] = {
       cliIncludeInternal: true,
       // configuration for your actionhero project structure
       paths: {
-        'action': [path.join(__dirname, '/../actions')],
-        'task': [path.join(__dirname, '/../tasks')],
-        'public': [path.join(__dirname, '/../public')],
-        'pid': [path.join(__dirname, '/../pids')],
-        'log': [path.join(__dirname, '/../log')],
-        'server': [path.join(__dirname, '/../servers')],
-        'cli': [path.join(__dirname, '/../bin')],
-        'initializer': [path.join(__dirname, '/../initializers')],
-        'plugin': [path.join(__dirname, '/../node_modules')],
-        'locale': [path.join(__dirname, '/../locales')]
+        action: [path.join(process.cwd(), 'actions')],
+        task: [path.join(process.cwd(), 'tasks')],
+        public: [path.join(process.cwd(), 'public')],
+        pid: [path.join(process.cwd(), 'pids')],
+        log: [path.join(process.cwd(), 'log')],
+        server: [path.join(process.cwd(), 'servers')],
+        cli: [path.join(process.cwd(), 'bin')],
+        initializer: [path.join(process.cwd(), 'initializers')],
+        plugin: [path.join(process.cwd(), 'node_modules')],
+        locale: [path.join(process.cwd(), 'locales')],
+        test: [path.join(process.cwd(), '__tests__')]
       },
       // hash containing chat rooms you wish to be created at server boot
       startingChatRooms: {
@@ -73,11 +79,11 @@ exports.test = {
       serverToken: `serverToken-${process.env.JEST_WORKER_ID || 0}`,
       developmentMode: true,
       startingChatRooms: {
-        'defaultRoom': {},
-        'otherRoom': {}
+        defaultRoom: {},
+        otherRoom: {}
       },
       paths: {
-        'locale': [
+        locale: [
           path.join(__dirname, '..', 'locales')
         ]
       },

@@ -9,6 +9,7 @@ const spawn = require('child_process').spawn
 const request = require('request-promise-native')
 const isrunning = require('is-running')
 const testDir = os.tmpdir() + path.sep + 'actionheroTestProject'
+console.log({ testDir })
 const binary = './node_modules/.bin/actionhero'
 const pacakgeJSON = require(path.join(__dirname, '/../../package.json'))
 
@@ -20,15 +21,15 @@ const doCommand = async (command, useCwd) => {
   return new Promise((resolve, reject) => {
     if (useCwd === null || useCwd === undefined) { useCwd = true }
 
-    let parts = command.split(' ')
-    let bin = parts.shift()
-    let args = parts
+    const parts = command.split(' ')
+    const bin = parts.shift()
+    const args = parts
     let stdout = ''
     let stderr = ''
 
-    let env = process.env
+    const env = process.env
 
-    let cmd = spawn(bin, args, {
+    const cmd = spawn(bin, args, {
       cwd: useCwd ? testDir : __dirname,
       env: env
     })
@@ -39,9 +40,8 @@ const doCommand = async (command, useCwd) => {
     pid = cmd.pid
 
     cmd.on('close', (exitCode) => {
-      // running jest in a sub-shell returns the output as stderr, so we need to filter it
-      if ((stderr.length > 0 && stderr.indexOf('✓') < 0) || exitCode !== 0) {
-        let error = new Error(stderr)
+      if (stderr.length > 0 || exitCode !== 0) {
+        const error = new Error(stderr)
         error.stderr = stderr
         error.stdout = stdout
         error.pid = pid
@@ -64,15 +64,15 @@ describe('Core: CLI', () => {
     beforeAll(async () => {
       if (process.env.SKIP_CLI_TEST_SETUP === 'true') { return }
 
-      let sourcePackage = path.normalize(path.join(__dirname, '/../../bin/templates/package.json'))
+      const sourcePackage = path.normalize(path.join(__dirname, '/../../bin/templates/package.json'))
       AHPath = path.normalize(path.join(__dirname, '/../..'))
 
       await doCommand(`rm -rf ${testDir}`, false)
       await doCommand(`mkdir -p ${testDir}`, false)
       await doCommand(`cp ${sourcePackage} ${testDir}/package.json`)
 
-      let data = fs.readFileSync(testDir + '/package.json').toString()
-      let result = data.replace(/%%versionNumber%%/g, `file:${AHPath}`)
+      const data = fs.readFileSync(testDir + '/package.json').toString()
+      const result = data.replace(/%%versionNumber%%/g, `file:${AHPath}`)
       fs.writeFileSync(`${testDir}/package.json`, result)
     })
 
@@ -83,7 +83,7 @@ describe('Core: CLI', () => {
 
     test('can call npm install in the new project', async () => {
       try {
-        await doCommand(`npm install`)
+        await doCommand('npm install')
       } catch (error) {
         // we might get warnings about package.json locks, etc.  we want to ignore them
         if (error.toString().indexOf('npm') < 0) { throw error }
@@ -123,22 +123,23 @@ describe('Core: CLI', () => {
         'locales/en.json',
         'tasks',
         '__tests__',
-        '__tests__/example.js',
-        '.gitignore'
+        '__tests__/actions/status.js',
+        '.gitignore',
+        'boot.js'
       ].forEach((f) => {
         expect(fs.existsSync(testDir + '/' + f)).toEqual(true)
       })
     }, 10000)
 
     test('can call the help command', async () => {
-      let { stdout } = await doCommand(`${binary} help`)
+      const { stdout } = await doCommand(`${binary} help`)
       expect(stdout).toMatch(/actionhero start cluster/)
       expect(stdout).toMatch(/The reusable, scalable, and quick node.js API server for stateless and stateful applications/)
       expect(stdout).toMatch(/actionhero generate server/)
     })
 
     test('can call the version command', async () => {
-      let { stdout } = await doCommand(`${binary} version`)
+      const { stdout } = await doCommand(`${binary} version`)
       expect(stdout).toContain(pacakgeJSON.version)
     })
 
@@ -156,23 +157,29 @@ describe('Core: CLI', () => {
 
     test('can generate an action', async () => {
       await doCommand(`${binary} generate action --name=myAction --description=my_description`)
-      let data = String(fs.readFileSync(`${testDir}/actions/myAction.js`))
-      expect(data).toMatch(/this.name = 'myAction'/)
-      expect(data).toMatch(/this.description = 'my_description'/)
+      const actionData = String(fs.readFileSync(`${testDir}/actions/myAction.js`))
+      expect(actionData).toMatch(/this.name = 'myAction'/)
+      expect(actionData).toMatch(/this.description = 'my_description'/)
+
+      const testData = String(fs.readFileSync(`${testDir}/__tests__/actions/myAction.js`))
+      expect(testData).toMatch("describe('myAction'")
     })
 
     test('can generate a task', async () => {
       await doCommand(`${binary} generate task --name=myTask --description=my_description --queue=my_queue --frequency=12345`)
-      let data = String(fs.readFileSync(`${testDir}/tasks/myTask.js`))
-      expect(data).toMatch(/this.name = 'myTask'/)
-      expect(data).toMatch(/this.description = 'my_description'/)
-      expect(data).toMatch(/this.queue = 'my_queue'/)
-      expect(data).toMatch(/this.frequency = 12345/)
+      const taskData = String(fs.readFileSync(`${testDir}/tasks/myTask.js`))
+      expect(taskData).toMatch(/this.name = 'myTask'/)
+      expect(taskData).toMatch(/this.description = 'my_description'/)
+      expect(taskData).toMatch(/this.queue = 'my_queue'/)
+      expect(taskData).toMatch(/this.frequency = 12345/)
+
+      const testData = String(fs.readFileSync(`${testDir}/__tests__/tasks/myTask.js`))
+      expect(testData).toMatch("describe('myTask'")
     })
 
     test('can generate a CLI command', async () => {
       await doCommand(`${binary} generate cli --name=myCommand --description=my_description --example=my_example`)
-      let data = String(fs.readFileSync(`${testDir}/bin/myCommand.js`))
+      const data = String(fs.readFileSync(`${testDir}/bin/myCommand.js`))
       expect(data).toMatch(/this.name = 'myCommand'/)
       expect(data).toMatch(/this.description = 'my_description'/)
       expect(data).toMatch(/this.example = 'my_example'/)
@@ -180,7 +187,7 @@ describe('Core: CLI', () => {
 
     test('can generate a server', async () => {
       await doCommand(`${binary} generate server --name=myServer`)
-      let data = String(fs.readFileSync(`${testDir}/servers/myServer.js`))
+      const data = String(fs.readFileSync(`${testDir}/servers/myServer.js`))
       expect(data).toMatch(/this.type = 'myServer'/)
       expect(data).toMatch(/canChat: false/)
       expect(data).toMatch(/logConnections: true/)
@@ -190,7 +197,7 @@ describe('Core: CLI', () => {
 
     test('can generate an initializer', async () => {
       await doCommand(`${binary} generate initializer --name=myInitializer --stopPriority=123`)
-      let data = String(fs.readFileSync(`${testDir}/initializers/myInitializer.js`))
+      const data = String(fs.readFileSync(`${testDir}/initializers/myInitializer.js`))
       expect(data).toMatch(/this.loadPriority = 1000/)
       expect(data).toMatch(/this.startPriority = 1000/)
       expect(data).toMatch(/this.stopPriority = 123/)
@@ -199,8 +206,38 @@ describe('Core: CLI', () => {
       expect(data).toMatch(/async stop \(\) {/)
     })
 
+    test('can ensure no boot.js does not break, will console.log message', async () => {
+      const origBootjs = String(fs.readFileSync(`${testDir}/boot.js`))
+      await doCommand(`rm ${testDir}/boot.js`, false)
+
+      const { stdout } = await doCommand(`${binary} version`)
+      expect(stdout).toContain(pacakgeJSON.version)
+      expect({ stdout, start: stdout.startsWith('No boot.js specified. Skipping.') }).toEqual({ stdout, start: true })
+      // replace with orig boot.js
+      fs.writeFileSync(`${testDir}/boot.js`, origBootjs)
+    })
+
+    test('can ensure a custom boot.js runs before everything else', async () => {
+      const origBootjs = String(fs.readFileSync(`${testDir}/boot.js`))
+      fs.writeFileSync(`${testDir}/boot.js`, `module.exports = async function() {
+        await new Promise((resolve)=> setTimeout(resolve,500))
+        console.log('BOOTING')
+      }`)
+
+      const { stdout } = await doCommand(`${binary} version`)
+      expect({ stdout, start: stdout.startsWith('BOOTING') }).toEqual({ stdout, start: true })
+      expect(stdout).toContain(pacakgeJSON.version)
+      // replace with orig boot.js
+      fs.writeFileSync(`${testDir}/boot.js`, origBootjs)
+    })
+
     test('can call npm test in the new project and not fail', async () => {
-      await doCommand(`npm test`)
+      // jest writes to stderr for some reason, so we need to test for the exit code here
+      try {
+        await doCommand('npm test')
+      } catch (error) {
+        if (error.exitCode !== 0) { throw error }
+      }
     }, 120000)
 
     describe('can run a single server', () => {
@@ -218,14 +255,14 @@ describe('Core: CLI', () => {
       })
 
       test('can boot a single server', async () => {
-        let response = await request(`http://localhost:${port}/api/showDocumentation`, { json: true })
+        const response = await request(`http://localhost:${port}/api/showDocumentation`, { json: true })
         expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
       })
 
       test('can handle signals to reboot', async () => {
         await doCommand(`kill -s USR2 ${serverPid}`)
         await sleep(3000)
-        let response = await request(`http://localhost:${port}/api/showDocumentation`, { json: true })
+        const response = await request(`http://localhost:${port}/api/showDocumentation`, { json: true })
         expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
       })
 
@@ -256,13 +293,13 @@ describe('Core: CLI', () => {
       })
 
       test('should be running the cluster with 2 nodes', async () => {
-        let { stdout } = await doCommand(`ps awx`)
-        let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
-        let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
+        const { stdout } = await doCommand('ps awx')
+        const parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
+        const children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).toEqual(1)
         expect(children.length).toEqual(2)
 
-        let response = await request(`http://localhost:${port}/api/showDocumentation`, { json: true })
+        const response = await request(`http://localhost:${port}/api/showDocumentation`, { json: true })
         expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
       })
 
@@ -270,9 +307,9 @@ describe('Core: CLI', () => {
         await doCommand(`kill -s TTIN ${clusterPid}`)
         await sleep(2500)
 
-        let { stdout } = await doCommand(`ps awx`)
-        let parents = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start cluster') >= 0 })
-        let children = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start') >= 0 && l.indexOf('cluster') < 0 })
+        const { stdout } = await doCommand('ps awx')
+        const parents = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start cluster') >= 0 })
+        const children = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).toEqual(1)
         expect(children.length).toEqual(3)
       })
@@ -281,9 +318,9 @@ describe('Core: CLI', () => {
         await doCommand(`kill -s TTOU ${clusterPid}`)
         await sleep(2500)
 
-        let { stdout } = await doCommand(`ps awx`)
-        let parents = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start cluster') >= 0 })
-        let children = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start') >= 0 && l.indexOf('cluster') < 0 })
+        const { stdout } = await doCommand('ps awx')
+        const parents = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start cluster') >= 0 })
+        const children = stdout.split('\n').filter((l) => { return l.indexOf('bin/actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).toEqual(1)
         expect(children.length).toEqual(2)
       })
@@ -292,13 +329,13 @@ describe('Core: CLI', () => {
         await doCommand(`kill -s USR2 ${clusterPid}`)
         await sleep(2000)
 
-        let { stdout } = await doCommand(`ps awx`)
-        let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
-        let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
+        const { stdout } = await doCommand('ps awx')
+        const parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
+        const children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).toEqual(1)
         expect(children.length).toEqual(2)
 
-        let response = await request(`http://localhost:${port}/api/showDocumentation`, { json: true })
+        const response = await request(`http://localhost:${port}/api/showDocumentation`, { json: true })
         expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
       })
 
@@ -306,13 +343,13 @@ describe('Core: CLI', () => {
         await doCommand(`kill -s WINCH ${clusterPid}`)
         await sleep(2000)
 
-        let { stdout } = await doCommand(`ps awx`)
-        let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
-        let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
+        const { stdout } = await doCommand('ps awx')
+        const parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
+        const children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).toEqual(1)
         expect(children.length).toEqual(2)
 
-        let response = await request(`http://localhost:${port}/api/showDocumentation`, { json: true })
+        const response = await request(`http://localhost:${port}/api/showDocumentation`, { json: true })
         expect(response.serverInformation.serverName).toEqual('my_actionhero_project')
       })
 
@@ -320,9 +357,9 @@ describe('Core: CLI', () => {
         await doCommand(`kill ${clusterPid}`)
         await sleep(2000)
 
-        let { stdout } = await doCommand(`ps awx`)
-        let parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
-        let children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
+        const { stdout } = await doCommand('ps awx')
+        const parents = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start cluster') >= 0 })
+        const children = stdout.split('\n').filter((l) => { return l.indexOf('actionhero start') >= 0 && l.indexOf('cluster') < 0 })
         expect(parents.length).toEqual(0)
         expect(children.length).toEqual(0)
       })

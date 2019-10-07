@@ -63,7 +63,7 @@ class Cache extends ActionHero.Initializer {
      * @return {Promise<Number>} Promise reslves in interger (length)
      */
     api.cache.size = async () => {
-      let keys = await api.cache.keys()
+      const keys = await api.cache.keys()
       let length = 0
       if (keys) { length = keys.length }
       return length
@@ -76,8 +76,8 @@ class Cache extends ActionHero.Initializer {
      * @return {Promise<Boolean>} will return true if successful.
      */
     api.cache.clear = async () => {
-      let keys = await api.cache.keys()
-      let jobs = []
+      const keys = await api.cache.keys()
+      const jobs = []
       keys.forEach((key) => { jobs.push(redis.del(key)) })
       await Promise.all(jobs)
       return true
@@ -92,9 +92,9 @@ class Cache extends ActionHero.Initializer {
      * @see api.cache.dumpRead
      */
     api.cache.dumpWrite = async (file) => {
-      let data = {}
-      let jobs = []
-      let keys = await api.cache.keys()
+      const data = {}
+      const jobs = []
+      const keys = await api.cache.keys()
 
       keys.forEach((key) => {
         jobs.push(redis.get(key).then((content) => { data[key] = content }))
@@ -116,13 +116,13 @@ class Cache extends ActionHero.Initializer {
      * @see api.cache.dumpWrite
      */
     api.cache.dumpRead = async (file) => {
-      let jobs = []
+      const jobs = []
       await api.cache.clear()
-      let data = JSON.parse(fs.readFileSync(file))
-      let count = Object.keys(data).length
+      const data = JSON.parse(fs.readFileSync(file))
+      const count = Object.keys(data).length
 
       Object.keys(data).forEach((key) => {
-        let content = data[key]
+        const content = data[key]
         jobs.push(api.cache.saveDumpedElement(key, content))
       })
 
@@ -131,10 +131,10 @@ class Cache extends ActionHero.Initializer {
     }
 
     api.cache.saveDumpedElement = async (key, content) => {
-      let parsedContent = JSON.parse(content)
+      const parsedContent = JSON.parse(content)
       await redis.set(key, content)
       if (parsedContent.expireTimestamp) {
-        let expireTimeSeconds = Math.ceil((parsedContent.expireTimestamp - new Date().getTime()) / 1000)
+        const expireTimeSeconds = Math.ceil((parsedContent.expireTimestamp - new Date().getTime()) / 1000)
         await redis.expire(key, expireTimeSeconds)
       }
     }
@@ -157,7 +157,7 @@ class Cache extends ActionHero.Initializer {
       if (!cacheObj) { throw new Error(api.i18n.localize('actionhero.cache.objectNotFound')) }
       if (cacheObj.expireTimestamp && cacheObj.expireTimestamp < new Date().getTime()) { throw new Error(api.i18n.localize('actionhero.cache.objectExpired')) }
 
-      let lastReadAt = cacheObj.readAt
+      const lastReadAt = cacheObj.readAt
       let expireTimeSeconds
       cacheObj.readAt = new Date().getTime()
 
@@ -170,7 +170,7 @@ class Cache extends ActionHero.Initializer {
         }
       }
 
-      let lockOk = await api.cache.checkLock(key, options.retry)
+      const lockOk = await api.cache.checkLock(key, options.retry)
       if (lockOk !== true) { throw new Error(api.i18n.localize('actionhero.cache.objectLocked')) }
 
       await redis.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj))
@@ -192,9 +192,9 @@ class Cache extends ActionHero.Initializer {
      * @see api.cache.destroy
      */
     api.cache.destroy = async (key) => {
-      let lockOk = await api.cache.checkLock(key, null)
+      const lockOk = await api.cache.checkLock(key, null)
       if (!lockOk) { throw new Error(api.i18n.localize('actionhero.cache.objectLocked')) }
-      let count = await redis.del(api.cache.redisPrefix + key)
+      const count = await redis.del(api.cache.redisPrefix + key)
       let response = true
       if (count !== 1) { response = false }
       return response
@@ -219,14 +219,14 @@ class Cache extends ActionHero.Initializer {
         expireTimestamp = new Date().getTime() + expireTimeMS
       }
 
-      let cacheObj = {
+      const cacheObj = {
         value: value,
         expireTimestamp: expireTimestamp,
         createdAt: new Date().getTime(),
         readAt: null
       }
 
-      let lockOk = await api.cache.checkLock(key, null)
+      const lockOk = await api.cache.checkLock(key, null)
       if (!lockOk) { throw new Error(api.i18n.localize('actionhero.cache.objectLocked')) }
       await redis.set(api.cache.redisPrefix + key, JSON.stringify(cacheObj))
       if (expireTimeSeconds) {
@@ -246,7 +246,7 @@ class Cache extends ActionHero.Initializer {
      * @see api.cache.listLength
      */
     api.cache.push = async (key, item) => {
-      let object = JSON.stringify({ data: item })
+      const object = JSON.stringify({ data: item })
       await redis.rpush(api.cache.redisPrefix + key, object)
       return true
     }
@@ -261,9 +261,9 @@ class Cache extends ActionHero.Initializer {
      * @see api.cache.listLength
      */
     api.cache.pop = async (key) => {
-      let object = await redis.lpop(api.cache.redisPrefix + key)
+      const object = await redis.lpop(api.cache.redisPrefix + key)
       if (!object) { return null }
-      let item = JSON.parse(object)
+      const item = JSON.parse(object)
       return item.data
     }
 
@@ -290,10 +290,10 @@ class Cache extends ActionHero.Initializer {
      */
     api.cache.lock = async (key, expireTimeMS) => {
       if (expireTimeMS === null) { expireTimeMS = api.cache.lockDuration }
-      let lockOk = await api.cache.checkLock(key, null)
+      const lockOk = await api.cache.checkLock(key, null)
       if (!lockOk) { return false }
 
-      let result = await redis.setnx(api.cache.lockPrefix + key, api.cache.lockName)
+      const result = await redis.setnx(api.cache.lockPrefix + key, api.cache.lockName)
       if (!result) { return false } // value was already set, so we cannot obtain the lock
 
       await redis.expire(api.cache.lockPrefix + key, Math.ceil(expireTimeMS / 1000))
@@ -310,7 +310,7 @@ class Cache extends ActionHero.Initializer {
      * @see api.cache.checkLock
      */
     api.cache.unlock = async (key) => {
-      let lockOk = await api.cache.checkLock(key, null)
+      const lockOk = await api.cache.checkLock(key, null)
       if (!lockOk) { return false }
 
       await redis.del(api.cache.lockPrefix + key)
@@ -327,11 +327,11 @@ class Cache extends ActionHero.Initializer {
 
       if (!startTime) { startTime = new Date().getTime() }
 
-      let lockedBy = await redis.get(api.cache.lockPrefix + key)
+      const lockedBy = await redis.get(api.cache.lockPrefix + key)
       if (lockedBy === api.cache.lockName || lockedBy === null) {
         return true
       } else {
-        let delta = new Date().getTime() - startTime
+        const delta = new Date().getTime() - startTime
         if (!retry || retry === false || delta > retry) {
           return false
         }

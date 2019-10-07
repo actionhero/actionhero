@@ -31,7 +31,7 @@ module.exports = class Params extends ActionHero.Initializer {
     ]
 
     api.params.buildPostVariables = () => {
-      let postVariables = []
+      const postVariables = []
       let i
       let j
 
@@ -41,8 +41,8 @@ module.exports = class Params extends ActionHero.Initializer {
 
       for (i in api.actions.actions) {
         for (j in api.actions.actions[i]) {
-          let action = api.actions.actions[i][j]
-          for (let key in action.inputs) {
+          const action = api.actions.actions[i][j]
+          for (const key in action.inputs) {
             postVariables.push(key)
           }
         }

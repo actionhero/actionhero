@@ -13,7 +13,7 @@ module.exports = class Generate extends ActionHero.CLI {
   }
 
   run () {
-    let documents = {}
+    const documents = {}
 
     documents.projectMap = fs.readFileSync(path.join(__dirname, '/../templates/projectMap.txt'))
 
@@ -42,10 +42,10 @@ module.exports = class Generate extends ActionHero.CLI {
       gitignore: '/bin/templates/gitignore'
     }
 
-    for (let name in oldFileMap) {
-      let localPath = oldFileMap[name]
-      let source = path.join(__dirname, '/../../', localPath)
-      let extension = (localPath.split('.'))[1]
+    for (const name in oldFileMap) {
+      const localPath = oldFileMap[name]
+      const source = path.join(__dirname, '/../../', localPath)
+      const extension = (localPath.split('.'))[1]
       documents[name] = fs.readFileSync(source)
       if (extension === 'js' || extension === 'json') {
         documents[name] = documents[name].toString()
@@ -58,6 +58,7 @@ module.exports = class Generate extends ActionHero.CLI {
     documents.packageJson = String(fs.readFileSync(path.join(__dirname, '/../templates/package.json')))
     documents.packageJson = documents.packageJson.replace('%%versionNumber%%', AHversionNumber)
     documents.readmeMd = String(fs.readFileSync(path.join(__dirname, '/../templates/README.md')))
+    documents.bootJs = String(fs.readFileSync(path.join(__dirname, '/../templates/boot.js')))
 
     console.log('Generating a new actionhero project...');
 
@@ -76,10 +77,12 @@ module.exports = class Generate extends ActionHero.CLI {
       '/public/css',
       '/public/logo',
       '/tasks',
-      '/__tests__'
+      '/__tests__',
+      '/__tests__/actions',
+      '/__tests__/tasks'
     ].forEach((dir) => {
       try {
-        let message = api.utils.createDirSafely(api.projectRoot + dir)
+        const message = api.utils.createDirSafely(api.projectRoot + dir)
         console.log(message)
       } catch (error) {
         console.log(error.toString())
@@ -107,14 +110,15 @@ module.exports = class Generate extends ActionHero.CLI {
       '/public/css/cosmo.css': 'publicCss',
       '/public/logo/actionhero.png': 'publicLogo',
       '/README.md': 'readmeMd',
-      '/__tests__/example.js': 'exampleTest',
+      '/__tests__/actions/status.js': 'exampleTest',
       '/locales/en.json': 'enLocale',
-      '/.gitignore': 'gitignore'
+      '/.gitignore': 'gitignore',
+      '/boot.js': 'bootJs'
     }
 
-    for (let file in newFileMap) {
+    for (const file in newFileMap) {
       try {
-        let message = api.utils.createFileSafely(api.projectRoot + file, documents[newFileMap[file]])
+        const message = api.utils.createFileSafely(api.projectRoot + file, documents[newFileMap[file]])
         console.log(message)
       } catch (error) {
         console.log(error.toString())

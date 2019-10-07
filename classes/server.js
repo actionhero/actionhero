@@ -80,8 +80,8 @@ module.exports = class MyServer extends Server {
     this.attributes = {}
     this.config = config
     this.connectionCustomMethods = {}
-    let defaultAttributes = this.defaultAttributes()
-    for (let key in defaultAttributes) {
+    const defaultAttributes = this.defaultAttributes()
+    for (const key in defaultAttributes) {
       if (!this.attributes[key]) { this.attributes[key] = defaultAttributes[key] }
       if (typeof this.attributes[key] === 'function') { this.attributes[key] = this[key]() }
     }
@@ -202,7 +202,7 @@ this.buildConnection({
   remotePort: remotePort
 })
    */
-  buildConnection (data) {
+  async buildConnection (data) {
     const details = {
       type: this.type,
       id: data.id,
@@ -215,7 +215,7 @@ this.buildConnection({
     if (this.attributes.canChat === true) { details.canChat = true }
     if (data.fingerprint) { details.fingerprint = data.fingerprint }
 
-    let connection = new ActionHero.Connection(details)
+    const connection = await ActionHero.Connection.createAsync(details)
 
     connection.sendMessage = (message) => {
       this.sendMessage(connection, message)
@@ -259,7 +259,7 @@ this.buildConnection({
    */
   async processAction (connection) {
     const actionProcessor = new ActionHero.ActionProcessor(connection)
-    let data = await actionProcessor.processAction()
+    const data = await actionProcessor.processAction()
     this.emit('actionComplete', data)
   }
 
@@ -273,7 +273,7 @@ this.buildConnection({
    * @return {Promise}
    */
   async processFile (connection) {
-    let results = await api.staticFile.get(connection)
+    const results = await api.staticFile.get(connection)
     this.sendFile(
       results.connection,
       results.error,
@@ -292,10 +292,10 @@ this.buildConnection({
    * @return {Array} An array of ActionHero.Connection objects
    */
   connections () {
-    let connections = []
+    const connections = []
 
-    for (let i in api.connections.connections) {
-      let connection = api.connections.connections[i]
+    for (const i in api.connections.connections) {
+      const connection = api.connections.connections[i]
       if (connection.type === this.type) { connections.push(connection) }
     }
 

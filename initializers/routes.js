@@ -29,7 +29,7 @@ module.exports = class Routes extends ActionHero.Initializer {
       if (connection.params.action === undefined || api.actions.actions[connection.params.action] === undefined) {
         let method = connection.rawConnection.method.toLowerCase()
         if (method === 'head' && !api.routes.routes.head) { method = 'get' }
-        for (let i in api.routes.routes[method]) {
+        for (const i in api.routes.routes[method]) {
           const route = api.routes.routes[method][i]
           const match = api.routes.matchURL(pathParts, route.path, route.matchTrailingPathParts)
           if (match.match === true) {
@@ -37,7 +37,7 @@ module.exports = class Routes extends ActionHero.Initializer {
               connection.params.apiVersion = connection.params.apiVersion || route.apiVersion
             }
 
-            for (let param in match.params) {
+            for (const param in match.params) {
               try {
                 const decodedName = decodeURIComponent(param.replace(/\+/g, ' '))
                 const decodedValue = decodeURIComponent(match.params[param].replace(/\+/g, ' '))
@@ -61,8 +61,8 @@ module.exports = class Routes extends ActionHero.Initializer {
     }
 
     api.routes.matchURL = (pathParts, match, matchTrailingPathParts) => {
-      let response = { match: false, params: {} }
-      let matchParts = match.split('/')
+      const response = { match: false, params: {} }
+      const matchParts = match.split('/')
       let regexp = ''
       let variable = ''
 
@@ -73,12 +73,12 @@ module.exports = class Routes extends ActionHero.Initializer {
         return response
       }
 
-      for (let i in matchParts) {
-        let matchPart = matchParts[i]
+      for (const i in matchParts) {
+        const matchPart = matchParts[i]
         let pathPart = pathParts[i]
 
         if (matchTrailingPathParts === true && parseInt(i) === (matchParts.length - 1)) {
-          for (let j in pathParts) {
+          for (const j in pathParts) {
             if (j > i) { pathPart = pathPart + '/' + pathParts[j] }
           }
         }
@@ -91,7 +91,7 @@ module.exports = class Routes extends ActionHero.Initializer {
         } else if (matchPart[0] === ':' && matchPart.indexOf('(') >= 0) {
           variable = matchPart.replace(':', '').split('(')[0]
           regexp = matchPart.substring(matchPart.indexOf('(') + 1, matchPart.length - 1)
-          let matches = pathPart.match(new RegExp(regexp, 'g'))
+          const matches = pathPart.match(new RegExp(regexp, 'g'))
           if (matches) {
             response.params[variable] = pathPart
           } else {
@@ -125,9 +125,9 @@ module.exports = class Routes extends ActionHero.Initializer {
      */
     api.routes.registerRoute = (method, path, action, apiVersion, matchTrailingPathParts, dir) => {
       if (!matchTrailingPathParts) { matchTrailingPathParts = false }
-      let verbs = method === 'all' ? api.routes.verbs : [method]
-      for (let vi in verbs) {
-        let verb = verbs[vi]
+      const verbs = method === 'all' ? api.routes.verbs : [method]
+      for (const vi in verbs) {
+        const verb = verbs[vi]
         api.routes.routes[verb].push({
           path: path,
           matchTrailingPathParts: matchTrailingPathParts,
@@ -152,10 +152,10 @@ module.exports = class Routes extends ActionHero.Initializer {
 
       let v
       let verb
-      for (let i in rawRoutes) {
-        let method = i.toLowerCase()
-        for (let j in rawRoutes[i]) {
-          let route = rawRoutes[i][j]
+      for (const i in rawRoutes) {
+        const method = i.toLowerCase()
+        for (const j in rawRoutes[i]) {
+          const route = rawRoutes[i][j]
           if (method === 'all') {
             for (v in api.routes.verbs) {
               verb = api.routes.verbs[v]
@@ -172,8 +172,8 @@ module.exports = class Routes extends ActionHero.Initializer {
       api.log(`${counter} routes loaded from ${api.routes.routesFile}`, 'debug')
 
       if (api.config.servers.web && api.config.servers.web.simpleRouting === true) {
-        let simplePaths = []
-        for (let action in api.actions.actions) {
+        const simplePaths = []
+        for (const action in api.actions.actions) {
           simplePaths.push('/' + action)
           // api.routes.verbs.forEach(function(verb){
           for (v in api.routes.verbs) {

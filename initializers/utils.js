@@ -61,9 +61,9 @@ let responses = await api.utils.asyncWaterfall(jobs)
 // responses = ['a', 'b', 'c']
      */
     api.utils.asyncWaterfall = async (jobs) => {
-      let results = []
+      const results = []
       while (jobs.length > 0) {
-        let collection = jobs.shift()
+        const collection = jobs.shift()
         let job
         let args
         if (typeof collection === 'function') {
@@ -74,7 +74,7 @@ let responses = await api.utils.asyncWaterfall(jobs)
           args = collection.args
         }
 
-        let value = await job.apply(this, args)
+        const value = await job.apply(this, args)
         results.push(value)
       }
 
@@ -94,13 +94,15 @@ let responses = await api.utils.asyncWaterfall(jobs)
      * @return {Object}     A new Object, combining A and B
      */
     api.utils.hashMerge = (a, b, arg) => {
-      let c = {}
+      const c = {}
       let i
       let response
 
       for (i in a) {
-        if (api.utils.isPlainObject(a[i]) && Object.keys(a[i]).length > 0) {
-          c[i] = api.utils.hashMerge(c[i], a[i], arg)
+        if (api.utils.isPlainObject(a[i])) {
+          // can't be anded into above condition, or empty objects will overwrite and not merge
+          // also make sure empty objects are created
+          c[i] = Object.keys(a[i]).length > 0 ? api.utils.hashMerge(c[i], a[i], arg) : {}
         } else {
           if (typeof a[i] === 'function') {
             response = a[i](arg)
@@ -110,13 +112,18 @@ let responses = await api.utils.asyncWaterfall(jobs)
               c[i] = response
             }
           } else {
-            c[i] = a[i]
+            // don't create first term if it is undefined or null
+            if (a[i] === undefined || a[i] === null);
+            else c[i] = a[i]
           }
         }
       }
       for (i in b) {
-        if (api.utils.isPlainObject(b[i]) && Object.keys(b[i]).length > 0) {
-          c[i] = api.utils.hashMerge(c[i], b[i], arg)
+        if (api.utils.isPlainObject(b[i])) {
+          // can't be anded into above condition, or empty objects will overwrite and not merge
+          if (Object.keys(b[i]).length > 0) c[i] = api.utils.hashMerge(c[i], b[i], arg)
+          // make sure empty objects are only created, when no key exists yet
+          else if (!(i in c)) c[i] = {}
         } else {
           if (typeof b[i] === 'function') {
             response = b[i](arg)
@@ -126,7 +133,12 @@ let responses = await api.utils.asyncWaterfall(jobs)
               c[i] = response
             }
           } else {
-            c[i] = b[i]
+            // ignore second term if it is undefined
+            if (b[i] === undefined);
+            // delete second term/key if value is null and it already exists
+            else if (b[i] == null && (i in c)) delete c[i]
+            // normal assignments for everything else
+            else c[i] = b[i]
           }
         }
       }
@@ -161,7 +173,7 @@ let responses = await api.utils.asyncWaterfall(jobs)
      * @return {Array}     Unique Array.
      */
     api.utils.arrayUniqueify = (arr) => {
-      let a = []
+      const a = []
       for (let i = 0; i < arr.length; i++) {
         for (let j = i + 1; j < arr.length; j++) {
           if (arr[i] === arr[j]) { j = ++i }
@@ -182,15 +194,15 @@ let responses = await api.utils.asyncWaterfall(jobs)
       let pluginRoot
 
       pathsToTry.forEach((pluginPath) => {
-        let pluginPathAttempt = path.normalize(pluginPath + path.sep + name)
+        const pluginPathAttempt = path.normalize(pluginPath + path.sep + name)
         try {
-          let stats = fs.lstatSync(pluginPathAttempt)
+          const stats = fs.lstatSync(pluginPathAttempt)
           if (!pluginRoot && (stats.isDirectory() || stats.isSymbolicLink())) { pluginRoot = pluginPathAttempt }
         } catch (e) { }
       })
 
       if (!pluginRoot) { return false }
-      let pluginSection = path.normalize(pluginRoot + path.sep + type)
+      const pluginSection = path.normalize(pluginRoot + path.sep + type)
       return pluginSection
     }
 
@@ -207,9 +219,9 @@ let responses = await api.utils.asyncWaterfall(jobs)
         if (keys[0] !== '0') { return false }
         if (keys[(keys.length - 1)] !== String(keys.length - 1)) { return false }
 
-        let arr = []
-        for (let i in keys) {
-          let key = keys[i]
+        const arr = []
+        for (const i in keys) {
+          const key = keys[i]
           if (String(parseInt(key)) !== key) { return false } else { arr.push(obj[key]) }
         }
 
@@ -225,9 +237,9 @@ let responses = await api.utils.asyncWaterfall(jobs)
      * @return {string} This server's external IP address.
      */
     api.utils.getExternalIPAddress = () => {
-      let ifaces = os.networkInterfaces()
+      const ifaces = os.networkInterfaces()
       let ip = false
-      for (let dev in ifaces) {
+      for (const dev in ifaces) {
         ifaces[dev].forEach((details) => {
           if (details.family === 'IPv4' && details.address !== '127.0.0.1') {
             ip = details.address
@@ -279,10 +291,10 @@ let responses = await api.utils.asyncWaterfall(jobs)
      * @return {Object}     A Object with Cookies.
      */
     api.utils.parseCookies = (req) => {
-      let cookies = {}
+      const cookies = {}
       if (req.headers.cookie) {
         req.headers.cookie.split(';').forEach((cookie) => {
-          let parts = cookie.split('=')
+          const parts = cookie.split('=')
           cookies[parts[0].trim()] = (parts[1] || '').trim()
         })
       }
@@ -299,10 +311,10 @@ let responses = await api.utils.asyncWaterfall(jobs)
     api.utils.parseIPv6URI = (addr) => {
       let host = '::1'
       let port = '80'
-      let regexp = new RegExp(/\[([0-9a-f:]+(?:%.+)?)]:([0-9]{1,5})/)
+      const regexp = new RegExp(/\[([0-9a-f:]+(?:%.+)?)]:([0-9]{1,5})/)
       // if we have brackets parse them and find a port
       if (addr.indexOf('[') > -1 && addr.indexOf(']') > -1) {
-        let res = regexp.exec(addr)
+        const res = regexp.exec(addr)
         if (res === null) {
           throw new Error('failed to parse address')
         }
@@ -322,16 +334,16 @@ let responses = await api.utils.asyncWaterfall(jobs)
      * @return {Promise<Number>}  Returns the average evnent loop dealy measured in ms.
      */
     api.utils.eventLoopDelay = async (itterations) => {
-      let jobs = []
+      const jobs = []
 
       if (!itterations) { throw new Error('itterations is required') }
 
-      let sleepyFunc = async () => {
+      const sleepyFunc = async () => {
         return new Promise((resolve) => {
-          let start = process.hrtime()
+          const start = process.hrtime()
           process.nextTick(() => {
-            let delta = process.hrtime(start)
-            let ms = (delta[0] * 1000) + (delta[1] / 1000000)
+            const delta = process.hrtime(start)
+            const ms = (delta[0] * 1000) + (delta[1] / 1000000)
             resolve(ms)
           })
         })
@@ -343,10 +355,10 @@ let responses = await api.utils.asyncWaterfall(jobs)
         i++
       }
 
-      let results = await api.utils.asyncWaterfall(jobs)
+      const results = await api.utils.asyncWaterfall(jobs)
       let sum = 0
       results.forEach((t) => { sum += t })
-      let avg = Math.round(sum / results.length * 10000) / 1000
+      const avg = Math.round(sum / results.length * 10000) / 1000
       return avg
     }
 
@@ -375,8 +387,8 @@ let responses = await api.utils.asyncWaterfall(jobs)
      * @return {Object}        Filtered Params.
      */
     api.utils.filterObjectForLogging = (params) => {
-      let filteredParams = {}
-      for (let i in params) {
+      const filteredParams = {}
+      for (const i in params) {
         if (api.utils.isPlainObject(params[i])) {
           filteredParams[i] = Object.assign({}, params[i])
         } else if (typeof params[i] === 'string') {
@@ -429,7 +441,7 @@ let responses = await api.utils.asyncWaterfall(jobs)
      */
     api.utils.dirExists = (dir) => {
       try {
-        let stats = fs.lstatSync(dir)
+        const stats = fs.lstatSync(dir)
         return (stats.isDirectory() || stats.isSymbolicLink())
       } catch (e) { return false }
     }
@@ -442,7 +454,7 @@ let responses = await api.utils.asyncWaterfall(jobs)
      */
     api.utils.fileExists = (file) => {
       try {
-        let stats = fs.lstatSync(file)
+        const stats = fs.lstatSync(file)
         return (stats.isFile() || stats.isSymbolicLink())
       } catch (e) { return false }
     }
@@ -456,7 +468,7 @@ let responses = await api.utils.asyncWaterfall(jobs)
      */
     api.utils.createDirSafely = (dir) => {
       if (api.utils.dirExists(dir)) {
-        let error = new Error(`directory '${path.normalize(dir)}' already exists`)
+        const error = new Error(`directory '${path.normalize(dir)}' already exists`)
         error.code = 'EEXIST'
         throw error
       } else {
@@ -476,7 +488,7 @@ let responses = await api.utils.asyncWaterfall(jobs)
      */
     api.utils.createFileSafely = (file, data, overwrite) => {
       if (api.utils.fileExists(file) && !overwrite) {
-        let error = new Error(`file '${path.normalize(file)}' already exists`)
+        const error = new Error(`file '${path.normalize(file)}' already exists`)
         error.code = 'EEXIST'
         throw error
       } else {
@@ -498,7 +510,7 @@ let responses = await api.utils.asyncWaterfall(jobs)
      */
     api.utils.createLinkfileSafely = (filePath, type, refrence) => {
       if (api.utils.fileExists(filePath)) {
-        let error = new Error(`link file '${filePath}' already exists`)
+        const error = new Error(`link file '${filePath}' already exists`)
         error.code = 'EEXIST'
         throw error
       } else {
@@ -518,7 +530,7 @@ let responses = await api.utils.asyncWaterfall(jobs)
      */
     api.utils.removeLinkfileSafely = (filePath, type, refrence) => {
       if (!api.utils.fileExists(filePath)) {
-        let error = new Error(`link file '${filePath}' doesn't exist`)
+        const error = new Error(`link file '${filePath}' doesn't exist`)
         error.code = 'ENOEXIST'
         throw error
       } else {
@@ -537,7 +549,7 @@ let responses = await api.utils.asyncWaterfall(jobs)
      */
     api.utils.createSymlinkSafely = (destination, source) => {
       if (api.utils.dirExists(destination)) {
-        let error = new Error(`symbolic link '${destination}' already exists`)
+        const error = new Error(`symbolic link '${destination}' already exists`)
         error.code = 'EEXIST'
         throw error
       } else {

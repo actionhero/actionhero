@@ -1,4 +1,4 @@
-exports['default'] = {
+exports.default = {
   i18n: (api) => {
     return {
       // visit https://github.com/mashpie/i18n-node to see all configuration options

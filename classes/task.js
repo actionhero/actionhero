@@ -9,6 +9,7 @@ module.exports = class Task {
    * @property {Number}  frequency   - How often to run this Task, in ms.  0 is non-recurring. (default: 0).
    * @property {Array}   middleware  - The Middleware specific to this Task (default: []).  Middleware is descibed by the string names of the middleware.
    * @property {string}  queue       - The default queue to run this Task on (default: 'default').
+   * @property {boolean} reEnqueuePeriodicTaskIfException - Queuing a periodic task in the case of an exception.  (default: false).
    *
    * @tutorial tasks
    * @example
@@ -29,8 +30,8 @@ module.exports = class SayHello extends Task {
 }
    */
   constructor () {
-    let coreProperties = this.coreProperties()
-    for (let key in coreProperties) {
+    const coreProperties = this.coreProperties()
+    for (const key in coreProperties) {
       if (!this[key]) { this[key] = coreProperties[key] }
       if (typeof this[key] === 'function') { this[key] = this[key]() }
     }
@@ -54,7 +55,8 @@ module.exports = class SayHello extends Task {
       description: this.name,
       frequency: 0,
       queue: 'default',
-      middleware: []
+      middleware: [],
+      reEnqueuePeriodicTaskIfException: true
     }
   }
 

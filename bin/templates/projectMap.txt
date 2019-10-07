@@ -45,5 +45,6 @@
 |- tests
 |-- (tests for your API)
 |
+boot.js
 readme.md
 package.json

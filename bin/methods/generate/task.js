@@ -20,8 +20,10 @@ module.exports = class GenerateTask extends ActionHero.CLI {
   }
 
   run ({ params }) {
-    let template = fs.readFileSync(path.join(__dirname, '/../../templates/task.js'))
-    template = String(template);
+    let taskTemplate = fs.readFileSync(path.join(__dirname, '/../../templates/task.js'))
+    taskTemplate = String(taskTemplate)
+    let testTemplate = fs.readFileSync(path.join(__dirname, '/../../templates/test/task.js'))
+    testTemplate = String(testTemplate);
 
     [
       'name',
@@ -29,12 +31,15 @@ module.exports = class GenerateTask extends ActionHero.CLI {
       'queue',
       'frequency'
     ].forEach((v) => {
-      let regex = new RegExp('%%' + v + '%%', 'g')
-      template = template.replace(regex, params[v])
+      const regex = new RegExp('%%' + v + '%%', 'g')
+      taskTemplate = taskTemplate.replace(regex, params[v])
+      testTemplate = testTemplate.replace(regex, params[v])
     })
 
-    let message = api.utils.createFileSafely(api.config.general.paths.task[0] + '/' + params.name + '.js', template)
-    console.log(message)
+    let message = api.utils.createFileSafely(api.config.general.paths.task[0] + '/' + params.name + '.js', taskTemplate)
+    console.info(message)
+    message = api.utils.createFileSafely(api.config.general.paths.test[0] + '/tasks/' + params.name + '.js', testTemplate)
+    console.info(message)
 
     return true
   }

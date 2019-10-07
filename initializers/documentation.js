@@ -23,8 +23,8 @@ module.exports = class Documentation extends ActionHero.Initializer {
 
       build: () => {
         let action
-        for (let i in api.actions.actions) {
-          for (let j in api.actions.actions[i]) {
+        for (const i in api.actions.actions) {
+          for (const j in api.actions.actions[i]) {
             action = api.actions.actions[i][j]
             if (action.toDocument !== false) {
               if (!api.documentation.documentation[action.name]) { api.documentation.documentation[action.name] = {} }
