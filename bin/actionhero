@@ -1,6 +1,6 @@
 #!/usr/bin/env node
+
 const path = require('path')
-'use strict'
 let projectRoot
 
 if (process.env.projectRoot) {
@@ -17,22 +17,22 @@ if (process.env.projectRoot) {
     const boot = require(projectRoot + path.sep + 'boot.js')
     await boot()
   } catch (e) {
-    if(e.code === 'MODULE_NOT_FOUND'){
+    if (e.code === 'MODULE_NOT_FOUND') {
       console.log('No boot.js specified. Skipping.')
     } else throw e
   }
   const fs = require('fs')
   const optimist = require('optimist')
   const spawn = require('child_process').spawn
-  const {api, Process} = require(path.join(__dirname, '..', 'index.js'))
+  const { api, Process } = require(path.join(__dirname, '..', 'index.js'))
   const actionheroRoot = path.normalize(path.join(__dirname, '..'))
 
   const formatParams = (runner) => {
-    let params = {}
+    const params = {}
     if (!runner.inputs) { runner.inputs = {} }
 
     Object.keys(runner.inputs).forEach((inputName) => {
-      let collection = runner.inputs[inputName]
+      const collection = runner.inputs[inputName]
       let value = optimist.argv[inputName]
 
       if (collection.default && (value === undefined || value === null || value === '')) {
@@ -70,7 +70,7 @@ if (process.env.projectRoot) {
       const RunnerClass = require(path.join(__dirname, 'methods', commands.join(path.sep) + '.js'))
       const runner = new RunnerClass()
       const params = formatParams(runner)
-      await runner.run({params: params})
+      await runner.run({ params: params })
       setTimeout(process.exit, 500, 0)
     } catch (error) {
       console.error(error.toString())
@@ -86,7 +86,7 @@ if (process.env.projectRoot) {
       if (process.env.configChanges) { configChanges = JSON.parse(process.env.configChanges) }
       if (optimist.argv.configChanges) { configChanges = JSON.parse(optimist.argv.configChanges) }
 
-      await actionHeroProcess.initialize({configChanges})
+      await actionHeroProcess.initialize({ configChanges })
       if (!api.projectRoot) { api.projectRoot = projectRoot }
       if (!api.actionheroRoot) { api.actionheroRoot = actionheroRoot }
       api._context = actionHeroProcess
@@ -105,9 +105,9 @@ if (process.env.projectRoot) {
       }
 
       if (!RunnerClass) {
-        for (let pluginName in api.config.plugins) {
+        for (const pluginName in api.config.plugins) {
           if (api.config.plugins[pluginName].cli !== false) {
-            let pluginPath = api.config.plugins[pluginName].path
+            const pluginPath = api.config.plugins[pluginName].path
             p = path.join(pluginPath, 'bin', commands.join(path.sep) + '.js')
             if (fs.existsSync(p)) { RunnerClass = require(p) }
           }
@@ -124,19 +124,19 @@ if (process.env.projectRoot) {
         console.log('⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻')
 
         if (optimist.argv.daemon) {
-          let newArgs = process.argv.splice(2)
-          for (let i in newArgs) {
+          const newArgs = process.argv.splice(2)
+          for (const i in newArgs) {
             if (newArgs[i].indexOf('--daemon') >= 0) { newArgs.splice(i, 1) }
           }
           newArgs.push('--isDaemon=true')
           const command = path.normalize(actionheroRoot + '/bin/actionhero')
-          const child = spawn(command, newArgs, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore'})
+          const child = spawn(command, newArgs, { detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore' })
           console.log(`spawned child process with pid ${child.pid}`, 'notice')
           process.nextTick(process.exit)
         } else {
           const runner = new RunnerClass()
-          let params = formatParams(runner)
-          let toStop = await runner.run({params: params})
+          const params = formatParams(runner)
+          const toStop = await runner.run({ params: params })
           if (toStop || toStop === null || toStop === undefined) {
             setTimeout(process.exit, 500, 0)
           }
@@ -148,10 +148,21 @@ if (process.env.projectRoot) {
     }
   }
 
-  let commands = []
+  const commands = []
   if (!optimist.argv._ || optimist.argv._.length === 0) { commands.push('start') }
   optimist.argv._.forEach(function (arg) { commands.push(arg) })
-  if (commands.length === 1 && ['generate'].indexOf(commands[0]) >= 0) {
+
+  const argsMatch = (a, b) => {
+    if (a.length !== b.length) { return false }
+    for (const i in a) {
+      if (a[i] !== b[i]) { return false }
+    }
+    return true
+  }
+
+  if (argsMatch(commands, ['generate'])) {
+    handleGenerate()
+  } else if (argsMatch(commands, ['generate', 'plugin'])) {
     handleGenerate()
   } else {
     handleMethod()
