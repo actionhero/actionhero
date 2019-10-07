@@ -18,6 +18,22 @@ ActionHero follows [semantic versioning](http://semver.org/). This means that a 
 * in `config/tasks.js` `add api.config.tasks.stuckWorkerTimeout = 3600000`.  This will be a 1 hour timeout for stuck/crashed worker processes
 * in `config/servers/websocket.js` `add api.config.servers.websocket.client.cookieKey = api.config.servers.web.fingerprintOptions.cookieKey`.  This will instruct the ActionHero Websocket Clients to share the same cookie as the web server to share a fingerprint, which can be used to share session information.
 * If you plan to use Jest for your tests, and want to test in parallel, you will need to configure your server in the test environment to make use of `process.env.JEST_WORKER_ID`.  Please view [`config/api.js`](https://github.com/actionhero/actionhero/blob/master/config/api.js), [`config/redis.js`](https://github.com/actionhero/actionhero/blob/master/config/redis.js), [`config/servers/socket.js`](https://github.com/actionhero/actionhero/blob/master/config/servers/socket.js), and [`config/servers/web.js`](https://github.com/actionhero/actionhero/blob/master/config/servers/web.js) for more information
+
+## Upgrading from v19 to v20
+
+**Full Release Notes: [GitHub](https://github.com/actionhero/actionhero/releases/tag/v20.0.0)**
+
+* In `config/api.js` add `api.config.general.paths.test = [path.join(__dirname, '/../__tests__')]` so that when you generate a new action or task, the related test file can be generated as well.
+* However you run actionhero, be sure to `cd` into the root directory of the project before starting the server.
+
+## Upgrading from v19 to v20
+
+**Full Release Notes: [GitHub](https://github.com/actionhero/actionhero/releases/tag/v19.0.0)**
+
+* in `config/tasks.js` `add api.config.tasks.stuckWorkerTimeout = 3600000`.  This will be a 1 hour timeout for stuck/crashed worker processes
+* in `config/servers/websocket.js` `add api.config.servers.websocket.client.cookieKey = api.config.servers.web.fingerprintOptions.cookieKey`.  This will instruct the ActionHero Websocket Clients to share the same cookie as the web server to share a fingerprint, which can be used to share session information.
+* If you plan to use Jest for your tests, and want to test in parallel, you will need to configure your server in the test environment to make use of `process.env.JEST_WORKER_ID`.  Please view [`config/api.js`](https://github.com/actionhero/actionhero/blob/master/config/api.js), [`config/redis.js`](https://github.com/actionhero/actionhero/blob/master/config/redis.js), [`config/servers/socket.js`](https://github.com/actionhero/actionhero/blob/master/config/servers/socket.js), and [`config/servers/web.js`](https://github.com/actionhero/actionhero/blob/master/config/servers/web.js) for more information
+
 ## Upgrading from v17 to v18
 
 **Full Release Notes: [GitHub](https://github.com/actionhero/actionhero/releases/tag/v18.0.0)**
@@ -254,7 +270,7 @@ describe('Action: RandomNumber', () => {
   * Testing plugins is now simpler.  [Read more about this on docs.actionherojs.com](https://docs.actionherojs.com/tutorial-plugins.html)
 
 * **Clients**
-  * `ActionheroClient` (the included client library for browser websocket clients) as been named a more clear `ActionheroWebsocketClient` to avoid ambiguity.  
+  * `ActionheroClient` (the included client library for browser websocket clients) as been named a more clear `ActionheroWebsocketClient` to avoid ambiguity.
   * The node sever-sever package has been renamed `actionhero-node-client` to help clear up any confusion.
 
 ## Upgrading from v16 to v17
