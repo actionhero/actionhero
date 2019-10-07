@@ -125,12 +125,12 @@ if (process.env.projectRoot) {
 
         if (optimist.argv.daemon) {
           const newArgs = process.argv.splice(2)
-          for (let i in newArgs) {
+          for (const i in newArgs) {
             if (newArgs[i].indexOf('--daemon') >= 0) { newArgs.splice(i, 1) }
           }
           newArgs.push('--isDaemon=true')
           const command = path.normalize(actionheroRoot + '/bin/actionhero')
-          const child = spawn(command, newArgs, {detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore'})
+          const child = spawn(command, newArgs, { detached: true, cwd: process.cwd(), env: process.env, stdio: 'ignore' })
           console.log(`spawned child process with pid ${child.pid}`, 'notice')
           process.nextTick(process.exit)
         } else {
@@ -151,7 +151,18 @@ if (process.env.projectRoot) {
   const commands = []
   if (!optimist.argv._ || optimist.argv._.length === 0) { commands.push('start') }
   optimist.argv._.forEach(function (arg) { commands.push(arg) })
-  if (commands.length === 1 && ['generate'].indexOf(commands[0]) >= 0) {
+
+  const argsMatch = (a, b) => {
+    if (a.length !== b.length) { return false }
+    for (const i in a) {
+      if (a[i] !== b[i]) { return false }
+    }
+    return true
+  }
+
+  if (argsMatch(commands, ['generate'])) {
+    handleGenerate()
+  } else if (argsMatch(commands, ['generate', 'plugin'])) {
     handleGenerate()
   } else {
     handleMethod()
