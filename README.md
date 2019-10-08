@@ -30,6 +30,7 @@
 [![Greenkeeper badge](https://badges.greenkeeper.io/actionhero/actionhero.svg)](https://greenkeeper.io/)
 [![Build Status](https://circleci.com/gh/actionhero/actionhero.png)](https://circleci.com/gh/actionhero/actionhero)
 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/l0oky/awesome-actionhero)
+[![Follow new releases](https://app.releasly.co/assets/badges/badge-green-classic.svg)](https://app.releasly.co/sites/actionhero/actionhero?utm_source=github_badge)
 [![Chat](https://slack.actionherojs.com/badge.svg)](http://slack.actionherojs.com)
 
 </div>
