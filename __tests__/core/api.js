@@ -1,3 +1,6 @@
+'use strict'
+// we need to use 'use strict' here because we are testing immutibility
+
 const path = require('path')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()

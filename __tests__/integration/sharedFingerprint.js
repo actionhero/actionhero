@@ -1,3 +1,6 @@
+'use strict'
+// we need to use 'use strict' here because we are loading a variable from a remote host
+
 const _Primus = require('primus')
 const request = require('request-promise-native')
 const path = require('path')

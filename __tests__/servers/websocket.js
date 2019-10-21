@@ -1,3 +1,6 @@
+'use strict'
+// we need to use 'use strict' here because we are relying on EVAL to load a variable
+
 const path = require('path')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()

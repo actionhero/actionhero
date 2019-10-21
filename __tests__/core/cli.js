@@ -1,4 +1,5 @@
-// Note: These tests will only run on *nix operating systems //
+// Note: These tests will only run on *nix operating systems
+// You can use SKIP_CLI_TEST_SETUP=true to skip the setup portion of these tests if you are testing this file repeatedly
 
 const fs = require('fs')
 const os = require('os')
@@ -7,9 +8,10 @@ const spawn = require('child_process').spawn
 const request = require('request-promise-native')
 const isrunning = require('is-running')
 const testDir = os.tmpdir() + path.sep + 'actionheroTestProject'
-console.log({ testDir })
 const binary = './node_modules/.bin/actionhero'
 const pacakgeJSON = require(path.join(__dirname, '/../../package.json'))
+
+console.log({ testDir })
 
 const port = 18080 + parseInt(process.env.JEST_WORKER_ID || 0)
 let pid
