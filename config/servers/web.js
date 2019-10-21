@@ -7,7 +7,7 @@ exports.default = {
     web: (api) => {
       return {
         enabled: true,
-        // HTTP or HTTPS?  This setting is to enable SSL termination directly in the actionhero app, not set redirecto host headers
+        // HTTP or HTTPS?  This setting is to enable SSL termination directly in the actionhero app, not set redirection host headers
         secure: false,
         // Passed to https.createServer if secure=true. Should contain SSL certificates
         serverOptions: {},
