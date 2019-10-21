@@ -1,5 +1,3 @@
-'use strict'
-
 const _Primus = require('primus')
 const request = require('request-promise-native')
 const path = require('path')

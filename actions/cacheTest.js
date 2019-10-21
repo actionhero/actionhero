@@ -1,4 +1,3 @@
-'use strict'
 const { Action, api } = require('./../index.js')
 
 module.exports = class CacheTest extends Action {

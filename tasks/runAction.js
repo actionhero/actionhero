@@ -1,4 +1,3 @@
-'use strict'
 const ActionHero = require('./../index.js')
 
 module.exports = class RunAction extends ActionHero.Task {

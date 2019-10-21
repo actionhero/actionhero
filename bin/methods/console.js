@@ -1,5 +1,3 @@
-'use strict'
-
 const REPL = require('repl')
 const ActionHero = require('./../../index.js')
 const api = ActionHero.api

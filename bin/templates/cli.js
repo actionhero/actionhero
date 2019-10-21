@@ -1,4 +1,3 @@
-'use strict'
 const { CLI } = require('actionhero')
 
 module.exports = class MyCLICommand extends CLI {

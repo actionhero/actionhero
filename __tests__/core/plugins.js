@@ -1,5 +1,3 @@
-'use strict'
-
 const path = require('path')
 const ChildProcess = require('child_process')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))

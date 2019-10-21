@@ -1,5 +1,3 @@
-'use strict'
-
 const ActionHero = require('actionhero')
 const actionhero = new ActionHero.Process()
 let api

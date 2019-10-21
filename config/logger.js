@@ -1,5 +1,3 @@
-'use strict'
-
 const cluster = require('cluster')
 const winston = require('winston')
 

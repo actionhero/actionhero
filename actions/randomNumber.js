@@ -1,4 +1,3 @@
-'use strict'
 const { Action } = require('./../index.js')
 
 module.exports = class RandomNumber extends Action {

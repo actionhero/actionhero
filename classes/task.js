@@ -13,7 +13,6 @@ module.exports = class Task {
    *
    * @tutorial tasks
    * @example
-'use strict'
 const {Task, api} = require('actionhero')
 
 module.exports = class SayHello extends Task {

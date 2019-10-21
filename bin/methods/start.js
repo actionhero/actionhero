@@ -1,5 +1,3 @@
-'use strict'
-
 const cluster = require('cluster')
 const readline = require('readline')
 const os = require('os')

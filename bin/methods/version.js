@@ -1,5 +1,3 @@
-'use strict'
-
 const path = require('path')
 const packageJSON = require(path.join(__dirname, '/../../package.json'))
 const ActionHero = require('./../../index.js')

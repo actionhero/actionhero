@@ -1,5 +1,3 @@
-'use strict'
-
 const uuid = require('uuid')
 const path = require('path')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))

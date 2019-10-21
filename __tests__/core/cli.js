@@ -1,5 +1,3 @@
-'use strict'
-
 // Note: These tests will only run on *nix operating systems //
 
 const fs = require('fs')

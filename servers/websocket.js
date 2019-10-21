@@ -1,5 +1,3 @@
-'use strict'
-
 const Primus = require('primus')
 const UglifyJS = require('uglify-js')
 const fs = require('fs')

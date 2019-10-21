@@ -1,5 +1,3 @@
-'use strict'
-
 const path = require('path')
 const glob = require('glob')
 const packageJson = require(path.join(__dirname, '..', 'package.json'))

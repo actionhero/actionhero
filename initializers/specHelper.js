@@ -1,5 +1,3 @@
-'use strict'
-
 const uuid = require('uuid')
 const NodeResque = require('node-resque')
 const ActionHero = require('./../index.js')
