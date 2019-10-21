@@ -1,5 +1,3 @@
-'use strict'
-
 const fs = require('fs')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api

@@ -1,5 +1,3 @@
-'use strict'
-
 const cluster = require('cluster')
 const argv = require('optimist').argv
 const ActionHero = require('./../index.js')

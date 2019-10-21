@@ -1,5 +1,3 @@
-'use strict'
-
 exports.default = {
   servers: {
     socket: (api) => {

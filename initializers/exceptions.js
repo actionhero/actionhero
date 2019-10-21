@@ -1,5 +1,3 @@
-'use strict'
-
 const os = require('os')
 const ActionHero = require('./../index.js')
 const api = ActionHero.api

@@ -1,4 +1,3 @@
-'use strict'
 const { Action } = require('actionhero')
 
 module.exports = class MyAction extends Action {

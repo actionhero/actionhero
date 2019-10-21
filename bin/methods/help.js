@@ -1,5 +1,3 @@
-'use strict'
-
 const glob = require('glob')
 const path = require('path')
 const ActionHero = require('./../../index.js')

@@ -1,4 +1,3 @@
-'use strict'
 const { Initializer, api } = require('actionhero')
 
 module.exports = class MyInitializer extends Initializer {

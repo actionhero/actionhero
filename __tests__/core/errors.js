@@ -1,5 +1,3 @@
-'use strict'
-
 const path = require('path')
 const ActionHero = require(path.join(__dirname, '/../../index.js'))
 const actionhero = new ActionHero.Process()

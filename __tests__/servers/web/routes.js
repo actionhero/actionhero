@@ -1,5 +1,3 @@
-'use strict'
-
 const request = require('request-promise-native')
 const fs = require('fs')
 const os = require('os')

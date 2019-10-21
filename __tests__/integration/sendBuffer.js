@@ -1,5 +1,3 @@
-'use strict'
-
 const request = require('request-promise-native')
 const stream = require('stream')
 const path = require('path')

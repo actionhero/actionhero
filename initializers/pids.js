@@ -1,5 +1,3 @@
-'use strict'
-
 const fs = require('fs')
 const cluster = require('cluster')
 const ActionHero = require('./../index.js')

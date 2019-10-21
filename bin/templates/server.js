@@ -1,4 +1,3 @@
-'use strict'
 const { Server } = require('actionhero')
 
 module.exports = class MyServer extends Server {
