@@ -9,7 +9,6 @@
 | -- servers
 | ---- web.js
 | ---- websocket.js
-| ---- socket.js
 |-- (project settings)
 |
 |- actions

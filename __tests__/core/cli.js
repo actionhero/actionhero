@@ -110,7 +110,6 @@ describe('Core: CLI', () => {
         'config/tasks.js',
         'config/servers/web.js',
         'config/servers/websocket.js',
-        'config/servers/socket.js',
         'pids',
         'log',
         'public',
