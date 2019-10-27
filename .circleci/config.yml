@@ -1,7 +1,7 @@
 version: 2
 
 # Define common steps all parts of the test workflow use
-refrences:
+references:
   ignored-branches: &ignored-branches
      branches:
       ignore:
