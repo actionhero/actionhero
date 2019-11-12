@@ -1,4 +1,4 @@
-export interface Api {
+export class Api {
   running: boolean;
   initialized: boolean;
   shuttingDown: boolean;
@@ -22,6 +22,8 @@ export interface Api {
   utils: any;
   log: Function;
   watchFileAndAct: Function;
-  _startingParams: object;
+  _startingParams: {
+    [key: string]: any;
+  };
   [key: string]: any;
 }

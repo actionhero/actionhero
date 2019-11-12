@@ -21,17 +21,17 @@ export abstract class Initializer {
   /**
    * Method run as part of the `initialize` lifecycle of your server.  Ususally sets api['YourNamespace']
    */
-  abstract async initialize(): Promise<void>;
+  async initialize?(): Promise<void>;
 
   /**
    * Method run as part of the `start` lifecycle of your server.  Ususally connects to remote servers or processes..
    */
-  abstract async start(): Promise<void>;
+  async start?(): Promise<void>;
 
   /**
    * Method run as part of the `initialize` lifecycle of your server.  Ususally disconnects from remote servers or processes.
    */
-  abstract async stop(): Promise<void>;
+  async stop?(): Promise<void>;
 
   validate() {
     if (!this.name) {

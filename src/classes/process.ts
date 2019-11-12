@@ -75,21 +75,23 @@ export class Process {
 
     for (const file of files) {
       delete require.cache[require.resolve(file)];
-      let initializer;
+      const exportedClasses = require(file);
+      for (const exportKey in exportedClasses) {
+        let initializer;
+        let InitializerClass = exportedClasses[exportKey];
+        try {
+          initializer = new InitializerClass();
+        } catch (error) {
+          this.fatalError(error, file);
+        }
 
-      try {
-        const InitializerClass = require(file);
-        initializer = new InitializerClass();
-      } catch (error) {
-        this.fatalError(error, file);
-      }
-
-      try {
-        initializer.validate();
-        await initializer.initialize(api);
-        this.initializers[initializer.name] = initializer;
-      } catch (error) {
-        this.fatalError(error, initializer);
+        try {
+          initializer.validate();
+          await initializer.initialize(api);
+          this.initializers[initializer.name] = initializer;
+        } catch (error) {
+          this.fatalError(error, initializer);
+        }
       }
     }
 
@@ -125,130 +127,160 @@ export class Process {
     }
 
     initializerFiles = api.utils.arrayUniqueify(initializerFiles);
+    initializerFiles = initializerFiles.filter(file => {
+      return (
+        !file.match("initializers/utils") && !file.match("initializers/config")
+      );
+    });
 
     initializerFiles.forEach(f => {
       const file = path.normalize(f);
       const fileParts = file.split(".");
       const ext = fileParts[fileParts.length - 1];
-      if (ext !== "js") {
+      if (ext !== "js" && ext !== "ts") {
         return;
       }
 
       delete require.cache[require.resolve(file)];
-      let initializer: Initializer;
 
-      try {
-        const InitializerClass = require(file);
-        initializer = new InitializerClass();
-      } catch (error) {
-        this.fatalError(error, file);
-      }
+      const exportedClasses = require(file);
+      for (const exportKey in exportedClasses) {
+        let initializer: Initializer;
+        let InitializerClass = exportedClasses[exportKey];
+        try {
+          initializer = new InitializerClass();
 
-      // check if initializer already exists (exclude utils and config)
-      if (
-        this.initializers[initializer.name] &&
-        file !== path.resolve(__dirname, "..", "initializers", "utils") &&
-        file !== path.resolve(__dirname, "..", "initializers", "config")
-      ) {
-        const warningMessage = `an existing intializer with the same name \`${initializer.name}\` will be overridden by the file ${file}`;
-        if (api.log) {
-          api.log(warningMessage, "warning");
-        } else {
-          console.warn(warningMessage);
-        }
-      } else {
-        initializer.validate();
-        this.initializers[initializer.name] = initializer;
-      }
-
-      const initializeFunction = async () => {
-        api.watchFileAndAct(file, async () => {
-          api.log(
-            `*** Rebooting due to initializer change (${file}) ***`,
-            "info"
-          );
-          await api.commands.restart();
-        });
-
-        if (typeof initializer.initialize === "function") {
-          if (typeof api.log === "function") {
-            api.log(`Loading initializer: ${initializer.name}`, "debug", file);
-          }
-          try {
-            await initializer.initialize();
-            try {
-              api.log(`Loaded initializer: ${initializer.name}`, "debug", file);
-            } catch (e) {}
-          } catch (error) {
-            const message = `Exception occured in initializer \`${initializer.name}\` during load`;
-            try {
-              api.log(message, "emerg", error.toString());
-            } catch (_error) {
-              console.error(message);
+          // check if initializer already exists (exclude utils and config)
+          if (this.initializers[initializer.name]) {
+            const warningMessage = `an existing intializer with the same name \`${initializer.name}\` will be overridden by the file ${file}`;
+            if (api.log) {
+              api.log(warningMessage, "warning");
+            } else {
+              console.warn(warningMessage);
             }
-            throw error;
+          } else {
+            initializer.validate();
+            this.initializers[initializer.name] = initializer;
           }
+        } catch (error) {
+          this.fatalError(error, file);
         }
-      };
 
-      const startFunction = async () => {
-        if (typeof initializer.start === "function") {
-          if (typeof api.log === "function") {
-            api.log(`Starting initializer: ${initializer.name}`, "debug", file);
-          }
-          try {
-            await initializer.start();
-            api.log(`Started initializer: ${initializer.name}`, "debug", file);
-          } catch (error) {
+        const initializeFunction = async () => {
+          api.watchFileAndAct(file, async () => {
             api.log(
-              `Exception occured in initializer \`${initializer.name}\` during start`,
-              "emerg",
-              error.toString()
+              `*** Rebooting due to initializer change (${file}) ***`,
+              "info"
             );
-            throw error;
+            await api.commands.restart();
+          });
+
+          if (typeof initializer.initialize === "function") {
+            if (typeof api.log === "function") {
+              api.log(
+                `Loading initializer: ${initializer.name}`,
+                "debug",
+                file
+              );
+            }
+            try {
+              await initializer.initialize();
+              try {
+                api.log(
+                  `Loaded initializer: ${initializer.name}`,
+                  "debug",
+                  file
+                );
+              } catch (e) {}
+            } catch (error) {
+              const message = `Exception occured in initializer \`${initializer.name}\` during load`;
+              try {
+                api.log(message, "emerg", error.toString());
+              } catch (_error) {
+                console.error(message);
+              }
+              throw error;
+            }
           }
+        };
+
+        const startFunction = async () => {
+          if (typeof initializer.start === "function") {
+            if (typeof api.log === "function") {
+              api.log(
+                `Starting initializer: ${initializer.name}`,
+                "debug",
+                file
+              );
+            }
+            try {
+              await initializer.start();
+              api.log(
+                `Started initializer: ${initializer.name}`,
+                "debug",
+                file
+              );
+            } catch (error) {
+              api.log(
+                `Exception occured in initializer \`${initializer.name}\` during start`,
+                "emerg",
+                error.toString()
+              );
+              throw error;
+            }
+          }
+        };
+
+        const stopFunction = async () => {
+          if (typeof initializer.stop === "function") {
+            if (typeof api.log === "function") {
+              api.log(
+                `Stopping initializer: ${initializer.name}`,
+                "debug",
+                file
+              );
+            }
+            try {
+              await initializer.stop();
+              api.log(
+                `Stopped initializer: ${initializer.name}`,
+                "debug",
+                file
+              );
+            } catch (error) {
+              api.log(
+                `Exception occured in initializer \`${initializer.name}\` during stop`,
+                "emerg",
+                error.toString()
+              );
+              throw error;
+            }
+          }
+        };
+
+        if (loadInitializerRankings[initializer.loadPriority] === undefined) {
+          loadInitializerRankings[initializer.loadPriority] = [];
         }
-      };
-
-      const stopFunction = async () => {
-        if (typeof initializer.stop === "function") {
-          if (typeof api.log === "function") {
-            api.log(`Stopping initializer: ${initializer.name}`, "debug", file);
-          }
-          try {
-            await initializer.stop();
-            api.log(`Stopped initializer: ${initializer.name}`, "debug", file);
-          } catch (error) {
-            api.log(
-              `Exception occured in initializer \`${initializer.name}\` during stop`,
-              "emerg",
-              error.toString()
-            );
-            throw error;
-          }
+        if (startInitializerRankings[initializer.startPriority] === undefined) {
+          startInitializerRankings[initializer.startPriority] = [];
         }
-      };
+        if (stopInitializerRankings[initializer.stopPriority] === undefined) {
+          stopInitializerRankings[initializer.stopPriority] = [];
+        }
 
-      if (loadInitializerRankings[initializer.loadPriority] === undefined) {
-        loadInitializerRankings[initializer.loadPriority] = [];
-      }
-      if (startInitializerRankings[initializer.startPriority] === undefined) {
-        startInitializerRankings[initializer.startPriority] = [];
-      }
-      if (stopInitializerRankings[initializer.stopPriority] === undefined) {
-        stopInitializerRankings[initializer.stopPriority] = [];
-      }
-
-      if (initializer.loadPriority > 0) {
-        loadInitializerRankings[initializer.loadPriority].push(
-          initializeFunction
-        );
-      }
-      if (initializer.startPriority > 0) {
-        startInitializerRankings[initializer.startPriority].push(startFunction);
-      }
-      if (initializer.stopPriority > 0) {
-        stopInitializerRankings[initializer.stopPriority].push(stopFunction);
+        if (initializer.loadPriority > 0) {
+          loadInitializerRankings[initializer.loadPriority].push(
+            initializeFunction
+          );
+        }
+        if (initializer.startPriority > 0) {
+          startInitializerRankings[initializer.startPriority].push(
+            startFunction
+          );
+        }
+        if (initializer.stopPriority > 0) {
+          stopInitializerRankings[initializer.stopPriority].push(stopFunction);
+        }
       }
     });
 
@@ -358,12 +390,15 @@ export class Process {
     }
     if (errors) {
       if (api.log) {
-        api.log(`Error with initializer step: ${type}`, "emerg");
+        api.log(
+          `Error with initializer step: ${JSON.stringify(type)}`,
+          "emerg"
+        );
         errors.forEach(error => {
           api.log(error.stack, "emerg");
         });
       } else {
-        console.error(`Error with initializer step: ${type}`);
+        console.error(`Error with initializer step: ${JSON.stringify(type)}`);
         errors.forEach(error => {
           console.error(error.stack);
         });

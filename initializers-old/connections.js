@@ -1,5 +1,5 @@
-const ActionHero = require('./../index.js')
-const api = ActionHero.api
+const ActionHero = require("../index.js");
+const api = ActionHero.api;
 
 /**
  * This callback is displayed as part of the Requester class.
@@ -43,32 +43,32 @@ api.connections.addMiddleware(connectionMiddleware)
  * @extends ActionHero.Initializer
  */
 module.exports = class Connections extends ActionHero.Initializer {
-  constructor () {
-    super()
-    this.name = 'connections'
-    this.loadPriority = 400
+  constructor() {
+    super();
+    this.name = "connections";
+    this.loadPriority = 400;
   }
 
-  initialize () {
+  initialize() {
     api.connections = {
       connections: {},
       middleware: {},
       globalMiddleware: [],
 
       allowedVerbs: [
-        'quit',
-        'exit',
-        'documentation',
-        'paramAdd',
-        'paramDelete',
-        'paramView',
-        'paramsView',
-        'paramsDelete',
-        'roomAdd',
-        'roomLeave',
-        'roomView',
-        'detailsView',
-        'say'
+        "quit",
+        "exit",
+        "documentation",
+        "paramAdd",
+        "paramDelete",
+        "paramView",
+        "paramsView",
+        "paramsDelete",
+        "roomAdd",
+        "roomLeave",
+        "roomView",
+        "detailsView",
+        "say"
       ],
 
       /**
@@ -82,24 +82,31 @@ module.exports = class Connections extends ActionHero.Initializer {
        * @memberOf api.connections
        */
       apply: async (connectionId, method, args) => {
-        return api.redis.doCluster('api.connections.applyResponder', [connectionId, method, args], connectionId, true)
+        return api.redis.doCluster(
+          "api.connections.applyResponder",
+          [connectionId, method, args],
+          connectionId,
+          true
+        );
       },
 
       /**
        * @private
        */
       applyResponder: async (connectionId, method, args) => {
-        const connection = api.connections.connections[connectionId]
-        if (!connection) { return }
+        const connection = api.connections.connections[connectionId];
+        if (!connection) {
+          return;
+        }
 
         if (method && args) {
-          if (method === 'sendMessage' || method === 'sendFile') {
-            await connection[method](args)
+          if (method === "sendMessage" || method === "sendFile") {
+            await connection[method](args);
           } else {
-            await connection[method].apply(connection, args)
+            await connection[method].apply(connection, args);
           }
         }
-        return api.connections.cleanConnection(connection)
+        return api.connections.cleanConnection(connection);
       },
 
       /**
@@ -109,38 +116,45 @@ module.exports = class Connections extends ActionHero.Initializer {
        * @memberOf api.connections
        * @see ActionHero~ConnectionMiddleware
        */
-      addMiddleware: (data) => {
-        if (!data.name) { throw new Error('middleware.name is required') }
-        if (!data.priority) { data.priority = api.config.general.defaultMiddlewarePriority }
-        data.priority = Number(data.priority)
-        api.connections.middleware[data.name] = data
+      addMiddleware: data => {
+        if (!data.name) {
+          throw new Error("middleware.name is required");
+        }
+        if (!data.priority) {
+          data.priority = api.config.general.defaultMiddlewarePriority;
+        }
+        data.priority = Number(data.priority);
+        api.connections.middleware[data.name] = data;
 
-        api.connections.globalMiddleware.push(data.name)
+        api.connections.globalMiddleware.push(data.name);
         api.connections.globalMiddleware.sort((a, b) => {
-          if (api.connections.middleware[a].priority > api.connections.middleware[b].priority) {
-            return 1
+          if (
+            api.connections.middleware[a].priority >
+            api.connections.middleware[b].priority
+          ) {
+            return 1;
           } else {
-            return -1
+            return -1;
           }
-        })
+        });
       },
 
       /**
        * @private
        */
-      cleanConnection: (connection) => {
-        const clean = {}
+      cleanConnection: connection => {
+        const clean = {};
         for (const i in connection) {
-          if (i !== 'rawConnection' && i !== 'api') {
+          if (i !== "rawConnection" && i !== "api") {
             try {
-              JSON.stringify(connection[i])
-              clean[i] = connection[i]
+              JSON.stringify(connection[i]);
+              clean[i] = connection[i];
             } catch (error) {}
           }
         }
 
-        return clean
+        return clean;
       }
-    }
+    };
   }
-}
+};

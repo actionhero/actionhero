@@ -86,7 +86,7 @@ if (process.env.projectRoot) {
     // reload utils, as they won't have been loaded yet
     try {
       const UtilsClass = require(path.normalize(
-        path.join(__dirname, "/../initializers/utils.js")
+        path.join(__dirname, "/../initializers/utils")
       ));
       const utils = new UtilsClass();
       await utils.initialize();
@@ -129,14 +129,14 @@ if (process.env.projectRoot) {
       api._context = actionHeroProcess;
       let RunnerClass;
 
-      let p = path.join(__dirname, "methods", commands.join(path.sep) + ".js");
+      let p = path.join(__dirname, "methods", commands.join(path.sep));
       if (fs.existsSync(p) && api.config.general.cliIncludeInternal !== false) {
         RunnerClass = require(p);
       }
 
       if (!RunnerClass) {
         api.config.general.paths.cli.forEach((cliPath: string) => {
-          p = path.join(cliPath, commands.join(path.sep) + ".js");
+          p = path.join(cliPath, commands.join(path.sep));
           if (fs.existsSync(p)) {
             RunnerClass = require(p);
           }
@@ -147,7 +147,7 @@ if (process.env.projectRoot) {
         for (const pluginName in api.config.plugins) {
           if (api.config.plugins[pluginName].cli !== false) {
             const pluginPath = api.config.plugins[pluginName].path;
-            p = path.join(pluginPath, "bin", commands.join(path.sep) + ".js");
+            p = path.join(pluginPath, "bin", commands.join(path.sep));
             if (fs.existsSync(p)) {
               RunnerClass = require(p);
             }
