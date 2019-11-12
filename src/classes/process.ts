@@ -97,19 +97,15 @@ export class Process {
 
     // load initializers from core
     initializerFiles = initializerFiles.concat(
-      glob.sync(path.join(__dirname, "..", "initializers", "**", "*.js"))
-    );
-    initializerFiles = initializerFiles.concat(
-      glob.sync(path.join(__dirname, "..", "initializers", "**", "*.ts"))
+      glob.sync(
+        path.join(__dirname, "..", "initializers", "**", "*(*.js|*.ts)")
+      )
     );
 
     // load initializers from project
     api.config.general.paths.initializer.forEach((startPath: string) => {
       initializerFiles = initializerFiles.concat(
-        glob.sync(path.join(startPath, "**", "*.js"))
-      );
-      initializerFiles = initializerFiles.concat(
-        glob.sync(path.join(startPath, "**", "*.ts"))
+        glob.sync(path.join(startPath, "**", "*(*.js|*.ts)"))
       );
     });
 
@@ -118,10 +114,7 @@ export class Process {
       if (api.config.plugins[pluginName] !== false) {
         const pluginPath = api.config.plugins[pluginName].path;
         initializerFiles = initializerFiles.concat(
-          glob.sync(path.join(pluginPath, "initializers", "**", "*.js"))
-        );
-        initializerFiles = initializerFiles.concat(
-          glob.sync(path.join(pluginPath, "initializers", "**", "*.ts"))
+          glob.sync(path.join(pluginPath, "initializers", "**", "*(*.js|*.ts)"))
         );
       }
     }
