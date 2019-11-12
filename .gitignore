@@ -8,8 +8,9 @@ node_modules/*
 locales/test-env-*
 public/javascript/ActionheroWebsocketClient.js
 public/javascript/ActionheroWebsocketClient.min.js
+dist
 
-#JSDoc
+#Docs
 /docs
 gh-pages-branch
 

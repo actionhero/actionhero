@@ -30,6 +30,8 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
+    "@types/glob": "^7.1.1",
+    "@types/node": "^12.12.7",
     "browser_fingerprint": "^1.0.5",
     "dot-prop": "^5.1.1",
     "etag": "^1.8.1",
@@ -39,7 +41,7 @@
     "ioredis": "^4.14.1",
     "is-running": "^2.1.0",
     "mime": "^2.4.4",
-    "node-resque": "^5.5.7",
+    "node-resque": "^6.0.0",
     "optimist": "^0.6.1",
     "primus": "^7.3.4",
     "qs": "^6.9.0",
@@ -49,47 +51,39 @@
     "ws": "^7.2.0"
   },
   "devDependencies": {
+    "@types/jest": "^24.0.22",
     "docdash": "1.1.1",
     "jest": "^24.9.0",
     "jest-environment-webdriver": "^0.2.0",
-    "jsdoc": "^3.6.3",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
-    "standard": "^14.3.1"
+    "prettier": "^1.19.1",
+    "ts-jest": "^24.1.0",
+    "ts-node": "^8.5.0",
+    "typedoc": "^0.15.0",
+    "typescript": "^3.7.2"
   },
   "optionalDependencies": {},
   "bin": {
     "actionhero": "./bin/actionhero"
   },
-  "standard": {
-    "ignore": [
-      "bin/templates",
-      "docs",
-      "client"
-    ],
-    "globals": [
-      "describe",
-      "test",
-      "beforeAll",
-      "beforeEach",
-      "afterAll",
-      "afterEach",
-      "expect",
-      "browser",
-      "by"
-    ]
-  },
   "jest": {
     "testPathIgnorePatterns": [
       "<rootDir>/__tests__/testPlugin"
-    ]
+    ],
+    "transform": {
+      "^.+\\.ts?$": "ts-jest"
+    }
   },
   "scripts": {
     "postinstall": "echo 'To generate a new actionhero project, run \"npx actionhero generate\"'",
-    "help": "node ./bin/actionhero help",
     "test": "jest",
-    "pretest": "standard",
+    "prepare": "npm run declaration && npm run docs",
+    "pretest": "npm run lint",
     "start": "node ./bin/actionhero",
-    "docs": "jsdoc -c jsdoc-conf.json"
+    "declaration": "tsc --declaration",
+    "docs": "typedoc --out docs --theme default",
+    "lint": "prettier --check src/*/**.ts __test__/*/**.ts examples/*/**.ts",
+    "pretty": "prettier --write src/*/**.ts __test__/*/**.ts examples/*/**.ts"
   }
 }
