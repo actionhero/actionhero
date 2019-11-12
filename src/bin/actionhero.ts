@@ -127,35 +127,51 @@ if (process.env.projectRoot) {
         api.actionheroRoot = actionheroRoot;
       }
       api._context = actionHeroProcess;
-      let RunnerClass;
+      let ExportedClasses;
 
-      let p = path.join(__dirname, "methods", commands.join(path.sep));
+      let p: string;
+      p = path.join(__dirname, "methods", commands.join(path.sep) + ".js");
       if (fs.existsSync(p) && api.config.general.cliIncludeInternal !== false) {
-        RunnerClass = require(p);
+        ExportedClasses = require(p);
       }
 
-      if (!RunnerClass) {
+      p = path.join(__dirname, "methods", commands.join(path.sep) + ".ts");
+      if (fs.existsSync(p) && api.config.general.cliIncludeInternal !== false) {
+        ExportedClasses = require(p);
+      }
+
+      if (!ExportedClasses) {
         api.config.general.paths.cli.forEach((cliPath: string) => {
-          p = path.join(cliPath, commands.join(path.sep));
+          p = path.join(cliPath, commands.join(path.sep) + ".js");
           if (fs.existsSync(p)) {
-            RunnerClass = require(p);
+            ExportedClasses = require(p);
+          }
+
+          p = path.join(cliPath, commands.join(path.sep) + ".ts");
+          if (fs.existsSync(p)) {
+            ExportedClasses = require(p);
           }
         });
       }
 
-      if (!RunnerClass) {
+      if (!ExportedClasses) {
         for (const pluginName in api.config.plugins) {
           if (api.config.plugins[pluginName].cli !== false) {
             const pluginPath = api.config.plugins[pluginName].path;
-            p = path.join(pluginPath, "bin", commands.join(path.sep));
+            p = path.join(pluginPath, "bin", commands.join(path.sep) + ".js");
             if (fs.existsSync(p)) {
-              RunnerClass = require(p);
+              ExportedClasses = require(p);
+            }
+
+            p = path.join(pluginPath, "bin", commands.join(path.sep) + ".ts");
+            if (fs.existsSync(p)) {
+              ExportedClasses = require(p);
             }
           }
         }
       }
 
-      if (!RunnerClass) {
+      if (!ExportedClasses) {
         console.error(
           `Error: \`${commands.join(" ")}\` is not a method I can perform.`
         );
@@ -183,8 +199,10 @@ if (process.env.projectRoot) {
           });
           console.log(`spawned child process with pid ${child.pid}`, "notice");
           process.nextTick(process.exit);
+        } else if (Object.keys(ExportedClasses).length > 1) {
+          throw new Error("actionhero CLI files should only export one method");
         } else {
-          const runner = new RunnerClass();
+          const runner = new ExportedClasses[Object.keys(ExportedClasses)[0]]();
           const params = formatParams(runner);
           const toStop = await runner.run({ params: params });
           if (toStop || toStop === null || toStop === undefined) {
