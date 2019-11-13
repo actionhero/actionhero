@@ -1,15 +1,11 @@
-const cluster = require("cluster");
-const argv = require("optimist").argv;
-const ActionHero = require("./../index.js");
-const api = ActionHero.api;
+import { argv } from "optimist";
+import * as cluster from "cluster";
+import { api, Initializer } from "../index";
 
 /**
  * I build this server's ID.
- *
- * @namespace api.id
- * @extends ActionHero.Initializer
  */
-module.exports = class ID extends ActionHero.Initializer {
+export class ID extends Initializer {
   constructor() {
     super();
     this.name = "id";
@@ -17,14 +13,14 @@ module.exports = class ID extends ActionHero.Initializer {
     this.startPriority = 2;
   }
 
-  initialize() {
+  async initialize() {
     if (argv.title) {
       api.id = argv.title;
     } else if (process.env.ACTIONHERO_TITLE) {
       api.id = process.env.ACTIONHERO_TITLE;
     } else if (!api.config.general.id) {
       let externalIP = api.utils.getExternalIPAddress();
-      if (externalIP) {
+      if (!externalIP) {
         const message =
           " * Error fetching this hosts external IP address; setting id base to 'actionhero'";
         try {
@@ -44,7 +40,7 @@ module.exports = class ID extends ActionHero.Initializer {
     }
   }
 
-  start() {
+  async start() {
     api.log(`server ID: ${api.id}`, "notice");
   }
-};
+}
