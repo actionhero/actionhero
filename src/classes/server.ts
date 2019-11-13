@@ -94,7 +94,7 @@ export abstract class Server extends EventEmitter {
     connection: Connection,
     message: string | object | Array<any>,
     messageId?: string
-  ): Promise<boolean>;
+  ): Promise<void>;
 
   /**
    * Must be defined explaining how to send a file to an induvidual connection.  Might be a noop for some connection types.

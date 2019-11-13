@@ -1,20 +1,17 @@
-const ActionHero = require('./../index.js')
+import { api, Action } from "./../index";
 
-module.exports = class ShowDocumentation extends ActionHero.Action {
-  constructor () {
-    super()
-    this.name = 'showDocumentation'
-    this.description = 'return API documentation'
-  }
-
-  outputExample () {
-    return {
+export class ShowDocumentation extends Action {
+  constructor() {
+    super();
+    this.name = "showDocumentation";
+    this.description = "return API documentation";
+    this.outputExample = {
       documentation: {
         cacheTest: {
           1: {
-            name: 'cacheTest',
+            name: "cacheTest",
             version: 1,
-            description: 'I will test the internal cache functions of the API',
+            description: "I will test the internal cache functions of the API",
             inputs: {
               key: {
                 required: true
@@ -28,8 +25,8 @@ module.exports = class ShowDocumentation extends ActionHero.Action {
                 saveResp: true,
                 sizeResp: 1,
                 loadResp: {
-                  key: '',
-                  value: 'value',
+                  key: "",
+                  value: "value",
                   expireTimestamp: 1420953274716,
                   createdAt: 1420953269716,
                   readAt: null
@@ -41,12 +38,11 @@ module.exports = class ShowDocumentation extends ActionHero.Action {
         },
         randomNumber: {
           1: {
-            name: 'randomNumber',
+            name: "randomNumber",
             version: 1,
-            description: 'I am an API method which will generate a random number',
-            inputs: {
-
-            },
+            description:
+              "I am an API method which will generate a random number",
+            inputs: {},
             outputExample: {
               randomNumber: 0.123
             }
@@ -54,19 +50,17 @@ module.exports = class ShowDocumentation extends ActionHero.Action {
         },
         showDocumentation: {
           1: {
-            name: 'showDocumentation',
+            name: "showDocumentation",
             version: 1,
-            description: 'return API documentation',
-            inputs: {
-
-            }
+            description: "return API documentation",
+            inputs: {}
           }
         },
         sleepTest: {
           1: {
-            name: 'sleepTest',
+            name: "sleepTest",
             version: 1,
-            description: 'I will sleep and then return',
+            description: "I will sleep and then return",
             inputs: {
               sleepDuration: {
                 required: true
@@ -76,20 +70,18 @@ module.exports = class ShowDocumentation extends ActionHero.Action {
         },
         status: {
           1: {
-            name: 'status',
+            name: "status",
             version: 1,
-            description: 'I will return some basic information about the API',
-            inputs: {
-
-            }
+            description: "I will return some basic information about the API",
+            inputs: {}
           }
         }
       }
-    }
+    };
   }
 
-  run ({ response }) {
-    const { documentation } = ActionHero.api
-    response.documentation = documentation.documentation
+  run({ response }) {
+    const { documentation } = api;
+    response.documentation = documentation.documentation;
   }
 }
