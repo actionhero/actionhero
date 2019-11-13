@@ -46,7 +46,7 @@ export abstract class Action {
   constructor() {
     // Only in files required by `index.js` do we need to delay the loading of the API object
     // This is due to cyclical require issues
-    api = require("../../index").api;
+    api = require("../index").api;
 
     const coreProperties = this.defaults();
     for (const key in coreProperties) {

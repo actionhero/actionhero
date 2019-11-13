@@ -23,11 +23,11 @@ export interface ActionMiddleware {
   /**Is this middleware applied to all actions? */
   global: boolean;
   /**Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`. */
-  priority: number;
+  priority?: number;
   /**Called berore the action runs.  Has access to all params, before sanitizartion.  Can modify the data object for use in actions. */
-  preProcessor: Function;
+  preProcessor?: Function;
   /**Called after the action runs. */
-  postProcessor: Function;
+  postProcessor?: Function;
 }
 
 export class Actions extends Initializer {

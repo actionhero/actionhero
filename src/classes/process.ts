@@ -139,6 +139,13 @@ export class Process {
       delete require.cache[require.resolve(file)];
 
       const exportedClasses = require(file);
+      if (Object.keys(exportedClasses).length === 0) {
+        this.fatalError(
+          new Error(`no exported intializers found in ${file}`),
+          file
+        );
+      }
+
       for (const exportKey in exportedClasses) {
         let initializer: Initializer;
         let InitializerClass = exportedClasses[exportKey];

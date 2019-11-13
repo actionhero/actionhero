@@ -27,7 +27,7 @@ export class ActionProcessor {
   constructor(connection: Connection) {
     /// Only in files required by `index.js` do we need to delay the loading of the API object
     // This is due to cyclical require issues
-    api = require("../../index").api;
+    api = require("../index").api;
 
     this.connection = connection;
     this.action = null;

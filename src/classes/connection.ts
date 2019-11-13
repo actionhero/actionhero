@@ -42,7 +42,7 @@ export class Connection {
   constructor(data, callCreateMethods = true) {
     // Only in files required by `index.js` do we need to delay the loading of the API object
     // This is due to cyclical require issues
-    api = require("../../index.js").api;
+    api = require("../index").api;
 
     this.setup(data);
     if (callCreateMethods) {
@@ -153,7 +153,7 @@ export class Connection {
   /**
    * Send a message to a connection.  Uses Server#sendMessage.
    */
-  async sendMessage(message: string | object | Array<any>) {
+  async sendMessage(message: string | object | Array<any>, verb?: string) {
     throw new Error("not implamented");
   }
 
