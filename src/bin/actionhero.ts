@@ -27,14 +27,18 @@ if (process.env.projectRoot) {
 }
 
 (async () => {
-  try {
-    const boot = require(`${projectRoot}${path.sep}boot.js`);
-    await boot();
-  } catch (e) {
-    if (e.code === "MODULE_NOT_FOUND") {
-      console.log("No boot.js specified. Skipping.");
-    } else throw e;
-  }
+  const bootFilePaths = [
+    `${projectRoot}/boot.js`,
+    `${projectRoot}/boot.ts`,
+    `${projectRoot}/src/boot.js`,
+    `${projectRoot}/src/boot.ts`
+  ];
+  bootFilePaths.forEach(async bootFile => {
+    if (fs.existsSync(bootFile)) {
+      const Exports = require(bootFile);
+      await Exports[Object.keys(Exports)[0]]();
+    }
+  });
 
   const { api, Process } = require(path.join(__dirname, "..", "index"));
   const actionheroRoot = path.normalize(path.join(__dirname, ".."));

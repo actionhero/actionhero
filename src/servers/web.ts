@@ -386,7 +386,7 @@ export class WebServer extends Server {
 
     // waiting until URL() can handle relative paths
     // https://github.com/nodejs/node/issues/12682
-    const parsedURL = url.parse(req.url, true); //eslint-disable-line
+    const parsedURL = url.parse(req.url, true);
     let i;
     for (i in headersHash) {
       responseHeaders.push([i, headersHash[i]]);

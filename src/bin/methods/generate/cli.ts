@@ -17,7 +17,7 @@ export class GenerateCLI extends CLI {
 
   async run({ params }) {
     let templateBuffer = fs.readFileSync(
-      path.join(__dirname, "/../../templates/cli.js")
+      path.join(__dirname, "/../../templates/cli.ts.template")
     );
 
     let template = templateBuffer.toString();
@@ -28,7 +28,7 @@ export class GenerateCLI extends CLI {
     });
 
     const message = api.utils.createFileSafely(
-      api.config.general.paths.cli[0] + "/" + params.name + ".js",
+      api.config.general.paths.cli[0] + "/" + params.name + ".ts",
       template
     );
     console.log(message);

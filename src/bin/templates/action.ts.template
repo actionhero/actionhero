@@ -1,4 +1,4 @@
-const { Action } = require("actionhero");
+import { Action } from "actionhero";
 
 export class MyAction extends Action {
   constructor() {

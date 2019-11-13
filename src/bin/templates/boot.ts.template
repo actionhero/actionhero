@@ -6,4 +6,4 @@
 
 // include high-level requires here.
 
-module.exports = async function() {};
+export async function BOOT() {}

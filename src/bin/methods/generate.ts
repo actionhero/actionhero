@@ -40,7 +40,7 @@ export class Generate extends CLI {
       publicCss: "/public/css/cosmo.css",
       exampleTest: "/__tests__/template.js.example",
       enLocale: "/locales/en.json",
-      gitignore: "/bin/templates/gitignore"
+      gitignore: "/bin/templates/gitignore.template"
     };
 
     for (const name in oldFileMap) {
@@ -67,10 +67,10 @@ export class Generate extends CLI {
       AHversionNumber
     );
     documents.readmeMd = String(
-      fs.readFileSync(path.join(__dirname, "/../templates/README.md"))
+      fs.readFileSync(path.join(__dirname, "/../templates/README.md.template"))
     );
     documents.bootJs = String(
-      fs.readFileSync(path.join(__dirname, "/../templates/boot.js"))
+      fs.readFileSync(path.join(__dirname, "/../templates/boot.ts.template"))
     );
 
     console.log("Generating a new actionhero project...");
@@ -125,7 +125,7 @@ export class Generate extends CLI {
       "/__tests__/actions/status.js": "exampleTest",
       "/locales/en.json": "enLocale",
       "/.gitignore": "gitignore",
-      "/boot.js": "bootJs"
+      "/boot.ts": "bootTs"
     };
 
     for (const file in newFileMap) {

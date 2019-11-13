@@ -17,12 +17,12 @@ export class GenerateAction extends CLI {
 
   async run({ params }) {
     let actionTemplateBuffer = fs.readFileSync(
-      path.join(__dirname, "../../templates/action.js")
+      path.join(__dirname, "../../templates/action.ts.template")
     );
     let actionTemplate = actionTemplateBuffer.toString();
 
     let testTemplateBuffer = fs.readFileSync(
-      path.join(__dirname, "/../../templates/test/action.js")
+      path.join(__dirname, "/../../templates/test/action.ts.template")
     );
     let testTemplate = testTemplateBuffer.toString();
 
@@ -33,13 +33,13 @@ export class GenerateAction extends CLI {
     });
 
     let message = api.utils.createFileSafely(
-      api.config.general.paths.action[0] + "/" + params.name + ".js",
+      api.config.general.paths.action[0] + "/" + params.name + ".ts",
       actionTemplate
     );
     console.info(message);
 
     message = api.utils.createFileSafely(
-      api.config.general.paths.test[0] + "/actions/" + params.name + ".js",
+      api.config.general.paths.test[0] + "/actions/" + params.name + ".ts",
       testTemplate
     );
     console.info(message);

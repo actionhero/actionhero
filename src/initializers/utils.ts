@@ -170,7 +170,7 @@ export class Utils extends Initializer {
       for (i in safeInstances) {
         if (typeof o === safeInstances[i]) {
           return false;
-        } //eslint-disable-line
+        }
       }
       if (o[expandPreventMatchKey] === false) {
         return false;

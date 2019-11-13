@@ -115,7 +115,6 @@ export class Redis extends Initializer {
       // see https://github.com/actionhero/actionhero/issues/1244 for more information
       if (waitForResponse) {
         return new Promise(async (resolve, reject) => {
-          //eslint-disable-line
           const timer = setTimeout(
             () => reject(new Error("RPC Timeout")),
             api.config.general.rpcTimeout

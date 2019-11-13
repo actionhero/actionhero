@@ -1,4 +1,4 @@
-const { Process } = require("actionhero");
+import { Process } from "actionhero";
 const actionhero = new Process();
 let api;
 
@@ -7,6 +7,7 @@ describe("Task", () => {
     beforeAll(async () => {
       api = await actionhero.start();
     });
+
     afterAll(async () => {
       await actionhero.stop();
     });

@@ -80,7 +80,7 @@
     "test": "jest",
     "prepare": "npm run declaration && npm run docs",
     "pretest": "npm run lint",
-    "start": "node ./bin/actionhero",
+    "start": "ts-node ./src/bin/actionhero",
     "declaration": "tsc --declaration",
     "docs": "typedoc --out docs --theme default",
     "lint": "prettier --check src/*/**.ts __test__/*/**.ts examples/*/**.ts",

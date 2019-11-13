@@ -19,7 +19,7 @@ export class GenerateInitializer extends CLI {
 
   async run({ params }) {
     let templateBuffer = fs.readFileSync(
-      path.join(__dirname, "/../../templates/initializer.js")
+      path.join(__dirname, "/../../templates/initializer.ts.template")
     );
     let template = String(templateBuffer);
 
@@ -29,7 +29,7 @@ export class GenerateInitializer extends CLI {
     });
 
     const message = api.utils.createFileSafely(
-      api.config.general.paths.initializer[0] + "/" + params.name + ".js",
+      api.config.general.paths.initializer[0] + "/" + params.name + ".ts",
       template
     );
     console.log(message);
