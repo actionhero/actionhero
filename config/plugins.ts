@@ -1,5 +1,5 @@
-exports.default = {
-  plugins: (api) => {
+export const DEFAULT = {
+  plugins: api => {
     /*
     If you want to use plugins in your application, include them here:
 
@@ -22,6 +22,6 @@ exports.default = {
     }
     */
 
-    return {}
+    return {};
   }
-}
+};

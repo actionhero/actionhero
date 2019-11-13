@@ -128,13 +128,13 @@ export class Config extends Initializer {
 
     const loadConfigFile = f => {
       const localConfig = require(f);
-      if (f.includes("routes.js")) {
+      if (f.includes("routes.js") || f.includes("routes.ts")) {
         let localRoutes = { routes: {} };
 
-        if (localConfig.default) {
+        if (localConfig.DEFAULT) {
           localRoutes = api.utils.hashMerge(
             localRoutes,
-            localConfig.default,
+            localConfig.DEFAULT,
             api
           );
         }
@@ -158,10 +158,10 @@ export class Config extends Initializer {
           }
         });
       } else {
-        if (localConfig.default) {
+        if (localConfig.DEFAULT) {
           api.config = api.utils.hashMerge(
             api.config,
-            localConfig.default,
+            localConfig.DEFAULT,
             api
           );
         }
@@ -176,7 +176,9 @@ export class Config extends Initializer {
     };
 
     api.loadConfigDirectory = (configPath, watch) => {
-      const configFiles = glob.sync(path.join(configPath, "**", "*.js"));
+      const configFiles = glob.sync(
+        path.join(configPath, "**", "**/*(*.js|*.ts)")
+      );
 
       let loadRetries = 0;
       let loadErrors = {};

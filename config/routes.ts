@@ -1,7 +1,6 @@
-exports.default = {
-  routes: (api) => {
+export const DEFAULT = {
+  routes: api => {
     return {
-
       /* ---------------------
       routes.js
 
@@ -26,7 +25,6 @@ exports.default = {
       ]
 
       ---------------------- */
-
-    }
+    };
   }
-}
+};

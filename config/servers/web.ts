@@ -1,8 +1,8 @@
-const os = require('os')
+const os = require("os");
 
-exports.default = {
+export const DEFAULT = {
   servers: {
-    web: (api) => {
+    web: api => {
       return {
         enabled: true,
         // HTTP or HTTPS?  This setting is to enable SSL termination directly in the actionhero app, not set redirection host headers
@@ -11,30 +11,33 @@ exports.default = {
         serverOptions: {},
         // Should we redirect all traffic to the first host in this array if hte request header doesn't match?
         // i.e.: [ 'https://www.site.com' ]
-        allowedRequestHosts: process.env.ALLOWED_HOSTS ? process.env.ALLOWED_HOSTS.split(',') : [],
+        allowedRequestHosts: process.env.ALLOWED_HOSTS
+          ? process.env.ALLOWED_HOSTS.split(",")
+          : [],
         // Port or Socket Path
         port: process.env.PORT || 8080,
         // Which IP to listen on (use '0.0.0.0' for all; '::' for all on ipv4 and ipv6)
         // Set to `null` when listening to socket
-        bindIP: '0.0.0.0',
+        bindIP: "0.0.0.0",
         // Any additional headers you want actionhero to respond with
         httpHeaders: {
-          'X-Powered-By': api.config.general.serverName,
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE',
-          'Access-Control-Allow-Headers': 'Content-Type',
-          'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
+          "X-Powered-By": api.config.general.serverName,
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods":
+            "HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE",
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Strict-Transport-Security": "max-age=31536000; includeSubDomains"
         },
         // Route that actions will be served from; secondary route against this route will be treated as actions,
         //  IE: /api/?action=test == /api/test/
-        urlPathForActions: 'api',
+        urlPathForActions: "api",
         // Route that static files will be served from;
         //  path (relative to your project root) to serve static content from
         //  set to `null` to disable the file server entirely
-        urlPathForFiles: 'public',
+        urlPathForFiles: "public",
         // When visiting the root URL, should visitors see 'api' or 'file'?
         //  Visitors can always visit /api and /public as normal
-        rootEndpointType: 'file',
+        rootEndpointType: "file",
         // simple routing also adds an 'all' route which matches /api/:action for all actions
         simpleRouting: true,
         // queryRouting allows an action to be defined via a URL param, ie: /api?action=:action
@@ -52,11 +55,11 @@ exports.default = {
         bootAttempts: 1,
         // Settings for determining the id of an http(s) request (browser-fingerprint)
         fingerprintOptions: {
-          cookieKey: 'sessionID',
+          cookieKey: "sessionID",
           toSetCookie: true,
           onlyStaticElements: false,
           settings: {
-            path: '/',
+            path: "/",
             expires: 3600000
           }
         },
@@ -85,37 +88,37 @@ exports.default = {
         // options to pass to the query parser
         // learn more about the options @ https://github.com/hapijs/qs
         queryParseOptions: {}
-      }
+      };
     }
   }
-}
+};
 
-exports.production = {
+export const production = {
   servers: {
-    web: (api) => {
+    web: api => {
       return {
         padding: null,
         metadataOptions: {
           serverInformation: false,
           requesterInformation: false
         }
-      }
+      };
     }
   }
-}
+};
 
-exports.test = {
+export const test = {
   servers: {
-    web: (api) => {
+    web: api => {
       return {
         secure: false,
-        port: 18080 + parseInt(process.env.JEST_WORKER_ID || 0),
+        port: 18080 + parseInt(process.env.JEST_WORKER_ID || "0"),
         matchExtensionMime: true,
         metadataOptions: {
           serverInformation: true,
           requesterInformation: true
         }
-      }
+      };
     }
   }
-}
+};
