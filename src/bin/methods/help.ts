@@ -14,8 +14,9 @@ export class Help extends CLI {
     const methods = {};
 
     // CLI commands included with ActionHero
+    console.log();
     if (api.config.general.cliIncludeInternal !== false) {
-      glob.sync(path.join(__dirname, "**", "*(*.js|*.ts)")).forEach(f => {
+      glob.sync(path.join(__dirname, "**", "**/*(*.js|*.ts)")).forEach(f => {
         files.push(f);
       });
     }

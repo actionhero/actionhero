@@ -1,6 +1,6 @@
-const ActionHero = require('actionhero')
+const {Task} = require('actionhero')
 
-module.exports = class MyTask extends ActionHero.Task {
+export class MyTask extends Task {
   constructor () {
     super()
     this.name = '%%name%%'

@@ -1,10 +1,13 @@
-const cluster = require("cluster");
-const readline = require("readline");
-const os = require("os");
-const ActionHero = require("../../index.js");
-const api = ActionHero.api;
+import * as os from "os";
+import * as readline from "readline";
+import * as cluster from "cluster";
+import { api, CLI } from "./../../index";
 
-module.exports = class Start extends ActionHero.CLI {
+export class Start extends CLI {
+  state: string;
+  shutdownTimeout: number;
+  checkForInernalStopTimer: NodeJS.Timeout;
+
   constructor() {
     super();
     this.name = "start";
@@ -125,7 +128,7 @@ module.exports = class Start extends ActionHero.CLI {
         process.nextTick(process.exit);
       });
 
-      process.on("unhandledRejection", rejection => {
+      process.on("unhandledRejection", (rejection: Error) => {
         let stack;
         try {
           stack = rejection.stack.split(os.EOL);
@@ -159,6 +162,7 @@ module.exports = class Start extends ActionHero.CLI {
         output: process.stdout
       });
       rl.on("SIGINT", () => {
+        //@ts-ignore
         process.emit("SIGINT");
       });
     }
@@ -167,4 +171,4 @@ module.exports = class Start extends ActionHero.CLI {
     await this.startServer();
     return false;
   }
-};
+}

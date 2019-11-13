@@ -6,6 +6,4 @@
 
 // include high-level requires here.
 
-module.exports = async function () {
-
-}
+module.exports = async function() {};
