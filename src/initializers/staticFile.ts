@@ -52,11 +52,7 @@ export class StaticFile extends Initializer {
       counter: number = 0
     ) => {
       let file: string;
-
-      if (
-        !connection.params.file ||
-        !api.staticFile.searchPath(connection, counter)
-      ) {
+      if (!connection.params.file || !api.staticFile.searchPath(counter)) {
         return api.staticFile.sendFileNotFound(
           connection,
           await api.config.errors.fileNotProvided(connection)
