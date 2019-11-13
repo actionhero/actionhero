@@ -6,7 +6,14 @@ import { Api } from "./api";
 let api: Api;
 
 interface ServerConfig {
-  [key: string]: object;
+  [key: string]: any;
+  // [key: string]: {
+  //   [key: string]:
+  //     | {
+  //         any;
+  //       }
+  //     | any;
+  // };
 }
 
 /**
@@ -37,7 +44,7 @@ export abstract class Server extends EventEmitter {
     [key: string]: Function;
   };
 
-  constructor(config: ServerConfig) {
+  constructor() {
     // Only in files required by `index.js` do we need to delay the loading of the API object
     // This is due to cyclical require issues
     api = require("../index").api;
@@ -46,7 +53,7 @@ export abstract class Server extends EventEmitter {
 
     this.options = {};
     this.attributes = {};
-    this.config = config;
+    this.config = {}; // will be appllied by the initializer
     this.connectionCustomMethods = {};
     const defaultAttributes = this.defaultAttributes();
     for (const key in defaultAttributes) {
@@ -262,7 +269,7 @@ export abstract class Server extends EventEmitter {
   /**
    * Log a message from this server type.  A wrapper around api.log with a server prefix.
    */
-  log(message: string, severity: string, data?: any) {
+  log(message: string, severity?: string, data?: any) {
     api.log(`[server: ${this.type}] ${message}`, severity, data);
   }
 }

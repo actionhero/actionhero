@@ -44,13 +44,15 @@ export class I18N extends Initializer {
         /**
          * Return a translated string.
          */
-        localize: (message: string, options?: object) => {
-          if (!options) {
-            options = api.i18n;
-          }
-          return api.i18n.__.apply(options, message);
+        localize: (
+          message: string | Array<string>,
+          options: any = api.i18n
+        ) => {
+          const messageArray = Array.isArray(message) ? message : [message];
+          return api.i18n.__.apply(options, messageArray);
         }
       },
+
       i18n
     );
   }

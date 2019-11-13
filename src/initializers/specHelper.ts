@@ -27,7 +27,7 @@ export class SpecHelper extends Initializer {
 
     class TestServer extends Server {
       constructor() {
-        super({});
+        super();
 
         this.type = "testServer";
         this.attributes = {
