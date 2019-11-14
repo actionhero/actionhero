@@ -29,10 +29,9 @@ if (process.env.projectRoot) {
 (async () => {
   const bootFilePaths = [
     `${projectRoot}/boot.js`,
-    // `${projectRoot}/boot.ts`,
     `${projectRoot}/dist/boot.js`
-    // `${projectRoot}/src/boot.ts`
   ];
+
   bootFilePaths.forEach(async bootFile => {
     if (fs.existsSync(bootFile)) {
       const Exports = require(bootFile);

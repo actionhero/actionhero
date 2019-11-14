@@ -397,6 +397,8 @@ export class Process {
         });
       }
       await api.commands.stop.call(api);
+
+      await api.utils.sleep(1000); // allow time for console.log to print
       process.exit(1);
     }
   }

@@ -72,14 +72,20 @@ describe("Core: Plugins", () => {
         const {
           stdout: helpResponse,
           stderr: error1
-        } = await exec("./src/bin/actionhero.ts help", { env });
+        } = await exec(
+          "./node_modules/.bin/ts-node ./src/bin/actionhero.ts help",
+          { env }
+        );
         expect(error1).toEqual("");
         expect(helpResponse).toContain("hello");
 
         const {
           stdout: helloResponse,
           stderr: error2
-        } = await exec("./src/bin/actionhero.ts hello", { env });
+        } = await exec(
+          "./node_modules/.bin/ts-node ./src/bin/actionhero.ts hello",
+          { env }
+        );
         expect(error2).toEqual("");
         expect(helloResponse).toContain("hello");
       },
@@ -140,12 +146,18 @@ describe("Core: Plugins", () => {
         const {
           stdout: helpResponse,
           stderr: error1
-        } = await exec("./src/bin/actionhero.ts help", { env });
+        } = await exec(
+          "./node_modules/.bin/ts-node ./src/bin/actionhero.ts help",
+          { env }
+        );
         expect(error1).toEqual("");
         expect(helpResponse).not.toContain("hello");
 
         try {
-          await exec("./src/bin/actionhero.ts hello", { env });
+          await exec(
+            "./node_modules/.bin/ts-node ./src/bin/actionhero.ts hello",
+            { env }
+          );
           throw new Error("should not get here");
         } catch (error) {
           expect(error.toString()).toMatch(
@@ -193,12 +205,18 @@ describe("Core: Plugins", () => {
         const {
           stdout: helpResponse,
           stderr: error1
-        } = await exec("./src/bin/actionhero.ts help", { env });
+        } = await exec(
+          "./node_modules/.bin/ts-node ./src/bin/actionhero.ts help",
+          { env }
+        );
         expect(error1).toEqual("");
         expect(helpResponse).not.toContain("hello");
 
         try {
-          await exec("./src/bin/actionhero.ts hello", { env });
+          await exec(
+            "./node_modules/.bin/ts-node ./src/bin/actionhero.ts hello",
+            { env }
+          );
           throw new Error("should not get here");
         } catch (error) {
           expect(error.toString()).toMatch(

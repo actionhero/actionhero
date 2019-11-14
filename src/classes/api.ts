@@ -41,7 +41,11 @@ export class Api {
  */
 function isTypescript(): boolean {
   try {
-    return process[Symbol.for("ts-node.register.instance")] ? true : false;
+    return process[Symbol.for("ts-node.register.instance")] ||
+      (process.env.NODE_ENV === "test" &&
+        process.env.ACTIONHERO_TEST_FILE_EXTENSION !== "js")
+      ? true
+      : false;
   } catch (error) {
     console.error(error);
     return false;

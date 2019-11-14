@@ -80,7 +80,7 @@ export class ShowDocumentation extends Action {
     };
   }
 
-  run({ response }) {
+  async run({ response }) {
     const { documentation } = api;
     response.documentation = documentation.documentation;
   }

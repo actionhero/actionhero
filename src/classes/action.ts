@@ -63,7 +63,7 @@ export abstract class Action {
    * The main "do something" method for this action.  It can be `async`.  Usually the goal of this run method is to set properties on `data.response`.  If error is thrown in this method, it will be logged, caught, and appended to `data.response.error`
    * @param data The data about this connection, response, and params.
    */
-  abstract run(data: ActionProcessor): void;
+  abstract async run(data: ActionProcessor): Promise<void>;
 
   private defaults() {
     return {

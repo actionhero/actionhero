@@ -86,7 +86,7 @@
     "start": "node ./dist/bin/actionhero",
     "build": "tsc",
     "docs": "typedoc --out docs --theme default",
-    "lint": "prettier --check src/*/**.ts __test__/*/**.ts examples/*/**.ts",
-    "pretty": "prettier --write src/*/**.ts __test__/*/**.ts examples/*/**.ts"
+    "lint": "prettier --check src/*/**.ts __test__/*/**.ts examples/*/**.ts config",
+    "pretty": "prettier --write src/*/**.ts __test__/*/**.ts examples/*/**.ts config"
   }
 }
