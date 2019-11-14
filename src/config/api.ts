@@ -81,7 +81,7 @@ export const test = {
         otherRoom: {}
       },
       paths: {
-        locale: [path.join(__dirname, "..", "locales")]
+        locale: [path.join(process.cwd(), "locales")]
       },
       rpcTimeout: 3000
     };

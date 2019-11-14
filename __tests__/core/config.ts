@@ -15,8 +15,8 @@ const newConfigFolderPaths = [
 ];
 
 const routeFilesContent = [
-  "exports.default = {\n  routes: (api) => {\n    return {\n\n      get: [\n        { path: '/api-status', action: 'status' }\n      ]\n\n    }\n  }\n}\n",
-  "exports.default = {\n  routes: (api) => {\n    return {\n\n      get: [\n        { path: '/random-number', action: 'randomNumber' }\n      ]\n\n    }\n  }\n}\n"
+  "export const DEFAULT = {\n  routes: (api) => {\n    return {\n\n      get: [\n        { path: '/api-status', action: 'status' }\n      ]\n\n    }\n  }\n}\n",
+  "export const DEFAULT= {\n  routes: (api) => {\n    return {\n\n      get: [\n        { path: '/random-number', action: 'randomNumber' }\n      ]\n\n    }\n  }\n}\n"
 ];
 
 const createRouteFile = async (newConfigFolderPath, routeFileContent) => {
@@ -25,7 +25,7 @@ const createRouteFile = async (newConfigFolderPath, routeFileContent) => {
   } catch (ex) {}
 
   try {
-    const newRoutesFilePath = path.join(newConfigFolderPath, "routes.js");
+    const newRoutesFilePath = path.join(newConfigFolderPath, "routes.ts");
 
     await promisify(fs.writeFile)(newRoutesFilePath, routeFileContent, {
       encoding: "utf-8"
@@ -35,7 +35,7 @@ const createRouteFile = async (newConfigFolderPath, routeFileContent) => {
 
 const removeRouteFile = async newConfigFolderPath => {
   try {
-    const newRoutesFilePath = path.join(newConfigFolderPath, "routes.js");
+    const newRoutesFilePath = path.join(newConfigFolderPath, "routes.ts");
 
     await promisify(fs.unlink)(newRoutesFilePath);
   } catch (ex) {}

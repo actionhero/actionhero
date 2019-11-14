@@ -9,7 +9,6 @@ locales/test-env-*
 public/javascript/ActionheroWebsocketClient.js
 public/javascript/ActionheroWebsocketClient.min.js
 dist
-src/locales
 
 #Docs
 /docs
