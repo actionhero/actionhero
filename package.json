@@ -33,6 +33,7 @@
   "dependencies": {
     "@types/glob": "^7.1.1",
     "@types/node": "^12.12.7",
+    "@types/uuid": "^3.4.6",
     "browser_fingerprint": "^1.0.5",
     "dot-prop": "^5.2.0",
     "etag": "^1.8.1",
@@ -79,10 +80,11 @@
   "scripts": {
     "postinstall": "echo 'To generate a new actionhero project, run \"npx actionhero generate\"'",
     "test": "jest",
-    "prepare": "npm run compile && npm run docs",
-    "pretest": "npm run lint && npm run compile",
-    "start": "ts-node ./src/bin/actionhero",
-    "compile": "tsc --declaration",
+    "prepare": "npm run build && npm run docs",
+    "pretest": "npm run lint && npm run build",
+    "dev": "ts-node ./src/bin/actionhero",
+    "start": "node ./dist/bin/actionhero",
+    "build": "tsc",
     "docs": "typedoc --out docs --theme default",
     "lint": "prettier --check src/*/**.ts __test__/*/**.ts examples/*/**.ts",
     "pretty": "prettier --write src/*/**.ts __test__/*/**.ts examples/*/**.ts"

@@ -1,6 +1,6 @@
 const os = require("os");
 
-export const DEFAULT = {
+exports.default = {
   servers: {
     web: api => {
       return {
@@ -93,7 +93,7 @@ export const DEFAULT = {
   }
 };
 
-export const production = {
+exports.production = {
   servers: {
     web: api => {
       return {
@@ -107,7 +107,7 @@ export const production = {
   }
 };
 
-export const test = {
+exports.test = {
   servers: {
     web: api => {
       return {

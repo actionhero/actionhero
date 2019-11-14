@@ -1,4 +1,4 @@
-export const DEFAULT = {
+exports.default = {
   tasks: api => {
     return {
       // Should this node run a scheduler to promote delayed tasks?
@@ -54,7 +54,7 @@ export const DEFAULT = {
   }
 };
 
-export const test = {
+exports.test = {
   tasks: api => {
     return {
       timeout: 100,

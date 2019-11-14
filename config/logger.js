@@ -1,5 +1,5 @@
-import * as cluster from "cluster";
-import * as winston from "winston";
+const cluster = require("cluster");
+const winston = require("winston");
 
 // learn more about winston v3 loggers @
 // - https://github.com/winstonjs/winston
@@ -69,7 +69,7 @@ function buildFileLogger(
   };
 }
 
-export const DEFAULT = {
+exports.default = {
   logger: api => {
     const loggers = [];
 
@@ -90,7 +90,7 @@ export const DEFAULT = {
   }
 };
 
-export const test = {
+exports.test = {
   logger: api => {
     const loggers = [];
 

@@ -1,7 +1,7 @@
-import * as path from "path";
+const path = require("path");
 const TYPECRIPT_SOURCE = "src";
 
-export const DEFAULT = {
+exports.default = {
   general: api => {
     const packageJSON = require(api.projectRoot + path.sep + "package.json");
 

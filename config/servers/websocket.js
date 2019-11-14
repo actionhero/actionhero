@@ -1,6 +1,6 @@
 // Note that to use the websocket server, you also need the web server enabled
 
-export const DEFAULT = {
+exports.default = {
   servers: {
     websocket: api => {
       return {

@@ -1,4 +1,4 @@
-export const DEFAULT = {
+exports.default = {
   routes: api => {
     return {
       /* ---------------------

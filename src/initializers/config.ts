@@ -131,10 +131,10 @@ export class Config extends Initializer {
       if (f.includes("routes.js") || f.includes("routes.ts")) {
         let localRoutes = { routes: {} };
 
-        if (localConfig.DEFAULT) {
+        if (localConfig.default) {
           localRoutes = api.utils.hashMerge(
             localRoutes,
-            localConfig.DEFAULT,
+            localConfig.default,
             api
           );
         }
@@ -158,10 +158,10 @@ export class Config extends Initializer {
           }
         });
       } else {
-        if (localConfig.DEFAULT) {
+        if (localConfig.default) {
           api.config = api.utils.hashMerge(
             api.config,
-            localConfig.DEFAULT,
+            localConfig.default,
             api
           );
         }

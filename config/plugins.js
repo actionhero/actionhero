@@ -1,4 +1,4 @@
-export const DEFAULT = {
+exports.default = {
   plugins: api => {
     /*
     If you want to use plugins in your application, include them here:

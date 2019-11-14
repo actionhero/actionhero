@@ -1,5 +1,4 @@
-// error messages can be strings of objects
-export const DEFAULT = {
+exports.default = {
   errors: api => {
     return {
       _toExpand: false,

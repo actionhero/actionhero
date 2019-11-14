@@ -1,4 +1,4 @@
-export const DEFAULT = {
+exports.default = {
   i18n: api => {
     return {
       // visit https://github.com/mashpie/i18n-node to see all configuration options
@@ -27,7 +27,7 @@ export const DEFAULT = {
   }
 };
 
-export const test = {
+exports.test = {
   i18n: api => {
     return {
       updateFiles: true
