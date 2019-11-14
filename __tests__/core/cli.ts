@@ -276,231 +276,230 @@ describe("Core: CLI", () => {
       }, 20000);
     });
 
-    // test("can ensure no boot.js does not break, will console.log message", async () => {
-    //   const origBootjs = String(fs.readFileSync(`${testDir}/boot.js`));
-    //   await doCommand(`rm ${testDir}/boot.js`, false);
+    test("can ensure no boot.js does not break, will console.log message", async () => {
+      const origBootjs = String(fs.readFileSync(`${testDir}/boot.js`));
+      await doCommand(`rm ${testDir}/boot.js`, false);
 
-    //   const { stdout } = await doCommand(`${binary} version`);
-    //   expect(stdout).toContain(pacakgeJSON.version);
+      const { stdout } = await doCommand(`${binary} version`);
+      expect(stdout).toContain(pacakgeJSON.version);
 
-    //   // replace with orig boot.js
-    //   fs.writeFileSync(`${testDir}/boot.js`, origBootjs);
-    // });
+      // replace with orig boot.js
+      fs.writeFileSync(`${testDir}/boot.js`, origBootjs);
+    }, 20000);
 
-    // test("can ensure a custom boot.js runs before everything else", async () => {
-    //   const origBootjs = String(fs.readFileSync(`${testDir}/boot.js`));
-    //   fs.writeFileSync(
-    //     `${testDir}/boot.js`,
-    //     `module.exports = async function() {
-    //       await new Promise((resolve)=> setTimeout(resolve,500))
-    //       console.log('BOOTING')
-    //     }`
-    //   );
+    test("can ensure a custom boot.js runs before everything else", async () => {
+      const origBootjs = String(fs.readFileSync(`${testDir}/boot.js`));
+      fs.writeFileSync(
+        `${testDir}/boot.js`,
+        `exports.default = async function BOOT() {
+          await new Promise((resolve)=> setTimeout(resolve,500))
+          console.log('BOOTING')
+        }`
+      );
 
-    //   const { stdout } = await doCommand(`${binary} version`);
-    //   expect({ stdout, start: stdout.startsWith("BOOTING") }).toEqual({
-    //     stdout,
-    //     start: true
-    //   });
-    //   expect(stdout).toContain(pacakgeJSON.version);
-    //   // replace with orig boot.js
-    //   fs.writeFileSync(`${testDir}/boot.js`, origBootjs);
-    // });
+      const { stdout } = await doCommand(`${binary} version`);
+      expect({ stdout, start: stdout.startsWith("BOOTING") }).toEqual({
+        stdout,
+        start: true
+      });
+      expect(stdout).toContain(pacakgeJSON.version);
+      // replace with orig boot.js
+      fs.writeFileSync(`${testDir}/boot.js`, origBootjs);
+    }, 20000);
 
-    // test("can call npm test in the new project and not fail", async () => {
-    //   // jest writes to stderr for some reason, so we need to test for the exit code here
-    //   try {
-    //     await doCommand("npm test");
-    //   } catch (error) {
-    //     if (error.exitCode !== 0) {
-    //       throw error;
-    //     }
-    //   }
-    // }, 120000);
+    test("can call npm test in the new project and not fail", async () => {
+      // jest writes to stderr for some reason, so we need to test for the exit code here
+      try {
+        await doCommand("npm test");
+      } catch (error) {
+        if (error.exitCode !== 0) {
+          throw error;
+        }
+      }
+    }, 120000);
 
-    //   describe("can run a single server", () => {
-    //     // NOTE: To run these tests, don't await! It will be fine... what could go wrong?
-    //     let serverPid;
+    describe("can run a single server", () => {
+      let serverPid;
 
-    //     beforeAll(async function() {
-    //       doCommand(`${binary} start`);
-    //       await sleep(3000);
-    //       serverPid = pid;
-    //     });
+      beforeAll(async function() {
+        doCommand(`${binary} start`);
+        await sleep(10000);
+        serverPid = pid;
+      }, 20000);
 
-    //     afterAll(async () => {
-    //       if (isrunning(serverPid)) {
-    //         await doCommand(`kill ${serverPid}`);
-    //       }
-    //     });
+      afterAll(async () => {
+        if (isrunning(serverPid)) {
+          await doCommand(`kill ${serverPid}`);
+        }
+      });
 
-    //     test("can boot a single server", async () => {
-    //       const response = await request(
-    //         `http://localhost:${port}/api/showDocumentation`,
-    //         { json: true }
-    //       );
-    //       expect(response.serverInformation.serverName).toEqual(
-    //         "my_actionhero_project"
-    //       );
-    //     });
+      test("can boot a single server", async () => {
+        const response = await request(
+          `http://localhost:${port}/api/showDocumentation`,
+          { json: true }
+        );
+        expect(response.serverInformation.serverName).toEqual(
+          "my_actionhero_project"
+        );
+      });
 
-    //     test("can handle signals to reboot", async () => {
-    //       await doCommand(`kill -s USR2 ${serverPid}`);
-    //       await sleep(3000);
-    //       const response = await request(
-    //         `http://localhost:${port}/api/showDocumentation`,
-    //         { json: true }
-    //       );
-    //       expect(response.serverInformation.serverName).toEqual(
-    //         "my_actionhero_project"
-    //       );
-    //     });
+      test("can handle signals to reboot", async () => {
+        await doCommand(`kill -s USR2 ${serverPid}`);
+        await sleep(3000);
+        const response = await request(
+          `http://localhost:${port}/api/showDocumentation`,
+          { json: true }
+        );
+        expect(response.serverInformation.serverName).toEqual(
+          "my_actionhero_project"
+        );
+      });
 
-    //     test("can handle signals to stop", async () => {
-    //       await doCommand(`kill ${serverPid}`);
-    //       await sleep(3000);
-    //       try {
-    //         await request(`http://localhost:${port}/api/showDocumentation`);
-    //         throw new Error("should not get here");
-    //       } catch (error) {
-    //         expect(error.toString()).toMatch(/ECONNREFUSED/);
-    //       }
-    //     });
+      test("can handle signals to stop", async () => {
+        await doCommand(`kill ${serverPid}`);
+        await sleep(3000);
+        try {
+          await request(`http://localhost:${port}/api/showDocumentation`);
+          throw new Error("should not get here");
+        } catch (error) {
+          expect(error.toString()).toMatch(/ECONNREFUSED/);
+        }
+      });
 
-    //     // test('will shutdown after the alloted time')
-    //   });
+      // test('will shutdown after the alloted time')
+    });
 
-    //   describe("can run a cluster", () => {
-    //     let clusterPid;
-    //     beforeAll(async function() {
-    //       doCommand(`${binary} start cluster --workers=2`);
-    //       await sleep(3000);
-    //       clusterPid = pid;
-    //     });
+    describe("can run a cluster", () => {
+      let clusterPid;
+      beforeAll(async function() {
+        doCommand(`${binary} start cluster --workers=2`);
+        await sleep(20000);
+        clusterPid = pid;
+      }, 30000);
 
-    //     afterAll(async () => {
-    //       if (isrunning(clusterPid)) {
-    //         await doCommand(`kill ${clusterPid}`);
-    //       }
-    //     });
+      afterAll(async () => {
+        if (isrunning(clusterPid)) {
+          await doCommand(`kill ${clusterPid}`);
+        }
+      });
 
-    //     test("should be running the cluster with 2 nodes", async () => {
-    //       const { stdout } = await doCommand("ps awx");
-    //       const parents = stdout.split("\n").filter(l => {
-    //         return l.indexOf("actionhero start cluster") >= 0;
-    //       });
-    //       const children = stdout.split("\n").filter(l => {
-    //         return l.indexOf("actionhero start") >= 0 && l.indexOf("cluster") < 0;
-    //       });
-    //       expect(parents.length).toEqual(1);
-    //       expect(children.length).toEqual(2);
+      test("should be running the cluster with 2 nodes", async () => {
+        const { stdout } = await doCommand("ps awx");
+        const parents = stdout.split("\n").filter(l => {
+          return l.indexOf("actionhero start cluster") >= 0;
+        });
+        const children = stdout.split("\n").filter(l => {
+          return l.indexOf("actionhero start") >= 0 && l.indexOf("cluster") < 0;
+        });
+        expect(parents.length).toEqual(1);
+        expect(children.length).toEqual(2);
 
-    //       const response = await request(
-    //         `http://localhost:${port}/api/showDocumentation`,
-    //         { json: true }
-    //       );
-    //       expect(response.serverInformation.serverName).toEqual(
-    //         "my_actionhero_project"
-    //       );
-    //     });
+        const response = await request(
+          `http://localhost:${port}/api/showDocumentation`,
+          { json: true }
+        );
+        expect(response.serverInformation.serverName).toEqual(
+          "my_actionhero_project"
+        );
+      });
 
-    //     test("can handle signals to add a worker", async () => {
-    //       await doCommand(`kill -s TTIN ${clusterPid}`);
-    //       await sleep(2500);
+      test("can handle signals to add a worker", async () => {
+        await doCommand(`kill -s TTIN ${clusterPid}`);
+        await sleep(5000);
 
-    //       const { stdout } = await doCommand("ps awx");
-    //       const parents = stdout.split("\n").filter(l => {
-    //         return l.indexOf("bin/actionhero start cluster") >= 0;
-    //       });
-    //       const children = stdout.split("\n").filter(l => {
-    //         return (
-    //           l.indexOf("bin/actionhero start") >= 0 && l.indexOf("cluster") < 0
-    //         );
-    //       });
-    //       expect(parents.length).toEqual(1);
-    //       expect(children.length).toEqual(3);
-    //     });
+        const { stdout } = await doCommand("ps awx");
+        const parents = stdout.split("\n").filter(l => {
+          return l.indexOf("bin/actionhero start cluster") >= 0;
+        });
+        const children = stdout.split("\n").filter(l => {
+          return (
+            l.indexOf("bin/actionhero start") >= 0 && l.indexOf("cluster") < 0
+          );
+        });
+        expect(parents.length).toEqual(1);
+        expect(children.length).toEqual(3);
+      }, 20000);
 
-    //     test("can handle signals to remove a worker", async () => {
-    //       await doCommand(`kill -s TTOU ${clusterPid}`);
-    //       await sleep(2500);
+      test("can handle signals to remove a worker", async () => {
+        await doCommand(`kill -s TTOU ${clusterPid}`);
+        await sleep(5000);
 
-    //       const { stdout } = await doCommand("ps awx");
-    //       const parents = stdout.split("\n").filter(l => {
-    //         return l.indexOf("bin/actionhero start cluster") >= 0;
-    //       });
-    //       const children = stdout.split("\n").filter(l => {
-    //         return (
-    //           l.indexOf("bin/actionhero start") >= 0 && l.indexOf("cluster") < 0
-    //         );
-    //       });
-    //       expect(parents.length).toEqual(1);
-    //       expect(children.length).toEqual(2);
-    //     });
+        const { stdout } = await doCommand("ps awx");
+        const parents = stdout.split("\n").filter(l => {
+          return l.indexOf("bin/actionhero start cluster") >= 0;
+        });
+        const children = stdout.split("\n").filter(l => {
+          return (
+            l.indexOf("bin/actionhero start") >= 0 && l.indexOf("cluster") < 0
+          );
+        });
+        expect(parents.length).toEqual(1);
+        expect(children.length).toEqual(2);
+      }, 20000);
 
-    //     test("can handle signals to reboot (graceful)", async () => {
-    //       await doCommand(`kill -s USR2 ${clusterPid}`);
-    //       await sleep(2000);
+      test("can handle signals to reboot (graceful)", async () => {
+        await doCommand(`kill -s USR2 ${clusterPid}`);
+        await sleep(5000);
 
-    //       const { stdout } = await doCommand("ps awx");
-    //       const parents = stdout.split("\n").filter(l => {
-    //         return l.indexOf("actionhero start cluster") >= 0;
-    //       });
-    //       const children = stdout.split("\n").filter(l => {
-    //         return l.indexOf("actionhero start") >= 0 && l.indexOf("cluster") < 0;
-    //       });
-    //       expect(parents.length).toEqual(1);
-    //       expect(children.length).toEqual(2);
+        const { stdout } = await doCommand("ps awx");
+        const parents = stdout.split("\n").filter(l => {
+          return l.indexOf("actionhero start cluster") >= 0;
+        });
+        const children = stdout.split("\n").filter(l => {
+          return l.indexOf("actionhero start") >= 0 && l.indexOf("cluster") < 0;
+        });
+        expect(parents.length).toEqual(1);
+        expect(children.length).toEqual(2);
 
-    //       const response = await request(
-    //         `http://localhost:${port}/api/showDocumentation`,
-    //         { json: true }
-    //       );
-    //       expect(response.serverInformation.serverName).toEqual(
-    //         "my_actionhero_project"
-    //       );
-    //     });
+        const response = await request(
+          `http://localhost:${port}/api/showDocumentation`,
+          { json: true }
+        );
+        expect(response.serverInformation.serverName).toEqual(
+          "my_actionhero_project"
+        );
+      }, 20000);
 
-    //     test("can handle signals to reboot (hup)", async () => {
-    //       await doCommand(`kill -s WINCH ${clusterPid}`);
-    //       await sleep(2000);
+      test("can handle signals to reboot (hup)", async () => {
+        await doCommand(`kill -s WINCH ${clusterPid}`);
+        await sleep(5000);
 
-    //       const { stdout } = await doCommand("ps awx");
-    //       const parents = stdout.split("\n").filter(l => {
-    //         return l.indexOf("actionhero start cluster") >= 0;
-    //       });
-    //       const children = stdout.split("\n").filter(l => {
-    //         return l.indexOf("actionhero start") >= 0 && l.indexOf("cluster") < 0;
-    //       });
-    //       expect(parents.length).toEqual(1);
-    //       expect(children.length).toEqual(2);
+        const { stdout } = await doCommand("ps awx");
+        const parents = stdout.split("\n").filter(l => {
+          return l.indexOf("actionhero start cluster") >= 0;
+        });
+        const children = stdout.split("\n").filter(l => {
+          return l.indexOf("actionhero start") >= 0 && l.indexOf("cluster") < 0;
+        });
+        expect(parents.length).toEqual(1);
+        expect(children.length).toEqual(2);
 
-    //       const response = await request(
-    //         `http://localhost:${port}/api/showDocumentation`,
-    //         { json: true }
-    //       );
-    //       expect(response.serverInformation.serverName).toEqual(
-    //         "my_actionhero_project"
-    //       );
-    //     });
+        const response = await request(
+          `http://localhost:${port}/api/showDocumentation`,
+          { json: true }
+        );
+        expect(response.serverInformation.serverName).toEqual(
+          "my_actionhero_project"
+        );
+      }, 20000);
 
-    //     test("can handle signals to stop", async () => {
-    //       await doCommand(`kill ${clusterPid}`);
-    //       await sleep(2000);
+      test("can handle signals to stop", async () => {
+        await doCommand(`kill ${clusterPid}`);
+        await sleep(5000);
 
-    //       const { stdout } = await doCommand("ps awx");
-    //       const parents = stdout.split("\n").filter(l => {
-    //         return l.indexOf("actionhero start cluster") >= 0;
-    //       });
-    //       const children = stdout.split("\n").filter(l => {
-    //         return l.indexOf("actionhero start") >= 0 && l.indexOf("cluster") < 0;
-    //       });
-    //       expect(parents.length).toEqual(0);
-    //       expect(children.length).toEqual(0);
-    //     });
+        const { stdout } = await doCommand("ps awx");
+        const parents = stdout.split("\n").filter(l => {
+          return l.indexOf("actionhero start cluster") >= 0;
+        });
+        const children = stdout.split("\n").filter(l => {
+          return l.indexOf("actionhero start") >= 0 && l.indexOf("cluster") < 0;
+        });
+        expect(parents.length).toEqual(0);
+        expect(children.length).toEqual(0);
+      }, 20000);
 
-    //     // test('can detect flapping and exit')
-    //     // test('can reboot and abosrb code changes without downtime')
-    //   });
+      // test('can detect flapping and exit')
+      // test('can reboot and abosrb code changes without downtime')
+    });
   }
 });
