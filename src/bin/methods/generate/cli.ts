@@ -17,7 +17,7 @@ export class GenerateCLI extends CLI {
 
   async run({ params }) {
     let templateBuffer = fs.readFileSync(
-      path.join(__dirname, "/../../templates/cli.ts.template")
+      path.join(__dirname, "/../../../../templates/cli.ts.template")
     );
 
     let template = templateBuffer.toString();

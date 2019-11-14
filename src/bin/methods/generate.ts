@@ -20,16 +20,16 @@ export class Generate extends CLI {
     );
 
     const oldFileMap = {
-      configApiJs: "/config/api.ts",
-      configLoggerJs: "/config/logger.ts",
-      configRedisJs: "/config/redis.ts",
-      configTasksJs: "/config/tasks.ts",
-      configErrorsJs: "/config/errors.ts",
-      configPluginsJs: "/config/plugins.ts",
-      configI18nJs: "/config/i18n.ts",
-      configRoutesJs: "/config/routes.ts",
-      configWebJs: "/config/servers/web.ts",
-      configWebsocketJs: "/config/servers/websocket.ts",
+      configApiJs: "/config/api.js",
+      configLoggerJs: "/config/logger.js",
+      configRedisJs: "/config/redis.js",
+      configTasksJs: "/config/tasks.js",
+      configErrorsJs: "/config/errors.js",
+      configPluginsJs: "/config/plugins.js",
+      configI18nJs: "/config/i18n.js",
+      configRoutesJs: "/config/routes.js",
+      configWebJs: "/config/servers/web.js",
+      configWebsocketJs: "/config/servers/websocket.js",
       packageJson: "/package.json",
       actionStatus: "/src/actions/status.ts",
       actionChatRoom: "/src/actions/createChatRoom.ts",
@@ -76,29 +76,30 @@ export class Generate extends CLI {
       )
     );
 
-    documents.bootJs = String(
+    documents.bootJS = String(
       fs.readFileSync(
-        path.join(__dirname, "/../../../templates/boot.ts.template")
+        path.join(__dirname, "/../../../templates/boot.js.template")
       )
     );
 
     console.log("Generating a new actionhero project...");
 
     [
-      "/actions",
+      "/src",
+      "/src/actions",
       "/pids",
       "/config",
       "/config/servers",
-      "/initializers",
+      "/src/initializers",
       "/log",
       "/locales",
-      "/bin",
-      "/servers",
+      "/src/bin",
+      "/src/servers",
       "/public",
       "/public/javascript",
       "/public/css",
       "/public/logo",
-      "/tasks",
+      "/src/tasks",
       "/__tests__",
       "/__tests__/actions",
       "/__tests__/tasks"
@@ -112,20 +113,20 @@ export class Generate extends CLI {
     });
 
     const newFileMap = {
-      "/config/api.ts": "configApiJs",
-      "/config/logger.ts": "configLoggerJs",
-      "/config/redis.ts": "configRedisJs",
-      "/config/tasks.ts": "configTasksJs",
-      "/config/errors.ts": "configErrorsJs",
-      "/config/plugins.ts": "configPluginsJs",
-      "/config/i18n.ts": "configI18nJs",
-      "/config/routes.ts": "configRoutesJs",
-      "/config/servers/web.ts": "configWebJs",
-      "/config/servers/websocket.ts": "configWebsocketJs",
+      "/config/api.js": "configApiJs",
+      "/config/logger.js": "configLoggerJs",
+      "/config/redis.js": "configRedisJs",
+      "/config/tasks.js": "configTasksJs",
+      "/config/errors.js": "configErrorsJs",
+      "/config/plugins.js": "configPluginsJs",
+      "/config/i18n.js": "configI18nJs",
+      "/config/routes.js": "configRoutesJs",
+      "/config/servers/web.js": "configWebJs",
+      "/config/servers/websocket.js": "configWebsocketJs",
       "/package.json": "packageJson",
-      "/actions/status.ts": "actionStatus",
-      "/actions/createChatRoom.ts": "actionChatRoom",
-      "/actions/showDocumentation.ts": "actionDocumentation",
+      "/src/actions/status.ts": "actionStatus",
+      "/src/actions/createChatRoom.ts": "actionChatRoom",
+      "/src/actions/showDocumentation.ts": "actionDocumentation",
       "/public/index.html": "publicIndex",
       "/public/chat.html": "publicChat",
       "/public/css/cosmo.css": "publicCss",
@@ -134,7 +135,7 @@ export class Generate extends CLI {
       "/__tests__/actions/status.ts": "exampleTest",
       "/locales/en.json": "enLocale",
       "/.gitignore": "gitignore",
-      "/boot.ts": "bootTs"
+      "/boot.js": "bootJS"
     };
 
     for (const file in newFileMap) {

@@ -32,12 +32,13 @@ if (process.env.projectRoot) {
     `${projectRoot}/dist/boot.js`
   ];
 
-  bootFilePaths.forEach(async bootFile => {
+  for (const i in bootFilePaths) {
+    const bootFile = bootFilePaths[i];
     if (fs.existsSync(bootFile)) {
       const Exports = require(bootFile);
       await Exports[Object.keys(Exports)[0]]();
     }
-  });
+  }
 
   const { api, Process } = require(path.join(__dirname, "..", "index"));
   const actionheroRoot = path.normalize(path.join(__dirname, ".."));

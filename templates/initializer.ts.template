@@ -1,19 +1,19 @@
-const { Initializer, api } = require('actionhero')
+const { Initializer, api } = require("actionhero");
 
 export class MyInitializer extends Initializer {
-  constructor () {
-    super()
-    this.name = '%%name%%'
-    this.loadPriority = %%loadPriority%%
-    this.startPriority = %%startPriority%%
-    this.stopPriority = %%stopPriority%%
+  constructor() {
+    super();
+    this.name = "%%name%%";
+    this.loadPriority = %%loadPriority%%;
+    this.startPriority = %%startPriority%%;
+    this.stopPriority = %%stopPriority%%;
   }
 
-  async initialize () {
-    api['%%name%%'] = {} //eslint-disable-line
+  async initialize() {
+    api["%%name%%"] = {}; //eslint-disable-line
   }
 
-  async start () {}
+  async start() {}
 
-  async stop () {}
+  async stop() {}
 }

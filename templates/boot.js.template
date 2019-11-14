@@ -6,4 +6,4 @@
 
 // include high-level requires here.
 
-export async function BOOT() {}
+exports.default = async function BOOT() {}

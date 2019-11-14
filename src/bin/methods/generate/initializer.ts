@@ -19,7 +19,7 @@ export class GenerateInitializer extends CLI {
 
   async run({ params }) {
     let templateBuffer = fs.readFileSync(
-      path.join(__dirname, "/../../templates/initializer.ts.template")
+      path.join(__dirname, "/../../../../templates/initializer.ts.template")
     );
     let template = String(templateBuffer);
 

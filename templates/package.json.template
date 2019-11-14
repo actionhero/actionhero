@@ -27,8 +27,8 @@
     "test": "jest",
     "pretest": "npm run lint",
     "declaration": "tsc --declaration",
-    "lint": "prettier --check src/*/**.ts __test__/*/**.ts",
-    "pretty": "prettier --write src/*/**.ts __test__/*/**.ts"
+    "lint": "prettier --check src/*/** __test__/*/** config",
+    "pretty": "prettier --write src/*/** __test__/*/** config"
   },
   "jest": {
     "testEnvironment": "node",

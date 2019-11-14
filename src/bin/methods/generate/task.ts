@@ -19,12 +19,12 @@ export class GenerateTask extends CLI {
 
   async run({ params }) {
     let taskTemplateBuffer = fs.readFileSync(
-      path.join(__dirname, "/../../templates/task.ts.template")
+      path.join(__dirname, "/../../../../templates/task.ts.template")
     );
     let taskTemplate = String(taskTemplateBuffer);
 
     let testTemplateBuffer = fs.readFileSync(
-      path.join(__dirname, "/../../templates/test/task.ts.template")
+      path.join(__dirname, "/../../../../templates/test/task.ts.template")
     );
     let testTemplate = String(testTemplateBuffer);
 

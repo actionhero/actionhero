@@ -1,16 +1,16 @@
-const {Task} = require('actionhero')
+const { Task } = require("actionhero");
 
 export class MyTask extends Task {
-  constructor () {
-    super()
-    this.name = '%%name%%'
-    this.description = '%%description%%'
-    this.frequency = %%frequency%%
-    this.queue = '%%queue%%'
-    this.middleware = []
+  constructor() {
+    super();
+    this.name = "%%name%%";
+    this.description = "%%description%%";
+    this.frequency = %%frequency%%;
+    this.queue = "%%queue%%";
+    this.middleware = [];
   }
 
-  async run (data) {
+  async run(data) {
     // your logic here
   }
 }

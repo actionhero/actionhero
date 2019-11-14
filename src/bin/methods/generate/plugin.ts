@@ -22,7 +22,10 @@ export class GeneratePlugin extends CLI {
 
   async run() {
     let templateBuffer = fs.readFileSync(
-      path.join(__dirname, "/../../templates/package-plugin.json.template")
+      path.join(
+        __dirname,
+        "/../../../../templates/package-plugin.json.template"
+      )
     );
     let template = String(templateBuffer);
 

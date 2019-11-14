@@ -17,12 +17,12 @@ export class GenerateAction extends CLI {
 
   async run({ params }) {
     let actionTemplateBuffer = fs.readFileSync(
-      path.join(__dirname, "../../templates/action.ts.template")
+      path.join(__dirname, "../../../../templates/action.ts.template")
     );
     let actionTemplate = actionTemplateBuffer.toString();
 
     let testTemplateBuffer = fs.readFileSync(
-      path.join(__dirname, "/../../templates/test/action.ts.template")
+      path.join(__dirname, "/../../../../templates/test/action.ts.template")
     );
     let testTemplate = testTemplateBuffer.toString();
 
