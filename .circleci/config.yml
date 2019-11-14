@@ -3,7 +3,7 @@ version: 2
 # Define common steps all parts of the test workflow use
 references:
   ignored-branches: &ignored-branches
-     branches:
+    branches:
       ignore:
         - gh-pages
 
@@ -73,7 +73,7 @@ jobs:
           <<: *cache-options
       - run:
           name: linter
-          command: ./node_modules/.bin/standard
+          command: npm run lint
 
   test-node-v8:
     docker:
