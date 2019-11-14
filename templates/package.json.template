@@ -25,7 +25,6 @@
     "start": "actionhero start",
     "actionhero": "actionhero",
     "test": "jest",
-    "prepare": "npm run declaration && npm run docs",
     "pretest": "npm run lint",
     "declaration": "tsc --declaration",
     "lint": "prettier --check src/*/**.ts __test__/*/**.ts",

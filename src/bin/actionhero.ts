@@ -89,19 +89,33 @@ if (process.env.projectRoot) {
 
     // reload utils, as they won't have been loaded yet
     try {
-      const UtilsClass = require(path.normalize(
+      const ExportedUtilClasses = require(path.normalize(
         path.join(__dirname, "/../initializers/utils")
       ));
-      const utils = new UtilsClass();
+
+      if (Object.keys(ExportedUtilClasses).length > 1) {
+        throw new Error("actionhero CLI files should only export one method");
+      }
+
+      const utils = new ExportedUtilClasses[
+        Object.keys(ExportedUtilClasses)[0]
+      ]();
       await utils.initialize();
 
       // when generating the project from scratch, we cannot rely on the normal initilizers
-      const RunnerClass = require(path.join(
+      const ExportedRunnerClasses = require(path.join(
         __dirname,
         "methods",
-        commands.join(path.sep) + ".js"
+        commands.join(path.sep)
       ));
-      const runner = new RunnerClass();
+
+      if (Object.keys(ExportedRunnerClasses).length > 1) {
+        throw new Error("actionhero CLI files should only export one method");
+      }
+
+      const runner = new ExportedRunnerClasses[
+        Object.keys(ExportedRunnerClasses)[0]
+      ]();
       const params = formatParams(runner);
       await runner.run({ params: params });
       setTimeout(process.exit, 500, 0);

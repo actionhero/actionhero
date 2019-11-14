@@ -9,7 +9,8 @@
     "type": "git",
     "url": "git://github.com/actionhero/actionhero.git"
   },
-  "main": "index.js",
+  "main": "dist/index",
+  "types": "dist/index",
   "keywords": [
     "api",
     "realtime",
@@ -65,7 +66,7 @@
   },
   "optionalDependencies": {},
   "bin": {
-    "actionhero": "./bin/actionhero"
+    "actionhero": "./dist/bin/actionhero.js"
   },
   "jest": {
     "testPathIgnorePatterns": [
@@ -78,10 +79,10 @@
   "scripts": {
     "postinstall": "echo 'To generate a new actionhero project, run \"npx actionhero generate\"'",
     "test": "jest",
-    "prepare": "npm run declaration && npm run docs",
-    "pretest": "npm run lint",
+    "prepare": "npm run compile && npm run docs",
+    "pretest": "npm run lint && npm run compile",
     "start": "ts-node ./src/bin/actionhero",
-    "declaration": "tsc --declaration",
+    "compile": "tsc --declaration",
     "docs": "typedoc --out docs --theme default",
     "lint": "prettier --check src/*/**.ts __test__/*/**.ts examples/*/**.ts",
     "pretty": "prettier --write src/*/**.ts __test__/*/**.ts examples/*/**.ts"

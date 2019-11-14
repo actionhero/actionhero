@@ -16,36 +16,36 @@ export class Generate extends CLI {
     } = {};
 
     documents.projectMap = fs.readFileSync(
-      path.join(__dirname, "/../templates/projectMap.txt")
+      path.join(__dirname, "/../../../templates/projectMap.txt")
     );
 
     const oldFileMap = {
-      configApiJs: "/config/api.js",
-      configLoggerJs: "/config/logger.js",
-      configRedisJs: "/config/redis.js",
-      configTasksJs: "/config/tasks.js",
-      configErrorsJs: "/config/errors.js",
-      configPluginsJs: "/config/plugins.js",
-      configI18nJs: "/config/i18n.js",
-      configRoutesJs: "/config/routes.js",
-      configWebJs: "/config/servers/web.js",
-      configWebsocketJs: "/config/servers/websocket.js",
+      configApiJs: "/config/api.ts",
+      configLoggerJs: "/config/logger.ts",
+      configRedisJs: "/config/redis.ts",
+      configTasksJs: "/config/tasks.ts",
+      configErrorsJs: "/config/errors.ts",
+      configPluginsJs: "/config/plugins.ts",
+      configI18nJs: "/config/i18n.ts",
+      configRoutesJs: "/config/routes.ts",
+      configWebJs: "/config/servers/web.ts",
+      configWebsocketJs: "/config/servers/websocket.ts",
       packageJson: "/package.json",
-      actionStatus: "/actions/status.js",
-      actionChatRoom: "/actions/createChatRoom.js",
-      actionDocumentation: "/actions/showDocumentation.js",
+      actionStatus: "/src/actions/status.ts",
+      actionChatRoom: "/src/actions/createChatRoom.ts",
+      actionDocumentation: "/src/actions/showDocumentation.ts",
       publicIndex: "/public/index.html",
       publicChat: "/public/chat.html",
       publicLogo: "/public/logo/actionhero.png",
       publicCss: "/public/css/cosmo.css",
-      exampleTest: "/__tests__/template.js.example",
+      exampleTest: "/__tests__/template.ts.example",
       enLocale: "/locales/en.json",
-      gitignore: "/bin/templates/gitignore.template"
+      gitignore: "/templates/gitignore.template"
     };
 
     for (const name in oldFileMap) {
       const localPath = oldFileMap[name];
-      const source = path.join(__dirname, "/../../", localPath);
+      const source = path.join(__dirname, "/../../../", localPath);
       const extension = localPath.split(".")[1];
       documents[name] = fs.readFileSync(source);
       if (extension === "js" || extension === "json") {
@@ -60,17 +60,26 @@ export class Generate extends CLI {
     const AHversionNumber = JSON.parse(documents.packageJson).version;
 
     documents.packageJson = String(
-      fs.readFileSync(path.join(__dirname, "/../templates/package.json"))
+      fs.readFileSync(
+        path.join(__dirname, "/../../../templates/package.json.template")
+      )
     );
+
     documents.packageJson = documents.packageJson.replace(
       "%%versionNumber%%",
       AHversionNumber
     );
+
     documents.readmeMd = String(
-      fs.readFileSync(path.join(__dirname, "/../templates/README.md.template"))
+      fs.readFileSync(
+        path.join(__dirname, "/../../../templates/README.md.template")
+      )
     );
+
     documents.bootJs = String(
-      fs.readFileSync(path.join(__dirname, "/../templates/boot.ts.template"))
+      fs.readFileSync(
+        path.join(__dirname, "/../../../templates/boot.ts.template")
+      )
     );
 
     console.log("Generating a new actionhero project...");
@@ -103,26 +112,26 @@ export class Generate extends CLI {
     });
 
     const newFileMap = {
-      "/config/api.js": "configApiJs",
-      "/config/logger.js": "configLoggerJs",
-      "/config/redis.js": "configRedisJs",
-      "/config/tasks.js": "configTasksJs",
-      "/config/errors.js": "configErrorsJs",
-      "/config/plugins.js": "configPluginsJs",
-      "/config/i18n.js": "configI18nJs",
-      "/config/routes.js": "configRoutesJs",
-      "/config/servers/web.js": "configWebJs",
-      "/config/servers/websocket.js": "configWebsocketJs",
+      "/config/api.ts": "configApiJs",
+      "/config/logger.ts": "configLoggerJs",
+      "/config/redis.ts": "configRedisJs",
+      "/config/tasks.ts": "configTasksJs",
+      "/config/errors.ts": "configErrorsJs",
+      "/config/plugins.ts": "configPluginsJs",
+      "/config/i18n.ts": "configI18nJs",
+      "/config/routes.ts": "configRoutesJs",
+      "/config/servers/web.ts": "configWebJs",
+      "/config/servers/websocket.ts": "configWebsocketJs",
       "/package.json": "packageJson",
-      "/actions/status.js": "actionStatus",
-      "/actions/createChatRoom.js": "actionChatRoom",
-      "/actions/showDocumentation.js": "actionDocumentation",
+      "/actions/status.ts": "actionStatus",
+      "/actions/createChatRoom.ts": "actionChatRoom",
+      "/actions/showDocumentation.ts": "actionDocumentation",
       "/public/index.html": "publicIndex",
       "/public/chat.html": "publicChat",
       "/public/css/cosmo.css": "publicCss",
       "/public/logo/actionhero.png": "publicLogo",
       "/README.md": "readmeMd",
-      "/__tests__/actions/status.js": "exampleTest",
+      "/__tests__/actions/status.ts": "exampleTest",
       "/locales/en.json": "enLocale",
       "/.gitignore": "gitignore",
       "/boot.ts": "bootTs"
