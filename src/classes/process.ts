@@ -97,7 +97,10 @@ export class Process {
 
     // load initializers from core
     initializerFiles = initializerFiles.concat(
-      glob.sync(path.join(__dirname, "..", "initializers", `**/*(*${api.ext})`))
+      glob.sync(
+        path.join(__dirname, "..", "initializers", `**/*(*${api.ext})`)
+      ),
+      glob.sync(path.join(__dirname, "..", "initializers", `**/*.js`))
     );
 
     // load initializers from project
@@ -128,6 +131,8 @@ export class Process {
 
       return true;
     });
+
+    initializerFiles = api.utils.ensureNoTsHeaderFiles(initializerFiles);
 
     initializerFiles.forEach(f => {
       const file = path.normalize(f);

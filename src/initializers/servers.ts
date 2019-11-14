@@ -41,6 +41,8 @@ export class Servers extends Initializer {
         }
       }
 
+      files = api.utils.ensureNoTsHeaderFiles(files);
+
       for (const j in files) {
         const filename = files[j];
         const ExportedClasses = require(filename);

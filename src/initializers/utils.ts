@@ -362,6 +362,19 @@ export class Utils extends Initializer {
     };
 
     /**
+     *swap out d.ts files for the JS versions when running with ts-node
+     */
+    api.utils.ensureNoTsHeaderFiles = (files: Array<string>): Array<string> => {
+      return files.filter(f => {
+        if (f.match(/.*\.d\.ts$/)) {
+          return false;
+        } else {
+          return true;
+        }
+      });
+    };
+
+    /**
      * Returns the averge delay between a tick of the node.js event loop, as measured for N calls of `process.nextTick`
      */
     api.utils.eventLoopDelay = async (itterations: number): Promise<number> => {

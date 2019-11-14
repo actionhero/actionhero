@@ -1,4 +1,4 @@
-const { CLI } = require("actionhero");
+import { CLI } from "actionhero";
 
 export class MyCLICommand extends CLI {
   constructor() {

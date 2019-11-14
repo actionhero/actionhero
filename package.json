@@ -84,7 +84,7 @@
     "pretest": "npm run lint && npm run build",
     "dev": "ts-node ./src/bin/actionhero",
     "start": "node ./dist/bin/actionhero",
-    "build": "tsc",
+    "build": "tsc --declaration",
     "docs": "typedoc --out docs --theme default",
     "lint": "prettier --check src/*/**.ts __test__/*/**.ts examples/*/**.ts config",
     "pretty": "prettier --write src/*/**.ts __test__/*/**.ts examples/*/**.ts config"

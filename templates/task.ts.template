@@ -1,4 +1,4 @@
-const { Task } = require("actionhero");
+=import { Task } from "actionhero";
 
 export class MyTask extends Task {
   constructor() {

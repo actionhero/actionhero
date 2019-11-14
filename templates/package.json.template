@@ -22,11 +22,12 @@
     "typescript": "latest"
   },
   "scripts": {
+    "dev": "ts-node ./node_modules/.bin/actionhero start",
     "start": "actionhero start",
     "actionhero": "actionhero",
     "test": "jest",
-    "pretest": "npm run lint",
-    "declaration": "tsc --declaration",
+    "pretest": "npm run build && npm run lint",
+    "build": "tsc --declaration",
     "lint": "prettier --check src/*/** __test__/*/** config",
     "pretty": "prettier --write src/*/** __test__/*/** config"
   },

@@ -20,6 +20,7 @@ export class Generate extends CLI {
     );
 
     const oldFileMap = {
+      tsconfig: "tsconfig.json",
       configApiJs: "/config/api.js",
       configLoggerJs: "/config/logger.js",
       configRedisJs: "/config/redis.js",
@@ -48,11 +49,11 @@ export class Generate extends CLI {
       const source = path.join(__dirname, "/../../../", localPath);
       const extension = localPath.split(".")[1];
       documents[name] = fs.readFileSync(source);
-      if (extension === "js" || extension === "json") {
+      if (extension === "ts" || extension === "js" || extension === "json") {
         documents[name] = documents[name].toString();
         documents[name] = documents[name].replace(
-          "require('./../index.js')",
-          "require('actionhero')"
+          'from "./../index"',
+          'from "actionhero"'
         );
       }
     }
@@ -113,6 +114,7 @@ export class Generate extends CLI {
     });
 
     const newFileMap = {
+      "tsconfig.json": "tsconfig",
       "/config/api.js": "configApiJs",
       "/config/logger.js": "configLoggerJs",
       "/config/redis.js": "configRedisJs",
