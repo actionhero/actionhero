@@ -38,7 +38,7 @@ describe("Core: Tasks", () => {
         this.frequency = 100;
       }
 
-      run(params) {
+      async run(params) {
         taskOutput.push("periodicTask");
         return "periodicTask";
       }

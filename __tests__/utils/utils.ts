@@ -11,13 +11,6 @@ describe("Utils", () => {
     await actionhero.stop();
   });
 
-  describe("util.isTypescript", () => {
-    test("it knows we are testing in typescript", async () => {
-      const ts = api.utils.isTypescript;
-      expect(ts).toBe(true);
-    });
-  });
-
   describe("util.sleep", () => {
     test("it sleeps", async () => {
       const start = new Date().getTime();
