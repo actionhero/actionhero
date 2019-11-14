@@ -148,28 +148,14 @@ export class SpecHelper extends Initializer {
 
     /**
      * A special connection usable in tests.  Create via `await api.specHelper.Connection.createAsync()`
-     *
-     * @type {Class}
-     * @memberof api.specHelper
      */
     api.specHelper.Connection = class {
-      /*
-      constructor () {
-        let id = uuid.v4()
-        api.servers.servers.testServer.buildConnection({
-          id: id,
-          rawConnection: {},
-          remoteAddress: 'testServer',
-          remotePort: 0
-        })
-        return api.connections.connections[id]
-      }
-      */
-
       static async createAsync(data) {
         const id = uuid.v4();
+
         await api.servers.servers.testServer.buildConnection({
           id: id,
+          fingerprint: id,
           rawConnection: {},
           remoteAddress: "testServer",
           remotePort: 0

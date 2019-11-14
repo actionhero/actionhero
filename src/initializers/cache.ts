@@ -330,12 +330,8 @@ export class Cache extends Initializer {
     api.cache.checkLock = async (
       key: string,
       retry: boolean | number,
-      startTime: number
+      startTime: number = new Date().getTime()
     ) => {
-      if (!startTime) {
-        startTime = new Date().getTime();
-      }
-
       const lockedBy = await redis.get(api.cache.lockPrefix + key);
       if (lockedBy === api.cache.lockName || lockedBy === null) {
         return true;

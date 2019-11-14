@@ -80,7 +80,7 @@ export abstract class Action {
     };
   }
 
-  private validate() {
+  validate() {
     if (!this.name) {
       throw new Error("name is required for this action");
     }

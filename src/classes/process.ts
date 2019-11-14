@@ -308,11 +308,7 @@ export class Process {
     return api;
   }
 
-  async start(params) {
-    if (!params) {
-      params = {};
-    }
-
+  async start(params = {}) {
     if (api.initialized !== true) {
       await this.initialize(params);
     }

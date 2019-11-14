@@ -27,7 +27,7 @@ export abstract class Task {
   middleware: Array<string>;
   /**The default queue to run this Task on (default: 'default') */
   queue: string;
-  /**Queuing a periodic task in the case of an exception.  (default: false) */
+  /**Re-enqueuing a periodic task in the case of an exception.  (default: false) */
   reEnqueuePeriodicTaskIfException: boolean;
 
   constructor() {
@@ -35,9 +35,6 @@ export abstract class Task {
     for (const key in coreProperties) {
       if (!this[key]) {
         this[key] = coreProperties[key];
-      }
-      if (typeof this[key] === "function") {
-        this[key] = this[key]();
       }
     }
   }
@@ -47,8 +44,9 @@ export abstract class Task {
    * If error is thrown in this method, it will be logged & caught.  Using middleware, you can decide to re-run the task on failure.
    * `this` is a Task instance itself now.
    *
-   * @param data The data about this instance of the task, specifically params.
-   * @param worker Instance of a node-resque worker. You can inspect `worker.job` and set `worker.result` explicitly if your Task does not return a value.
+   * Inputs:
+   * * data: The data about this instance of the task, specifically params.
+   * * worker: Instance of a node-resque worker. You can inspect `worker.job` and set `worker.result` explicitly if your Task does not return a value.
    */
   abstract run(data: TaskData, worker): void;
 
@@ -63,7 +61,7 @@ export abstract class Task {
     };
   }
 
-  private validate() {
+  validate() {
     if (!this.name) {
       throw new Error("name is required for this task");
     }
