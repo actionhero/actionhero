@@ -1,4 +1,4 @@
-=import { Task } from "actionhero";
+import { Task } from "actionhero";
 
 export class MyTask extends Task {
   constructor() {
