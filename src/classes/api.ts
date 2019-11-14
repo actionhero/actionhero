@@ -16,7 +16,6 @@ export class Api {
   log: Function;
   watchFileAndAct: Function;
   typescript: boolean;
-  // ext: string;
   _startingParams: {
     [key: string]: any;
   };
@@ -24,7 +23,6 @@ export class Api {
 
   constructor() {
     this.typescript = isTypescript();
-    // this.ext = this.typescript ? ".ts" : ".js";
   }
 }
 
