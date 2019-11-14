@@ -27,10 +27,7 @@ if (process.env.projectRoot) {
 }
 
 (async () => {
-  const bootFilePaths = [
-    `${projectRoot}/boot.js`,
-    `${projectRoot}/dist/boot.js`
-  ];
+  const bootFilePaths = [`${projectRoot}/boot`, `${projectRoot}/dist/boot`];
 
   for (const i in bootFilePaths) {
     const bootFile = bootFilePaths[i];

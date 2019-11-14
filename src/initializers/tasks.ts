@@ -520,7 +520,7 @@ export class Tasks extends Initializer {
 
     api.tasks.loadTasks = reload => {
       api.config.general.paths.task.forEach(p => {
-        glob.sync(path.join(p, `**/*(*${api.ext})`)).forEach(f => {
+        glob.sync(path.join(p, "**", "**/*(*.js|*.ts)")).forEach(f => {
           api.tasks.loadFile(f, reload);
         });
       });
@@ -529,7 +529,7 @@ export class Tasks extends Initializer {
         if (api.config.plugins[pluginName].tasks !== false) {
           const pluginPath = api.config.plugins[pluginName].path;
           glob
-            .sync(path.join(pluginPath, "tasks", `**/*(*${api.ext})`))
+            .sync(path.join(pluginPath, "tasks", "**", "**/*(*.js|*.ts)"))
             .forEach(f => {
               api.tasks.loadFile(f, reload);
             });

@@ -1,8 +1,6 @@
 const path = require("path");
-const DIST_PATH = "dist"; // could be "" if you aren't using Typescript
-const SRC_PATH = "src"; // could be "" if you aren't using Typescript
 
-exports.default = {
+export const DEFAULT = {
   general: api => {
     const packageJSON = require(api.projectRoot + path.sep + "package.json");
 
@@ -51,29 +49,14 @@ exports.default = {
       cliIncludeInternal: true,
       // configuration for your actionhero project structure
       paths: {
-        action: [
-          path.join(process.cwd(), SRC_PATH, "actions"),
-          path.join(process.cwd(), DIST_PATH, "actions")
-        ],
-        task: [
-          path.join(process.cwd(), SRC_PATH, "tasks"),
-          path.join(process.cwd(), DIST_PATH, "tasks")
-        ],
+        action: [path.join(__dirname, "..", "actions")],
+        task: [path.join(__dirname, "..", "tasks")],
+        server: [path.join(__dirname, "..", "servers")],
+        cli: [path.join(__dirname, "..", "bin")],
+        initializer: [path.join(__dirname, "..", "initializers")],
         public: [path.join(process.cwd(), "public")],
         pid: [path.join(process.cwd(), "pids")],
         log: [path.join(process.cwd(), "log")],
-        server: [
-          path.join(process.cwd(), SRC_PATH, "servers"),
-          path.join(process.cwd(), DIST_PATH, "servers")
-        ],
-        cli: [
-          path.join(process.cwd(), SRC_PATH, "bin"),
-          path.join(process.cwd(), DIST_PATH, "bin")
-        ],
-        initializer: [
-          path.join(process.cwd(), SRC_PATH, "initializers"),
-          path.join(process.cwd(), DIST_PATH, "initializers")
-        ],
         plugin: [path.join(process.cwd(), "node_modules")],
         locale: [path.join(process.cwd(), "locales")],
         test: [path.join(process.cwd(), "__tests__")]
@@ -87,7 +70,7 @@ exports.default = {
   }
 };
 
-exports.test = {
+export const test = {
   general: api => {
     return {
       id: `test-server-${process.env.JEST_WORKER_ID || 0}`,
@@ -105,7 +88,7 @@ exports.test = {
   }
 };
 
-exports.production = {
+export const production = {
   general: api => {
     return {
       fileRequestLogLevel: "debug",

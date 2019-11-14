@@ -1,4 +1,4 @@
-exports.default = {
+export const DEFAULT = {
   errors: api => {
     return {
       _toExpand: false,

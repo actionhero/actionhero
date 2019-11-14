@@ -30,13 +30,13 @@ export class Servers extends Initializer {
 
     for (const i in serverFolders) {
       const p = serverFolders[i];
-      let files = glob.sync(path.join(p, `**/*${api.ext}`));
+      let files = glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"));
 
       for (const pluginName in api.config.plugins) {
         if (api.config.plugins[pluginName].servers !== false) {
           const pluginPath = api.config.plugins[pluginName].path;
           files = files.concat(
-            glob.sync(path.join(pluginPath, "servers", `**/*${api.ext}`))
+            glob.sync(path.join(pluginPath, "servers", "**", "**/*(*.js|*.ts)"))
           );
         }
       }

@@ -12,18 +12,11 @@ export class Api {
     restart: Function;
   };
   config: any;
-  // utils: {
-  //   [key: string]:
-  //     | Function
-  //     | {
-  //         [key: string]: Function;
-  //       };
-  // };
   utils: any;
   log: Function;
   watchFileAndAct: Function;
   typescript: boolean;
-  ext: string;
+  // ext: string;
   _startingParams: {
     [key: string]: any;
   };
@@ -31,7 +24,7 @@ export class Api {
 
   constructor() {
     this.typescript = isTypescript();
-    this.ext = this.typescript ? ".ts" : ".js";
+    // this.ext = this.typescript ? ".ts" : ".js";
   }
 }
 

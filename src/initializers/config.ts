@@ -109,8 +109,12 @@ export class Config extends Initializer {
       addConfigPath(entry, false);
     });
 
+    if (configPaths.length < 1 && api.typescript) {
+      addConfigPath("src/config", false);
+    }
+
     if (configPaths.length < 1) {
-      addConfigPath("config", false);
+      addConfigPath("dist/config", false);
     }
 
     if (configPaths.length < 1) {
@@ -131,10 +135,10 @@ export class Config extends Initializer {
       if (f.includes("routes.js") || f.includes("routes.ts")) {
         let localRoutes = { routes: {} };
 
-        if (localConfig.default) {
+        if (localConfig.DEFAULT) {
           localRoutes = api.utils.hashMerge(
             localRoutes,
-            localConfig.default,
+            localConfig.DEFAULT,
             api
           );
         }
@@ -158,10 +162,10 @@ export class Config extends Initializer {
           }
         });
       } else {
-        if (localConfig.default) {
+        if (localConfig.DEFAULT) {
           api.config = api.utils.hashMerge(
             api.config,
-            localConfig.default,
+            localConfig.DEFAULT,
             api
           );
         }
@@ -176,9 +180,9 @@ export class Config extends Initializer {
     };
 
     api.loadConfigDirectory = (configPath, watch) => {
-      const configFiles = glob.sync(
-        path.join(configPath, "**", "**/*(*.js|*.ts)")
-      );
+      const configFiles = glob
+        .sync(path.join(configPath, "**", "**/*(*.js|*.ts)"))
+        .filter(f => !f.match(/.*\.d\.ts$/));
 
       let loadRetries = 0;
       let loadErrors = {};
@@ -249,7 +253,14 @@ export class Config extends Initializer {
     api.config = {};
 
     // load the default config of actionhero
-    api.loadConfigDirectory(path.join(__dirname, "/../../config"), false);
+    if (api.typescript) {
+      api.loadConfigDirectory(path.join(__dirname, "/../config"), false);
+    } else {
+      api.loadConfigDirectory(
+        path.join(__dirname, "/../../dist/config"),
+        false
+      );
+    }
 
     // load the project specific config
     configPaths.map(api.loadConfigDirectory);

@@ -69,7 +69,7 @@ function buildFileLogger(
   };
 }
 
-exports.default = {
+export const DEFAULT = {
   logger: api => {
     const loggers = [];
 
@@ -90,7 +90,7 @@ exports.default = {
   }
 };
 
-exports.test = {
+export const test = {
   logger: api => {
     const loggers = [];
 
