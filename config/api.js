@@ -1,5 +1,5 @@
 const path = require("path");
-const TYPECRIPT_SOURCE = "src";
+const DIST_PATH = "dist";
 
 exports.default = {
   general: api => {
@@ -51,27 +51,27 @@ exports.default = {
       // configuration for your actionhero project structure
       paths: {
         action: [
-          path.join(process.cwd(), TYPECRIPT_SOURCE, "actions"),
-          path.join(process.cwd(), "actions")
+          path.join(process.cwd(), DIST_PATH, "actions")
+          // path.join(process.cwd(), "actions")
         ],
         task: [
-          path.join(process.cwd(), TYPECRIPT_SOURCE, "tasks"),
-          path.join(process.cwd(), "tasks")
+          path.join(process.cwd(), DIST_PATH, "tasks")
+          // path.join(process.cwd(), "tasks")
         ],
         public: [path.join(process.cwd(), "public")],
         pid: [path.join(process.cwd(), "pids")],
         log: [path.join(process.cwd(), "log")],
         server: [
-          path.join(process.cwd(), TYPECRIPT_SOURCE, "servers"),
-          path.join(process.cwd(), "servers")
+          path.join(process.cwd(), DIST_PATH, "servers")
+          // path.join(process.cwd(), "servers")
         ],
         cli: [
-          path.join(process.cwd(), TYPECRIPT_SOURCE, "bin"),
-          path.join(process.cwd(), "bin")
+          path.join(process.cwd(), DIST_PATH, "bin")
+          // path.join(process.cwd(), "bin")
         ],
         initializer: [
-          path.join(process.cwd(), TYPECRIPT_SOURCE, "initializers"),
-          path.join(process.cwd(), "initializers")
+          path.join(process.cwd(), DIST_PATH, "initializers")
+          // path.join(process.cwd(), "initializers")
         ],
         plugin: [path.join(process.cwd(), "node_modules")],
         locale: [path.join(process.cwd(), "locales")],
