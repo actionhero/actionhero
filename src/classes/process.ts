@@ -97,15 +97,13 @@ export class Process {
 
     // load initializers from core
     initializerFiles = initializerFiles.concat(
-      glob.sync(
-        path.join(__dirname, "..", "initializers", "**", "**/*(*.js|*.ts)")
-      )
+      glob.sync(path.join(__dirname, "..", "initializers", `**/*(*${api.ext})`))
     );
 
     // load initializers from project
     api.config.general.paths.initializer.forEach((startPath: string) => {
       initializerFiles = initializerFiles.concat(
-        glob.sync(path.join(startPath, "**", "**/*(*.js|*.ts)"))
+        glob.sync(path.join(startPath, `**/*(*${api.ext})`))
       );
     });
 
@@ -114,28 +112,25 @@ export class Process {
       if (api.config.plugins[pluginName] !== false) {
         const pluginPath = api.config.plugins[pluginName].path;
         initializerFiles = initializerFiles.concat(
-          glob.sync(
-            path.join(pluginPath, "initializers", "**", "**/*(*.js|*.ts)")
-          )
+          glob.sync(path.join(pluginPath, "initializers", `**/*(*${api.ext})`))
         );
       }
     }
 
     initializerFiles = api.utils.arrayUniqueify(initializerFiles);
     initializerFiles = initializerFiles.filter(file => {
-      return (
-        !file.match("initializers/utils") && !file.match("initializers/config")
-      );
+      if (file.match("initializers/utils")) {
+        return false;
+      }
+      if (file.match("initializers/config")) {
+        return false;
+      }
+
+      return true;
     });
 
     initializerFiles.forEach(f => {
       const file = path.normalize(f);
-      const fileParts = file.split(".");
-      const ext = fileParts[fileParts.length - 1];
-      if (ext !== "js" && ext !== "ts") {
-        return;
-      }
-
       delete require.cache[require.resolve(file)];
 
       const exportedClasses = require(file);

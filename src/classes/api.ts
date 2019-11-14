@@ -22,8 +22,28 @@ export class Api {
   utils: any;
   log: Function;
   watchFileAndAct: Function;
+  typescript: boolean;
+  ext: string;
   _startingParams: {
     [key: string]: any;
   };
   [key: string]: any;
+
+  constructor() {
+    this.typescript = isTypescript();
+    this.ext = this.typescript ? ".ts" : ".js";
+  }
+}
+
+/**
+ * Are we running in typescript at the moment?
+ * see https://github.com/TypeStrong/ts-node/pull/858 for more details
+ */
+function isTypescript(): boolean {
+  try {
+    return process[Symbol.for("ts-node.register.instance")] ? true : false;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
 }

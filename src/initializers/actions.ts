@@ -141,7 +141,7 @@ export class Actions extends Initializer {
 
     for (const i in api.config.general.paths.action) {
       const p = api.config.general.paths.action[i];
-      const files = glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"));
+      const files = glob.sync(path.join(p, `**/*${api.ext}`));
       for (const j in files) {
         await api.actions.loadFile(files[j]);
       }
@@ -151,7 +151,7 @@ export class Actions extends Initializer {
       if (api.config.plugins[pluginName].actions !== false) {
         const pluginPath = api.config.plugins[pluginName].path;
         const files = glob.sync(
-          path.join(pluginPath, "actions", "**", "**/*(*.js|*.ts)")
+          path.join(pluginPath, "actions", `**/*(*${api.ext})`)
         );
         for (const j in files) {
           await api.actions.loadFile(files[j]);

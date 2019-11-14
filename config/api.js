@@ -1,5 +1,6 @@
 const path = require("path");
-const DIST_PATH = "dist";
+const DIST_PATH = "dist"; // could be "" if you aren't using Typescript
+const SRC_PATH = "src"; // could be "" if you aren't using Typescript
 
 exports.default = {
   general: api => {
@@ -51,26 +52,31 @@ exports.default = {
       // configuration for your actionhero project structure
       paths: {
         action: [
-          path.join(process.cwd(), DIST_PATH, "actions")
+          path.join(process.cwd(), DIST_PATH, "actions"),
+          path.join(process.cwd(), SRC_PATH, "actions")
           // path.join(process.cwd(), "actions")
         ],
         task: [
-          path.join(process.cwd(), DIST_PATH, "tasks")
+          path.join(process.cwd(), DIST_PATH, "tasks"),
+          path.join(process.cwd(), SRC_PATH, "tasks")
           // path.join(process.cwd(), "tasks")
         ],
         public: [path.join(process.cwd(), "public")],
         pid: [path.join(process.cwd(), "pids")],
         log: [path.join(process.cwd(), "log")],
         server: [
-          path.join(process.cwd(), DIST_PATH, "servers")
+          path.join(process.cwd(), DIST_PATH, "servers"),
+          path.join(process.cwd(), SRC_PATH, "servers")
           // path.join(process.cwd(), "servers")
         ],
         cli: [
-          path.join(process.cwd(), DIST_PATH, "bin")
+          path.join(process.cwd(), DIST_PATH, "bin"),
+          path.join(process.cwd(), SRC_PATH, "bin")
           // path.join(process.cwd(), "bin")
         ],
         initializer: [
-          path.join(process.cwd(), DIST_PATH, "initializers")
+          path.join(process.cwd(), DIST_PATH, "initializers"),
+          path.join(process.cwd(), SRC_PATH, "initializers")
           // path.join(process.cwd(), "initializers")
         ],
         plugin: [path.join(process.cwd(), "node_modules")],
