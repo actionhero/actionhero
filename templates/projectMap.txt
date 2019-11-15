@@ -2,17 +2,7 @@
 |- boot.js
 |- src
 |  - config
-|    -- api.js
-|    -- errors.js
-|    -- i18n.js
-|    -- logger.js
-|    -- redis.js
-|    -- routes.js
-|    -- tasks.js
-|    -- servers
-|    ---- web.js
-|    ---- websocket.js
-|-- (project settings)
+|    - (project settings)
 |
 |  - actions
 |    -- (your actions)
