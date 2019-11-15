@@ -63,6 +63,7 @@
     "ts-jest": "^24.1.0",
     "ts-node": "^8.5.0",
     "typedoc": "^0.15.1",
+    "typedoc-plugin-tutorials": "0.0.1-alpha.1",
     "typescript": "^3.7.2"
   },
   "optionalDependencies": {},
@@ -85,7 +86,7 @@
     "dev": "ts-node ./src/bin/actionhero",
     "start": "node ./dist/bin/actionhero",
     "build": "tsc --declaration",
-    "docs": "typedoc --out docs --theme default",
+    "docs": "typedoc --out docs --theme default --mode file --media tutorials",
     "lint": "prettier --check src/*/**.ts __test__/*/**.ts examples/*/**.ts config",
     "pretty": "prettier --write src/*/**.ts __test__/*/**.ts examples/*/**.ts config"
   }
