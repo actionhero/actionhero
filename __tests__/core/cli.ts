@@ -115,7 +115,7 @@ describe("Core: CLI", () => {
         }
         expect(error.exitCode).toEqual(0);
       }
-    }, 60000);
+    }, 120000);
 
     test("can generate a new project", async () => {
       await doCommand(`${binary} generate`);
