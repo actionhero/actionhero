@@ -4,7 +4,7 @@ _visit www.actionherojs.com for more information_
 
 ## To install:
 
-(assuming you have [node](http://nodejs.org/), [TypeScript](https://www.typescriptlang.org/) and NPM installed)
+(assuming you have [node](http://nodejs.org/), [TypeScript](https://www.typescriptlang.org/), and NPM installed)
 
 `npm install`
 
