@@ -7,14 +7,15 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "@types/node": "^12.12.7",
+
     "actionhero": "%%versionNumber%%",
     "ws": "latest",
     "ioredis": "latest",
     "winston": "latest"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.22",
+    "@types/node": "latest",
+    "@types/jest": "latest",
     "jest": "latest",
     "prettier": "latest",
     "ts-jest": "latest",
@@ -28,6 +29,7 @@
     "test": "jest",
     "pretest": "npm run build && npm run lint",
     "build": "tsc --declaration",
+    "postinstall": "npm run build",
     "lint": "prettier --check src/*/** __test__/*/** config",
     "pretty": "prettier --write src/*/** __test__/*/** config"
   },

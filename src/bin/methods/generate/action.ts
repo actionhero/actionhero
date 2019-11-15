@@ -33,7 +33,10 @@ export class GenerateAction extends CLI {
     });
 
     let message = api.utils.createFileSafely(
-      api.config.general.paths.action[0] + "/" + params.name + ".ts",
+      api.utils.replaceDistWithSrc(api.config.general.paths.action[0]) +
+        "/" +
+        params.name +
+        ".ts",
       actionTemplate
     );
     console.info(message);

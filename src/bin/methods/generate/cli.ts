@@ -28,7 +28,9 @@ export class GenerateCLI extends CLI {
     });
 
     const message = api.utils.createFileSafely(
-      api.config.general.paths.cli[0] + "/" + params.name + ".ts",
+      api.utils.replaceDistWithSrc(
+        api.config.general.paths.cli[0] + "/" + params.name + ".ts"
+      ),
       template
     );
     console.log(message);

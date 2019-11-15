@@ -120,7 +120,7 @@ export class Config extends Initializer {
     if (configPaths.length < 1) {
       throw new Error(
         configPaths +
-          "No config directory found in this project.  Did you compile it?\r\nPerhaps you are running your typescript files and should use node-ts (npm run dev)?\r\n\r\n"
+          "No config directory found in this project.  Did you compile your typescript project?"
       );
     }
 

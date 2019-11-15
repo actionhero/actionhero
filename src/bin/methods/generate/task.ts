@@ -35,7 +35,9 @@ export class GenerateTask extends CLI {
     });
 
     let message = api.utils.createFileSafely(
-      api.config.general.paths.task[0] + "/" + params.name + ".ts",
+      api.utils.replaceDistWithSrc(
+        api.config.general.paths.task[0] + "/" + params.name + ".ts"
+      ),
       taskTemplate
     );
     console.info(message);

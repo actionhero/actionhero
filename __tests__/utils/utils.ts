@@ -264,6 +264,14 @@ describe("Utils", () => {
     });
   });
 
+  describe("utils.replaceDistWithSrc", () => {
+    test("it replaces paths from dist to src", () => {
+      const p = `${api.config.general.paths.action[0]}/new-actions/test.ts`;
+      const withDist = api.utils.replaceDistWithSrc(p);
+      expect(withDist).toMatch("actionhero/src/actions/new-actions/test.ts");
+    });
+  });
+
   describe("utils.filterObjectForLogging", () => {
     beforeEach(() => {
       expect(api.config.general.filteredParams.length).toEqual(0);

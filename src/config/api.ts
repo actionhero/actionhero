@@ -59,8 +59,12 @@ export const DEFAULT = {
         log: [path.join(process.cwd(), "log")],
         plugin: [path.join(process.cwd(), "node_modules")],
         locale: [path.join(process.cwd(), "locales")],
-        test: [path.join(process.cwd(), "__tests__")]
+        test: [path.join(process.cwd(), "__tests__")],
+        // for the src and dist paths, assume we are running in compiled mode from `dist`
+        src: path.join(process.cwd(), "src"),
+        dist: path.join(process.cwd(), "dist")
       },
+
       // hash containing chat rooms you wish to be created at server boot
       startingChatRooms: {
         // format is {roomName: {authKey, authValue}}

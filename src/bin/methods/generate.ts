@@ -170,7 +170,7 @@ export class Generate extends CLI {
       "You may need to run `npm install` to install some dependancies",
       "alert"
     );
-    console.log("Run 'npm start' to start your server");
+    console.log("Run 'npm run dev' to start your server");
 
     return true;
   }

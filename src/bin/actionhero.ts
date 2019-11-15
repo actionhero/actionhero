@@ -83,7 +83,7 @@ if (process.env.projectRoot) {
     return params;
   };
 
-  const handleGenerate = async (commands: Array<string>) => {
+  const handleUnbuiltProject = async (commands: Array<string>) => {
     api.projectRoot = projectRoot;
     api.actionheroRoot = actionheroRoot;
 
@@ -254,10 +254,12 @@ if (process.env.projectRoot) {
     return true;
   };
 
-  if (argsMatch(commands, ["generate"])) {
-    handleGenerate(commands);
+  if (argsMatch(commands, ["version"])) {
+    handleUnbuiltProject(commands);
+  } else if (argsMatch(commands, ["generate"])) {
+    handleUnbuiltProject(commands);
   } else if (argsMatch(commands, ["generate", "plugin"])) {
-    handleGenerate(commands);
+    handleUnbuiltProject(commands);
   } else {
     handleMethod(commands);
   }
