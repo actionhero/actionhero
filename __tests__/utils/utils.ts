@@ -268,7 +268,7 @@ describe("Utils", () => {
     test("it replaces paths from dist to src", () => {
       const p = `${api.config.general.paths.action[0]}/new-actions/test.ts`;
       const withDist = api.utils.replaceDistWithSrc(p);
-      expect(withDist).toMatch("actionhero/src/actions/new-actions/test.ts");
+      expect(withDist).toMatch("/src/actions/new-actions/test.ts");
     });
   });
 
