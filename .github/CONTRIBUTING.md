@@ -27,7 +27,7 @@ If you need help writing tests, please ask for help in the [slack team](http://s
 
 ## Linting
 
-We use [prettier.js](https://prettier.io/) to manage our lint rules. We run `standard` as part of our test suite, and your contributions must pass. Prettier is _very_ opinionated and inflexible such that we cannot inject our own opinions. There are no eslint/jshint files to manage in this project.
+We use [prettier.js](https://prettier.io/) to manage our lint rules. We run `prettier` as part of our test suite, and your contributions must pass. Prettier is _very_ opinionated and inflexible such that we cannot inject our own opinions. There are no eslint/jshint files to manage in this project.
 
 ## Documentation
 
