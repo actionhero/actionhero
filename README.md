@@ -50,10 +50,24 @@ Currently actionhero supports the following out of the box...
 ## Quick Start
 
 ```bash
-# mkdir new_project; cd new_project
-npm install actionhero
+# Generate a new Project
 npx actionhero generate
-npm start
+npm install
+npm run build # <--- new! I compile the TS to JS
+npm run dev # <--- new! I use `ts-node` to let you develop on your ts files without compiling
+
+# Use the actionhero CLI
+(npx) actionhero generate action --name my_action
+(npx) actionhero generate task --name my_task --queue default --frequency 0
+
+# Test
+npm test
+# I'll run `prettier` and `build` for you first
+# I handle .ts files now!
+
+# To deploy your app
+npm run build # <--- new! I compile the TS to JS
+npm run start
 ```
 
 Your new project will come with example actions, tests, and more.
@@ -67,6 +81,7 @@ Or deploy a free API server now:
 - [Getting Started @ www.actionherojs.com](https://www.actionherojs.com/get-started)
   - ActionHero's marketing site can be found @ [https://github.com/actionhero/www.actionherojs.com/](https://github.com/actionhero/www.actionherojs.com/). If you want to contribute to this site, visit the [related project](https://github.com/actionhero/www.actionherojs.com)
 - [Read the documentation @ docs.actionherojs.com](http://docs.actionherojs.com/)
+  - ---> Start with the [Tutorials](https://docs.actionherojs.com/tutorials/index.html) <---
   - Starting with ActionHero version 18, the documentation for each version is included in this repository (and the NPM package) in the `/docs` folder. The current version of this documentation is also automatically deployed to https://docs.actionherojs.com.
 - [Find community-based resources](https://github.com/l0oky/awesome-actionhero)
 - [Interact with the Community & View the Release History](https://www.actionherojs.com/community)

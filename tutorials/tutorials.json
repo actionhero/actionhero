@@ -1,0 +1,79 @@
+{
+  "core": {
+    "title": "Actionhero Core Features",
+    "children": {
+      "actions": {
+        "title": "Actions"
+      },
+      "tasks": {
+        "title": "Tasks"
+      },
+      "initializers": {
+        "title": "Initializers"
+      },
+      "localization": {
+        "title": "Localization"
+      },
+      "middleware": {
+        "title": "Middleware"
+      },
+      "testing": {
+        "title": "Testing"
+      },
+      "chat": {
+        "title": "Chat"
+      },
+      "servers": {
+        "title": "Servers",
+        "children": {
+          "web-server": {
+            "title": "Web Server"
+          },
+          "websocket-server": {
+            "title": "Websocket Server"
+          }
+        }
+      },
+      "cli": {
+        "title": "Cli"
+      }
+    }
+  },
+  "config-and-dev": {
+    "title": "Configuration and Development",
+    "children": {
+      "running-actionhero": {
+        "title": "Running Actionhero"
+      },
+      "config": {
+        "title": "Config"
+      },
+      "development-mode": {
+        "title": "Development Mode"
+      },
+      "file-server": {
+        "title": "File Server"
+      },
+      "logging": {
+        "title": "Logging"
+      }
+    }
+  },
+  "advanced": {
+    "title": "Advanced Actionhero Topics",
+    "children": {
+      "plugins": {
+        "title": "Plugins"
+      },
+      "cluster": {
+        "title": "Cluster"
+      },
+      "production-notes": {
+        "title": "Production Notes"
+      },
+      "upgrade-path": {
+        "title": "Upgrade Path"
+      }
+    }
+  }
+}
