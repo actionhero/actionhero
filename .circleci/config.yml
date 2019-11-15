@@ -25,6 +25,9 @@ references:
           name: display-npm-version
           command: npm --version
       - run:
+          name: install ts-ndoe globally
+          command: npm install -g ts-node
+      - run:
           name: test-log-setup
           command: mkdir -p ./log
       - run:
