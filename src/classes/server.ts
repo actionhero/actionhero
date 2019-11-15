@@ -7,13 +7,6 @@ let api: Api;
 
 interface ServerConfig {
   [key: string]: any;
-  // [key: string]: {
-  //   [key: string]:
-  //     | {
-  //         any;
-  //       }
-  //     | any;
-  // };
 }
 
 /**
