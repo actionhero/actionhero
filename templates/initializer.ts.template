@@ -1,4 +1,4 @@
-import { Initializer, api  } from "actionhero";
+import { Initializer, api } from "actionhero";
 
 export class MyInitializer extends Initializer {
   constructor() {
@@ -10,7 +10,7 @@ export class MyInitializer extends Initializer {
   }
 
   async initialize() {
-    api["%%name%%"] = {}; //eslint-disable-line
+    api["%%name%%"] = {};
   }
 
   async start() {}

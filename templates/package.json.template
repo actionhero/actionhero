@@ -29,7 +29,6 @@
     "test": "jest",
     "pretest": "npm run build && npm run lint",
     "build": "tsc --declaration",
-    "postinstall": "npm run build",
     "lint": "prettier --check src/*/** __test__/*/** config",
     "pretty": "prettier --write src/*/** __test__/*/** config"
   },

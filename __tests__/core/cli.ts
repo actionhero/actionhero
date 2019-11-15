@@ -9,7 +9,7 @@ import * as request from "request-promise-native";
 import * as isrunning from "is-running";
 
 const testDir = os.tmpdir() + path.sep + "actionheroTestProject";
-const binary = "ts-node ./node_modules/.bin/actionhero";
+const binary = "./node_modules/.bin/actionhero";
 const pacakgeJSON = require(path.join(__dirname, "/../../package.json"));
 
 console.log(`testDir: ${testDir}`);
@@ -27,7 +27,8 @@ class ErrorWithStd extends Error {
 
 const doCommand = async (
   command: string,
-  useCwd = true
+  useCwd = true,
+  extraEnv = {}
 ): Promise<{
   stderr: string;
   stdout: string;
@@ -41,7 +42,12 @@ const doCommand = async (
     let stdout = "";
     let stderr = "";
 
-    const env = process.env;
+    let env = process.env;
+    // we don't want the CLI commands to source typescript files
+    // when running jest, it will reset NDOE_ENV=test
+    delete env.NODE_ENV;
+    // but somtimes we do /shrug/
+    env = Object.assign(env, extraEnv);
 
     const cmd = spawn(bin, args, {
       cwd: useCwd ? testDir : __dirname,
@@ -118,7 +124,8 @@ describe("Core: CLI", () => {
     }, 120000);
 
     test("can generate a new project", async () => {
-      await doCommand(`${binary} generate`);
+      const { stdout } = await doCommand(`${binary} generate`);
+      expect(stdout).toMatch("<3, the Actionhero Team");
 
       [
         "src/actions",
@@ -156,6 +163,11 @@ describe("Core: CLI", () => {
       ].forEach(f => {
         expect(fs.existsSync(testDir + "/" + f)).toEqual(true);
       });
+    }, 20000);
+
+    test("the project can be compiled", async () => {
+      const { stdout } = await doCommand(`npm run build`);
+      expect(stdout).toMatch("tsc");
     }, 20000);
 
     test("can call the help command", async () => {
@@ -310,7 +322,7 @@ describe("Core: CLI", () => {
     test("can call npm test in the new project and not fail", async () => {
       // jest writes to stderr for some reason, so we need to test for the exit code here
       try {
-        await doCommand("npm test");
+        await doCommand("npm test", true, { NODE_ENV: "test" });
       } catch (error) {
         if (error.exitCode !== 0) {
           throw error;
@@ -322,8 +334,8 @@ describe("Core: CLI", () => {
       let serverPid;
 
       beforeAll(async function() {
-        doCommand(`${binary} start`);
-        await sleep(10000);
+        doCommand(`${binary} start`, true, { PORT: port });
+        await sleep(5000);
         serverPid = pid;
       }, 20000);
 
@@ -345,7 +357,7 @@ describe("Core: CLI", () => {
 
       test("can handle signals to reboot", async () => {
         await doCommand(`kill -s USR2 ${serverPid}`);
-        await sleep(3000);
+        await sleep(1000);
         const response = await request(
           `http://localhost:${port}/api/showDocumentation`,
           { json: true }
@@ -357,7 +369,7 @@ describe("Core: CLI", () => {
 
       test("can handle signals to stop", async () => {
         await doCommand(`kill ${serverPid}`);
-        await sleep(3000);
+        await sleep(1000);
         try {
           await request(`http://localhost:${port}/api/showDocumentation`);
           throw new Error("should not get here");
@@ -372,8 +384,8 @@ describe("Core: CLI", () => {
     describe("can run a cluster", () => {
       let clusterPid;
       beforeAll(async function() {
-        doCommand(`${binary} start cluster --workers=2`);
-        await sleep(20000);
+        doCommand(`${binary} start cluster --workers=2`, true, { PORT: port });
+        await sleep(10000);
         clusterPid = pid;
       }, 30000);
 
@@ -405,7 +417,7 @@ describe("Core: CLI", () => {
 
       test("can handle signals to add a worker", async () => {
         await doCommand(`kill -s TTIN ${clusterPid}`);
-        await sleep(5000);
+        await sleep(2000);
 
         const { stdout } = await doCommand("ps awx");
         const parents = stdout.split("\n").filter(l => {
@@ -422,7 +434,7 @@ describe("Core: CLI", () => {
 
       test("can handle signals to remove a worker", async () => {
         await doCommand(`kill -s TTOU ${clusterPid}`);
-        await sleep(5000);
+        await sleep(2000);
 
         const { stdout } = await doCommand("ps awx");
         const parents = stdout.split("\n").filter(l => {
@@ -439,7 +451,7 @@ describe("Core: CLI", () => {
 
       test("can handle signals to reboot (graceful)", async () => {
         await doCommand(`kill -s USR2 ${clusterPid}`);
-        await sleep(5000);
+        await sleep(2000);
 
         const { stdout } = await doCommand("ps awx");
         const parents = stdout.split("\n").filter(l => {
@@ -462,7 +474,7 @@ describe("Core: CLI", () => {
 
       test("can handle signals to reboot (hup)", async () => {
         await doCommand(`kill -s WINCH ${clusterPid}`);
-        await sleep(5000);
+        await sleep(2000);
 
         const { stdout } = await doCommand("ps awx");
         const parents = stdout.split("\n").filter(l => {
@@ -485,7 +497,7 @@ describe("Core: CLI", () => {
 
       test("can handle signals to stop", async () => {
         await doCommand(`kill ${clusterPid}`);
-        await sleep(5000);
+        await sleep(2000);
 
         const { stdout } = await doCommand("ps awx");
         const parents = stdout.split("\n").filter(l => {
