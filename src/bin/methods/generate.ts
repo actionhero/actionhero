@@ -169,7 +169,7 @@ export class Generate extends CLI {
     console.log(
       `
 -------------------------------------------------------------------------------------------------------------------
-You need to run \`npm install\` to install dependancies, and then \`npm build\` to build the .js from this .ts project.
+You need to run \`npm install\` to install dependancies, and then \`npm run build\` to build the .js from this .ts project.
 Then, run 'npm run dev' to start your server
 
 <3, the Actionhero Team
