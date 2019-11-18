@@ -25,7 +25,7 @@ export class ActionProcessor {
   actionStatus: string | Error;
 
   // allow for setting of any value via middleware
-  session: { [key: string]: any };
+  session: any;
 
   constructor(connection: Connection) {
     /// Only in files required by `index.js` do we need to delay the loading of the API object
