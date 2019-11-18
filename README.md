@@ -37,15 +37,14 @@ _The reusable, scalable, and quick node.js API server for stateless and stateful
 
 ## Who is the ActionHero?
 
-ActionHero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs for HTTP, WebSockets, and more. Clients connected to an actionhero server can [**consume the api**](https://docs.actionherojs.com/tutorial-actions.html), [**consume static content**](https://docs.actionherojs.com/tutorial-file-server.html), and [**communicate with each other**](https://docs.actionherojs.com/tutorial-chat.html). ActionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more. ActionHero provides a simple Async/Await API for managing every type of connection and background task.
+ActionHero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs for HTTP, WebSockets, and more. Clients connected to an actionhero server can [**consume the api**](https://docs.actionherojs.com/tutorials/core/actions.html), [**consume static content**](https://docs.actionherojs.com/tutorials/config-and-dev/file-server.html), and [**communicate with each other**](https://docs.actionherojs.com/tutorials/core/chat.html). ActionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more. ActionHero provides a simple Async/Await API for managing every type of connection and background task.
 
 Currently actionhero supports the following out of the box...
 
-- [Web Clients](https://docs.actionherojs.com/tutorial-web-server.html): HTTP, HTTPS
-- [Socket Clients](https://docs.actionherojs.com/tutorial-socket-server.html): TCP (telnet), TLS
-- [Web Socket Clients](https://docs.actionherojs.com/tutorial-websocket-server.html): HTTP, HTTPS
+- [Web Clients](https://docs.actionherojs.com/tutorials/core/servers/web-server.html): HTTP, HTTPS
+- [Web Socket Clients](https://docs.actionherojs.com/tutorials/core/servers/websocket-server.html): HTTP, HTTPS
 
-[... and you can also make your own servers and transports.](https://docs.actionherojs.com/ActionHero.Server.html)
+[... and you can also make your own servers and transports.](https://docs.actionherojs.com/tutorials/core/servers/index.html)
 
 ## Quick Start
 
@@ -91,33 +90,32 @@ Or deploy a free API server now:
 
 ### Core Components
 
-- [Actions](https://docs.actionherojs.com/tutorial-actions.html)
-- [Tasks](https://docs.actionherojs.com/tutorial-tasks.html)
-- [Middleware](https://docs.actionherojs.com/tutorial-middleware.html)
-- [Initializers](https://docs.actionherojs.com/tutorial-initializers.html)
-- [CLI Commands](https://docs.actionherojs.com/tutorial-cli.html)
-- [Configuration](https://docs.actionherojs.com/tutorial-config.html)
-- [Cluster](https://docs.actionherojs.com/tutorial-cluster.html)
-- [Chat & Realtime Communication](https://docs.actionherojs.com/tutorial-chat.html)
-- [File Server](https://docs.actionherojs.com/tutorial-file-server.html)
-- [Logging](https://docs.actionherojs.com/tutorial-logging.html)
-- [Plugins](https://docs.actionherojs.com/tutorial-plugins.html)
-- [Servers](https://docs.actionherojs.com/tutorial-servers.html)
-- [Localization & Translation](https://docs.actionherojs.com/tutorial-localization.html)
+- [Actions](https://docs.actionherojs.com/tutorials/core/actions.html)
+- [Tasks](https://docs.actionherojs.com/tutorials/core/tasks.html)
+- [Middleware](https://docs.actionherojs.com/tutorials/core/middleware.html)
+- [Initializers](https://docs.actionherojs.com/tutorials/core/initializers.html)
+- [CLI Commands](https://docs.actionherojs.com/tutorials/core/cli.html)
+- [Configuration](https://docs.actionherojs.com/tutorials/config-and-dev/config.html)
+- [Cluster](https://docs.actionherojs.com/tutorials/advanced/cluster.html)
+- [Chat & Realtime Communication](https://docs.actionherojs.com/tutorials/core/chat.html)
+- [File Server](https://docs.actionherojs.com/tutorials/config-and-dev/file-server.html)
+- [Logging](https://docs.actionherojs.com/tutorials/config-and-dev/logging.html)
+- [Plugins](https://docs.actionherojs.com/tutorials/advanced/plugins.html)
+- [Servers](https://docs.actionherojs.com/tutorials/core/servers/index.html)
+- [Localization & Translation](https://docs.actionherojs.com/tutorials/core/localization.html)
 
 ### Server Types
 
-- [Web Server & Routes](https://docs.actionherojs.com/tutorial-web-server.html)
-- [Socket Server](https://docs.actionherojs.com/tutorial-socket-server.html)
-- [WebSocket Server](https://docs.actionherojs.com/tutorial-websocket-server.html)
+- [Web Server & Routes](https://docs.actionherojs.com/tutorials/core/servers/web-server.html)
+- [WebSocket Server](https://docs.actionherojs.com/tutorials/core/servers/websocket-server.html)
 
 ### Testing, Deployment, and Operations
 
-- [Running ActionHero](https://docs.actionherojs.com/tutorial-running-actionhero.html)
-- [Development Mode & REPL](https://docs.actionherojs.com/tutorial-development-mode.html)
-- [Testing & SpecHelper](https://docs.actionherojs.com/tutorial-testing.html)
-- [Production Notes](https://docs.actionherojs.com/tutorial-production-notes.html)
-- [Upgrade Path](https://docs.actionherojs.com/tutorial-upgrade-path.html)
+- [Running ActionHero](https://docs.actionherojs.com/tutorials/config-and-dev/running-actionhero.html)
+- [Development Mode & REPL](https://docs.actionherojs.com/tutorials/config-and-dev/development-mode.html)
+- [Testing & SpecHelper](https://docs.actionherojs.com/tutorials/core/testing.html)
+- [Production Notes](https://docs.actionherojs.com/tutorials/advanced/production-notes.html)
+- [Upgrade Path](https://docs.actionherojs.com/tutorials/advanced/upgrade-path.html)
 
 ## Sample Projects
 
