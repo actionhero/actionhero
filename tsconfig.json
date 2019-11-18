@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "allowJs": true,
+    "module": "commonjs",
+    "target": "es2018"
+  },
+  "include": ["./src/**/*"]
+}

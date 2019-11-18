@@ -1,4 +1,4 @@
-version: '2'
+version: "2"
 services:
   haproxy:
     image: dockercloud/haproxy
@@ -6,7 +6,6 @@ services:
       - actionhero
     ports:
       - 80:8080
-      - 5000:5000
       - 1936:1936
     environment:
       STATS_AUTH: actionhero:actionhero
@@ -14,13 +13,14 @@ services:
       MONITOR_URI: /api/status
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+
   redis:
     image: redis
+
   actionhero:
     build: ./
     ports:
-     - 8080
-     - 5000
+      - 8080
     depends_on:
       - redis
     links:

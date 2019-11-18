@@ -1,6 +1,6 @@
-# ActionHero
+# Actionhero
 
-*The reusable, scalable, and quick node.js API server for stateless and stateful applications*
+_The reusable, scalable, and quick node.js API server for stateless and stateful applications_
 
 <div align="center">
   <img src="https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png" alt="ActionHero Logo" />
@@ -36,7 +36,8 @@
 </div>
 
 ## Who is the ActionHero?
-ActionHero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs for HTTP, WebSockets, and more.  Clients connected to an actionhero server can [**consume the api**](https://docs.actionherojs.com/tutorial-actions.html), [**consume static content**](https://docs.actionherojs.com/tutorial-file-server.html), and [**communicate with each other**](https://docs.actionherojs.com/tutorial-chat.html).  ActionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more.  ActionHero provides a simple Async/Await API for managing every type of connection and background task.
+
+ActionHero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs for HTTP, WebSockets, and more. Clients connected to an actionhero server can [**consume the api**](https://docs.actionherojs.com/tutorial-actions.html), [**consume static content**](https://docs.actionherojs.com/tutorial-file-server.html), and [**communicate with each other**](https://docs.actionherojs.com/tutorial-chat.html). ActionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more. ActionHero provides a simple Async/Await API for managing every type of connection and background task.
 
 Currently actionhero supports the following out of the box...
 
@@ -47,11 +48,26 @@ Currently actionhero supports the following out of the box...
 [... and you can also make your own servers and transports.](https://docs.actionherojs.com/ActionHero.Server.html)
 
 ## Quick Start
+
 ```bash
-# mkdir new_project; cd new_project
-npm install actionhero
+# Generate a new Project
 npx actionhero generate
-npm start
+npm install
+npm run build # <--- new! I compile the TS to JS
+npm run dev # <--- new! I use `ts-node` to let you develop on your ts files without compiling
+
+# Use the actionhero CLI
+(npx) actionhero generate action --name my_action
+(npx) actionhero generate task --name my_task --queue default --frequency 0
+
+# Test
+npm test
+# I'll run `prettier` and `build` for you first
+# I handle .ts files now!
+
+# To deploy your app
+npm run build # <--- new! I compile the TS to JS
+npm run start
 ```
 
 Your new project will come with example actions, tests, and more.
@@ -63,9 +79,10 @@ Or deploy a free API server now:
 ## Learn More 📚
 
 - [Getting Started @ www.actionherojs.com](https://www.actionherojs.com/get-started)
-  - ActionHero's marketing site can be found @ [https://github.com/actionhero/www.actionherojs.com/](https://github.com/actionhero/www.actionherojs.com/).  If you want to contribute to this site, visit the [related project](https://github.com/actionhero/www.actionherojs.com)
+  - ActionHero's marketing site can be found @ [https://github.com/actionhero/www.actionherojs.com/](https://github.com/actionhero/www.actionherojs.com/). If you want to contribute to this site, visit the [related project](https://github.com/actionhero/www.actionherojs.com)
 - [Read the documentation @ docs.actionherojs.com](http://docs.actionherojs.com/)
-  - Starting with ActionHero version 18, the documentation for each version is included in this repository (and the NPM package) in the `/docs` folder.  The current version of this documentation is also automatically deployed to https://docs.actionherojs.com.
+  - ---> Start with the [Tutorials](https://docs.actionherojs.com/tutorials/index.html) <---
+  - Starting with ActionHero version 18, the documentation for each version is included in this repository (and the NPM package) in the `/docs` folder. The current version of this documentation is also automatically deployed to https://docs.actionherojs.com.
 - [Find community-based resources](https://github.com/l0oky/awesome-actionhero)
 - [Interact with the Community & View the Release History](https://www.actionherojs.com/community)
 - [Server Client](https://github.com/actionhero/actionhero-client)
@@ -73,6 +90,7 @@ Or deploy a free API server now:
 ## In-depth Tutorials 🎓
 
 ### Core Components
+
 - [Actions](https://docs.actionherojs.com/tutorial-actions.html)
 - [Tasks](https://docs.actionherojs.com/tutorial-tasks.html)
 - [Middleware](https://docs.actionherojs.com/tutorial-middleware.html)
@@ -88,11 +106,13 @@ Or deploy a free API server now:
 - [Localization & Translation](https://docs.actionherojs.com/tutorial-localization.html)
 
 ### Server Types
+
 - [Web Server & Routes](https://docs.actionherojs.com/tutorial-web-server.html)
 - [Socket Server](https://docs.actionherojs.com/tutorial-socket-server.html)
 - [WebSocket Server](https://docs.actionherojs.com/tutorial-websocket-server.html)
 
 ### Testing, Deployment, and Operations
+
 - [Running ActionHero](https://docs.actionherojs.com/tutorial-running-actionhero.html)
 - [Development Mode & REPL](https://docs.actionherojs.com/tutorial-development-mode.html)
 - [Testing & SpecHelper](https://docs.actionherojs.com/tutorial-testing.html)
@@ -100,6 +120,7 @@ Or deploy a free API server now:
 - [Upgrade Path](https://docs.actionherojs.com/tutorial-upgrade-path.html)
 
 ## Sample Projects
+
 - [Simple](https://github.com/actionhero/actionhero-tutorial)
 - [Elaborate (Angular, Sequelize)](https://github.com/actionhero/actionhero-angular-bootstrap-cors-csrf)
 - [Client Use: React](https://github.com/actionhero/actionhero-react-next-chat)
@@ -107,11 +128,12 @@ Or deploy a free API server now:
 
 ## Who?
 
-* Many folks [have helped](https://github.com/actionhero/actionhero/graphs/contributors) to make ActionHero a reality.
-* If you want to contribute to actionhero, contribute to the conversation on [github](https://github.com/actionhero/actionhero) and join us on [slack](https://slack.actionherojs.com)
+- Many folks [have helped](https://github.com/actionhero/actionhero/graphs/contributors) to make ActionHero a reality.
+- If you want to contribute to actionhero, contribute to the conversation on [github](https://github.com/actionhero/actionhero) and join us on [slack](https://slack.actionherojs.com)
 
 ## Contributing
-* Contributing to ActionHero is easy!  [You can learn more about contributing to ActionHero here](https://github.com/actionhero/actionhero/blob/master/.github/CONTRIBUTING.md)
+
+- Contributing to ActionHero is easy! [You can learn more about contributing to ActionHero here](https://github.com/actionhero/actionhero/blob/master/.github/CONTRIBUTING.md)
 
 ## License
 

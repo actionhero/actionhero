@@ -3,7 +3,7 @@ version: 2
 # Define common steps all parts of the test workflow use
 references:
   ignored-branches: &ignored-branches
-     branches:
+    branches:
       ignore:
         - gh-pages
 
@@ -25,11 +25,17 @@ references:
           name: display-npm-version
           command: npm --version
       - run:
+          name: install ts-ndoe globally
+          command: sudo npm install -g ts-node
+      - run:
           name: test-log-setup
           command: mkdir -p ./log
       - run:
           name: test-reporter-setup
           command: mkdir ./junit
+      - run:
+          name: prepare
+          command: npm run prepare
       - run:
           name: test
           command: ./node_modules/.bin/jest --ci --reporters=jest-junit --reporters=default --runInBand
@@ -73,7 +79,7 @@ jobs:
           <<: *cache-options
       - run:
           name: linter
-          command: ./node_modules/.bin/standard
+          command: npm run lint
 
   test-node-v8:
     docker:

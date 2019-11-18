@@ -1,0 +1,41 @@
+|
+|- boot.js
+|- src
+|  - config
+|    - (project settings)
+|
+|  - actions
+|    -- (your actions)
+|
+|  - initializers
+|    -- (any additional initializers you want)
+|
+|  - servers
+|    -- (custom servers you may make)
+|
+|  - tasks
+|    -- (your tasks)
+|
+|  - bin
+|    -- (your custom CLI commands)
+|
+|- locales
+|-- (translation files)
+|
+|- __tests__
+|-- (tests for your API)
+|
+| - log
+|-- (default location for logs)
+|
+|- node_modules
+|-- (your modules, actionhero should be npm installed in here)
+|
+|- pids
+|-- (pidfiles for your running servers)
+|
+|- public
+|-- (your static assets to be served by /file)
+|
+readme.md
+package.json
