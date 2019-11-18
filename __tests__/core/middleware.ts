@@ -52,7 +52,7 @@ describe("Core: Middleware", () => {
       expect(_preProcessorNote).toEqual("slept");
     });
 
-    test("can define a local preProcessor and it will not append the connection", async () => {
+    test("can define a local preProcessor and it will not append the connection when not applied to the action", async () => {
       api.actions.addMiddleware({
         name: "test middleware",
         global: false,
@@ -69,6 +69,8 @@ describe("Core: Middleware", () => {
     });
 
     describe("midleware can read properties of the action template", () => {
+      const sessions = [];
+
       beforeAll(() => {
         api.actions.versions.authAction = [1];
         api.actions.actions.authAction = {
@@ -77,8 +79,9 @@ describe("Core: Middleware", () => {
             description: "I am a test",
             version: 1,
             authenticated: true,
-            run: data => {
-              data.response.thing = "stuff";
+            run: ({ response, session }) => {
+              sessions.push(session);
+              response.thing = "stuff";
             }
           }
         };
@@ -107,6 +110,20 @@ describe("Core: Middleware", () => {
 
         const authResponse = await api.specHelper.runAction("authAction");
         expect(authResponse.authenticatedAction).toEqual(true);
+      });
+
+      test("middleware can add data to the session", async () => {
+        api.actions.addMiddleware({
+          name: "session middleware",
+          global: true,
+          preProcessor: async data => {
+            data.session = { id: "abc123" };
+          }
+        });
+
+        await api.specHelper.runAction("authAction");
+        const lastSession = sessions.pop();
+        expect(lastSession.id).toBe("abc123");
       });
     });
 

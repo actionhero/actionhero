@@ -24,6 +24,9 @@ export class ActionProcessor {
   duration: number;
   actionStatus: string | Error;
 
+  // allow for setting of any value via middleware
+  session: any;
+
   constructor(connection: Connection) {
     /// Only in files required by `index.js` do we need to delay the loading of the API object
     // This is due to cyclical require issues
@@ -43,6 +46,7 @@ export class ActionProcessor {
     this.response = {};
     this.duration = null;
     this.actionStatus = null;
+    this.session = {};
   }
 
   private incrementTotalActions(count = 1) {

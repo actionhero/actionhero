@@ -361,6 +361,7 @@ data = {
   params: { action: 'randomNumber', apiVersion: 1 },
   actionStartTime: 123,
   response: {},
+  session: {}
 }
 ```
 

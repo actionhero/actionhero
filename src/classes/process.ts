@@ -139,7 +139,13 @@ export class Process {
       const file = path.normalize(f);
       delete require.cache[require.resolve(file)];
 
-      const exportedClasses = require(file);
+      let exportedClasses = require(file);
+
+      // allow for old-js style single default exports
+      if (typeof exportedClasses === "function") {
+        exportedClasses = { default: exportedClasses };
+      }
+
       if (Object.keys(exportedClasses).length === 0) {
         this.fatalError(
           new Error(`no exported intializers found in ${file}`),
