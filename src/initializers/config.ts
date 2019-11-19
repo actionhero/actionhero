@@ -23,16 +23,7 @@ export class Config extends Initializer {
       api.utils.hashMerge(api, api._startingParams.api);
     }
 
-    api.env = "development";
-
-    if (argv.NODE_ENV) {
-      api.env = argv.NODE_ENV;
-    } else if (process.env.NODE_ENV) {
-      api.env = process.env.NODE_ENV;
-    }
-
     // reloading in development mode
-
     api.watchedFiles = api.watchedFiles || {};
     api.watchFileAndAct = (file, handler) => {
       file = path.normalize(file);
