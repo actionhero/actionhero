@@ -4,6 +4,7 @@ import * as path from "path";
 import * as fs from "fs";
 import * as optimist from "optimist";
 import { spawn } from "child_process";
+import { projectRoot } from "./../classes/process/projectRoot";
 
 interface RunnerInputs {
   [propName: string]: any;
@@ -12,18 +13,6 @@ interface RunnerInputs {
 interface Runner {
   name: string;
   inputs: RunnerInputs;
-}
-
-let projectRoot: string;
-
-if (process.env.projectRoot) {
-  projectRoot = process.env.projectRoot;
-} else if (process.env.project_root) {
-  projectRoot = process.env.project_root;
-} else if (process.env.PROJECT_ROOT) {
-  projectRoot = process.env.PROJECT_ROOT;
-} else {
-  projectRoot = path.normalize(process.cwd());
 }
 
 (async () => {
@@ -87,21 +76,7 @@ if (process.env.projectRoot) {
     api.projectRoot = projectRoot;
     api.actionheroRoot = actionheroRoot;
 
-    // reload utils, as they won't have been loaded yet
     try {
-      const ExportedUtilClasses = require(path.normalize(
-        path.join(__dirname, "/../initializers/utils")
-      ));
-
-      if (Object.keys(ExportedUtilClasses).length > 1) {
-        throw new Error("actionhero CLI files should only export one method");
-      }
-
-      const utils = new ExportedUtilClasses[
-        Object.keys(ExportedUtilClasses)[0]
-      ]();
-      await utils.initialize();
-
       // when generating the project from scratch, we cannot rely on the normal initilizers
       const ExportedRunnerClasses = require(path.join(
         __dirname,

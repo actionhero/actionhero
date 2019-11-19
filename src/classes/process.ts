@@ -1,10 +1,18 @@
 import * as path from "path";
 import * as glob from "glob";
-import { Api } from "./api";
+import { Config } from "./config";
 import { Initializer } from "./initializer";
 import { Initializers } from "./initializers";
+import { arrayUniqueify } from "./../utils/arrayUniqueify";
+import { ensureNoTsHeaderFiles } from "./../utils/ensureNoTsHeaderFiles";
 
-let api: Api;
+import { id } from "./process/id";
+
+export { env } from "./process/env";
+export { actionheroVersion } from "./process/actionheroVersion";
+export { projectRoot } from "./process/projectRoot";
+export { typescript } from "./process/typescript";
+export { id } from "./process/id";
 
 export class Process {
   initializers: Initializers;
@@ -12,37 +20,21 @@ export class Process {
   loadInitializers: Array<Function>;
   startInitializers: Array<Function>;
   stopInitializers: Array<Function>;
+  _startingParams: {
+    [key: string]: any;
+  };
 
   constructor() {
-    // Only in files required by `index.js` do we need to delay the loading of the API object
-    // This is due to cyclical require issues
-    api = require("./../index").api;
-
     this.initializers = {};
     this.loadInitializers = [];
     this.startInitializers = [];
     this.stopInitializers = [];
 
     this.startCount = 0;
-
-    api.commands = {
-      initialize: async (params: object) => {
-        return this.initialize(params);
-      },
-      start: async (params: object) => {
-        return this.start(params);
-      },
-      stop: async (callback: Function) => {
-        return this.stop();
-      },
-      restart: async (callback: Function) => {
-        return this.restart();
-      }
-    };
   }
 
   async initialize(params: object = {}) {
-    api._startingParams = params;
+    this._startingParams = params;
 
     const loadInitializerRankings = {};
     const startInitializerRankings = {};
@@ -69,7 +61,7 @@ export class Process {
 
         try {
           initializer.validate();
-          await initializer.initialize(api);
+          await initializer.initialize();
           this.initializers[initializer.name] = initializer;
         } catch (error) {
           this.fatalError(error, initializer);
@@ -103,7 +95,7 @@ export class Process {
       }
     }
 
-    initializerFiles = api.utils.arrayUniqueify(initializerFiles);
+    initializerFiles = arrayUniqueify(initializerFiles);
     initializerFiles = initializerFiles.filter(file => {
       if (file.match("initializers/utils")) {
         return false;
@@ -115,7 +107,7 @@ export class Process {
       return true;
     });
 
-    initializerFiles = api.utils.ensureNoTsHeaderFiles(initializerFiles);
+    initializerFiles = ensureNoTsHeaderFiles(initializerFiles);
 
     initializerFiles.forEach(f => {
       const file = path.normalize(f);
@@ -303,6 +295,7 @@ export class Process {
     }
 
     api.running = true;
+    api.log(`environment: ${api.env}`, "notice");
     api.log("*** Starting ActionHero ***", "info");
 
     this.startInitializers.push(() => {
@@ -321,6 +314,7 @@ export class Process {
       return this.fatalError(error, "start");
     }
 
+    api.log(`server ID: ${id}`, "notice");
     return api;
   }
 
@@ -355,18 +349,16 @@ export class Process {
       } else {
         console.log(message);
       }
-      return api;
     }
   }
 
   async restart() {
     if (api.running === true) {
       await this.stop();
-      await this.start(api._startingParams);
+      await this.start(this._startingParams);
     } else {
-      await this.start(api._startingParams);
+      await this.start(this._startingParams);
     }
-    return api;
   }
 
   // HELPERS
@@ -414,6 +406,6 @@ export class Process {
   }
 }
 
-function sortNumber(a, b) {
+function sortNumber(a: number, b: number) {
   return a - b;
 }

@@ -55,7 +55,7 @@ Remember - you will be using `npm run dev` now when developing locally.
 ## Change all of your _.js files to _.ts
 
 - All the files you just moved into `src`
-  * Helpful rename command for *nix -> `for f in *.js; do mv -- "$f" "${f%.js}.ts"; done`
+  - Helpful rename command for _nix -> `for f in _.js; do mv -- "$f" "${f%.js}.ts"; done`
 - Change the imports from Require `const {thing} = require('thing')` to Import `import { thing } from 'thing'`
 - Change all the exports from Module `module.exports = ...` or `exports.thing = ...` to Generic `export const thing = ...`
 
@@ -114,3 +114,7 @@ const authenticatedTeamMemberMiddleware = {
   }
 };
 ```
+
+## Config and ID
+
+- `api.config.general.id` is removed.

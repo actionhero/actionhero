@@ -1,5 +1,5 @@
 export const DEFAULT = {
-  errors: api => {
+  errors: config => {
     return {
       _toExpand: false,
 

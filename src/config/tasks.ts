@@ -1,5 +1,5 @@
 export const DEFAULT = {
-  tasks: api => {
+  tasks: config => {
     return {
       // Should this node run a scheduler to promote delayed tasks?
       scheduler: false,
@@ -55,7 +55,7 @@ export const DEFAULT = {
 };
 
 export const test = {
-  tasks: api => {
+  tasks: config => {
     return {
       timeout: 100,
       checkTimeout: 50
