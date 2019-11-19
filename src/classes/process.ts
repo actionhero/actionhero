@@ -3,7 +3,6 @@ import * as glob from "glob";
 import { Api } from "./api";
 import { Initializer } from "./initializer";
 import { Initializers } from "./initializers";
-const packageJson = require(path.join(__dirname, "..", "..", "package.json"));
 
 let api: Api;
 
@@ -24,21 +23,6 @@ export class Process {
     this.startInitializers = [];
     this.stopInitializers = [];
 
-    let projectRoot = process.cwd();
-    if (process.env.project_root) {
-      projectRoot = process.env.project_root;
-    } else if (process.env.projectRoot) {
-      projectRoot = process.env.projectRoot;
-    } else if (process.env.PROJECT_ROOT) {
-      projectRoot = process.env.PROJECT_ROOT;
-    }
-
-    api.running = false;
-    api.initialized = false;
-    api.shuttingDown = false;
-    api.projectRoot = projectRoot;
-    api.bootTime = null;
-
     this.startCount = 0;
 
     api.commands = {
@@ -55,8 +39,6 @@ export class Process {
         return this.restart();
       }
     };
-
-    api.actionheroVersion = packageJson.version;
   }
 
   async initialize(params: object = {}) {
