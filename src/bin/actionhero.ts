@@ -29,7 +29,7 @@ interface Runner {
     }
   }
 
-  const { api, Process } = require(path.join(__dirname, "..", "index"));
+  const { config, Process } = require(path.join(__dirname, "..", "index"));
   const actionheroRoot = path.normalize(path.join(__dirname, ".."));
 
   const formatParams = (runner: Runner) => {
@@ -73,9 +73,6 @@ interface Runner {
   };
 
   const handleUnbuiltProject = async (commands: Array<string>) => {
-    api.projectRoot = projectRoot;
-    api.actionheroRoot = actionheroRoot;
-
     try {
       // when generating the project from scratch, we cannot rely on the normal initilizers
       const ExportedRunnerClasses = require(path.join(
@@ -113,28 +110,22 @@ interface Runner {
       }
 
       await actionHeroProcess.initialize({ configChanges });
-      if (!api.projectRoot) {
-        api.projectRoot = projectRoot;
-      }
-      if (!api.actionheroRoot) {
-        api.actionheroRoot = actionheroRoot;
-      }
-      api._context = actionHeroProcess;
+
       let ExportedClasses;
 
       let p: string;
       p = path.join(__dirname, "methods", commands.join(path.sep) + ".js");
-      if (fs.existsSync(p) && api.config.general.cliIncludeInternal !== false) {
+      if (fs.existsSync(p) && config.general.cliIncludeInternal !== false) {
         ExportedClasses = require(p);
       }
 
       p = path.join(__dirname, "methods", commands.join(path.sep) + ".ts");
-      if (fs.existsSync(p) && api.config.general.cliIncludeInternal !== false) {
+      if (fs.existsSync(p) && config.general.cliIncludeInternal !== false) {
         ExportedClasses = require(p);
       }
 
       if (!ExportedClasses) {
-        api.config.general.paths.cli.forEach((cliPath: string) => {
+        config.general.paths.cli.forEach((cliPath: string) => {
           p = path.join(cliPath, commands.join(path.sep) + ".js");
           if (fs.existsSync(p)) {
             ExportedClasses = require(p);
@@ -148,9 +139,9 @@ interface Runner {
       }
 
       if (!ExportedClasses) {
-        for (const pluginName in api.config.plugins) {
-          if (api.config.plugins[pluginName].cli !== false) {
-            const pluginPath = api.config.plugins[pluginName].path;
+        for (const pluginName in config.plugins) {
+          if (config.plugins[pluginName].cli !== false) {
+            const pluginPath = config.plugins[pluginName].path;
             p = path.join(pluginPath, "bin", commands.join(path.sep) + ".js");
             if (fs.existsSync(p)) {
               ExportedClasses = require(p);

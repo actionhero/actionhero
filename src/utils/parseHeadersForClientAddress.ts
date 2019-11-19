@@ -1,3 +1,5 @@
+import { parseIPv6URI } from "./parseIPv6URI";
+
 /**
  * Return ip and port information if defined in the header
  */
@@ -28,7 +30,7 @@ export function parseHeadersForClientAddress(
       }
     } else {
       // IPv6
-      parts = api.utils.parseIPv6URI(forwardedIp);
+      parts = parseIPv6URI(forwardedIp);
       if (parts.host) {
         ip = parts.host;
       }

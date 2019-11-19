@@ -1,8 +1,30 @@
+/// <reference path="./../../node_modules/@types/ioredis/index.d.ts" />
+
+import * as IORedis from "ioredis";
 import * as uuid from "uuid";
-import { api, Initializer } from "../index";
+import * as dotProp from "dot-prop";
+import { api, config, id, log, Initializer } from "../index";
 
 export interface PubSubMessage {
   [key: string]: any;
+}
+
+export interface RedisApi {
+  clients: {
+    [key: string]: IORedis.Redis;
+  };
+  subscriptionHandlers: {
+    [key: string]: Function;
+  };
+  rpcCallbacks: {
+    [key: string]: any;
+  };
+  status: {
+    subscribed: boolean;
+  };
+  publish?: Function;
+  doCluster?: Function;
+  respondCluster?: Function;
 }
 
 /**
@@ -18,16 +40,17 @@ export class Redis extends Initializer {
   }
 
   async initialize() {
-    if (api.config.redis.enabled === false) {
+    if (config.redis.enabled === false) {
       return;
     }
 
-    api.redis = {};
-    api.redis.clients = {};
-    api.redis.subscriptionHandlers = {};
-    api.redis.rpcCallbacks = {};
-    api.redis.status = {
-      subscribed: false
+    api.redis = {
+      clients: {},
+      subscriptionHandlers: {},
+      rpcCallbacks: {},
+      status: {
+        subscribed: false
+      }
     };
 
     /**
@@ -43,7 +66,7 @@ export class Redis extends Initializer {
      * ```
      */
     api.redis.publish = async (payload: object | Array<any>) => {
-      const channel = api.config.general.channel;
+      const channel = config.general.channel;
       return api.redis.clients.client.publish(channel, JSON.stringify(payload));
     };
 
@@ -59,7 +82,7 @@ export class Redis extends Initializer {
             "cannot operate on a method outside of the api object"
           );
         }
-        const method = api.utils.dotProp.get(api, cmdParts.join("."));
+        const method: Function = dotProp.get(api, cmdParts.join("."));
         let args = message.args;
         if (args === null) {
           args = [];
@@ -71,10 +94,7 @@ export class Redis extends Initializer {
           const response = await method.apply(null, args);
           await api.redis.respondCluster(message.messageId, response);
         } else {
-          api.log(
-            "RPC method `" + cmdParts.join(".") + "` not found",
-            "warning"
-          );
+          log("RPC method `" + cmdParts.join(".") + "` not found", "warning");
         }
       }
     };
@@ -102,8 +122,8 @@ export class Redis extends Initializer {
       const messageId = uuid.v4();
       const payload = {
         messageType: "do",
-        serverId: api.id,
-        serverToken: api.config.general.serverToken,
+        serverId: id,
+        serverToken: config.general.serverToken,
         messageId: messageId,
         method: method,
         connectionId: connectionId,
@@ -117,7 +137,7 @@ export class Redis extends Initializer {
         return new Promise(async (resolve, reject) => {
           const timer = setTimeout(
             () => reject(new Error("RPC Timeout")),
-            api.config.general.rpcTimeout
+            config.general.rpcTimeout
           );
           api.redis.rpcCallbacks[messageId] = { timer, resolve, reject };
           try {
@@ -139,8 +159,8 @@ export class Redis extends Initializer {
     ) => {
       const payload = {
         messageType: "doResponse",
-        serverId: api.id,
-        serverToken: api.config.general.serverToken,
+        serverId: id,
+        serverToken: config.general.serverToken,
         messageId: messageId,
         response: response // args to pass back, including error
       };
@@ -151,37 +171,37 @@ export class Redis extends Initializer {
     const connectionNames = ["client", "subscriber", "tasks"];
     for (var i in connectionNames) {
       const r = connectionNames[i];
-      if (api.config.redis[r].buildNew === true) {
-        const args = api.config.redis[r].args;
-        api.redis.clients[r] = new api.config.redis[r].konstructor(
+      if (config.redis[r].buildNew === true) {
+        const args = config.redis[r].args;
+        api.redis.clients[r] = new config.redis[r].konstructor(
           args[0],
           args[1],
           args[2]
         );
 
         api.redis.clients[r].on("error", error => {
-          api.log(`Redis connection \`${r}\` error`, "alert", error);
+          log(`Redis connection \`${r}\` error`, "alert", error);
         });
 
         api.redis.clients[r].on("connect", () => {
-          api.log(`Redis connection \`${r}\` connected`, "debug");
+          log(`Redis connection \`${r}\` connected`, "debug");
         });
       } else {
-        api.redis.clients[r] = api.config.redis[r].konstructor.apply(
+        api.redis.clients[r] = config.redis[r].konstructor.apply(
           null,
-          api.config.redis[r].args
+          config.redis[r].args
         );
         api.redis.clients[r].on("error", error => {
-          api.log(`Redis connection \`${r}\` error`, "alert", error);
+          log(`Redis connection \`${r}\` error`, "alert", error);
         });
-        api.log(`Redis connection \`${r}\` connected`, "debug");
+        log(`Redis connection \`${r}\` connected`, "debug");
       }
 
       await api.redis.clients[r].get("_test");
     }
 
     if (!api.redis.status.subscribed) {
-      await api.redis.clients.subscriber.subscribe(api.config.general.channel);
+      await api.redis.clients.subscriber.subscribe(config.general.channel);
       api.redis.status.subscribed = true;
 
       const messageHandler = async (
@@ -196,8 +216,8 @@ export class Redis extends Initializer {
         }
 
         if (
-          messageChannel === api.config.general.channel &&
-          message.serverToken === api.config.general.serverToken
+          messageChannel === config.general.channel &&
+          message.serverToken === config.general.serverToken
         ) {
           if (api.redis.subscriptionHandlers[message.messageType]) {
             await api.redis.subscriptionHandlers[message.messageType](message);
@@ -210,24 +230,24 @@ export class Redis extends Initializer {
   }
 
   async start() {
-    if (api.config.redis.enabled === false) {
-      api.log("redis is disabled", "notice");
+    if (config.redis.enabled === false) {
+      log("redis is disabled", "notice");
     } else {
       await api.redis.doCluster("api.log", [
-        `actionhero member ${api.id} has joined the cluster`
+        `actionhero member ${id} has joined the cluster`
       ]);
     }
   }
 
   async stop() {
-    if (api.config.redis.enabled === false) {
+    if (config.redis.enabled === false) {
       return;
     }
 
     await api.redis.clients.subscriber.unsubscribe();
     api.redis.status.subscribed = false;
     await api.redis.doCluster("api.log", [
-      `actionhero member ${api.id} has left the cluster`
+      `actionhero member ${id} has left the cluster`
     ]);
 
     const keys = Object.keys(api.redis.clients);
@@ -235,7 +255,9 @@ export class Redis extends Initializer {
       const client = api.redis.clients[keys[i]];
       if (typeof client.quit === "function") {
         await client.quit();
+        //@ts-ignore
       } else if (typeof client.end === "function") {
+        //@ts-ignore
         await client.end();
       } else if (typeof client.disconnect === "function") {
         await client.disconnect();

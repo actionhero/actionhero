@@ -1,6 +1,15 @@
 import * as glob from "glob";
 import * as path from "path";
-import { api, Initializer } from "../index";
+import {
+  api,
+  config,
+  log,
+  watchFileAndAct,
+  Initializer,
+  Action
+} from "../index";
+import { sortGlobalMiddleware } from "./../utils/sortGlobalMiddleware";
+import { ensureNoTsHeaderFiles } from "./../utils/ensureNoTsHeaderFiles";
 
 /**
  * var middleware = {
@@ -30,6 +39,23 @@ export interface ActionMiddleware {
   postProcessor?: Function;
 }
 
+export interface ActionsApi {
+  actions: {
+    [key: string]: {
+      [key: string]: Action;
+    };
+  };
+  versions: {
+    [key: string]: Array<string | number>;
+  };
+  middleware: {
+    [key: string]: ActionMiddleware;
+  };
+  globalMiddleware: Array<string>;
+  addMiddleware?: Function;
+  loadFile?: Function;
+}
+
 export class Actions extends Initializer {
   constructor() {
     super();
@@ -53,13 +79,13 @@ export class Actions extends Initializer {
         throw new Error("middleware.name is required");
       }
       if (!data.priority) {
-        data.priority = api.config.general.defaultMiddlewarePriority;
+        data.priority = config.general.defaultMiddlewarePriority;
       }
       data.priority = Number(data.priority);
       api.actions.middleware[data.name] = data;
       if (data.global === true) {
         api.actions.globalMiddleware.push(data.name);
-        api.utils.sortGlobalMiddleware(
+        sortGlobalMiddleware(
           api.actions.globalMiddleware,
           api.actions.middleware
         );
@@ -73,26 +99,26 @@ export class Actions extends Initializer {
 
       const loadMessage = action => {
         if (reload) {
-          api.log(
+          log(
             `action reloaded: ${action.name} @ v${action.version}, ${fullFilePath}`,
             "info"
           );
         } else {
-          api.log(
+          log(
             `action loaded: ${action.name} @ v${action.version}, ${fullFilePath}`,
             "debug"
           );
         }
       };
 
-      api.watchFileAndAct(fullFilePath, async () => {
-        if (!api.config.general.developmentModeForceRestart) {
+      watchFileAndAct(fullFilePath, async () => {
+        if (!config.general.developmentModeForceRestart) {
           // reload by updating in-memory copy of our action
           api.actions.loadFile(fullFilePath, true);
           api.params.buildPostVariables();
           api.routes.loadRoutes();
         } else {
-          api.log(
+          log(
             `*** Rebooting due to action change (${fullFilePath}) ***`,
             "info"
           );
@@ -113,12 +139,13 @@ export class Actions extends Initializer {
           if (!api.actions.actions[action.name]) {
             api.actions.actions[action.name] = {};
           }
+
           if (!api.actions.versions[action.name]) {
             api.actions.versions[action.name] = [];
           }
 
           if (api.actions.actions[action.name][action.version] && !reload) {
-            api.log(
+            log(
               `an existing action with the same name \`${action.name}\` will be overridden by the file ${fullFilePath}`,
               "warning"
             );
@@ -139,22 +166,22 @@ export class Actions extends Initializer {
       }
     };
 
-    for (const i in api.config.general.paths.action) {
-      const p = api.config.general.paths.action[i];
+    for (const i in config.general.paths.action) {
+      const p = config.general.paths.action[i];
       let files = glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"));
-      files = api.utils.ensureNoTsHeaderFiles(files);
+      files = ensureNoTsHeaderFiles(files);
       for (const j in files) {
         await api.actions.loadFile(files[j]);
       }
     }
 
-    for (const pluginName in api.config.plugins) {
-      if (api.config.plugins[pluginName].actions !== false) {
-        const pluginPath = api.config.plugins[pluginName].path;
+    for (const pluginName in config.plugins) {
+      if (config.plugins[pluginName].actions !== false) {
+        const pluginPath = config.plugins[pluginName].path;
         let files = glob.sync(
           path.join(pluginPath, "actions", "**", "**/*(*.js|*.ts)")
         );
-        files = api.utils.ensureNoTsHeaderFiles(files);
+        files = ensureNoTsHeaderFiles(files);
         for (const j in files) {
           await api.actions.loadFile(files[j]);
         }

@@ -1,4 +1,11 @@
 import { api, Initializer } from "../index";
+import { arrayUniqueify } from "./../utils/arrayUniqueify";
+
+export interface ParamsApi {
+  globalSafeParams?: Array<string>;
+  postVariables: Array<string>;
+  buildPostVariables?: Function;
+}
 
 /**
  * Collects and formats allowed params for this server.
@@ -42,7 +49,7 @@ export class Params extends Initializer {
         }
       }
 
-      api.params.postVariables = api.utils.arrayUniqueify(postVariables);
+      api.params.postVariables = arrayUniqueify(postVariables);
       return api.params.postVariables;
     };
 

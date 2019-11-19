@@ -1,34 +1,47 @@
+import { ActionsApi } from "./../initializers/actions";
+import { TaskApi } from "./../initializers/tasks";
+import { ConnectionsApi } from "./../initializers/connections";
+import { ServersApi } from "./../initializers/servers";
+import { ChatRoomApi } from "./../initializers/chatRoom";
+import { ExceptionHandlerAPI } from "./../initializers/exceptions";
+import { ParamsApi } from "./../initializers/params";
+import { ResqueApi } from "./../initializers/resque";
+import { RedisApi } from "./../initializers/redis";
+import { StaticFileApi } from "./../initializers/staticFile";
+import { DocumentationApi } from "./../initializers/documentation";
+import { RoutesApi } from "./../initializers/routes";
+import { SpecHelperApi } from "./../initializers/specHelper";
+
 export class Api {
   running: boolean;
-  initialized: boolean;
-  shuttingDown: boolean;
-  projectRoot: string;
-  env: string;
-  actionheroVersion: string | number;
-  bootTime: number | null;
+
   commands: {
-    initialize: Function;
-    start: Function;
-    stop: Function;
-    restart: Function;
-  };
-  config: any;
-  utils: any;
-  log: Function;
-  watchFileAndAct: Function;
-  typescript: boolean;
-  _startingParams: {
-    [key: string]: any;
+    initialize?: Function;
+    start?: Function;
+    stop?: Function;
+    restart?: Function;
   };
 
-  // this is left in as way for older methods to still extend the api object
-  // going forward, all interfacaes should be exposed via export to be consumed directly
-  [key: string]: any;
+  connections: ConnectionsApi;
+  actions: ActionsApi;
+  tasks: TaskApi;
+  servers: ServersApi;
+  chatRoom: ChatRoomApi;
+  params: ParamsApi;
+  documentation: DocumentationApi;
+  staticFile: StaticFileApi;
+  redis: RedisApi;
+  resque: ResqueApi;
+  routes: RoutesApi;
+  exceptionHandlers: ExceptionHandlerAPI;
+  specHelper: SpecHelperApi;
+
+  // // this is left in as way for older methods to still extend the api object
+  // // going forward, all interfacaes should be exposed via export to be consumed directly
+  // [key: string]: any;
 
   constructor() {
     this.running = false;
-    this.initialized = false;
-    this.shuttingDown = false;
-    this.bootTime = null;
+    this.commands = {};
   }
 }

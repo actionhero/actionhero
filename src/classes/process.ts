@@ -1,5 +1,6 @@
 import * as path from "path";
 import * as glob from "glob";
+import { Api } from "./api";
 import { config } from "./config";
 import { log } from "./log";
 import { Initializer } from "./initializer";
@@ -13,6 +14,8 @@ import { id } from "./process/id";
 import { env } from "./process/env";
 import { pid, writePidFile, clearPidFile } from "./process/pid";
 import { watchFileAndAct, unWatchAllFiles } from "./process/watchFileAndAct";
+
+let api: Api;
 
 export class Process {
   running: boolean;
@@ -29,12 +32,32 @@ export class Process {
   };
 
   constructor() {
+    // Only in files required by `index.js` do we need to delay the loading of the API object
+    // This is due to cyclical require issues
+    api = require("../index").api;
+
     this.initializers = {};
     this.loadInitializers = [];
     this.startInitializers = [];
     this.stopInitializers = [];
 
     this.startCount = 0;
+
+    api.commands.initialize = (...args) => {
+      this.initialize(...args);
+    };
+
+    api.commands.start = (...args) => {
+      this.start(...args);
+    };
+
+    api.commands.stop = () => {
+      this.stop();
+    };
+
+    api.commands.restart = () => {
+      this.restart();
+    };
   }
 
   async initialize(params: object = {}) {
@@ -240,6 +263,7 @@ export class Process {
     }
 
     this.running = true;
+    api.running = true;
     log(`environment: ${env}`, "notice");
     log("*** Starting ActionHero ***", "info");
 
@@ -276,6 +300,7 @@ export class Process {
         delete this.shuttingDown;
         // reset initializers to prevent duplicate check on restart
         this.initializers = {};
+        api.running = false;
       });
 
       try {

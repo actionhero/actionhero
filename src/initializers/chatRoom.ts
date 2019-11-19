@@ -1,4 +1,4 @@
-import { api, Initializer } from "../index";
+import { api, id, log, config, Initializer } from "../index";
 import { Connection } from "../classes/connection";
 import { PubSubMessage } from "../initializers/redis";
 
@@ -59,6 +59,30 @@ export interface ChatPubSubMessage extends PubSubMessage {
   };
 }
 
+export interface ChatRoomApi {
+  middleware: {
+    [key: string]: ChatMiddleware;
+  };
+  globalMiddleware: Array<string>;
+  keys: { [keys: string]: string };
+  messageChannel: string;
+  addMiddleware?: Function;
+  broadcast?: Function;
+  generateMessagePayload?: Function;
+  runMiddleware?: Function;
+  incomingMessagePerConnection?: Function;
+  incomingMessage?: Function;
+  list?: Function;
+  add?: Function;
+  exists?: Function;
+  destroy?: Function;
+  removeMember?: Function;
+  sanitizeMemberDetails?: Function;
+  roomStatus?: Function;
+  generateMemberDetails?: Function;
+  addMember?: Function;
+}
+
 /**
  * Chat & Realtime Communication Methods
  */
@@ -71,7 +95,7 @@ export class ChatRoom extends Initializer {
   }
 
   async initialize() {
-    if (api.config.redis.enabled === false) {
+    if (config.redis.enabled === false) {
       return;
     }
 
@@ -93,7 +117,7 @@ export class ChatRoom extends Initializer {
         throw new Error("middleware.name is required");
       }
       if (!data.priority) {
-        data.priority = api.config.general.defaultMiddlewarePriority;
+        data.priority = config.general.defaultMiddlewarePriority;
       }
       data.priority = Number(data.priority);
       api.chatRoom.middleware[data.name] = data;
@@ -120,15 +144,15 @@ export class ChatRoom extends Initializer {
       message: object | Array<any> | string
     ) => {
       if (!room || !message) {
-        throw new Error(api.config.errors.connectionRoomAndMessage(connection));
+        throw new Error(config.errors.connectionRoomAndMessage(connection));
       } else if (
         connection.rooms === undefined ||
         connection.rooms.indexOf(room) > -1
       ) {
         const payload: ChatPubSubMessage = {
           messageType: "chat",
-          serverToken: api.config.general.serverToken,
-          serverId: api.id,
+          serverToken: config.general.serverToken,
+          serverId: id,
           message: message,
           sentAt: new Date().getTime(),
           connection: {
@@ -146,8 +170,8 @@ export class ChatRoom extends Initializer {
         );
         const payloadToSend: ChatPubSubMessage = {
           messageType: "chat",
-          serverToken: api.config.general.serverToken,
-          serverId: api.id,
+          serverToken: config.general.serverToken,
+          serverId: id,
           message: newPayload.message,
           sentAt: newPayload.sentAt,
           connection: {
@@ -158,9 +182,7 @@ export class ChatRoom extends Initializer {
 
         await api.redis.publish(payloadToSend);
       } else {
-        throw new Error(
-          api.config.errors.connectionNotInRoom(connection, room)
-        );
+        throw new Error(config.errors.connectionNotInRoom(connection, room));
       }
     };
 
@@ -200,7 +222,7 @@ export class ChatRoom extends Initializer {
           );
           connection.sendMessage(newMessagePayload, "say");
         } catch (error) {
-          api.log(error, "warning", { messagePayload, connection });
+          log(error, "warning", { messagePayload, connection });
         }
       }
     };
@@ -220,7 +242,7 @@ export class ChatRoom extends Initializer {
       if (found === false) {
         return api.redis.clients.client.sadd(api.chatRoom.keys.rooms, room);
       } else {
-        throw new Error(await api.config.errors.connectionRoomExists(room));
+        throw new Error(await config.errors.connectionRoomExists(room));
       }
     };
 
@@ -233,7 +255,7 @@ export class ChatRoom extends Initializer {
         await api.chatRoom.broadcast(
           {},
           room,
-          await api.config.errors.connectionRoomHasBeenDeleted(room)
+          await config.errors.connectionRoomHasBeenDeleted(room)
         );
         const membersHash = await api.redis.clients.client.hgetall(
           api.chatRoom.keys.members + room
@@ -246,7 +268,7 @@ export class ChatRoom extends Initializer {
         await api.redis.clients.client.srem(api.chatRoom.keys.rooms, room);
         await api.redis.clients.client.del(api.chatRoom.keys.members + room);
       } else {
-        throw new Error(await api.config.errors.connectionRoomNotExist(room));
+        throw new Error(await config.errors.connectionRoomNotExist(room));
       }
     };
 
@@ -259,6 +281,7 @@ export class ChatRoom extends Initializer {
         room
       );
       let found = false;
+      // @ts-ignore
       if (bool === 1 || bool === true) {
         found = true;
       }
@@ -300,10 +323,10 @@ export class ChatRoom extends Initializer {
             membersCount: count
           };
         } else {
-          throw new Error(await api.config.errors.connectionRoomNotExist(room));
+          throw new Error(await config.errors.connectionRoomNotExist(room));
         }
       } else {
-        throw new Error(await api.config.errors.connectionRoomRequired());
+        throw new Error(await config.errors.connectionRoomRequired());
       }
     };
 
@@ -314,7 +337,7 @@ export class ChatRoom extends Initializer {
       return {
         id: connection.id,
         joinedAt: new Date().getTime(),
-        host: api.id
+        host: id
       };
     };
 
@@ -337,14 +360,14 @@ export class ChatRoom extends Initializer {
 
       if (connection.rooms.indexOf(room) >= 0) {
         throw new Error(
-          await api.config.errors.connectionAlreadyInRoom(connection, room)
+          await config.errors.connectionAlreadyInRoom(connection, room)
         );
       }
 
       if (connection.rooms.indexOf(room) < 0) {
         const found = await api.chatRoom.exists(room);
         if (!found) {
-          throw new Error(await api.config.errors.connectionRoomNotExist(room));
+          throw new Error(await config.errors.connectionRoomNotExist(room));
         }
       }
 
@@ -386,14 +409,14 @@ export class ChatRoom extends Initializer {
 
       if (connection.rooms.indexOf(room) < 0) {
         throw new Error(
-          await api.config.errors.connectionNotInRoom(connection, room)
+          await config.errors.connectionNotInRoom(connection, room)
         );
       }
 
       if (connection.rooms.indexOf(room) >= 0) {
         const found = await api.chatRoom.exists(room);
         if (!found) {
-          throw new Error(await api.config.errors.connectionRoomNotExist(room));
+          throw new Error(await config.errors.connectionRoomNotExist(room));
         }
       }
 
@@ -446,7 +469,7 @@ export class ChatRoom extends Initializer {
   }
 
   async start() {
-    if (api.config.redis.enabled === false) {
+    if (config.redis.enabled === false) {
       return;
     }
 
@@ -456,17 +479,17 @@ export class ChatRoom extends Initializer {
       }
     };
 
-    if (api.config.general.startingChatRooms) {
-      const rooms = Object.keys(api.config.general.startingChatRooms);
+    if (config.general.startingChatRooms) {
+      const rooms = Object.keys(config.general.startingChatRooms);
       for (const room of rooms) {
-        api.log(`ensuring the existence of the chatRoom: ${room}`);
+        log(`ensuring the existence of the chatRoom: ${room}`);
         try {
           await api.chatRoom.add(room);
         } catch (error) {
           if (
             !error
               .toString()
-              .match(await api.config.errors.connectionRoomExists(room))
+              .match(await config.errors.connectionRoomExists(room))
           ) {
             throw error;
           }

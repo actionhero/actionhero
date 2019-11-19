@@ -1,4 +1,6 @@
 import { isPlainObject } from "./isPlainObject";
+import { config } from "./../classes/config";
+import * as dotProp from "dot-prop";
 
 /**
  * Prepares acton params for logging.
@@ -13,15 +15,15 @@ export function filterObjectForLogging(params: object): object {
     } else if (typeof params[i] === "string") {
       filteredParams[i] = params[i].substring(
         0,
-        api.config.logger.maxLogStringLength
+        config.logger.maxLogStringLength
       );
     } else {
       filteredParams[i] = params[i];
     }
   }
-  api.config.general.filteredParams.forEach(configParam => {
-    if (api.utils.dotProp.get(params, configParam) !== undefined) {
-      api.utils.dotProp.set(filteredParams, configParam, "[FILTERED]");
+  config.general.filteredParams.forEach(configParam => {
+    if (dotProp.get(params, configParam) !== undefined) {
+      dotProp.set(filteredParams, configParam, "[FILTERED]");
     }
   });
   return filteredParams;

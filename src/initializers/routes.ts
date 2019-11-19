@@ -1,5 +1,15 @@
 import * as path from "path";
-import { api, Initializer } from "../index";
+import { api, config, log, Initializer } from "../index";
+import { arrayUniqueify } from "./../utils/arrayUniqueify";
+
+export interface RoutesApi {
+  routes: { [key: string]: any };
+  verbs: Array<string>;
+  processRoute?: Function;
+  matchURL?: Function;
+  registerRoute?: Function;
+  loadRoutes?: Function;
+}
 
 /**
  * Countains routing options for web clients.  Can associate routes with actions or files.
@@ -179,8 +189,8 @@ export class Routes extends Initializer {
       });
 
       if (!rawRoutes) {
-        if (api.config.routes) {
-          rawRoutes = api.config.routes;
+        if (config.routes) {
+          rawRoutes = config.routes;
         }
       }
 
@@ -216,18 +226,9 @@ export class Routes extends Initializer {
         }
       }
 
-      api.params.postVariables = api.utils.arrayUniqueify(
-        api.params.postVariables
-      );
-      api.log(
-        `${counter} routes loaded from ${api.routes.routesFile}`,
-        "debug"
-      );
+      api.params.postVariables = arrayUniqueify(api.params.postVariables);
 
-      if (
-        api.config.servers.web &&
-        api.config.servers.web.simpleRouting === true
-      ) {
+      if (config.servers.web && config.servers.web.simpleRouting === true) {
         const simplePaths = [];
         for (const action in api.actions.actions) {
           simplePaths.push("/" + action);
@@ -237,12 +238,12 @@ export class Routes extends Initializer {
             api.routes.registerRoute(verb, "/" + action, action);
           }
         }
-        api.log(
+        log(
           `${simplePaths.length} simple routes loaded from action names`,
           "debug"
         );
 
-        api.log("routes:", "debug", api.routes.routes);
+        log("routes:", "debug", api.routes.routes);
       }
     };
 

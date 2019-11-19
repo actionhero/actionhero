@@ -1,7 +1,10 @@
 import * as glob from "glob";
 import * as path from "path";
 import { Plugin } from "node-resque";
-import { api, Initializer } from "../index";
+import { api, config, log, Initializer, watchFileAndAct } from "../index";
+import { asyncWaterfall } from "./../utils/asyncWaterfall";
+import { ensureNoTsHeaderFiles } from "./../utils/ensureNoTsHeaderFiles";
+import { sortGlobalMiddleware } from "./../utils/sortGlobalMiddleware";
 
 /**
  * An exmaple middleware
@@ -49,6 +52,43 @@ export interface TaskMiddleware {
   postEnqueue?: Function;
 }
 
+export interface TaskApi {
+  tasks: { [key: string]: any };
+  jobs: { [key: string]: any };
+  middleware: { [key: string]: TaskMiddleware };
+  globalMiddleware: Array<string>;
+  loadFile?: Function;
+  jobWrapper?: Function;
+  enqueueRecurrentTask?: Function;
+  enqueue?: Function;
+  enqueueAt?: Function;
+  enqueueIn?: Function;
+  del?: Function;
+  delDelayed?: Function;
+  scheduledAt?: Function;
+  stats?: Function;
+  queued?: Function;
+  delQueue?: Function;
+  locks?: Function;
+  delLock?: Function;
+  timestamps?: Function;
+  delayedAt?: Function;
+  allDelayed?: Function;
+  workers?: Function;
+  workingOn?: Function;
+  allWorkingOn?: Function;
+  failed?: Function;
+  failedCount?: Function;
+  removeFailed?: Function;
+  retryAndRemoveFailed?: Function;
+  cleanOldWorkers?: Function;
+  enqueueAllRecurrentTasks?: Function;
+  details?: Function;
+  stopRecurrentTask?: Function;
+  loadTasks?: Function;
+  addMiddleware?: Function;
+}
+
 /**
  * Tools for enquing and inspecting the task sytem (delayed jobs).
  */
@@ -69,15 +109,12 @@ export class Tasks extends Initializer {
     };
 
     api.tasks.loadFile = (fullFilePath: string, reload: boolean = false) => {
-      api.watchFileAndAct(fullFilePath, async () => {
-        if (!api.config.general.developmentModeForceRestart) {
+      watchFileAndAct(fullFilePath, async () => {
+        if (!config.general.developmentModeForceRestart) {
           // reload by updating in-memory copy of our task
           api.tasks.loadFile(fullFilePath, true);
         } else {
-          api.log(
-            `*** Rebooting due to task change (${fullFilePath}) ***`,
-            "info"
-          );
+          log(`*** Rebooting due to task change (${fullFilePath}) ***`, "info");
           await api.commands.restart();
         }
       });
@@ -90,7 +127,7 @@ export class Tasks extends Initializer {
         task.validate();
 
         if (api.tasks.tasks[task.name] && !reload) {
-          api.log(
+          log(
             `an existing task with the same name \`${task.name}\` will be overridden by the file ${fullFilePath}`,
             "warning"
           );
@@ -98,7 +135,7 @@ export class Tasks extends Initializer {
 
         api.tasks.tasks[task.name] = task;
         api.tasks.jobs[task.name] = api.tasks.jobWrapper(task.name);
-        api.log(
+        log(
           `task ${reload ? "(re)" : ""} loaded: ${task.name}, ${fullFilePath}`,
           reload ? "info" : "debug"
         );
@@ -136,15 +173,19 @@ export class Tasks extends Initializer {
               //@ts-ignore
               super(...args);
               if (api.tasks.middleware[m].preProcessor) {
+                //@ts-ignore
                 this.beforePerform = api.tasks.middleware[m].preProcessor;
               }
               if (api.tasks.middleware[m].postProcessor) {
+                //@ts-ignore
                 this.afterPerform = api.tasks.middleware[m].postProcessor;
               }
               if (api.tasks.middleware[m].preEnqueue) {
+                //@ts-ignore
                 this.beforeEnqueue = api.tasks.middleware[m].preEnqueue;
               }
               if (api.tasks.middleware[m].postEnqueue) {
+                //@ts-ignore
                 this.afterEnqueue = api.tasks.middleware[m].postEnqueue;
               }
             }
@@ -184,9 +225,10 @@ export class Tasks extends Initializer {
      */
     api.tasks.enqueue = async (
       taskName: string,
-      params: object = {},
+      params: { [key: string]: any },
       queue: string = api.tasks.tasks[taskName].queue
     ) => {
+      //@ts-ignore
       return api.resque.queue.enqueue(queue, taskName, params);
     };
 
@@ -202,9 +244,10 @@ export class Tasks extends Initializer {
     api.tasks.enqueueAt = async (
       timestamp: number,
       taskName: string,
-      params: object = {},
+      params: { [key: string]: any },
       queue: string = api.tasks.tasks[taskName].queue
     ) => {
+      //@ts-ignore
       return api.resque.queue.enqueueAt(timestamp, queue, taskName, params);
     };
 
@@ -221,9 +264,10 @@ export class Tasks extends Initializer {
     api.tasks.enqueueIn = async (
       time: number,
       taskName: string,
-      params: object = {},
+      params: { [key: string]: any },
       queue: string = api.tasks.tasks[taskName].queue
     ) => {
+      //@ts-ignore
       return api.resque.queue.enqueueIn(time, queue, taskName, params);
     };
 
@@ -240,9 +284,10 @@ export class Tasks extends Initializer {
     api.tasks.del = async (
       q: string,
       taskName: string,
-      args: object | Array<any>,
+      args: { [key: string]: any },
       count: number
     ) => {
+      //@ts-ignore
       return api.resque.queue.del(q, taskName, args, count);
     };
 
@@ -258,8 +303,9 @@ export class Tasks extends Initializer {
     api.tasks.delDelayed = async (
       q: string,
       taskName: string,
-      args: object | Array<any>
+      args: { [key: string]: any }
     ) => {
+      // @ts-ignore
       return api.resque.queue.delDelayed(q, taskName, args);
     };
 
@@ -276,8 +322,9 @@ export class Tasks extends Initializer {
     api.tasks.scheduledAt = async (
       q: string,
       taskName: string,
-      args: object | Array<any>
+      params: { [key: string]: any }
     ): Promise<Array<number>> => {
+      //@ts-ignore
       return api.resque.queue.scheduledAt(q, taskName, args);
     };
 
@@ -343,7 +390,7 @@ export class Tasks extends Initializer {
      * Return all jobs which have been enqueued to run at a certain timestamp.
      * Will throw an error if redis cannot be reached.
      */
-    api.tasks.delayedAt = async (timestamp: number): Promise<Array<object>> => {
+    api.tasks.delayedAt = async (timestamp: number): Promise<any> => {
       return api.resque.queue.delayedAt(timestamp);
     };
 
@@ -352,7 +399,7 @@ export class Tasks extends Initializer {
      * Note: This is a very slow command.
      * Will throw an error if redis cannot be reached.
      */
-    api.tasks.allDelayed = async (): Promise<Array<object>> => {
+    api.tasks.allDelayed = async (): Promise<any> => {
       return api.resque.queue.allDelayed();
     };
 
@@ -372,7 +419,7 @@ export class Tasks extends Initializer {
     api.tasks.workingOn = async (
       workerName: string,
       queues: string
-    ): Promise<object> => {
+    ): Promise<any> => {
       return api.resque.queue.workingOn(workerName, queues);
     };
 
@@ -407,7 +454,7 @@ export class Tasks extends Initializer {
      * Remove a specific job from the failed queue.
      * Will throw an error if redis cannot be reached.
      */
-    api.tasks.removeFailed = async (failedJob: object) => {
+    api.tasks.removeFailed = async failedJob => {
       return api.resque.queue.removeFailed(failedJob);
     };
 
@@ -415,7 +462,7 @@ export class Tasks extends Initializer {
      * Remove a specific job from the failed queue, and retry it by placing it back into its original queue.
      * Will throw an error if redis cannot be reached.
      */
-    api.tasks.retryAndRemoveFailed = async (failedJob: object) => {
+    api.tasks.retryAndRemoveFailed = async failedJob => {
       return api.resque.queue.retryAndRemoveFailed(failedJob);
     };
 
@@ -442,9 +489,9 @@ export class Tasks extends Initializer {
         await api.tasks.del(task.queue, taskName);
         await api.tasks.delDelayed(task.queue, taskName);
         await api.tasks.enqueueIn(task.frequency, taskName);
-        api.log(
+        log(
           `re-enqueued recurrent job ${taskName}`,
-          api.config.tasks.schedulerLogging.reEnqueue
+          config.tasks.schedulerLogging.reEnqueue
         );
       }
     };
@@ -463,9 +510,9 @@ export class Tasks extends Initializer {
           jobs.push(async () => {
             const toRun = await api.tasks.enqueue(taskName);
             if (toRun === true) {
-              api.log(
+              log(
                 `enqueuing periodic task: ${taskName}`,
-                api.config.tasks.schedulerLogging.enqueue
+                config.tasks.schedulerLogging.enqueue
               );
               loadedTasks.push(taskName);
             }
@@ -473,7 +520,7 @@ export class Tasks extends Initializer {
         }
       });
 
-      await api.utils.asyncWaterfall(jobs);
+      await asyncWaterfall(jobs);
       return loadedTasks;
     };
 
@@ -519,26 +566,22 @@ export class Tasks extends Initializer {
     };
 
     api.tasks.loadTasks = reload => {
-      api.config.general.paths.task.forEach(p => {
-        api.utils
-          .ensureNoTsHeaderFiles(
-            glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"))
-          )
-          .forEach(f => {
-            api.tasks.loadFile(f, reload);
-          });
+      config.general.paths.task.forEach(p => {
+        ensureNoTsHeaderFiles(
+          glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"))
+        ).forEach(f => {
+          api.tasks.loadFile(f, reload);
+        });
       });
 
-      for (const pluginName in api.config.plugins) {
-        if (api.config.plugins[pluginName].tasks !== false) {
-          const pluginPath = api.config.plugins[pluginName].path;
-          api.utils
-            .ensureNoTsHeaderFiles(
-              glob.sync(path.join(pluginPath, "tasks", "**", "**/*(*.js|*.ts)"))
-            )
-            .forEach(f => {
-              api.tasks.loadFile(f, reload);
-            });
+      for (const pluginName in config.plugins) {
+        if (config.plugins[pluginName].tasks !== false) {
+          const pluginPath = config.plugins[pluginName].path;
+          ensureNoTsHeaderFiles(
+            glob.sync(path.join(pluginPath, "tasks", "**", "**/*(*.js|*.ts)"))
+          ).forEach(f => {
+            api.tasks.loadFile(f, reload);
+          });
         }
       }
     };
@@ -548,16 +591,13 @@ export class Tasks extends Initializer {
         throw new Error("middleware.name is required");
       }
       if (!middleware.priority) {
-        middleware.priority = api.config.general.defaultMiddlewarePriority;
+        middleware.priority = config.general.defaultMiddlewarePriority;
       }
       middleware.priority = Number(middleware.priority);
       api.tasks.middleware[middleware.name] = middleware;
       if (middleware.global === true) {
         api.tasks.globalMiddleware.push(middleware.name);
-        api.utils.sortGlobalMiddleware(
-          api.tasks.globalMiddleware,
-          api.tasks.middleware
-        );
+        sortGlobalMiddleware(api.tasks.globalMiddleware, api.tasks.middleware);
       }
       api.tasks.loadTasks(true);
     };
@@ -566,11 +606,11 @@ export class Tasks extends Initializer {
   }
 
   async start() {
-    if (api.config.redis.enabled === false) {
+    if (config.redis.enabled === false) {
       return;
     }
 
-    if (api.config.tasks.scheduler === true) {
+    if (config.tasks.scheduler === true) {
       await api.tasks.enqueueAllRecurrentTasks();
     }
   }

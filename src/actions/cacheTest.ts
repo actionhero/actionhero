@@ -1,4 +1,4 @@
-import { api, Action } from "./../index";
+import { api, Cache, Action } from "./../index";
 
 export class CacheTest extends Action {
   constructor() {
@@ -51,10 +51,10 @@ export class CacheTest extends Action {
     const value = params.value;
 
     response.cacheTestResults = {
-      saveResp: await api.cache.save(key, value, 5000),
-      sizeResp: await api.cache.size(),
-      loadResp: await api.cache.load(key),
-      deleteResp: await api.cache.destroy(key)
+      saveResp: await Cache.save(key, value, 5000),
+      sizeResp: await Cache.size(),
+      loadResp: await Cache.load(key),
+      deleteResp: await Cache.destroy(key)
     };
   }
 }

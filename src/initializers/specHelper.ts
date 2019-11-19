@@ -1,6 +1,27 @@
 import { Worker } from "node-resque";
 import * as uuid from "uuid";
-import { api, Initializer, Server } from "../index";
+import {
+  api,
+  config,
+  log,
+  env,
+  Initializer,
+  Server,
+  Connection
+} from "../index";
+
+export interface SpecHelperApi {
+  returnMetadata?: boolean;
+  // Server?: Server;
+  Server?: any;
+  // Connection?: Connection;
+  Connection?: any;
+  runAction?: Function;
+  getStaticFile?: Function;
+  runTask?: Function;
+  runFullTask?: Function;
+  findEnqueuedTasks?: Function;
+}
 
 /**
  * A speical "mock" server which enables you to test actions and tasks in a simple way.  Only availalbe in the TEST environment.
@@ -17,7 +38,7 @@ export class SpecHelper extends Initializer {
   }
 
   async initialize() {
-    if (api.env === "test" || String(process.env.SPECHELPER) === "true") {
+    if (env === "test" || String(process.env.SPECHELPER) === "true") {
       this.enabled = true;
     }
 
@@ -42,7 +63,7 @@ export class SpecHelper extends Initializer {
       async initialize() {}
 
       async start() {
-        api.log("loading the testServer", "info");
+        log("loading the testServer", "info");
         this.on("connection", connection => {
           this.handleConnection(connection);
         });
@@ -103,13 +124,13 @@ export class SpecHelper extends Initializer {
       async actionComplete(data) {
         if (typeof data.response === "string" || Array.isArray(data.response)) {
           if (data.response.error) {
-            data.response = await api.config.errors.serializers.servers.specHelper(
+            data.response = await config.errors.serializers.servers.specHelper(
               data.response.error
             );
           }
         } else {
           if (data.response.error) {
-            data.response.error = await api.config.errors.serializers.servers.specHelper(
+            data.response.error = await config.errors.serializers.servers.specHelper(
               data.response.error
             );
           }
@@ -118,8 +139,8 @@ export class SpecHelper extends Initializer {
             data.response.messageId = data.messageId;
 
             data.response.serverInformation = {
-              serverName: api.config.general.serverName,
-              apiVersion: api.config.general.apiVersion
+              serverName: config.general.serverName,
+              apiVersion: config.general.apiVersion
             };
 
             data.response.requesterInformation = {
@@ -172,11 +193,9 @@ export class SpecHelper extends Initializer {
      * @param  {Object}  input      You can provide either a pre-build connection `api.specHelper.Connection.createAsync()`, or just a Object with params for your action.
      * @return {Promise<Object>}    The `response` from the action.
      */
-    api.specHelper.runAction = async (actionName, input) => {
+    api.specHelper.runAction = async (actionName: string, input = {}) => {
       let connection;
-      if (!input) {
-        input = {};
-      }
+
       if (input.id && input.type === "testServer") {
         connection = input;
       } else {
@@ -202,7 +221,7 @@ export class SpecHelper extends Initializer {
      * @param  {string}  file The name & path of the file to request.
      * @return {Promise<Object>} The body contents and metadata of the file requested.  Conatins: mime, length, body, and more.
      */
-    api.specHelper.getStaticFile = async file => {
+    api.specHelper.getStaticFile = async (file: string) => {
       const connection = await api.specHelper.Connection.createAsync();
       connection.params.file = file;
 
@@ -225,7 +244,10 @@ export class SpecHelper extends Initializer {
      * @return {Promise<Object>}   The return value from the task.
      * @see api.specHelper.runFullTask
      */
-    api.specHelper.runTask = async (taskName, params) => {
+    api.specHelper.runTask = async (
+      taskName: string,
+      params: object | Array<any>
+    ) => {
       return api.tasks.tasks[taskName].run(params);
     };
 
@@ -239,13 +261,16 @@ export class SpecHelper extends Initializer {
      * @return {Promise<Object>}   The return value from the task.
      * @see api.specHelper.runTask
      */
-    api.specHelper.runFullTask = async (taskName, params) => {
+    api.specHelper.runFullTask = async (
+      taskName: string,
+      params: object | Array<any>
+    ) => {
       const worker = new Worker(
         {
           connection: {
             redis: api.redis.clients.tasks
           },
-          queues: api.config.tasks.queues || ["default"]
+          queues: config.tasks.queues || ["default"]
         },
         api.tasks.jobs
       );
@@ -272,7 +297,7 @@ export class SpecHelper extends Initializer {
      * @async
      * @param  {string}   taskName The name of the task.
      */
-    api.specHelper.findEnqueuedTasks = async taskName => {
+    api.specHelper.findEnqueuedTasks = async (taskName: string) => {
       let found = [];
 
       // normal queues

@@ -3,12 +3,10 @@ import { asyncWaterfall } from "./asyncWaterfall";
 /**
  * Returns the averge delay between a tick of the node.js event loop, as measured for N calls of `process.nextTick`
  */
-export async function ventLoopDelay(itterations: number): Promise<number> {
+export async function eventLoopDelay(
+  itterations: number = 10000
+): Promise<number> {
   const jobs = [];
-
-  if (!itterations) {
-    throw new Error("itterations is required");
-  }
 
   const sleepyFunc = async () => {
     return new Promise(resolve => {

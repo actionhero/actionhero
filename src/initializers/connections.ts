@@ -1,5 +1,4 @@
-import { api, Initializer } from "../index";
-import { Connection } from "./../classes/connection";
+import { api, config, Initializer, Connection } from "../index";
 
 /**
  * ```js
@@ -26,6 +25,18 @@ export interface ConnectionMiddleware {
   destroy?: Function;
 }
 
+export interface ConnectionsApi {
+  connections: {
+    [key: string]: Connection;
+  };
+  middleware: {
+    [key: string]: ConnectionMiddleware;
+  };
+  globalMiddleware: Array<string>;
+  allowedVerbs: Array<string>;
+  cleanConnection: Function;
+}
+
 export class Connections extends Initializer {
   constructor() {
     super();
@@ -34,7 +45,7 @@ export class Connections extends Initializer {
   }
 
   async initialize() {
-    api.connections = {
+    api.connections = <ConnectionsApi>{
       connections: {},
       middleware: {},
       globalMiddleware: [],
@@ -96,7 +107,7 @@ export class Connections extends Initializer {
           throw new Error("middleware.name is required");
         }
         if (!data.priority) {
-          data.priority = api.config.general.defaultMiddlewarePriority;
+          data.priority = config.general.defaultMiddlewarePriority;
         }
         data.priority = Number(data.priority);
         api.connections.middleware[data.name] = data;
