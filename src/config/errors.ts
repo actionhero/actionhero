@@ -1,3 +1,5 @@
+import * as i18n from "i18n";
+
 export const DEFAULT = {
   errors: config => {
     return {
@@ -87,7 +89,7 @@ export const DEFAULT = {
       },
 
       dataLengthTooLarge: (maxLength, receivedLength) => {
-        return api.i18n.localize([
+        return i18n.localize([
           "actionhero.errors.dataLengthTooLarge",
           { maxLength: maxLength, receivedLength: receivedLength }
         ]);
@@ -162,21 +164,19 @@ export const DEFAULT = {
       },
 
       connectionRoomHasBeenDeleted: room => {
-        return api.i18n.localize(
-          "actionhero.errors.connectionRoomHasBeenDeleted"
-        );
+        return i18n.localize("actionhero.errors.connectionRoomHasBeenDeleted");
       },
 
       connectionRoomNotExist: room => {
-        return api.i18n.localize("actionhero.errors.connectionRoomNotExist");
+        return i18n.localize("actionhero.errors.connectionRoomNotExist");
       },
 
       connectionRoomExists: room => {
-        return api.i18n.localize("actionhero.errors.connectionRoomExists");
+        return i18n.localize("actionhero.errors.connectionRoomExists");
       },
 
       connectionRoomRequired: room => {
-        return api.i18n.localize("actionhero.errors.connectionRoomRequired");
+        return i18n.localize("actionhero.errors.connectionRoomRequired");
       }
     };
   }

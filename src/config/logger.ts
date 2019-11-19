@@ -48,8 +48,8 @@ function buildFileLogger(
   maxFiles = undefined,
   maxsize = 20480
 ) {
-  return function(api) {
-    const filename = `${path}/${api.pids.title}-${api.env}.log`;
+  return function(config) {
+    const filename = `${path}/${config.process.id}-${config.process.env}.log`;
 
     return winston.createLogger({
       format: winston.format.combine(

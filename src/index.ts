@@ -10,6 +10,7 @@ export { ActionProcessor } from "./classes/actionProcessor";
 
 // export methods
 export { log } from "./classes/log";
+export { localize } from "./classes/i18n";
 
 // export objects
 export { config } from "./classes/config";
