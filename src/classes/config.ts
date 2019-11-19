@@ -11,8 +11,6 @@ import { actionheroVersion } from "./process/actionheroVersion";
 import { typescript } from "./process/typescript";
 import { projectRoot } from "./process/projectRoot";
 
-// const RELOAD_DELAY = 2000;
-
 interface ConfigInterface {
   [key: string]: any;
 }
@@ -31,49 +29,6 @@ function buildConfig(_startingParams: { [key: string]: any } = {}) {
   const configPaths = [];
 
   hashMerge(config, _startingParams);
-
-  // reloading in development mode
-  // api.watchedFiles = api.watchedFiles || {};
-  // api.watchFileAndAct = (file, handler) => {
-  //   file = path.normalize(file);
-
-  //   if (!fs.existsSync(file)) {
-  //     throw new Error(file + " does not exist, and cannot be watched");
-  //   }
-
-  //   if (
-  //     api.config.general.developmentMode === true &&
-  //     !api.watchedFiles[file]
-  //   ) {
-  //     const watcher = fs.watch(file, { persistent: false }, eventType => {
-  //       const stats = fs.statSync(file);
-  //       if (
-  //         api.running === true &&
-  //         api.config.general.developmentMode === true &&
-  //         eventType === "change" &&
-  //         stats.mtimeMs - api.watchedFiles[file].stats.mtimeMs >= RELOAD_DELAY
-  //       ) {
-  //         api.watchedFiles[file].stats = stats;
-  //         let cleanPath = file;
-  //         if (process.platform === "win32") {
-  //           cleanPath = file.replace(/\//g, "\\");
-  //         }
-  //         delete require.cache[require.resolve(cleanPath)];
-  //         handler(file);
-  //       }
-  //     });
-
-  //     api.watchedFiles[file] = { watcher, stats: fs.statSync(file) };
-  //   }
-  // };
-
-  // api.unWatchAllFiles = () => {
-  //   for (const file in api.watchedFiles) {
-  //     api.watchedFiles[file].watcher.close();
-  //     delete api.watchedFiles[file];
-  //   }
-  // };
-
   // We support multiple configuration paths as follows:
   //
   // 1. Use the project 'config' folder, if it exists.
@@ -252,8 +207,4 @@ function buildConfig(_startingParams: { [key: string]: any } = {}) {
   return config;
 }
 
-// async stop() {
-//   api.unWatchAllFiles();
-// }
-
-export const Config = buildConfig();
+export const config = buildConfig();
