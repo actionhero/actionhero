@@ -131,6 +131,10 @@ ie: `import { log, config } from 'actionhero'`
 - localize (method that accepts a string and a connection)
 - watchFileAndAct / unWatchAllFiles (methods)
 
+### Removed from the API object with no replacement:
+
+- utils
+
 * `api.config.general.id` is removed.
 
 ### The API object
