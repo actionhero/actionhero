@@ -149,5 +149,5 @@ what remains on the API object are truly things about your API - actions, tasks,
 
 ## Config
 
-- `config.general.id` can no longer be set
--
+- `config.general.id`: can no longer be set
+- `config.i18n.determineConnectionLocale`: this method should be set on the `i18n` object exported by actionhero.

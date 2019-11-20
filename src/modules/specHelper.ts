@@ -33,7 +33,7 @@ export namespace specHelper {
   /**
    * Mock a specHelper connection requesting a file from the server.
    */
-  export async function getStaticFile(file: string) {
+  export async function getStaticFile(file: string): Promise<any> {
     const connection = await api.specHelper.Connection.createAsync();
     connection.params.file = file;
 

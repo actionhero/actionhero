@@ -2,6 +2,7 @@ import * as I18n from "i18n";
 import * as path from "path";
 import { Connection } from "../classes/connection";
 import { config } from "./config";
+import { api } from "./../index";
 import * as dotProp from "dot-prop";
 
 const options = config.i18n;
@@ -19,10 +20,9 @@ export namespace i18n {
 
   export function invokeConnectionLocale(connection: Connection) {
     const cmdParts = config.i18n.determineConnectionLocale.split(".");
-    // TODO
-    // const method = dotProp.get(api, cmdParts.join("."));
-    // const locale = method(connection);
-    // i18n.setLocale(connection, locale);
+    const method: Function = dotProp.get(i18n, cmdParts.join("."));
+    const locale = method(connection);
+    I18n.setLocale(connection, locale);
   }
 
   /**

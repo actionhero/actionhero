@@ -22,7 +22,8 @@ export const DEFAULT = {
       // the name of the method by which to determine the connection's locale
       // by default, every request will be in the 'en' locale
       // this method will be called witin the localiazation middleware on all requests
-      determineConnectionLocale: "api.i18n.determineConnectionLocale"
+      // this method should be set on the `i18n` object exported by actionhero.
+      determineConnectionLocale: "determineConnectionLocale"
     };
   }
 };
