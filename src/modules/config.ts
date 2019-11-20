@@ -15,17 +15,17 @@ interface ConfigInterface {
   [key: string]: any;
 }
 
-function buildConfig(_startingParams: { [key: string]: any } = {}) {
-  let config: ConfigInterface = {
-    process: {
-      env,
-      id,
-      typescript,
-      projectRoot,
-      actionheroVersion
-    }
-  };
+export let config: ConfigInterface = {
+  process: {
+    env,
+    id,
+    typescript,
+    projectRoot,
+    actionheroVersion
+  }
+};
 
+export function buildConfig(_startingParams: ConfigInterface = {}) {
   const configPaths = [];
 
   hashMerge(config, _startingParams);
@@ -207,4 +207,4 @@ function buildConfig(_startingParams: { [key: string]: any } = {}) {
   return config;
 }
 
-export const config = buildConfig();
+buildConfig();
