@@ -140,3 +140,7 @@ ie: `import { log, config } from 'actionhero'`
 ### The API object
 
 what remains on the API object are truly things about your API - actions, tasks, servers, initializers. And now these elements are very typesafe. **You can no longer add and remove things randomly to the API object**. This means that in your project, you should create imports/and exorts directly and share them with your actions and tasks.
+
+## Config
+
+- `config.general.id` can no longer be set

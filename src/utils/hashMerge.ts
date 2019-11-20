@@ -5,7 +5,11 @@ import { isPlainObject } from "./isPlainObject";
  * ActionHero uses this internally to construct and resolve the config.
  * Matching keys in B override A.
  */
-export function hashMerge(a: object, b: object, arg?: object): object {
+export function hashMerge(
+  a: object,
+  b: object,
+  arg?: object
+): { [key: string]: any } {
   const c = {};
   let i: string;
   let response: object;

@@ -43,11 +43,11 @@ export class Process {
 
     this.startCount = 0;
 
-    api.commands.initialize = async (...args) => {
+    api.commands.initialize = async (...args): Promise<Api | void> => {
       return this.initialize(...args);
     };
 
-    api.commands.start = async (...args) => {
+    api.commands.start = async (...args): Promise<Api | void> => {
       return this.start(...args);
     };
 
@@ -55,7 +55,7 @@ export class Process {
       return this.stop();
     };
 
-    api.commands.restart = async () => {
+    api.commands.restart = async (): Promise<Api | void> => {
       return this.restart();
     };
 

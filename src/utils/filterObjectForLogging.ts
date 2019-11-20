@@ -7,7 +7,7 @@ import * as dotProp from "dot-prop";
  * Hides any sensitieve data as defined by `api.config.general.filteredParams`
  * Truncates long strings via `api.config.logger.maxLogStringLength`
  */
-export function filterObjectForLogging(params: object): object {
+export function filterObjectForLogging(params: object): { [key: string]: any } {
   const filteredParams = {};
   for (const i in params) {
     if (isPlainObject(params[i])) {
