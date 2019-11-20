@@ -43,20 +43,20 @@ export class Process {
 
     this.startCount = 0;
 
-    api.commands.initialize = (...args) => {
-      this.initialize(...args);
+    api.commands.initialize = async (...args) => {
+      return this.initialize(...args);
     };
 
-    api.commands.start = (...args) => {
-      this.start(...args);
+    api.commands.start = async (...args) => {
+      return this.start(...args);
     };
 
-    api.commands.stop = () => {
-      this.stop();
+    api.commands.stop = async () => {
+      return this.stop();
     };
 
-    api.commands.restart = () => {
-      this.restart();
+    api.commands.restart = async () => {
+      return this.restart();
     };
 
     api.process = this;
@@ -273,6 +273,7 @@ export class Process {
     this.startInitializers.push(() => {
       this.bootTime = new Date().getTime();
       if (this.startCount === 0) {
+        log(`server ID: ${id}`, "notice");
         log("*** ActionHero Started ***", "notice");
         this.startCount++;
       } else {
@@ -286,17 +287,18 @@ export class Process {
       return this.fatalError(error, "start");
     }
 
-    log(`server ID: ${id}`, "notice");
     return api;
   }
 
   async stop() {
-    if (this.running === true) {
+    if (this.running) {
       this.shuttingDown = true;
       this.running = false;
       this.initialized = false;
 
       log("stopping process...", "notice");
+
+      await sleep(1000);
 
       this.stopInitializers.push(async () => {
         clearPidFile();
@@ -305,6 +307,7 @@ export class Process {
         // reset initializers to prevent duplicate check on restart
         this.initializers = {};
         api.running = false;
+        await sleep(1000);
       });
 
       try {
