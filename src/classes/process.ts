@@ -257,6 +257,7 @@ export class Process {
     }
 
     this.initialized = true;
+    return api;
   }
 
   async start(params = {}) {
@@ -286,6 +287,7 @@ export class Process {
     }
 
     log(`server ID: ${id}`, "notice");
+    return api;
   }
 
   async stop() {
@@ -326,6 +328,7 @@ export class Process {
     } else {
       await this.start(this._startingParams);
     }
+    return api;
   }
 
   // HELPERS
