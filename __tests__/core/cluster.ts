@@ -1,4 +1,4 @@
-import { Process, config } from "./../../src/index";
+import { Process, config, chatRoom, redis } from "./../../src/index";
 import { sleep } from "./../../src/utils/sleep";
 
 const actionhero = new Process();
@@ -9,9 +9,10 @@ describe("Core: Action Cluster", () => {
     api = await actionhero.start();
     for (var room in config.general.startingChatRooms) {
       try {
-        await api.chatRoom.destroy(room);
-        await api.chatRoom.add(room);
+        await chatRoom.destroy(room);
+        await chatRoom.add(room);
       } catch (error) {
+        console.log(error);
         if (!error.toString().match(config.errors.connectionRoomExists(room))) {
           throw error;
         }
@@ -33,7 +34,7 @@ describe("Core: Action Cluster", () => {
       api.rpcTestMethod = (arg1, arg2) => {
         data[1] = [arg1, arg2];
       };
-      await api.redis.doCluster("api.rpcTestMethod", ["arg1", "arg2"]);
+      await redis.doCluster("api.rpcTestMethod", ["arg1", "arg2"]);
       await sleep(100);
 
       expect(data[1][0]).toEqual("arg1");
@@ -47,11 +48,7 @@ describe("Core: Action Cluster", () => {
         data[1] = [arg1, arg2];
       };
 
-      await api.redis.doCluster(
-        "api.rpcTestMethod",
-        ["arg1", "arg2"],
-        client.id
-      );
+      await redis.doCluster("api.rpcTestMethod", ["arg1", "arg2"], client.id);
       await sleep(100);
 
       expect(data[1][0]).toEqual("arg1");
@@ -93,7 +90,7 @@ describe("Core: Action Cluster", () => {
 
     test("failing RPC calls with a callback will have a failure callback", async () => {
       try {
-        await api.redis.doCluster(
+        await redis.doCluster(
           "api.rpcTestMethod",
           [],
           "A missing clientId",
