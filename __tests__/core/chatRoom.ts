@@ -1,4 +1,5 @@
-import { Process } from "./../../src/index";
+import { Process, config } from "./../../src/index";
+import { sleep } from "./../../src/utils/sleep";
 
 const actionhero = new Process();
 let api;
@@ -8,15 +9,13 @@ describe("Core", () => {
     beforeAll(async () => {
       api = await actionhero.start();
 
-      for (var room in api.config.general.startingChatRooms) {
+      for (var room in config.general.startingChatRooms) {
         try {
           await api.chatRoom.destroy(room);
           await api.chatRoom.add(room);
         } catch (error) {
           if (
-            !error
-              .toString()
-              .match(api.config.errors.connectionRoomExists(room))
+            !error.toString().match(config.errors.connectionRoomExists(room))
           ) {
             throw error;
           }
@@ -41,14 +40,14 @@ describe("Core", () => {
         client1.verbs("roomAdd", "defaultRoom");
         client2.verbs("roomAdd", "defaultRoom");
         client3.verbs("roomAdd", "defaultRoom");
-        await api.utils.sleep(100);
+        await sleep(100);
       });
 
       afterAll(async () => {
         client1.destroy();
         client2.destroy();
         client3.destroy();
-        await api.utils.sleep(100);
+        await sleep(100);
       });
 
       test("all connections can join the default room and client #1 can see them", async () => {
@@ -86,7 +85,7 @@ describe("Core", () => {
           "client",
           "1"
         ]);
-        await api.utils.sleep(100);
+        await sleep(100);
 
         const { message, room, from } = client2.messages[
           client2.messages.length - 1
@@ -273,7 +272,7 @@ describe("Core", () => {
           await clientA.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomAdd", "defaultRoom");
           await clientA.verbs("say", ["defaultRoom", "hi there"]);
-          await api.utils.sleep(100);
+          await sleep(100);
           const message = clientB.messages[clientB.messages.length - 1];
           expect(message.thing).toEqual("stuff");
           expect(message.message).toBeUndefined();
@@ -305,7 +304,7 @@ describe("Core", () => {
           await clientA.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomLeave", "defaultRoom");
-          await api.utils.sleep(100);
+          await sleep(100);
 
           expect(clientA.messages.pop().message).toEqual(
             "I have left the room: " + clientB.id
@@ -329,7 +328,7 @@ describe("Core", () => {
           await clientA.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("say", ["defaultRoom", "something", "awesome"]);
-          await api.utils.sleep(100);
+          await sleep(100);
 
           const lastMessage = clientA.messages[clientA.messages.length - 1];
           expect(lastMessage.message).toEqual("something else");
@@ -357,7 +356,7 @@ describe("Core", () => {
           await clientA.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("say", ["defaultRoom", "something", "awesome"]);
-          await api.utils.sleep(100);
+          await sleep(100);
 
           const lastMessage = clientA.messages[clientA.messages.length - 1];
           expect(lastMessage.message).toEqual("MIDDLEWARE 1 MIDDLEWARE 2");
@@ -374,7 +373,7 @@ describe("Core", () => {
           await clientA.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("say", ["defaultRoom", "something", "awesome"]);
-          await api.utils.sleep(100);
+          await sleep(100);
 
           // welcome message is passed, no join/leave/or say messages
           expect(clientA.messages).toHaveLength(1);
@@ -433,7 +432,7 @@ describe("Core", () => {
           await clientA.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("say", ["defaultRoom", "something", "awesome"]);
-          await api.utils.sleep(100);
+          await sleep(100);
           const lastMessage = clientA.messages[clientA.messages.length - 1];
           expect(lastMessage.message).toEqual("something else");
         });
@@ -460,7 +459,7 @@ describe("Core", () => {
           await clientA.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("say", ["defaultRoom", "something", "awesome"]);
-          await api.utils.sleep(100);
+          await sleep(100);
 
           const lastMessage = clientA.messages[clientA.messages.length - 1];
           expect(lastMessage.message).toEqual("MIDDLEWARE 1 MIDDLEWARE 2");
@@ -477,7 +476,7 @@ describe("Core", () => {
           await clientA.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("say", ["defaultRoom", "something", "awesome"]);
-          await api.utils.sleep(100);
+          await sleep(100);
 
           // welcome message is passed, no join/leave/or say messages
           expect(clientA.messages).toHaveLength(1);

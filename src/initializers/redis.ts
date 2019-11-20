@@ -1,13 +1,9 @@
 /// <reference path="./../../node_modules/@types/ioredis/index.d.ts" />
 
 import * as IORedis from "ioredis";
-import * as uuid from "uuid";
 import * as dotProp from "dot-prop";
-import { api, config, id, log, Initializer } from "../index";
-
-export interface PubSubMessage {
-  [key: string]: any;
-}
+import { api, config, id, log, chatRoom, Initializer, redis } from "../index";
+import { PubSubMessage } from "./../modules/redis";
 
 export interface RedisApi {
   clients: {
@@ -22,9 +18,6 @@ export interface RedisApi {
   status: {
     subscribed: boolean;
   };
-  publish?: Function;
-  doCluster?: Function;
-  respondCluster?: Function;
 }
 
 /**
@@ -53,23 +46,6 @@ export class Redis extends Initializer {
       }
     };
 
-    /**
-     * Publish a message to all other ActionHero nodes in the clsuter.  Will be autneticated against `api.config.serverToken`
-     * ```js
-     * let payload = {
-     *   messageType: 'myMessageType',
-     *   serverId: api.id,
-     *   serverToken: api.config.general.serverToken,
-     *   message: 'hello!'
-     * }
-     * await api.redis.publish(payload)
-     * ```
-     */
-    api.redis.publish = async (payload: object | Array<any>) => {
-      const channel = config.general.channel;
-      return api.redis.clients.client.publish(channel, JSON.stringify(payload));
-    };
-
     api.redis.subscriptionHandlers.do = async (message: PubSubMessage) => {
       if (
         !message.connectionId ||
@@ -95,7 +71,7 @@ export class Redis extends Initializer {
         }
         if (method) {
           const response = await method.apply(null, args);
-          await api.redis.respondCluster(message.messageId, response);
+          await redis.respondCluster(message.messageId, response);
         } else {
           log("RPC method `" + cmdParts.join(".") + "` not found", "warning");
         }
@@ -111,64 +87,6 @@ export class Redis extends Initializer {
         resolve(message.response);
         delete api.redis.rpcCallbacks[message.messageId];
       }
-    };
-
-    /**
-     * Invoke a command on all servers in this cluster.
-     */
-    api.redis.doCluster = async (
-      method: string,
-      args: Array<any> = [],
-      connectionId: string,
-      waitForResponse: boolean = false
-    ) => {
-      const messageId = uuid.v4();
-      const payload = {
-        messageType: "do",
-        serverId: id,
-        serverToken: config.general.serverToken,
-        messageId: messageId,
-        method: method,
-        connectionId: connectionId,
-        args: args // [1,2,3]
-      };
-
-      // we need to be sure that we build the response-handling promise before sending the request to Redis
-      // it is possible for another node to get and work the request before we resolve our write
-      // see https://github.com/actionhero/actionhero/issues/1244 for more information
-      if (waitForResponse) {
-        return new Promise(async (resolve, reject) => {
-          const timer = setTimeout(
-            () => reject(new Error("RPC Timeout")),
-            config.general.rpcTimeout
-          );
-          api.redis.rpcCallbacks[messageId] = { timer, resolve, reject };
-          try {
-            await api.redis.publish(payload);
-          } catch (e) {
-            clearTimeout(timer);
-            delete api.redis.rpcCallbacks[messageId];
-            throw e;
-          }
-        });
-      }
-
-      await api.redis.publish(payload);
-    };
-
-    api.redis.respondCluster = async (
-      messageId: string,
-      response: PubSubMessage
-    ) => {
-      const payload = {
-        messageType: "doResponse",
-        serverId: id,
-        serverToken: config.general.serverToken,
-        messageId: messageId,
-        response: response // args to pass back, including error
-      };
-
-      await api.redis.publish(payload);
     };
 
     const connectionNames = ["client", "subscriber", "tasks"];
@@ -236,7 +154,7 @@ export class Redis extends Initializer {
     if (config.redis.enabled === false) {
       log("redis is disabled", "notice");
     } else {
-      await api.redis.doCluster("api.log", [
+      await redis.doCluster("api.log", [
         `actionhero member ${id} has joined the cluster`
       ]);
     }
@@ -249,7 +167,7 @@ export class Redis extends Initializer {
 
     await api.redis.clients.subscriber.unsubscribe();
     api.redis.status.subscribed = false;
-    await api.redis.doCluster("api.log", [
+    await redis.doCluster("api.log", [
       `actionhero member ${id} has left the cluster`
     ]);
 

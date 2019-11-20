@@ -1,6 +1,6 @@
 import * as fs from "fs";
-import { api, id, config, localize } from "../index";
-import { sleep } from "./../utils/sleep";
+import { api, id, config, i18n } from "../index";
+import { sleep } from "../utils/sleep";
 
 export interface CacheObject {
   key: string;
@@ -16,7 +16,7 @@ export interface CacheOptions {
   retry?: boolean | number;
 }
 
-export namespace Cache {
+export namespace cache {
   export const redisPrefix = config.general.cachePrefix;
   export const lockPrefix = config.general.lockPrefix;
   export const lockDuration = config.general.lockDuration;
@@ -60,7 +60,7 @@ export namespace Cache {
    * Returns the number of keys in redis which are under this ActionHero namespace.  Potentially very slow.
    */
   export async function size(): Promise<number> {
-    const keys = await Cache.keys();
+    const keys = await cache.keys();
     let length = 0;
     if (keys) {
       length = keys.length;
@@ -73,7 +73,7 @@ export namespace Cache {
    * Removes all keys in redis which are under this ActionHero namespace.  Potentially very slow.
    */
   export async function clear(): Promise<boolean> {
-    const keys = await Cache.keys();
+    const keys = await cache.keys();
     const jobs = [];
     keys.forEach((key: string) => {
       jobs.push(client().del(key));
@@ -89,7 +89,7 @@ export namespace Cache {
   export async function dumpWrite(file: string): Promise<number> {
     const data = {};
     const jobs = [];
-    const keys = await Cache.keys();
+    const keys = await cache.keys();
 
     keys.forEach((key: string) => {
       jobs.push(
@@ -113,7 +113,7 @@ export namespace Cache {
    */
   export async function dumpRead(file: string): Promise<number> {
     const jobs = [];
-    await Cache.clear();
+    await cache.clear();
     const fileData = fs.readFileSync(file).toString();
     const data = JSON.parse(fileData);
     const count = Object.keys(data).length;
@@ -153,14 +153,14 @@ export namespace Cache {
     } catch (e) {}
 
     if (!cacheObj) {
-      throw new Error(localize("actionhero.cache.objectNotFound"));
+      throw new Error(i18n.localize("actionhero.cache.objectNotFound"));
     }
 
     if (
       cacheObj.expireTimestamp &&
       cacheObj.expireTimestamp < new Date().getTime()
     ) {
-      throw new Error(localize("actionhero.cache.objectExpired"));
+      throw new Error(i18n.localize("actionhero.cache.objectExpired"));
     }
 
     const lastReadAt = cacheObj.readAt;
@@ -178,9 +178,9 @@ export namespace Cache {
       }
     }
 
-    const lockOk = await Cache.checkLock(key, options.retry);
+    const lockOk = await cache.checkLock(key, options.retry);
     if (lockOk !== true) {
-      throw new Error(localize("actionhero.cache.objectLocked"));
+      throw new Error(i18n.localize("actionhero.cache.objectLocked"));
     }
 
     await client().set(redisPrefix + key, JSON.stringify(cacheObj));
@@ -209,9 +209,9 @@ export namespace Cache {
    * Automatically handels `api.cache.redisPrefix`
    */
   export async function destroy(key: string): Promise<boolean> {
-    const lockOk = await Cache.checkLock(key, null);
+    const lockOk = await cache.checkLock(key, null);
     if (!lockOk) {
-      throw new Error(localize("actionhero.cache.objectLocked"));
+      throw new Error(i18n.localize("actionhero.cache.objectLocked"));
     }
     const count = await client().del(redisPrefix + key);
     let response = true;
@@ -244,9 +244,9 @@ export namespace Cache {
       readAt: null
     };
 
-    const lockOk = await Cache.checkLock(key, null);
+    const lockOk = await cache.checkLock(key, null);
     if (!lockOk) {
-      throw new Error(localize("actionhero.cache.objectLocked"));
+      throw new Error(i18n.localize("actionhero.cache.objectLocked"));
     }
     await client().set(redisPrefix + key, JSON.stringify(cacheObj));
     if (expireTimeSeconds) {
@@ -292,7 +292,7 @@ export namespace Cache {
     key: string,
     expireTimeMS: number = lockDuration
   ): Promise<boolean> {
-    const lockOk = await Cache.checkLock(key, null);
+    const lockOk = await cache.checkLock(key, null);
     if (!lockOk) {
       return false;
     }
@@ -311,7 +311,7 @@ export namespace Cache {
    * Unlock an item in redis (can be a list or a saved item) which was previously locked by this ActionHero process.
    */
   export async function unlock(key: string): Promise<boolean> {
-    const lockOk = await Cache.checkLock(key, null);
+    const lockOk = await cache.checkLock(key, null);
 
     if (!lockOk) {
       return false;
@@ -336,7 +336,7 @@ export namespace Cache {
       }
 
       await sleep(lockRetry);
-      return Cache.checkLock(key, retry, startTime);
+      return cache.checkLock(key, retry, startTime);
     }
   }
 }

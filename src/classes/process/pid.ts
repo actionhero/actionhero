@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import * as cluster from "cluster";
-import { config } from "./../config";
+import { config } from "./../../modules/config";
 import { id } from "./id";
-import { log } from "./../log";
+import { log } from "../../modules/log";
 
 function sanitizeId() {
   let pidfile = String(id).trim();
@@ -36,8 +36,3 @@ export function clearPidFile() {
     log("Unable to remove pidfile", "error", error);
   }
 }
-
-// async start() {
-//   api.pids.writePidFile();
-//
-// }

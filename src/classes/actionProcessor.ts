@@ -1,8 +1,8 @@
 import { Api } from "./api";
 import { Connection } from "./connection";
 import { Action } from "./action";
-import { config } from "./config";
-import { log } from "./log";
+import { config } from "./../modules/config";
+import { log } from "../modules/log";
 import * as dotProp from "dot-prop";
 import { filterObjectForLogging } from "./../utils/filterObjectForLogging";
 

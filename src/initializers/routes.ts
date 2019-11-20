@@ -1,5 +1,5 @@
 import * as path from "path";
-import { api, config, log, Initializer } from "../index";
+import { api, config, log, route, Initializer } from "../index";
 import { arrayUniqueify } from "./../utils/arrayUniqueify";
 
 export interface RoutesApi {
@@ -7,7 +7,6 @@ export interface RoutesApi {
   verbs: Array<string>;
   processRoute?: Function;
   matchURL?: Function;
-  registerRoute?: Function;
   loadRoutes?: Function;
 }
 
@@ -148,38 +147,6 @@ export class Routes extends Initializer {
       return response;
     };
 
-    /**
-     * Programatically define a route, rather than using `api.config.routes`.  This is useful for plugins which may define routes as well.
-     * You can use both `api.routes.registerRoute` and `api.config.routes` in the same project.
-     *
-     * * method:                 HTTP verb (get, put, etc)
-     * * path:                   The route in question.  Can use variables.
-     * * action:                 The action to call with this route.
-     * * apiVersion:             The version of the action to call, if more than one.
-     * * matchTrailingPathParts: Allows the final segment of your route to absorb all trailing path parts in a matched variable. (ie: /api/user would match /api/user/123)
-     * * dir:                    Which folder to serve static files from (must by included in api.config.general.paths)
-     */
-    api.routes.registerRoute = (
-      method: string,
-      path: string,
-      action: string,
-      apiVersion: number,
-      matchTrailingPathParts: boolean = false,
-      dir?: string
-    ) => {
-      const verbs = method === "all" ? api.routes.verbs : [method];
-      for (const vi in verbs) {
-        const verb = verbs[vi];
-        api.routes.routes[verb].push({
-          path: path,
-          matchTrailingPathParts: matchTrailingPathParts,
-          action: action,
-          dir: dir,
-          apiVersion: apiVersion
-        });
-      }
-    };
-
     // load in the routes file
     api.routes.loadRoutes = rawRoutes => {
       let counter = 0;
@@ -199,27 +166,27 @@ export class Routes extends Initializer {
       for (const i in rawRoutes) {
         const method = i.toLowerCase();
         for (const j in rawRoutes[i]) {
-          const route = rawRoutes[i][j];
+          const thisRoute = rawRoutes[i][j];
           if (method === "all") {
             for (v in api.routes.verbs) {
               verb = api.routes.verbs[v];
-              api.routes.registerRoute(
+              route.registerRoute(
                 verb,
-                route.path,
-                route.action,
-                route.apiVersion,
-                route.matchTrailingPathParts,
-                route.dir
+                thisRoute.path,
+                thisRoute.action,
+                thisRoute.apiVersion,
+                thisRoute.matchTrailingPathParts,
+                thisRoute.dir
               );
             }
           } else {
-            api.routes.registerRoute(
+            route.registerRoute(
               method,
-              route.path,
-              route.action,
-              route.apiVersion,
-              route.matchTrailingPathParts,
-              route.dir
+              thisRoute.path,
+              thisRoute.action,
+              thisRoute.apiVersion,
+              thisRoute.matchTrailingPathParts,
+              thisRoute.dir
             );
           }
           counter++;
@@ -232,10 +199,9 @@ export class Routes extends Initializer {
         const simplePaths = [];
         for (const action in api.actions.actions) {
           simplePaths.push("/" + action);
-          // api.routes.verbs.forEach(function(verb){
           for (v in api.routes.verbs) {
             verb = api.routes.verbs[v];
-            api.routes.registerRoute(verb, "/" + action, action);
+            route.registerRoute(verb, "/" + action, action, null);
           }
         }
         log(

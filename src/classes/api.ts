@@ -16,6 +16,7 @@ import { SpecHelperApi } from "./../initializers/specHelper";
 
 export class Api {
   running: boolean;
+  bootTime: number;
 
   process?: Process;
 
@@ -45,6 +46,7 @@ export class Api {
   // [key: string]: any;
 
   constructor() {
+    this.bootTime = new Date().getTime();
     this.running = false;
     this.commands = {};
   }

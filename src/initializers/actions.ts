@@ -8,36 +8,8 @@ import {
   Initializer,
   Action
 } from "../index";
-import { sortGlobalMiddleware } from "./../utils/sortGlobalMiddleware";
+import { ActionMiddleware } from "./../modules/action";
 import { ensureNoTsHeaderFiles } from "./../utils/ensureNoTsHeaderFiles";
-
-/**
- * var middleware = {
- *  name: 'userId checker',
- *  global: false,
- *  priority: 1000,
- *  preProcessor: async (data) => {
- *    if(!data.params.userId){
- *      throw new Error('All actions require a userId')
- *    }
- *  },
- *  postProcessor: async (data) => {
- *    if(data.thing.stuff == false){ data.toRender = false }
- *  }
- *}
- */
-export interface ActionMiddleware {
-  /**Unique name for the middleware. */
-  name: string;
-  /**Is this middleware applied to all actions? */
-  global: boolean;
-  /**Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`. */
-  priority?: number;
-  /**Called berore the action runs.  Has access to all params, before sanitizartion.  Can modify the data object for use in actions. */
-  preProcessor?: Function;
-  /**Called after the action runs. */
-  postProcessor?: Function;
-}
 
 export interface ActionsApi {
   actions: {
@@ -52,7 +24,6 @@ export interface ActionsApi {
     [key: string]: ActionMiddleware;
   };
   globalMiddleware: Array<string>;
-  addMiddleware?: Function;
   loadFile?: Function;
 }
 
@@ -69,27 +40,6 @@ export class Actions extends Initializer {
       versions: {},
       middleware: {},
       globalMiddleware: []
-    };
-
-    /**
-     * Add a middleware component avaialable to pre or post-process actions.
-     */
-    api.actions.addMiddleware = (data: ActionMiddleware) => {
-      if (!data.name) {
-        throw new Error("middleware.name is required");
-      }
-      if (!data.priority) {
-        data.priority = config.general.defaultMiddlewarePriority;
-      }
-      data.priority = Number(data.priority);
-      api.actions.middleware[data.name] = data;
-      if (data.global === true) {
-        api.actions.globalMiddleware.push(data.name);
-        sortGlobalMiddleware(
-          api.actions.globalMiddleware,
-          api.actions.middleware
-        );
-      }
     };
 
     api.actions.loadFile = async (fullFilePath: string, reload: boolean) => {

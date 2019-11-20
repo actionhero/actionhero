@@ -1,8 +1,8 @@
 import * as path from "path";
 import * as glob from "glob";
 import { Api } from "./api";
-import { config } from "./config";
-import { log } from "./log";
+import { config } from "./../modules/config";
+import { log } from "../modules/log";
 import { Initializer } from "./initializer";
 import { Initializers } from "./initializers";
 import { sleep } from "./../utils/sleep";

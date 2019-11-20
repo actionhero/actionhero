@@ -1,5 +1,5 @@
 import { isPlainObject } from "./isPlainObject";
-import { config } from "./../classes/config";
+import { config } from "./../modules/config";
 import * as dotProp from "dot-prop";
 
 /**

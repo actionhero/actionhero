@@ -1,6 +1,6 @@
 import { argv } from "optimist";
 import * as cluster from "cluster";
-import { config } from "./../config";
+import { config } from "./../../index";
 import { getExternalIPAddress } from "./../../utils/getExternalIPAddress";
 
 /**

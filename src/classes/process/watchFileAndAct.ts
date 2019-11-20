@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as fs from "fs";
-import { config } from "./../config";
+import { config } from "./../../modules/config";
 
 const RELOAD_DELAY = 2000;
 const watchedFiles = {};

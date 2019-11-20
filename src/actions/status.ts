@@ -1,4 +1,4 @@
-import { api, id, Action, actionheroVersion } from "./../index";
+import { api, id, task, Action, actionheroVersion } from "./../index";
 import * as path from "path";
 const packageJSON = require(path.normalize(
   path.join(__dirname, "..", "..", "package.json")
@@ -37,7 +37,7 @@ module.exports = class RandomNumber extends Action {
   }
 
   async checkResqueQueues(data) {
-    const details = await api.tasks.details();
+    const details = await task.details();
     let length = 0;
     Object.keys(details.queues).forEach(q => {
       length += details.queues[q].length;
@@ -57,6 +57,7 @@ module.exports = class RandomNumber extends Action {
   }
 
   async run(data) {
+    data.response.uptime = new Date().getTime() - api.bootTime;
     data.response.nodeStatus = data.connection.localize("Node Healthy");
     data.response.problems = [];
 

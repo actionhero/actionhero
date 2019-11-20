@@ -1,4 +1,3 @@
-import { Worker } from "node-resque";
 import * as uuid from "uuid";
 import {
   api,
@@ -14,13 +13,7 @@ export interface SpecHelperApi {
   returnMetadata?: boolean;
   // Server?: Server;
   Server?: any;
-  // Connection?: Connection;
   Connection?: any;
-  runAction?: Function;
-  getStaticFile?: Function;
-  runTask?: Function;
-  runFullTask?: Function;
-  findEnqueuedTasks?: Function;
 }
 
 /**
@@ -162,11 +155,6 @@ export class SpecHelper extends Initializer {
       }
     }
 
-    api.specHelper = {
-      returnMetadata: true,
-      Server: TestServer
-    };
-
     /**
      * A special connection usable in tests.  Create via `await api.specHelper.Connection.createAsync()`
      */
@@ -185,147 +173,9 @@ export class SpecHelper extends Initializer {
       }
     };
 
-    /**
-     * Run an action via the specHelper server.
-     *
-     * @async
-     * @param  {string}  actionName The name of the action to run.
-     * @param  {Object}  input      You can provide either a pre-build connection `api.specHelper.Connection.createAsync()`, or just a Object with params for your action.
-     * @return {Promise<Object>}    The `response` from the action.
-     */
-    api.specHelper.runAction = async (actionName: string, input = {}) => {
-      let connection;
-
-      if (input.id && input.type === "testServer") {
-        connection = input;
-      } else {
-        connection = await api.specHelper.Connection.createAsync();
-        connection.params = input;
-      }
-
-      connection.params.action = actionName;
-
-      connection.messageId = connection.params.messageId || uuid.v4();
-      const response = await new Promise(resolve => {
-        api.servers.servers.testServer.processAction(connection);
-        connection.actionCallbacks[connection.messageId] = resolve;
-      });
-
-      return response;
-    };
-
-    /**
-     * Mock a specHelper connection requesting a file from the server.
-     *
-     * @async
-     * @param  {string}  file The name & path of the file to request.
-     * @return {Promise<Object>} The body contents and metadata of the file requested.  Conatins: mime, length, body, and more.
-     */
-    api.specHelper.getStaticFile = async (file: string) => {
-      const connection = await api.specHelper.Connection.createAsync();
-      connection.params.file = file;
-
-      connection.messageCount = uuid.v4();
-      const response = await new Promise(resolve => {
-        api.servers.servers.testServer.processFile(connection);
-        connection.actionCallbacks[connection.messageId] = resolve;
-      });
-
-      return response;
-    };
-
-    /**
-     * Use the specHelper to run a task.
-     * Note: this only runs the task's `run()` method, and no middleware.  This is faster than api.specHelper.runFullTask.
-     *
-     * @async
-     * @param  {string}   taskName The name of the task.
-     * @param  {Object}   params   Params to pass to the task
-     * @return {Promise<Object>}   The return value from the task.
-     * @see api.specHelper.runFullTask
-     */
-    api.specHelper.runTask = async (
-      taskName: string,
-      params: object | Array<any>
-    ) => {
-      return api.tasks.tasks[taskName].run(params);
-    };
-
-    /**
-     * Use the specHelper to run a task.
-     * Note: this will run a full Task worker, and will also include any middleware.  This is slower than api.specHelper.runTask.
-     *
-     * @async
-     * @param  {string}   taskName The name of the task.
-     * @param  {Object}   params   Params to pass to the task
-     * @return {Promise<Object>}   The return value from the task.
-     * @see api.specHelper.runTask
-     */
-    api.specHelper.runFullTask = async (
-      taskName: string,
-      params: object | Array<any>
-    ) => {
-      const worker = new Worker(
-        {
-          connection: {
-            redis: api.redis.clients.tasks
-          },
-          queues: config.tasks.queues || ["default"]
-        },
-        api.tasks.jobs
-      );
-
-      try {
-        await worker.connect();
-        const result = await worker.performInline(taskName, params);
-        await worker.end();
-        return result;
-      } catch (error) {
-        try {
-          worker.end();
-        } catch (error) {}
-        throw error;
-      }
-    };
-
-    /**
-     * Use the specHelper to find enqueued instances of a task
-     * This will return an array of intances of the task which have been enqueued either in the normal queues or delayed queues
-     * If a task is enqued in a delayed queue, it will have a 'timestamp' propery
-     * i.e. [ { class: 'regularTask', queue: 'testQueue', args: [ [Object] ] } ]
-     *
-     * @async
-     * @param  {string}   taskName The name of the task.
-     */
-    api.specHelper.findEnqueuedTasks = async (taskName: string) => {
-      let found = [];
-
-      // normal queues
-      const queues = await api.resque.queue.queues();
-      for (const i in queues) {
-        const q = queues[i];
-        const length = await api.resque.queue.length(q);
-        const batchFound = await api.tasks.queued(q, 0, length + 1);
-        let matches = batchFound.filter(t => t.class === taskName);
-        matches = matches.map(m => {
-          m.timestamp = null;
-          return m;
-        });
-        found = found.concat(matches);
-      }
-
-      // delayed queues
-      const allDelayed = await api.resque.queue.allDelayed();
-      for (const timestamp in allDelayed) {
-        let matches = allDelayed[timestamp].filter(t => t.class === taskName);
-        matches = matches.map(m => {
-          m.timestamp = parseInt(timestamp);
-          return m;
-        });
-        found = found.concat(matches);
-      }
-
-      return found;
+    api.specHelper = {
+      returnMetadata: true,
+      Server: TestServer
     };
   }
 

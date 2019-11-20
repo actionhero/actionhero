@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import { Connection } from "./connection";
 import { ActionProcessor } from "./actionProcessor";
 import { Api } from "./api";
-import { log } from "./log";
+import { log } from "../modules/log";
 
 let api: Api;
 

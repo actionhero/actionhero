@@ -5,11 +5,11 @@ import { argv } from "optimist";
 import { hashMerge } from "./../utils/hashMerge";
 import { ensureNoTsHeaderFiles } from "./../utils/ensureNoTsHeaderFiles";
 
-import { env } from "./process/env";
-import { id } from "./process/id";
-import { actionheroVersion } from "./process/actionheroVersion";
-import { typescript } from "./process/typescript";
-import { projectRoot } from "./process/projectRoot";
+import { env } from "./../classes/process/env";
+import { id } from "./../classes/process/id";
+import { actionheroVersion } from "./../classes/process/actionheroVersion";
+import { typescript } from "./../classes/process/typescript";
+import { projectRoot } from "./../classes/process/projectRoot";
 
 interface ConfigInterface {
   [key: string]: any;

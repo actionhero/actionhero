@@ -1,11 +1,7 @@
 import * as uuidv4 from "uuid/v4";
-import { api } from "./../index";
-import { config } from "./config";
-import {
-  invokeConnectionLocale,
-  localize,
-  determineConnectionLocale
-} from "./i18n";
+import { api, chatRoom } from "./../index";
+import { config } from "./../modules/config";
+import { i18n } from "../modules/i18n";
 
 /**
  * The generic represenation of a connection for all server types is an ActionHero.Connection.  You will never be creating these yourself via an action or task, but you will find them in your Actons and Action Middleware.
@@ -135,7 +131,7 @@ export class Connection {
       }
     }
 
-    invokeConnectionLocale(this);
+    i18n.invokeConnectionLocale(this);
   }
 
   /**
@@ -143,7 +139,7 @@ export class Connection {
    */
   localize(message: string) {
     // this.locale will be sourced automatically
-    return localize(message, this);
+    return i18n.localize(message, this);
   }
 
   /**
@@ -184,7 +180,7 @@ export class Connection {
       const promises = [];
       for (const i in this.rooms) {
         const room = this.rooms[i];
-        promises.push(api.chatRoom.removeMember(this.id, room));
+        promises.push(chatRoom.removeMember(this.id, room));
       }
       await Promise.all(promises);
     }
@@ -266,14 +262,14 @@ export class Connection {
           return;
         case "roomAdd":
           room = words[0];
-          return api.chatRoom.addMember(this.id, room);
+          return chatRoom.addMember(this.id, room);
         case "roomLeave":
           room = words[0];
-          return api.chatRoom.removeMember(this.id, room);
+          return chatRoom.removeMember(this.id, room);
         case "roomView":
           room = words[0];
           if (this.rooms.indexOf(room) >= 0) {
-            return api.chatRoom.roomStatus(room);
+            return chatRoom.roomStatus(room);
           }
           throw new Error(await config.errors.connectionNotInRoom(this, room));
         case "detailsView":

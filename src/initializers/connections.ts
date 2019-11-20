@@ -1,4 +1,4 @@
-import { api, config, Initializer, Connection } from "../index";
+import { api, config, redis, Initializer, Connection } from "../index";
 
 /**
  * ```js
@@ -74,7 +74,7 @@ export class Connections extends Initializer {
         method: string,
         args: Array<any> = []
       ) => {
-        return api.redis.doCluster(
+        return redis.doCluster(
           "api.connections.applyResponder",
           [connectionId, method, args],
           connectionId,
