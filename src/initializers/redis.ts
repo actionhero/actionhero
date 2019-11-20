@@ -82,7 +82,10 @@ export class Redis extends Initializer {
             "cannot operate on a method outside of the api object"
           );
         }
-        const method: Function = dotProp.get(api, cmdParts.join("."));
+
+        const callabaleApi = Object.assign(api, { log });
+
+        const method: Function = dotProp.get(callabaleApi, cmdParts.join("."));
         let args = message.args;
         if (args === null) {
           args = [];
