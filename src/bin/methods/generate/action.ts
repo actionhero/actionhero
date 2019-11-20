@@ -1,6 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
-import { api, CLI } from "./../../../index";
+import { config, CLI } from "./../../../index";
+import { createFileSafely } from "./../../../utils/fileUtils";
+import { replaceDistWithSrc } from "./../../../utils/replaceDistWithSrc";
 
 export class GenerateAction extends CLI {
   constructor() {
@@ -32,8 +34,8 @@ export class GenerateAction extends CLI {
       testTemplate = testTemplate.replace(regex, params[v]);
     });
 
-    let message = api.utils.createFileSafely(
-      api.utils.replaceDistWithSrc(api.config.general.paths.action[0]) +
+    let message = createFileSafely(
+      replaceDistWithSrc(config.general.paths.action[0]) +
         "/" +
         params.name +
         ".ts",
@@ -41,8 +43,8 @@ export class GenerateAction extends CLI {
     );
     console.info(message);
 
-    message = api.utils.createFileSafely(
-      api.config.general.paths.test[0] + "/actions/" + params.name + ".ts",
+    message = createFileSafely(
+      config.general.paths.test[0] + "/actions/" + params.name + ".ts",
       testTemplate
     );
     console.info(message);

@@ -20,12 +20,12 @@ import { PubSubMessage } from "../initializers/redis";
  *    // Will be executed once per client connection before delivering the message.
  *    say: (connection, room, messagePayload) => {
  *      // do stuff
- *      api.log(messagePayload)
+ *      log(messagePayload)
  *    },
  *    // Will be executed only once, when the message is sent to the server.
  *    onSayReceive: (connection, room, messagePayload) => {
  *      // do stuff
- *      api.log(messagePayload)
+ *      log(messagePayload)
  *    }
  * }
  * api.chatRoom.addMiddleware(chatMiddleware)

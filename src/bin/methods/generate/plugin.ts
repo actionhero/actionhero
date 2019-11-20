@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
-import { api, CLI } from "./../../../index";
+import { CLI } from "./../../../index";
+import { createFileSafely, createDirSafely } from "./../../../utils/fileUtils";
 
 const PackageJSON = require(path.join(
   __dirname,
@@ -42,17 +43,14 @@ export class GeneratePlugin extends CLI {
       "public"
     ].forEach(type => {
       try {
-        const message = api.utils.createDirSafely(
-          path.join(process.cwd(), type),
-          template
-        );
+        const message = createDirSafely(path.join(process.cwd(), type));
         console.info(message);
       } catch (error) {
         console.log(error.toString());
       }
     });
 
-    const message = api.utils.createFileSafely(
+    const message = createFileSafely(
       path.join(process.cwd(), "package.json"),
       template
     );

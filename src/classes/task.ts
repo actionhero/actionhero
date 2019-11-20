@@ -1,7 +1,7 @@
 /**
  * Create a new ActionHero Task. The required properties of an task. These can be defined statically (this.name) or as methods which return a value.
  * ```js
- * const {Task, api} = require('actionhero')
+ * const { Task, api, log } = require('actionhero')
  * module.exports = class SayHello extends Task {
  *  constructor () {
  *   super()
@@ -10,7 +10,7 @@
  *    this.frequency = (60 * 1000)
  *  }
  *  async run (data, worker) {
- *    api.log('Hello!')
+ *    log('Hello!')
  *  }
  * }
  * ```

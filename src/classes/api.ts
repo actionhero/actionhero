@@ -1,3 +1,5 @@
+import { Process } from "./process";
+
 import { ActionsApi } from "./../initializers/actions";
 import { TaskApi } from "./../initializers/tasks";
 import { ConnectionsApi } from "./../initializers/connections";
@@ -14,6 +16,8 @@ import { SpecHelperApi } from "./../initializers/specHelper";
 
 export class Api {
   running: boolean;
+
+  process?: Process;
 
   commands: {
     initialize?: Function;

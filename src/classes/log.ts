@@ -24,9 +24,9 @@ loggers = config.logger.loggers.map((loggerBuilder: Function) => {
  * The default log levels are: `0=debug` `1=info` `2=notice` `3=warning` `4=error` `5=crit` `6=alert` `7=emerg`
  * Learn more at https://github.com/winstonjs/winston
  *
- * the most basic use.  Will assume 'info' as the severity: `api.log('hello')`
- * custom severity: `api.log('OH NO!', 'warning')`
- * custom severity with a metadata object: `api.log('OH NO, something went wrong', 'warning', { error: new Error('things are busted') })`
+ * the most basic use.  Will assume 'info' as the severity: `log('hello')`
+ * custom severity: `log('OH NO!', 'warning')`
+ * custom severity with a metadata object: `log('OH NO, something went wrong', 'warning', { error: new Error('things are busted') })`
  */
 export function log(message: string, severity: string = "info", data?: any) {
   loggers.map(logger => {

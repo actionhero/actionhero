@@ -58,6 +58,8 @@ export class Process {
     api.commands.restart = () => {
       this.restart();
     };
+
+    api.process = this;
   }
 
   async initialize(params: object = {}) {

@@ -82,7 +82,7 @@ function buildConfig(_startingParams: { [key: string]: any } = {}) {
   }
 
   // const rebootHandler = file => {
-  //   api.log(`*** rebooting due to config change (${file}) ***`, "info");
+  //   log(`*** rebooting due to config change (${file}) ***`, "info");
   //   delete require.cache[require.resolve(file)];
   //   api.commands.restart();
   // };

@@ -115,6 +115,24 @@ const authenticatedTeamMemberMiddleware = {
 };
 ```
 
-## Config and ID
+## The API Object and direct imports
 
-- `api.config.general.id` is removed.
+A number of things have been moved off of the API object to simlify thier use by creating import/export modules you can require directly. In this way, you can get type hinting for various things!
+
+### Removed from the API object and are now directly exported by Actionhero:
+
+ie: `import { log, config } from 'actionhero'`
+
+- log (the method to write to the logs)
+- config (the config object hash)
+- Cache (note the capital letter; contains Cache.load, etc)
+- id (the server's id)
+- env (development, staging, production)
+- localize (method that accepts a string and a connection)
+- watchFileAndAct / unWatchAllFiles (methods)
+
+* `api.config.general.id` is removed.
+
+### The API object
+
+what remains on the API object are truly things about your API - actions, tasks, servers, initializers. And now these elements are very typesafe. **You can no longer add and remove things randomly to the API object**. This means that in your project, you should create imports/and exorts directly and share them with your actions and tasks.

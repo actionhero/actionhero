@@ -267,7 +267,7 @@ export abstract class Server extends EventEmitter {
   }
 
   /**
-   * Log a message from this server type.  A wrapper around api.log with a server prefix.
+   * Log a message from this server type.  A wrapper around log() with a server prefix.
    */
   log(message: string, severity?: string, data?: any) {
     log(`[server: ${this.type}] ${message}`, severity, data);

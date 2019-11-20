@@ -22,14 +22,14 @@ import { sortGlobalMiddleware } from "./../utils/sortGlobalMiddleware";
  *     const elapsed = process.hrtime(worker.startTime)
  *     const seconds = elapsed[0]
  *     const millis = elapsed[1] / 1000000
- *     api.log(worker.job.class + ' done in ' + seconds + ' s and ' + millis + ' ms.', 'info')
+ *     log(worker.job.class + ' done in ' + seconds + ' s and ' + millis + ' ms.', 'info')
  *   },
  *   preEnqueue: async function () {
  *     const arg = this.args[0]
  *     return (arg === 'ok') // returing `false` will prevent the task from enqueing
  *   },
  *   postEnqueue: async function () {
- *     api.log("Task successfully enqueued!")
+ *     log("Task successfully enqueued!")
  *   }
  * }
  * api.tasks.addMiddleware(middleware)

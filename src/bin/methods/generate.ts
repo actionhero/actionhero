@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
-import { api, CLI } from "./../../index";
+import { api, projectRoot, CLI } from "./../../index";
+import { createFileSafely, createDirSafely } from "./../../utils/fileUtils";
 
 export class Generate extends CLI {
   constructor() {
@@ -107,7 +108,7 @@ export class Generate extends CLI {
       "/__tests__/tasks"
     ].forEach(dir => {
       try {
-        const message = api.utils.createDirSafely(api.projectRoot + dir);
+        const message = createDirSafely(projectRoot + dir);
         console.log(message);
       } catch (error) {
         console.log(error.toString());
@@ -143,8 +144,8 @@ export class Generate extends CLI {
 
     for (const file in newFileMap) {
       try {
-        const message = api.utils.createFileSafely(
-          api.projectRoot + file,
+        const message = createFileSafely(
+          projectRoot + file,
           documents[newFileMap[file]]
         );
         console.log(message);
