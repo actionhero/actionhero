@@ -13,24 +13,35 @@ export interface CacheObject {
 
 export interface CacheOptions {
   expireTimeMS?: number;
-  retry?: boolean;
+  retry?: boolean | number;
 }
-
-function client() {
-  if (config.redis.enabled && api.redis.clients && api.redis.clients.client) {
-    return api.redis.clients.client;
-  } else {
-    throw new Error("redis not connected, cache cannot be used");
-  }
-}
-
-const redisPrefix = config.general.cachePrefix;
-const lockPrefix = config.general.lockPrefix;
-const lockDuration = config.general.lockDuration;
-const lockName = id;
-const lockRetry = 100;
 
 export namespace Cache {
+  export const redisPrefix = config.general.cachePrefix;
+  export const lockPrefix = config.general.lockPrefix;
+  export const lockDuration = config.general.lockDuration;
+  export const lockRetry = 100;
+
+  export function client() {
+    if (config.redis.enabled && api.redis.clients && api.redis.clients.client) {
+      return api.redis.clients.client;
+    } else {
+      throw new Error("redis not connected, cache cannot be used");
+    }
+  }
+
+  let lockNameOverride;
+  export function lockName() {
+    if (lockNameOverride) {
+      return lockNameOverride;
+    }
+    return id;
+  }
+
+  export function overrideLockName(name: string) {
+    lockNameOverride = name;
+  }
+
   /**
    * Returns all the keys in redis which are under this ActionHero namespace.  Potentially very slow.
    */
@@ -286,7 +297,7 @@ export namespace Cache {
       return false;
     }
 
-    const result = await client().setnx(lockPrefix + key, lockName);
+    const result = await client().setnx(lockPrefix + key, lockName());
     if (!result) {
       return false;
     } // value was already set, so we cannot obtain the lock
@@ -312,11 +323,11 @@ export namespace Cache {
 
   export async function checkLock(
     key: string,
-    retry: boolean | number,
+    retry: boolean | number = false,
     startTime: number = new Date().getTime()
   ) {
     const lockedBy = await client().get(lockPrefix + key);
-    if (lockedBy === lockName || lockedBy === null) {
+    if (lockedBy === lockName() || lockedBy === null) {
       return true;
     } else {
       const delta = new Date().getTime() - startTime;

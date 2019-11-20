@@ -1,4 +1,4 @@
-import { Process, Action } from "./../../src/index";
+import { config, Process, Action } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -38,7 +38,7 @@ describe("Core", () => {
         expect(typeof item).toEqual("string");
       });
 
-      expect(api.config).toBeInstanceOf(Object);
+      expect(config).toBeInstanceOf(Object);
     });
 
     test("should have loaded postVariables properly", () => {
@@ -217,7 +217,7 @@ describe("Core", () => {
       afterAll(() => {
         delete api.actions.actions.testAction;
         delete api.actions.versions.testAction;
-        api.config.general.missingParamChecks = [null, "", undefined];
+        config.general.missingParamChecks = [null, "", undefined];
       });
 
       test("correct params that are falsey (false, []) should be allowed", async () => {
@@ -245,7 +245,7 @@ describe("Core", () => {
 
       test("correct params respect config options", async () => {
         let response;
-        api.config.general.missingParamChecks = [undefined];
+        config.general.missingParamChecks = [undefined];
         response = await api.specHelper.runAction("testAction", {
           requiredParam: ""
         });
@@ -355,7 +355,7 @@ describe("Core", () => {
       afterAll(() => {
         delete api.actions.actions.testAction;
         delete api.actions.versions.testAction;
-        api.config.general.missingParamChecks = [null, "", undefined];
+        config.general.missingParamChecks = [null, "", undefined];
       });
 
       test("correct params that are falsey (false, []) should be allowed", async () => {
@@ -388,7 +388,7 @@ describe("Core", () => {
 
       test("correct params respect config options", async () => {
         let response;
-        api.config.general.missingParamChecks = [undefined];
+        config.general.missingParamChecks = [undefined];
         response = await api.specHelper.runAction("testAction", {
           schemaParam: { requiredParam: "" }
         });
