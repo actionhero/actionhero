@@ -160,7 +160,9 @@ export namespace chatRoom {
    * Learn about the connections in the room.
    * Returns a hash of the form { room: room, members: cleanedMembers, membersCount: count }.  Members is an array of connections in the room sanitized via `api.chatRoom.sanitizeMemberDetails`
    */
-  export async function roomStatus(room: string): Promise<object> {
+  export async function roomStatus(
+    room: string
+  ): Promise<{ [key: string]: any }> {
     if (room) {
       const found = await chatRoom.exists(room);
       if (found === true) {
