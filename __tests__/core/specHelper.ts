@@ -1,4 +1,4 @@
-import { Process } from "./../../src/index";
+import { Process, specHelper } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -12,7 +12,7 @@ describe("Core: specHelper", () => {
   });
 
   test("can make a requset with just params", async () => {
-    const { randomNumber } = await api.specHelper.runAction("randomNumber");
+    const { randomNumber } = await specHelper.runAction("randomNumber");
     expect(randomNumber).toBeGreaterThanOrEqual(0);
     expect(randomNumber).toBeLessThan(1);
   });
@@ -20,7 +20,7 @@ describe("Core: specHelper", () => {
   test("will stack up messages recieved", async () => {
     const connection = await api.specHelper.Connection.createAsync();
     connection.params.thing = "stuff";
-    const { error } = await api.specHelper.runAction("x", connection);
+    const { error } = await specHelper.runAction("x", connection);
     expect(connection.messages).toHaveLength(2);
     expect(connection.messages[0].welcome).toEqual(
       "Hello! Welcome to the actionhero api"
@@ -97,7 +97,7 @@ describe("Core: specHelper", () => {
 
     describe("happy-path", () => {
       test("if the response payload is an object, it appends metadata", async () => {
-        const response = await api.specHelper.runAction("randomNumber");
+        const response = await specHelper.runAction("randomNumber");
         expect(response.error).toBeUndefined();
         expect(response.randomNumber).toBeTruthy();
         expect(response.messageId).toBeTruthy();
@@ -106,9 +106,7 @@ describe("Core: specHelper", () => {
       });
 
       test("if the response payload is a string, it maintains type", async () => {
-        const response = await api.specHelper.runAction(
-          "stringResponseTestAction"
-        );
+        const response = await specHelper.runAction("stringResponseTestAction");
         expect(response).toEqual("something response");
         expect(response.error).toBeUndefined();
         expect(response.messageId).toBeUndefined();
@@ -117,9 +115,7 @@ describe("Core: specHelper", () => {
       });
 
       test("if the response payload is a array, it maintains type", async () => {
-        const response = await api.specHelper.runAction(
-          "arrayResponseTestAction"
-        );
+        const response = await specHelper.runAction("arrayResponseTestAction");
         expect(response).toEqual([1, 2, 3]);
         expect(response.error).toBeUndefined();
         expect(response.messageId).toBeUndefined();
@@ -137,7 +133,7 @@ describe("Core: specHelper", () => {
       });
 
       test("if the response payload is an object, it should not append metadata", async () => {
-        const response = await api.specHelper.runAction("randomNumber");
+        const response = await specHelper.runAction("randomNumber");
         expect(response.error).toBeUndefined();
         expect(response.randomNumber).toBeTruthy();
         expect(response.messageId).toBeUndefined();
@@ -148,7 +144,7 @@ describe("Core: specHelper", () => {
 
     describe("errors", () => {
       test("if the response payload is an object and there is an error, it appends metadata", async () => {
-        const response = await api.specHelper.runAction("x");
+        const response = await specHelper.runAction("x");
         expect(response.error).toEqual(
           "Error: unknown action or invalid apiVersion"
         );
@@ -158,9 +154,7 @@ describe("Core: specHelper", () => {
       });
 
       test("if the response payload is a string, just the error will be returned", async () => {
-        const response = await api.specHelper.runAction(
-          "stringErrorTestAction"
-        );
+        const response = await specHelper.runAction("stringErrorTestAction");
         expect(response).toEqual("Error: some error");
         expect(response.messageId).toBeUndefined();
         expect(response.serverInformation).toBeUndefined();
@@ -168,7 +162,7 @@ describe("Core: specHelper", () => {
       });
 
       test("if the response payload is a array, just the error will be returned", async () => {
-        const response = await api.specHelper.runAction("arrayErrorTestAction");
+        const response = await specHelper.runAction("arrayErrorTestAction");
         expect(response).toEqual("Error: some error");
         expect(response.messageId).toBeUndefined();
         expect(response.serverInformation).toBeUndefined();
@@ -179,7 +173,7 @@ describe("Core: specHelper", () => {
 
   describe("test responses", () => {
     test("will not report a broken test as a broken action (sync)", async () => {
-      const response = await api.specHelper.runAction("randomNumber");
+      const response = await specHelper.runAction("randomNumber");
       try {
         response.not.a.real.thing();
         throw new Error("should not get here");
@@ -191,7 +185,7 @@ describe("Core: specHelper", () => {
     });
 
     test("will not report a broken test as a broken action (async)", async () => {
-      const response = await api.specHelper.runAction("sleepTest");
+      const response = await specHelper.runAction("sleepTest");
       try {
         response.not.a.real.thing();
         throw new Error("should not get here");
@@ -203,7 +197,7 @@ describe("Core: specHelper", () => {
     });
 
     test("messageId can be configurable", async () => {
-      const response = await api.specHelper.runAction("randomNumber", {
+      const response = await specHelper.runAction("randomNumber", {
         messageId: "aaa"
       });
       expect(response.messageId).toEqual("aaa");
@@ -212,7 +206,7 @@ describe("Core: specHelper", () => {
 
   describe("files", () => {
     test("can request file data", async () => {
-      const data = await api.specHelper.getStaticFile("simple.html");
+      const data = await specHelper.getStaticFile("simple.html");
       expect(data.error).toBeUndefined();
       expect(data.content).toEqual(
         "<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />"
@@ -222,7 +216,7 @@ describe("Core: specHelper", () => {
     });
 
     test("missing files", async () => {
-      const data = await api.specHelper.getStaticFile("missing.html");
+      const data = await specHelper.getStaticFile("missing.html");
       expect(data.error).toEqual("That file is not found");
       expect(data.mime).toEqual("text/html");
       expect(data.content).toBeNull();
@@ -243,7 +237,7 @@ describe("Core: specHelper", () => {
 
       connId = connection.id;
 
-      const response = await api.specHelper.runAction("cacheTest", connection);
+      const response = await specHelper.runAction("cacheTest", connection);
       messageIds.push(response.messageId);
       expect(connection.messages).toHaveLength(2);
       expect(connId).toEqual(connection.id);
@@ -251,10 +245,7 @@ describe("Core: specHelper", () => {
     });
 
     test("can make second request", async () => {
-      const response = await api.specHelper.runAction(
-        "randomNumber",
-        connection
-      );
+      const response = await specHelper.runAction("randomNumber", connection);
       messageIds.push(response.messageId);
       expect(connection.messages).toHaveLength(3);
       expect(connId).toEqual(connection.id);
@@ -262,7 +253,7 @@ describe("Core: specHelper", () => {
     });
 
     test("will generate new ids and fingerprints for a new connection", async () => {
-      const response = await api.specHelper.runAction("randomNumber");
+      const response = await specHelper.runAction("randomNumber");
       messageIds.push(response.messageId);
       expect(response.requesterInformation.id).not.toEqual(connId);
       expect(response.requesterInformation.fingerprint).not.toEqual(connId);
@@ -300,7 +291,7 @@ describe("Core: specHelper", () => {
     });
 
     test("can run tasks", async () => {
-      const response = await api.specHelper.runTask("testTask");
+      const response = await specHelper.runTask("testTask", {});
       expect(response).toEqual("OK");
       expect(taskRan).toEqual(true);
     });
