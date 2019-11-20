@@ -9,7 +9,7 @@ export namespace specHelper {
   export async function runAction(
     actionName: string,
     input: { [key: string]: any } = {}
-  ) {
+  ): Promise<{ [key: string]: any }> {
     let connection;
 
     if (input.id && input.type === "testServer") {
@@ -50,7 +50,10 @@ export namespace specHelper {
    * Use the specHelper to run a task.
    * Note: this only runs the task's `run()` method, and no middleware.  This is faster than api.specHelper.runFullTask.
    */
-  export async function runTask(taskName: string, params: object | Array<any>) {
+  export async function runTask(
+    taskName: string,
+    params: object | Array<any>
+  ): Promise<{ [key: string]: any }> {
     return api.tasks.tasks[taskName].run(params);
   }
 

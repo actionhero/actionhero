@@ -1,4 +1,4 @@
-import { Process } from "./../../src/index";
+import { Process, specHelper } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -12,7 +12,7 @@ describe("Test: RunAction", () => {
   });
 
   test("can run the task manually", async () => {
-    const { randomNumber } = await api.specHelper.runTask("runAction", {
+    const { randomNumber } = await specHelper.runTask("runAction", {
       action: "randomNumber"
     });
     expect(randomNumber).toBeGreaterThanOrEqual(0);

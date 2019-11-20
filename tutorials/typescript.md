@@ -51,6 +51,7 @@ Remember - you will be using `npm run dev` now when developing locally.
 
 - Create the `src` and `dist` directories
 - Move Actions, Tasks, Initializers, Servers, and Config into it
+- Create a new `modules` directory
 
 ## Change all of your _.js files to _.ts
 
@@ -115,17 +116,24 @@ const authenticatedTeamMemberMiddleware = {
 };
 ```
 
-## The API Object and direct imports
+## Modules and Initializers
 
-A number of things have been moved off of the API object to simlify thier use by creating import/export modules you can require directly. In this way, you can get type hinting for various things!
+A number of things have been moved off of the API object to simlify thier use by creating import/export modules you can require directly. In this way, you can get type hinting for various parts of actionhro! This is a logical seperation between `initailziers` - code that excecutes when your server boots up and loads or connects vs `modules` which provide an API for you to use in your code.
 
-### Removed from the API object and are now directly exported by Actionhero:
+For example, the `task` system has been split into 2 parts - both a `module` and `initializer`. The initializer continues to load your tasks into `api.tasks.tasks`, but doesn't expose any methods for you to use. Now, when you wan to call `task.enqueue()` you load it from the module via `import {task} from 'actionhero'`
+
+### Removed from the API object and are now directly exported by Actionhero as modules:
 
 ie: `import { log, config } from 'actionhero'`
 
 - log (the method to write to the logs)
 - config (the config object hash)
-- Cache (note the capital letter; contains Cache.load, etc)
+- action (addMiddleware)
+- task (addMiddleware)
+- cache
+- task
+- i18n
+- specHelper
 - id (the server's id)
 - env (development, staging, production)
 - localize (method that accepts a string and a connection)
@@ -133,9 +141,7 @@ ie: `import { log, config } from 'actionhero'`
 
 ### Removed from the API object with no replacement:
 
-- utils
-
-* `api.config.general.id` is removed.
+- utils (these are private to actionhero)
 
 ### The API object
 
@@ -144,3 +150,4 @@ what remains on the API object are truly things about your API - actions, tasks,
 ## Config
 
 - `config.general.id` can no longer be set
+-

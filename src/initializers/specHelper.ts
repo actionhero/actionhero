@@ -155,6 +155,11 @@ export class SpecHelper extends Initializer {
       }
     }
 
+    api.specHelper = {
+      returnMetadata: true,
+      Server: TestServer
+    };
+
     /**
      * A special connection usable in tests.  Create via `await api.specHelper.Connection.createAsync()`
      */
@@ -171,11 +176,6 @@ export class SpecHelper extends Initializer {
         });
         return api.connections.connections[id];
       }
-    };
-
-    api.specHelper = {
-      returnMetadata: true,
-      Server: TestServer
     };
   }
 

@@ -1,4 +1,4 @@
-import { Process } from "./../../src/index";
+import { Process, specHelper } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -13,14 +13,14 @@ describe("Action", () => {
     });
 
     test("fails with no params", async () => {
-      const { error } = await api.specHelper.runAction("cacheTest", {});
+      const { error } = await specHelper.runAction("cacheTest", {});
       expect(error).toEqual(
         "Error: key is a required parameter for this action"
       );
     });
 
     test("fails with just key", async () => {
-      const { error } = await api.specHelper.runAction("cacheTest", {
+      const { error } = await specHelper.runAction("cacheTest", {
         key: "test key"
       });
       expect(error).toEqual(
@@ -29,7 +29,7 @@ describe("Action", () => {
     });
 
     test("fails with just value", async () => {
-      const { error } = await api.specHelper.runAction("cacheTest", {
+      const { error } = await specHelper.runAction("cacheTest", {
         value: "abc123"
       });
       expect(error).toEqual(
@@ -38,7 +38,7 @@ describe("Action", () => {
     });
 
     test("fails with gibberish param", async () => {
-      const { error } = await api.specHelper.runAction("cacheTest", {
+      const { error } = await specHelper.runAction("cacheTest", {
         thingy: "abc123"
       });
       expect(error).toEqual(
@@ -47,7 +47,7 @@ describe("Action", () => {
     });
 
     test("fails with value shorter than 2 letters", async () => {
-      const { error } = await api.specHelper.runAction("cacheTest", {
+      const { error } = await specHelper.runAction("cacheTest", {
         key: "abc123",
         value: "v"
       });
@@ -55,7 +55,7 @@ describe("Action", () => {
     });
 
     test("works with correct params", async () => {
-      const { cacheTestResults } = await api.specHelper.runAction("cacheTest", {
+      const { cacheTestResults } = await specHelper.runAction("cacheTest", {
         key: "testKey",
         value: "abc123"
       });

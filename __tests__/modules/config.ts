@@ -1,4 +1,4 @@
-import { config } from "../../src/classes/config";
+import { config } from "../../src/index";
 
 describe("config class", () => {
   it("loads config", () => {

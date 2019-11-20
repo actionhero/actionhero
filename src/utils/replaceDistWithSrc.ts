@@ -1,4 +1,4 @@
-import { config } from "./../classes/config";
+import { config } from "./../modules/config";
 
 /**
  * Used by generator functions running from your `dist`, it replacaes the path with your `src`

@@ -1,5 +1,4 @@
-import { Api } from "./../../src/classes/api";
-import { config } from "./../../src/classes/config";
+import { config } from "./../../src/index";
 
 import { sleep } from "./../../src/utils/sleep";
 import { arrayUniqueify } from "./../../src/utils/arrayUniqueify";
@@ -12,8 +11,6 @@ import { parseIPv6URI } from "./../../src/utils/parseIPv6URI";
 import { arrayStartingMatch } from "./../../src/utils/arrayStartingMatch";
 import { replaceDistWithSrc } from "./../../src/utils/replaceDistWithSrc";
 import { filterObjectForLogging } from "./../../src/utils/filterObjectForLogging";
-
-let api: Api;
 
 describe("Utils", () => {
   describe("util.sleep", () => {

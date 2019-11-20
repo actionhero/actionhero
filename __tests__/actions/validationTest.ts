@@ -1,4 +1,4 @@
-import { Process } from "./../../src/index";
+import { Process, specHelper } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -13,14 +13,14 @@ describe("Action", () => {
     });
 
     test("fails with no params", async () => {
-      const { error } = await api.specHelper.runAction("validationTest", {});
+      const { error } = await specHelper.runAction("validationTest", {});
       expect(error).toEqual(
         "Error: string is a required parameter for this action"
       );
     });
 
     test("fails with a number", async () => {
-      const { error } = await api.specHelper.runAction("validationTest", {
+      const { error } = await specHelper.runAction("validationTest", {
         string: 87
       });
       expect(error).toEqual(
