@@ -362,12 +362,12 @@ export namespace task {
     const thisTask = api.tasks.tasks[taskName];
     if (thisTask.frequency > 0) {
       let removedCount = 0;
-      const count = await task.del(thisTask.queue, thisTask.name, {}, 1);
+      const count = await task.del(thisTask.queue, thisTask.name, null, 1);
       removedCount = removedCount + count;
       const timestamps = await task.delDelayed(
         thisTask.queue,
         thisTask.name,
-        {}
+        null
       );
       removedCount = removedCount + timestamps.length;
       return removedCount;
