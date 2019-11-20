@@ -74,7 +74,6 @@ export const DEFAULT = {
 export const test = {
   general: config => {
     return {
-      id: `test-server-${process.env.JEST_WORKER_ID || 0}`,
       serverToken: `serverToken-${process.env.JEST_WORKER_ID || 0}`,
       developmentMode: true,
       startingChatRooms: {
