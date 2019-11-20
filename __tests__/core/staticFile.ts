@@ -1,5 +1,6 @@
 import * as request from "request-promise-native";
-import { Process } from "./../../src/index";
+import { Process, config, specHelper } from "./../../src/index";
+import { sleep } from "./../../src/utils/sleep";
 
 const actionhero = new Process();
 let api;
@@ -22,9 +23,9 @@ describe("Core", () => {
       api = await actionhero.start();
       url =
         "http://localhost:" +
-        api.config.servers.web.port +
+        config.servers.web.port +
         "/" +
-        api.config.servers.web.urlPathForFiles;
+        config.servers.web.urlPathForFiles;
     });
 
     afterAll(async () => {
@@ -32,7 +33,7 @@ describe("Core", () => {
     });
 
     test("file: an HTML file", async () => {
-      const response = await api.specHelper.getStaticFile("simple.html");
+      const response = await specHelper.getStaticFile("simple.html");
       expect(response.mime).toEqual("text/html");
       expect(response.content).toEqual(
         "<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />"
@@ -40,23 +41,19 @@ describe("Core", () => {
     });
 
     test("file: 404 pages", async () => {
-      const response = await api.specHelper.getStaticFile("someRandomFile");
+      const response = await specHelper.getStaticFile("someRandomFile");
       expect(response.error).toEqual("That file is not found");
       expect(response.content).toBeNull();
     });
 
     test("I should not see files outside of the public dir", async () => {
-      const response = await api.specHelper.getStaticFile(
-        "../config/config.json"
-      );
+      const response = await specHelper.getStaticFile("../config/config.json");
       expect(response.error).toEqual("That file is not found");
       expect(response.content).toBeNull();
     });
 
     test("file: sub paths should work", async () => {
-      const response = await api.specHelper.getStaticFile(
-        "logo/actionhero.png"
-      );
+      const response = await specHelper.getStaticFile("logo/actionhero.png");
       expect(response.mime).toEqual("image/png");
       expect(response.length).toEqual(59273);
       // wacky per-OS encoding issues I guess?
@@ -162,12 +159,12 @@ describe("Core", () => {
     describe("Compression", () => {
       let serverCompressionState;
       beforeAll(() => {
-        serverCompressionState = api.config.servers.web.compress;
-        api.config.servers.web.compress = true; // activate compression, default is likely to be false
+        serverCompressionState = config.servers.web.compress;
+        config.servers.web.compress = true; // activate compression, default is likely to be false
       });
 
       afterAll(() => {
-        api.config.servers.web.compress = serverCompressionState;
+        config.servers.web.compress = serverCompressionState;
       });
 
       test("should respect accept-encoding header priority with gzip as first in a list of encodings", async () => {
@@ -237,7 +234,7 @@ describe("Core", () => {
             resolveWithFullResponse: true
           });
           expect(response.statusCode).toEqual(200);
-          await api.utils.sleep(100);
+          await sleep(100);
           expect(await lsofChk()).toEqual("0");
         }, 30000);
 
@@ -250,7 +247,7 @@ describe("Core", () => {
             throw new Error("should return 304");
           } catch (error) {
             expect(error.statusCode).toEqual(304);
-            await api.utils.sleep(100);
+            await sleep(100);
             expect(await lsofChk()).toEqual("0");
           }
         }, 30000);
