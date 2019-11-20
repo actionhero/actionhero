@@ -11,21 +11,21 @@ import { actionheroVersion } from "./../classes/process/actionheroVersion";
 import { typescript } from "./../classes/process/typescript";
 import { projectRoot } from "./../classes/process/projectRoot";
 
-interface ConfigInterface {
+export interface ConfigInterface {
   [key: string]: any;
 }
 
-export let config: ConfigInterface = {
-  process: {
-    env,
-    id,
-    typescript,
-    projectRoot,
-    actionheroVersion
-  }
-};
-
 export function buildConfig(_startingParams: ConfigInterface = {}) {
+  let config: ConfigInterface = {
+    process: {
+      env,
+      id,
+      typescript,
+      projectRoot,
+      actionheroVersion
+    }
+  };
+
   const configPaths = [];
 
   hashMerge(config, _startingParams);
@@ -204,7 +204,15 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
     config = hashMerge(config, _startingParams.configChanges);
   }
 
+  if (process.env.configChanges) {
+    config = hashMerge(config, JSON.parse(process.env.configChanges));
+  }
+
+  if (argv.configChanges) {
+    config = hashMerge(config, JSON.parse(argv.configChanges));
+  }
+
   return config;
 }
 
-buildConfig();
+export const config = buildConfig();

@@ -100,16 +100,7 @@ interface Runner {
   const handleMethod = async (commands: Array<string>) => {
     try {
       const actionHeroProcess = new Process();
-      let configChanges = {};
-
-      if (process.env.configChanges) {
-        configChanges = JSON.parse(process.env.configChanges);
-      }
-      if (optimist.argv.configChanges) {
-        configChanges = JSON.parse(optimist.argv.configChanges);
-      }
-
-      await actionHeroProcess.initialize({ configChanges });
+      await actionHeroProcess.initialize();
 
       let ExportedClasses;
 

@@ -1,13 +1,6 @@
 import * as path from "path";
 import * as glob from "glob";
-import {
-  api,
-  config,
-  log,
-  watchFileAndAct,
-  Initializer,
-  Server
-} from "../index";
+import { api, log, watchFileAndAct, Initializer, Server } from "../index";
 import { ensureNoTsHeaderFiles } from "./../utils/ensureNoTsHeaderFiles";
 
 export interface ServersApi {
@@ -28,7 +21,7 @@ export class Servers extends Initializer {
     this.stopPriority = 100;
   }
 
-  async initialize() {
+  async initialize(config) {
     api.servers = {
       servers: {}
     };
@@ -94,7 +87,7 @@ export class Servers extends Initializer {
     }
   }
 
-  async start() {
+  async start(config) {
     const serverNames = Object.keys(api.servers.servers);
     for (const i in serverNames) {
       const serverName = serverNames[i];

@@ -1,13 +1,5 @@
 import * as uuid from "uuid";
-import {
-  api,
-  config,
-  log,
-  env,
-  Initializer,
-  Server,
-  Connection
-} from "../index";
+import { api, log, env, Initializer, Server, Connection } from "../index";
 
 export interface SpecHelperApi {
   returnMetadata?: boolean;
@@ -30,7 +22,7 @@ export class SpecHelper extends Initializer {
     this.enabled = false;
   }
 
-  async initialize() {
+  async initialize(config) {
     if (env === "test" || String(process.env.SPECHELPER) === "true") {
       this.enabled = true;
     }

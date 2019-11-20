@@ -1,7 +1,7 @@
 import * as glob from "glob";
 import * as path from "path";
 import { Plugin } from "node-resque";
-import { api, config, log, task, Initializer, watchFileAndAct } from "../index";
+import { api, log, task, Initializer, watchFileAndAct } from "../index";
 import { ensureNoTsHeaderFiles } from "./../utils/ensureNoTsHeaderFiles";
 
 const taskModule = task;
@@ -29,7 +29,7 @@ export class Tasks extends Initializer {
     this.startPriority = 900;
   }
 
-  async initialize() {
+  async initialize(config) {
     api.tasks = {
       tasks: {},
       jobs: {},
@@ -169,7 +169,7 @@ export class Tasks extends Initializer {
     api.tasks.loadTasks(false);
   }
 
-  async start() {
+  async start(config) {
     if (config.redis.enabled === false) {
       return;
     }

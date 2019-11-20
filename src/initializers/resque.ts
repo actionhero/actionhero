@@ -1,5 +1,5 @@
 import { Queue, Scheduler, MultiWorker } from "node-resque";
-import { api, config, log, Initializer } from "../index";
+import { api, log, Initializer } from "../index";
 
 export interface ResqueApi {
   connectionDetails: {
@@ -31,7 +31,7 @@ export class Resque extends Initializer {
     this.stopPriority = 100;
   }
 
-  async initialize() {
+  async initialize(config) {
     if (config.redis.enabled === false) {
       return;
     }
@@ -196,7 +196,12 @@ export class Resque extends Initializer {
             log(
               "[ worker ] reEnqueue job",
               api.resque.workerLogging.reEnqueue,
-              { workerId, plugin: plugin, class: job.class, queue: job.queue }
+              {
+                workerId,
+                plugin: plugin,
+                class: job.class,
+                queue: job.queue
+              }
             );
           }
         );
@@ -255,7 +260,7 @@ export class Resque extends Initializer {
     };
   }
 
-  async start() {
+  async start(config) {
     if (config.redis.enabled === false) {
       return;
     }
@@ -272,7 +277,7 @@ export class Resque extends Initializer {
     await api.resque.startMultiWorker();
   }
 
-  async stop() {
+  async stop(config) {
     if (config.redis.enabled === false) {
       return;
     }

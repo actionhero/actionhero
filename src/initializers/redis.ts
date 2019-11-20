@@ -2,7 +2,7 @@
 
 import * as IORedis from "ioredis";
 import * as dotProp from "dot-prop";
-import { api, config, id, log, chatRoom, Initializer, redis } from "../index";
+import { api, id, log, Initializer, redis } from "../index";
 import { PubSubMessage } from "./../modules/redis";
 
 export interface RedisApi {
@@ -32,7 +32,7 @@ export class Redis extends Initializer {
     this.stopPriority = 99999;
   }
 
-  async initialize() {
+  async initialize(config) {
     if (config.redis.enabled === false) {
       return;
     }
@@ -150,7 +150,7 @@ export class Redis extends Initializer {
     }
   }
 
-  async start() {
+  async start(config) {
     if (config.redis.enabled === false) {
       log("redis is disabled", "notice");
     } else {
@@ -160,7 +160,7 @@ export class Redis extends Initializer {
     }
   }
 
-  async stop() {
+  async stop(config) {
     if (config.redis.enabled === false) {
       return;
     }

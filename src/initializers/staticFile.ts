@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as Mime from "mime";
-import { api, config, log, Initializer } from "../index";
+import { api, log, Initializer } from "../index";
 import { Connection } from "./../classes/connection";
 
 async function asyncStats(file: string): Promise<{ [key: string]: any }> {
@@ -47,7 +47,7 @@ export class StaticFile extends Initializer {
     this.loadPriority = 510;
   }
 
-  async initialize() {
+  async initialize(config) {
     api.staticFile = {
       searchLoactions: []
     };

@@ -1,5 +1,5 @@
 import * as path from "path";
-import { api, config, log, route, Initializer } from "../index";
+import { api, log, route, Initializer } from "../index";
 import { arrayUniqueify } from "./../utils/arrayUniqueify";
 
 export interface RoutesApi {
@@ -20,7 +20,7 @@ export class Routes extends Initializer {
     this.loadPriority = 500;
   }
 
-  async initialize() {
+  async initialize(config) {
     api.routes = {
       routes: {},
       verbs: ["head", "get", "post", "put", "patch", "delete"]

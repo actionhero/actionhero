@@ -1,5 +1,5 @@
 import * as os from "os";
-import { api, log, config, Initializer } from "../index";
+import { api, log, Initializer } from "../index";
 
 export interface ExceptionHandlerAPI {
   reporters: Array<any>;
@@ -23,7 +23,7 @@ export class Exceptions extends Initializer {
     return ["action", "remoteIP", "type", "params", "room"];
   }
 
-  async initialize() {
+  async initialize(config) {
     api.exceptionHandlers = {
       reporters: [],
       report: (error, type, name, objects, severity) => {

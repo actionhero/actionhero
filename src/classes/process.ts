@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as glob from "glob";
 import { Api } from "./api";
-import { config } from "./../modules/config";
+import { buildConfig, ConfigInterface } from "./../modules/config";
 import { log } from "../modules/log";
 import { Initializer } from "./initializer";
 import { Initializers } from "./initializers";
@@ -16,6 +16,7 @@ import { pid, writePidFile, clearPidFile } from "./process/pid";
 import { watchFileAndAct, unWatchAllFiles } from "./process/watchFileAndAct";
 
 let api: Api;
+let config: ConfigInterface = {};
 
 export class Process {
   running: boolean;
@@ -70,7 +71,8 @@ export class Process {
     const stopInitializerRankings = {};
     let initializerFiles: Array<string> = [];
 
-    writePidFile();
+    // rebuild config with startingParams
+    config = buildConfig(this._startingParams);
 
     // load initializers from core
     initializerFiles = initializerFiles.concat(
@@ -99,17 +101,6 @@ export class Process {
     }
 
     initializerFiles = arrayUniqueify(initializerFiles);
-    initializerFiles = initializerFiles.filter(file => {
-      if (file.match("initializers/utils")) {
-        return false;
-      }
-      if (file.match("initializers/config")) {
-        return false;
-      }
-
-      return true;
-    });
-
     initializerFiles = ensureNoTsHeaderFiles(initializerFiles);
 
     initializerFiles.forEach(f => {
@@ -161,7 +152,7 @@ export class Process {
             log(`Loading initializer: ${initializer.name}`, "debug", file);
 
             try {
-              await initializer.initialize();
+              await initializer.initialize(config);
               try {
                 log(`Loaded initializer: ${initializer.name}`, "debug", file);
               } catch (e) {}
@@ -182,7 +173,7 @@ export class Process {
             log(`Starting initializer: ${initializer.name}`, "debug", file);
 
             try {
-              await initializer.start();
+              await initializer.start(config);
               log(`Started initializer: ${initializer.name}`, "debug", file);
             } catch (error) {
               log(
@@ -200,7 +191,7 @@ export class Process {
             log(`Stopping initializer: ${initializer.name}`, "debug", file);
 
             try {
-              await initializer.stop();
+              await initializer.stop(config);
               log(`Stopped initializer: ${initializer.name}`, "debug", file);
             } catch (error) {
               log(
@@ -265,6 +256,7 @@ export class Process {
       await this.initialize(params);
     }
 
+    writePidFile();
     this.running = true;
     api.running = true;
     log(`environment: ${env}`, "notice");

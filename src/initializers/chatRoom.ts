@@ -1,4 +1,4 @@
-import { api, id, log, config, chatRoom, redis, Initializer } from "../index";
+import { api, id, log, chatRoom, redis, Initializer } from "../index";
 import { Connection } from "../classes/connection";
 import { ChatPubSubMessage, ChatMiddleware } from "../modules/chatRoom";
 
@@ -27,7 +27,7 @@ export class ChatRoom extends Initializer {
     this.startPriority = 200;
   }
 
-  async initialize() {
+  async initialize(config) {
     if (config.redis.enabled === false) {
       return;
     }
@@ -166,7 +166,7 @@ export class ChatRoom extends Initializer {
     };
   }
 
-  async start() {
+  async start(config) {
     if (config.redis.enabled === false) {
       return;
     }

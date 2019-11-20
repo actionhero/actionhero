@@ -1,13 +1,6 @@
 import * as glob from "glob";
 import * as path from "path";
-import {
-  api,
-  config,
-  log,
-  watchFileAndAct,
-  Initializer,
-  Action
-} from "../index";
+import { api, log, watchFileAndAct, Initializer, Action } from "../index";
 import { ActionMiddleware } from "./../modules/action";
 import { ensureNoTsHeaderFiles } from "./../utils/ensureNoTsHeaderFiles";
 
@@ -34,7 +27,7 @@ export class Actions extends Initializer {
     this.loadPriority = 410;
   }
 
-  async initialize() {
+  async initialize(config) {
     api.actions = {
       actions: {},
       versions: {},

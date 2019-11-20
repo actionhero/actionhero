@@ -1,3 +1,5 @@
+import { ConfigInterface } from "./../modules/config";
+
 /**
  * Create a new ActionHero Initializer. The required properties of an initializer. These can be defined statically (this.name) or as methods which return a value.
  */
@@ -21,17 +23,17 @@ export abstract class Initializer {
   /**
    * Method run as part of the `initialize` lifecycle of your server.  Ususally sets api['YourNamespace']
    */
-  async initialize?(): Promise<void>;
+  async initialize?(config: ConfigInterface): Promise<void>;
 
   /**
    * Method run as part of the `start` lifecycle of your server.  Ususally connects to remote servers or processes..
    */
-  async start?(): Promise<void>;
+  async start?(config: ConfigInterface): Promise<void>;
 
   /**
    * Method run as part of the `initialize` lifecycle of your server.  Ususally disconnects from remote servers or processes.
    */
-  async stop?(): Promise<void>;
+  async stop?(config: ConfigInterface): Promise<void>;
 
   validate() {
     if (!this.name) {

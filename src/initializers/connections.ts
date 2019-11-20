@@ -1,4 +1,4 @@
-import { api, config, redis, Initializer, Connection } from "../index";
+import { api, redis, Initializer, Connection } from "../index";
 
 /**
  * ```js
@@ -44,7 +44,7 @@ export class Connections extends Initializer {
     this.loadPriority = 400;
   }
 
-  async initialize() {
+  async initialize(config) {
     api.connections = <ConnectionsApi>{
       connections: {},
       middleware: {},
