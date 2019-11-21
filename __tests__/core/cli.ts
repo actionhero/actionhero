@@ -379,7 +379,9 @@ describe("Core: CLI", () => {
           await request(`http://localhost:${port}/api/showDocumentation`);
           throw new Error("should not get here");
         } catch (error) {
-          expect(error.toString()).toMatch(/ECONNREFUSED|ECONNRESET/);
+          expect(error.toString()).toMatch(
+            /ECONNREFUSED|ECONNRESET|RequestError/
+          );
         }
       });
 
