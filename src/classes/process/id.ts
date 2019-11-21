@@ -1,6 +1,7 @@
 import { argv } from "optimist";
 import * as cluster from "cluster";
-import { config. utils } from "./../../index";
+import { config } from "./../../modules/config";
+import { utils } from "./../../modules/utils";
 
 /**
  * I build this server's ID from the external IP address of this server and pid.
