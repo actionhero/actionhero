@@ -1,9 +1,8 @@
 import * as request from "request-promise-native";
-import { Process, config, specHelper } from "./../../src/index";
-import { sleep } from "./../../src/utils/sleep";
+import { Process, config, specHelper } from "../../../src/index";
+import { sleep } from "../../../src/utils/sleep";
 
 const actionhero = new Process();
-let api;
 let url;
 
 async function exec(command) {
@@ -20,7 +19,7 @@ async function exec(command) {
 describe("Core", () => {
   describe("static file", () => {
     beforeAll(async () => {
-      api = await actionhero.start();
+      await actionhero.start();
       url =
         "http://localhost:" +
         config.servers.web.port +
@@ -154,67 +153,6 @@ describe("Core", () => {
 
       expect(secondResponse.statusCode).toEqual(200);
       expect(secondResponse.body.length).toBeGreaterThan(1);
-    });
-
-    describe("Compression", () => {
-      let serverCompressionState;
-      beforeAll(() => {
-        serverCompressionState = config.servers.web.compress;
-        config.servers.web.compress = true; // activate compression, default is likely to be false
-      });
-
-      afterAll(() => {
-        config.servers.web.compress = serverCompressionState;
-      });
-
-      test("should respect accept-encoding header priority with gzip as first in a list of encodings", async () => {
-        const response = await request.get(url + "/simple.html", {
-          headers: { "Accept-Encoding": "gzip, deflate, sdch, br" },
-          resolveWithFullResponse: true
-        });
-
-        expect(response.statusCode).toEqual(200);
-        expect(response.headers["content-encoding"]).toEqual("gzip");
-      });
-
-      test("should respect accept-encoding header priority with deflate as second in a list of encodings", async () => {
-        const response = await request.get(url + "/simple.html", {
-          headers: { "Accept-Encoding": "br, deflate, gzip" },
-          resolveWithFullResponse: true
-        });
-
-        expect(response.statusCode).toEqual(200);
-        expect(response.headers["content-encoding"]).toEqual("deflate"); // br is not a currently supported encoding
-      });
-
-      test("should respect accept-encoding header priority with gzip as only option", async () => {
-        const response = await request.get(url + "/simple.html", {
-          headers: { "Accept-Encoding": "gzip" },
-          resolveWithFullResponse: true
-        });
-
-        expect(response.statusCode).toEqual(200);
-        expect(response.headers["content-encoding"]).toEqual("gzip");
-      });
-
-      test("should not encode content without a valid a supported value in accept-encoding header", async () => {
-        const response = await request.get(url + "/simple.html", {
-          headers: { "Accept-Encoding": "sdch, br" },
-          resolveWithFullResponse: true
-        });
-
-        expect(response.statusCode).toEqual(200);
-        expect(response.headers["content-encoding"]).toBeUndefined();
-      });
-
-      test("should not encode content without accept-encoding header", async () => {
-        const response = await request.get(url + "/simple.html", {
-          resolveWithFullResponse: true
-        });
-
-        expect(response.statusCode).toEqual(200);
-        expect(response.headers["content-encoding"]).toBeUndefined();
-      });
     });
 
     if (process.platform === "win32") {

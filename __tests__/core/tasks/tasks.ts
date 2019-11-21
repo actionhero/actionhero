@@ -1,5 +1,5 @@
-import { Process, Task, config, task, specHelper } from "./../../src/index";
-import { sleep } from "./../../src/utils/sleep";
+import { Process, Task, config, task, specHelper } from "../../../src/index";
+import { sleep } from "../../../src/utils/sleep";
 
 const actionhero = new Process();
 let api;
