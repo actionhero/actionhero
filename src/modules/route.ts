@@ -16,7 +16,7 @@ export namespace route {
     method: string,
     path: string,
     action: string,
-    apiVersion: number,
+    apiVersion?: number,
     matchTrailingPathParts: boolean = false,
     dir?: string
   ) {
