@@ -2,7 +2,7 @@ import * as winston from "winston";
 import { config } from "./config";
 import { utils } from "./utils";
 
-let loggers = [];
+export let loggers = [];
 
 config.general.paths.log.forEach((p: string) => {
   try {
