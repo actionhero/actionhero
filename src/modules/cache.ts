@@ -1,6 +1,5 @@
 import * as fs from "fs";
-import { api, id, config, i18n } from "../index";
-import { sleep } from "../utils/sleep";
+import { api, id, utils, config, i18n } from "../index";
 
 export interface CacheObject {
   key: string;
@@ -335,7 +334,7 @@ export namespace cache {
         return false;
       }
 
-      await sleep(lockRetry);
+      await utils.sleep(lockRetry);
       return cache.checkLock(key, retry, startTime);
     }
   }

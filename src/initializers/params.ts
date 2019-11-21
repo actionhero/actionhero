@@ -1,5 +1,4 @@
-import { api, Initializer } from "../index";
-import { arrayUniqueify } from "./../utils/arrayUniqueify";
+import { api, utils, Initializer } from "../index";
 
 export interface ParamsApi {
   globalSafeParams?: Array<string>;
@@ -49,7 +48,7 @@ export class Params extends Initializer {
         }
       }
 
-      api.params.postVariables = arrayUniqueify(postVariables);
+      api.params.postVariables = utils.arrayUniqueify(postVariables);
       return api.params.postVariables;
     };
 

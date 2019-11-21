@@ -4,9 +4,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as util from "util";
 import * as uuid from "uuid";
-import { api, config, log, Server } from "../index";
-import { Connection } from "./../classes/connection";
-import { parseHeadersForClientAddress } from "./../utils/parseHeadersForClientAddress";
+import { api, config, utils, log, Server, Connection } from "../index";
 
 export class WebSocketServer extends Server {
   server: any;
@@ -232,7 +230,9 @@ export class WebSocketServer extends Server {
   handleConnection(rawConnection) {
     const fingerprint =
       rawConnection.query[config.servers.web.fingerprintOptions.cookieKey];
-    const { ip, port } = parseHeadersForClientAddress(rawConnection.headers);
+    const { ip, port } = utils.parseHeadersForClientAddress(
+      rawConnection.headers
+    );
 
     this.buildConnection({
       rawConnection: rawConnection,

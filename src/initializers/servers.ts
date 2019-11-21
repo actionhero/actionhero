@@ -1,7 +1,13 @@
 import * as path from "path";
 import * as glob from "glob";
-import { api, log, watchFileAndAct, Initializer, Server } from "../index";
-import { ensureNoTsHeaderFiles } from "./../utils/ensureNoTsHeaderFiles";
+import {
+  api,
+  log,
+  utils,
+  watchFileAndAct,
+  Initializer,
+  Server
+} from "../index";
 
 export interface ServersApi {
   servers: {
@@ -48,7 +54,7 @@ export class Servers extends Initializer {
         }
       }
 
-      files = ensureNoTsHeaderFiles(files);
+      files = utils.ensureNoTsHeaderFiles(files);
 
       for (const j in files) {
         const filename = files[j];

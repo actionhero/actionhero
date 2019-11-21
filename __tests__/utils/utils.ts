@@ -1,22 +1,10 @@
-import { config } from "./../../src/index";
-
-import { sleep } from "./../../src/utils/sleep";
-import { arrayUniqueify } from "./../../src/utils/arrayUniqueify";
-import { asyncWaterfall } from "./../../src/utils/asyncWaterfall";
-import { collapseObjectToArray } from "./../../src/utils/collapseObjectToArray";
-import { hashMerge } from "./../../src/utils/hashMerge";
-import { eventLoopDelay } from "./../../src/utils/eventLoopDelay";
-import { parseHeadersForClientAddress } from "./../../src/utils/parseHeadersForClientAddress";
-import { parseIPv6URI } from "./../../src/utils/parseIPv6URI";
-import { arrayStartingMatch } from "./../../src/utils/arrayStartingMatch";
-import { replaceDistWithSrc } from "./../../src/utils/replaceDistWithSrc";
-import { filterObjectForLogging } from "./../../src/utils/filterObjectForLogging";
+import { config, utils } from "./../../src/index";
 
 describe("Utils", () => {
   describe("util.sleep", () => {
     test("it sleeps", async () => {
       const start = new Date().getTime();
-      await sleep(100);
+      await utils.sleep(100);
       const end = new Date().getTime();
       expect(end - start).toBeGreaterThanOrEqual(99);
       expect(end - start).toBeLessThan(200);
@@ -26,21 +14,21 @@ describe("Utils", () => {
   describe("utils.arrayUniqueify", () => {
     test("works", () => {
       const a = [1, 2, 3, 3, 4, 4, 4, 5, 5, 5];
-      expect(arrayUniqueify(a)).toEqual([1, 2, 3, 4, 5]);
+      expect(utils.arrayUniqueify(a)).toEqual([1, 2, 3, 4, 5]);
     });
   });
 
   describe("utils.asyncWaterfall", () => {
     test("works with no args", async () => {
       const sleepyFunc = async () => {
-        await sleep(100);
+        await utils.sleep(100);
         return new Date().getTime();
       };
 
       const jobs = [sleepyFunc, sleepyFunc, sleepyFunc];
 
       const start = new Date().getTime();
-      const results = await asyncWaterfall(jobs);
+      const results = await utils.asyncWaterfall(jobs);
       expect(new Date().getTime() - start).toBeGreaterThan(290);
       expect(results[1]).toBeGreaterThan(results[0]);
       expect(results[2]).toBeGreaterThan(results[1]);
@@ -48,7 +36,7 @@ describe("Utils", () => {
 
     test("works with args", async () => {
       const sleepyFunc = async response => {
-        await sleep(100);
+        await utils.sleep(100);
         return response;
       };
 
@@ -59,7 +47,7 @@ describe("Utils", () => {
       ];
 
       const start = new Date().getTime();
-      const results = await asyncWaterfall(jobs);
+      const results = await utils.asyncWaterfall(jobs);
       expect(new Date().getTime() - start).toBeGreaterThan(290);
       expect(results[0]).toEqual("a");
       expect(results[1]).toEqual("b");
@@ -70,13 +58,13 @@ describe("Utils", () => {
   describe("utils.collapseObjectToArray", () => {
     test("fails with numerical keys", () => {
       const o = { 0: "a", 1: "b" };
-      const response = collapseObjectToArray(o);
+      const response = utils.collapseObjectToArray(o);
       expect(response).toEqual(["a", "b"]);
     });
 
     test("fails with non-numerical keys", () => {
       const o = { a: 1 };
-      const response = collapseObjectToArray(o);
+      const response = utils.collapseObjectToArray(o);
       expect(response).toEqual(false);
     });
   });
@@ -91,21 +79,21 @@ describe("Utils", () => {
     const U = { b: undefined };
 
     test("simple", () => {
-      const Z = hashMerge(A, B);
+      const Z = utils.hashMerge(A, B);
       expect(Z.a).toEqual(1);
       expect(Z.b).toEqual(-2);
       expect(Z.c).toEqual(3);
     });
 
     test("directional", () => {
-      const Z = hashMerge(B, A);
+      const Z = utils.hashMerge(B, A);
       expect(Z.a).toEqual(1);
       expect(Z.b).toEqual(2);
       expect(Z.c).toEqual(3);
     });
 
     test("nested", () => {
-      const Z = hashMerge(C, D);
+      const Z = utils.hashMerge(C, D);
       expect(Z.a).toEqual(1);
       expect(Z.b.m).toEqual(10);
       expect(Z.b.n).toEqual(111);
@@ -114,7 +102,7 @@ describe("Utils", () => {
     });
 
     test("empty01", () => {
-      const Z = hashMerge(E, D);
+      const Z = utils.hashMerge(E, D);
       expect(Z.a).toEqual(1);
       expect(Z.b.n).toEqual(111);
       expect(Z.b.o).toEqual(22);
@@ -122,7 +110,7 @@ describe("Utils", () => {
     });
 
     test("empty10", () => {
-      const Z = hashMerge(D, E);
+      const Z = utils.hashMerge(D, E);
       expect(Z.a).toEqual(1);
       expect(Z.b.n).toEqual(111);
       expect(Z.b.o).toEqual(22);
@@ -130,7 +118,7 @@ describe("Utils", () => {
     });
 
     test("chained", () => {
-      const Z = hashMerge(hashMerge(C, E), D);
+      const Z = utils.hashMerge(utils.hashMerge(C, E), D);
       expect(Z.a).toEqual(1);
       expect(Z.b.m).toEqual(10);
       expect(Z.b.n).toEqual(111);
@@ -139,13 +127,13 @@ describe("Utils", () => {
     });
 
     test("null", () => {
-      const Z = hashMerge(A, N);
+      const Z = utils.hashMerge(A, N);
       expect(Z.a).toEqual(1);
       expect(Z.b).toBeUndefined();
     });
 
     test("undefined", () => {
-      const Z = hashMerge(A, U);
+      const Z = utils.hashMerge(A, U);
       expect(Z.a).toEqual(1);
       expect(Z.b).toEqual(2);
     });
@@ -153,7 +141,7 @@ describe("Utils", () => {
 
   describe("eventLoopDelay", () => {
     test("works", async () => {
-      const delay = await eventLoopDelay(10000);
+      const delay = await utils.eventLoopDelay(10000);
       expect(delay).toBeGreaterThan(0);
       expect(delay).toBeLessThan(1);
     });
@@ -164,7 +152,7 @@ describe("Utils", () => {
       const headers = {
         "x-real-ip": "10.11.12.13"
       };
-      const { ip, port } = parseHeadersForClientAddress(headers);
+      const { ip, port } = utils.parseHeadersForClientAddress(headers);
       expect(ip).toEqual("10.11.12.13");
       expect(port).toEqual(null);
     });
@@ -173,7 +161,7 @@ describe("Utils", () => {
         "x-forwarded-for": "35.36.37.38",
         "x-forwarded-port": "80"
       };
-      const { ip, port } = parseHeadersForClientAddress(headers);
+      const { ip, port } = utils.parseHeadersForClientAddress(headers);
       expect(ip).toEqual("35.36.37.38");
       expect(port).toEqual("80");
     });
@@ -182,21 +170,21 @@ describe("Utils", () => {
   describe("#parseIPv6URI", () => {
     test("address and port", () => {
       const uri = "[2604:4480::5]:8080";
-      const parts = parseIPv6URI(uri);
+      const parts = utils.parseIPv6URI(uri);
       expect(parts.host).toEqual("2604:4480::5");
       expect(parts.port).toEqual(8080);
     });
 
     test("address without port", () => {
       const uri = "2604:4480::5";
-      const parts = parseIPv6URI(uri);
+      const parts = utils.parseIPv6URI(uri);
       expect(parts.host).toEqual("2604:4480::5");
       expect(parts.port).toEqual(80);
     });
 
     test("full uri", () => {
       const uri = "http://[2604:4480::5]:8080/foo/bar";
-      const parts = parseIPv6URI(uri);
+      const parts = utils.parseIPv6URI(uri);
       expect(parts.host).toEqual("2604:4480::5");
       expect(parts.port).toEqual(8080);
     });
@@ -204,7 +192,7 @@ describe("Utils", () => {
     test("failing address", () => {
       const uri = "[2604:4480:z:5]:80";
       try {
-        const parts = parseIPv6URI(uri);
+        const parts = utils.parseIPv6URI(uri);
         console.log(parts);
       } catch (e) {
         expect(e.message).toEqual("failed to parse address");
@@ -213,14 +201,14 @@ describe("Utils", () => {
 
     test("should parse locally scoped ipv6 URIs without port", () => {
       const uri = "fe80::1ff:fe23:4567:890a%eth2";
-      const parts = parseIPv6URI(uri);
+      const parts = utils.parseIPv6URI(uri);
       expect(parts.host).toEqual("fe80::1ff:fe23:4567:890a%eth2");
       expect(parts.port).toEqual(80);
     });
 
     test("should parse locally scoped ipv6 URIs with port", () => {
       const uri = "[fe80::1ff:fe23:4567:890a%eth2]:8080";
-      const parts = parseIPv6URI(uri);
+      const parts = utils.parseIPv6URI(uri);
       expect(parts.host).toEqual("fe80::1ff:fe23:4567:890a%eth2");
       expect(parts.port).toEqual(8080);
     });
@@ -230,38 +218,38 @@ describe("Utils", () => {
     test("finds matching arrays", () => {
       const a = [1, 2, 3];
       const b = [1, 2, 3, 4, 5];
-      const numberResult = arrayStartingMatch(a, b);
+      const numberResult = utils.arrayStartingMatch(a, b);
       expect(numberResult).toBe(true);
 
       const c = ["a", "b", "c"];
       const d = ["a", "b", "c", "d", "e"];
-      const stringResult = arrayStartingMatch(c, d);
+      const stringResult = utils.arrayStartingMatch(c, d);
       expect(stringResult).toBe(true);
     });
 
     test("finds non-matching arrays", () => {
       const a = [1, 3];
       const b = [1, 2, 3, 4, 5];
-      const numberResult = arrayStartingMatch(a, b);
+      const numberResult = utils.arrayStartingMatch(a, b);
       expect(numberResult).toBe(false);
 
       const c = ["a", "b", "c"];
       const d = ["a", "b", "d", "e"];
-      const stringResult = arrayStartingMatch(c, d);
+      const stringResult = utils.arrayStartingMatch(c, d);
       expect(stringResult).toBe(false);
     });
 
     test("does not pass with empty arrays; first", () => {
       const a = [];
       const b = [1, 2, 3, 4, 5];
-      const result = arrayStartingMatch(a, b);
+      const result = utils.arrayStartingMatch(a, b);
       expect(result).toBe(false);
     });
 
     test("does not pass with empty arrays; second", () => {
       const a = [1, 2, 3, 4, 5];
       const b = [];
-      const result = arrayStartingMatch(a, b);
+      const result = utils.arrayStartingMatch(a, b);
       expect(result).toBe(false);
     });
   });
@@ -269,7 +257,7 @@ describe("Utils", () => {
   describe("utils.replaceDistWithSrc", () => {
     test("it replaces paths from dist to src", () => {
       const p = `${config.general.paths.action[0]}/new-actions/test.ts`;
-      const withDist = replaceDistWithSrc(p);
+      const withDist = utils.replaceDistWithSrc(p);
       expect(withDist).toMatch("/src/actions/new-actions/test.ts");
     });
   });
@@ -304,7 +292,7 @@ describe("Utils", () => {
     test("can filter top level params, no matter the type", () => {
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
       config.general.filteredParams.push("p1", "p2", "o2");
-      const filteredParams = filterObjectForLogging(inputs);
+      const filteredParams = utils.filterObjectForLogging(inputs);
       expect(filteredParams.p1).toEqual("[FILTERED]");
       expect(filteredParams.p2).toEqual("[FILTERED]");
       expect(filteredParams.o2).toEqual("[FILTERED]"); // entire object filtered
@@ -314,18 +302,18 @@ describe("Utils", () => {
     test("will not filter things that do not exist", () => {
       // Identity
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
-      const filteredParams = filterObjectForLogging(inputs);
+      const filteredParams = utils.filterObjectForLogging(inputs);
       expect(filteredParams).toEqual(testInput);
 
       config.general.filteredParams.push("p3", "p4", "o1.o3", "o1.o2.p1");
-      const filteredParams2 = filterObjectForLogging(inputs);
+      const filteredParams2 = utils.filterObjectForLogging(inputs);
       expect(filteredParams2).toEqual(testInput);
     });
 
     test("can filter a single level dot notation", () => {
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
       config.general.filteredParams.push("p1", "o1.o1p1", "somethingNotExist");
-      const filteredParams = filterObjectForLogging(inputs);
+      const filteredParams = utils.filterObjectForLogging(inputs);
       expect(filteredParams.p1).toEqual("[FILTERED]");
       expect(filteredParams.o1.o1p1).toEqual("[FILTERED]");
       // Unchanged things
@@ -338,7 +326,7 @@ describe("Utils", () => {
     test("can filter two levels deep", () => {
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
       config.general.filteredParams.push("p2", "o1.o2.o2p1", "o1.o2.notThere");
-      const filteredParams = filterObjectForLogging(inputs);
+      const filteredParams = utils.filterObjectForLogging(inputs);
       expect(filteredParams.p2).toEqual("[FILTERED]");
       expect(filteredParams.o1.o2.o2p1).toEqual("[FILTERED]");
       // Unchanged things

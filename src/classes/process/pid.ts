@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import * as cluster from "cluster";
+import { log } from "../../modules/log";
 import { config } from "./../../modules/config";
 import { id } from "./id";
-import { log } from "../../modules/log";
 
 function sanitizeId() {
   let pidfile = String(id).trim();

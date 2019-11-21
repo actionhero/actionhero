@@ -1,6 +1,4 @@
-import { api, config, log } from "./../index";
-import { asyncWaterfall } from "./../utils/asyncWaterfall";
-import { sortGlobalMiddleware } from "./../utils/sortGlobalMiddleware";
+import { api, config, utils, log } from "./../index";
 
 /**
  * An exmaple middleware
@@ -349,7 +347,7 @@ export namespace task {
       }
     });
 
-    await asyncWaterfall(jobs);
+    await utils.asyncWaterfall(jobs);
     return loadedTasks;
   }
 
@@ -405,7 +403,10 @@ export namespace task {
     api.tasks.middleware[middleware.name] = middleware;
     if (middleware.global === true) {
       api.tasks.globalMiddleware.push(middleware.name);
-      sortGlobalMiddleware(api.tasks.globalMiddleware, api.tasks.middleware);
+      utils.sortGlobalMiddleware(
+        api.tasks.globalMiddleware,
+        api.tasks.middleware
+      );
     }
     api.tasks.loadTasks(true);
   }

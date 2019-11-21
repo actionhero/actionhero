@@ -1,8 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as os from "os";
-import { Process, cache, id } from "./../../src/index";
-import { sleep } from "./../../src/utils/sleep";
+import { Process, cache, utils, id } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -64,7 +63,7 @@ describe("Core", () => {
     test("cache.load with expired items should not return them", async () => {
       const saveResp = await cache.save("testKey_slow", "abc123", 10);
       expect(saveResp).toEqual(true);
-      await sleep(20);
+      await utils.sleep(20);
       try {
         await cache.load("testKey_slow");
         throw new Error("should not get here");
@@ -96,7 +95,7 @@ describe("Core", () => {
       await cache.save(key, "val", 1000);
       const loadResp = await cache.load(key);
       expect(loadResp.value).toEqual("val");
-      await sleep(1001);
+      await utils.sleep(1001);
       try {
         await cache.load(key);
         throw new Error("should not get here");
@@ -115,7 +114,7 @@ describe("Core", () => {
       expect(saveResp).toEqual(true);
 
       // wait for `timeout` and try to load the key
-      await sleep(timeout);
+      await utils.sleep(timeout);
 
       let loadResp = await cache.load("testKey_slow", {
         expireTimeMS: expireTime
@@ -123,13 +122,13 @@ describe("Core", () => {
       expect(loadResp.value).toEqual("abc123");
 
       // wait another `timeout` and load the key again within the extended expire time
-      await sleep(timeout);
+      await utils.sleep(timeout);
 
       loadResp = await cache.load("testKey_slow");
       expect(loadResp.value).toEqual("abc123");
 
       // wait another `timeout` and the key load should fail without the extension
-      await sleep(timeout);
+      await utils.sleep(timeout);
 
       try {
         loadResp = await cache.load("testKey_slow");

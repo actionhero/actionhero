@@ -1,7 +1,7 @@
 import { argv } from "optimist";
 import * as cluster from "cluster";
-import { config } from "./../../index";
-import { getExternalIPAddress } from "./../../utils/getExternalIPAddress";
+import { config } from "./../../modules/config";
+import { utils } from "./../../modules/utils";
 
 /**
  * I build this server's ID from the external IP address of this server and pid.
@@ -16,7 +16,7 @@ function determineId() {
   } else if (process.env.JEST_WORKER_ID) {
     id = `test-server-${process.env.JEST_WORKER_ID || 0}`;
   } else if (!config || !config.general.id) {
-    let externalIP = getExternalIPAddress();
+    let externalIP = utils.getExternalIPAddress();
     if (!externalIP) {
       const message =
         " * Error fetching this hosts external IP address; setting id base to 'actionhero'";

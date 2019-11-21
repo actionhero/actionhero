@@ -5,10 +5,7 @@ import { buildConfig, ConfigInterface } from "./../modules/config";
 import { log } from "../modules/log";
 import { Initializer } from "./initializer";
 import { Initializers } from "./initializers";
-import { sleep } from "./../utils/sleep";
-import { arrayUniqueify } from "./../utils/arrayUniqueify";
-import { asyncWaterfall } from "./../utils/asyncWaterfall";
-import { ensureNoTsHeaderFiles } from "./../utils/ensureNoTsHeaderFiles";
+import { utils } from "../modules/utils";
 
 import { id } from "./process/id";
 import { env } from "./process/env";
@@ -100,8 +97,8 @@ export class Process {
       }
     }
 
-    initializerFiles = arrayUniqueify(initializerFiles);
-    initializerFiles = ensureNoTsHeaderFiles(initializerFiles);
+    initializerFiles = utils.arrayUniqueify(initializerFiles);
+    initializerFiles = utils.ensureNoTsHeaderFiles(initializerFiles);
 
     initializerFiles.forEach(f => {
       const file = path.normalize(f);
@@ -242,7 +239,7 @@ export class Process {
     );
 
     try {
-      await asyncWaterfall(this.loadInitializers);
+      await utils.asyncWaterfall(this.loadInitializers);
     } catch (error) {
       return this.fatalError(error, "initialize");
     }
@@ -274,7 +271,7 @@ export class Process {
     });
 
     try {
-      await asyncWaterfall(this.startInitializers);
+      await utils.asyncWaterfall(this.startInitializers);
     } catch (error) {
       return this.fatalError(error, "start");
     }
@@ -290,7 +287,7 @@ export class Process {
 
       log("stopping process...", "notice");
 
-      await sleep(1000);
+      await utils.sleep(1000);
 
       this.stopInitializers.push(async () => {
         clearPidFile();
@@ -299,12 +296,12 @@ export class Process {
         // reset initializers to prevent duplicate check on restart
         this.initializers = {};
         api.running = false;
-        await sleep(1000);
+        await utils.sleep(1000);
       });
 
       try {
         unWatchAllFiles();
-        await asyncWaterfall(this.stopInitializers);
+        await utils.asyncWaterfall(this.stopInitializers);
       } catch (error) {
         return this.fatalError(error, "stop");
       }
@@ -340,7 +337,7 @@ export class Process {
 
       await this.stop();
 
-      await sleep(1000); // allow time for console.log to print
+      await utils.sleep(1000); // allow time for console.log to print
       process.exit(1);
     }
   }

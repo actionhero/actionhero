@@ -1,6 +1,5 @@
 import * as REPL from "repl";
-import { config, api, env, CLI } from "./../../index";
-import { sleep } from "./../../utils/sleep";
+import { config, api, env, utils, CLI } from "./../../index";
 
 export class Console extends CLI {
   constructor() {
@@ -21,7 +20,7 @@ export class Console extends CLI {
     config.tasks.maxTaskProcessors = 0;
 
     await api.commands.start.call(api.process);
-    await sleep(500);
+    await utils.sleep(500);
 
     await new Promise((resolve, reject) => {
       const repl = REPL.start({

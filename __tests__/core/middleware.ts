@@ -1,5 +1,4 @@
-import { Process, config, action, specHelper } from "./../../src/index";
-import { sleep } from "./../../src/utils/sleep";
+import { Process, config, action, utils, specHelper } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -393,11 +392,11 @@ describe("Core: Middleware", () => {
         name: "connection middleware",
         create: async _connection => {
           middlewareRan = true;
-          await sleep(1);
+          await utils.sleep(1);
           _connection.longProcessResult = true;
         },
         destroy: async _connection => {
-          await sleep(1);
+          await utils.sleep(1);
           middlewareDestoryRan = true;
         }
       });

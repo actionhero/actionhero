@@ -1,11 +1,14 @@
 import * as fs from "fs";
 import * as path from "path";
-import { createFileSafely, createDirSafely } from "./../../utils/fileUtils";
 
 // import { api, projectRoot, CLI } from "./../../index";
 // we need to load each component directly so we don't accidentalyy source `config... which doesn't exist`
 import { CLI } from "./../../classes/cli";
 import { projectRoot } from "./../../classes/process/projectRoot";
+import {
+  createDirSafely,
+  createFileSafely
+} from "../../modules/utils/fileUtils";
 
 export class Generate extends CLI {
   constructor() {

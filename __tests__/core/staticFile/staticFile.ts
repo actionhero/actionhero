@@ -1,6 +1,5 @@
 import * as request from "request-promise-native";
-import { Process, config, specHelper } from "../../../src/index";
-import { sleep } from "../../../src/utils/sleep";
+import { Process, config, utils, specHelper } from "../../../src/index";
 
 const actionhero = new Process();
 let url;
@@ -172,7 +171,7 @@ describe("Core", () => {
             resolveWithFullResponse: true
           });
           expect(response.statusCode).toEqual(200);
-          await sleep(100);
+          await utils.sleep(100);
           expect(await lsofChk()).toEqual("0");
         }, 30000);
 
@@ -185,7 +184,7 @@ describe("Core", () => {
             throw new Error("should return 304");
           } catch (error) {
             expect(error.statusCode).toEqual(304);
-            await sleep(100);
+            await utils.sleep(100);
             expect(await lsofChk()).toEqual("0");
           }
         }, 30000);

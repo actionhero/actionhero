@@ -1,5 +1,11 @@
-import { Process, Task, config, task, specHelper } from "../../../src/index";
-import { sleep } from "../../../src/utils/sleep";
+import {
+  Process,
+  Task,
+  utils,
+  config,
+  task,
+  specHelper
+} from "../../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -55,7 +61,7 @@ describe("Core: Tasks", () => {
       }
 
       async run(params) {
-        await sleep(5000);
+        await utils.sleep(5000);
         taskOutput.push("slowTask");
         return "slowTask";
       }
@@ -176,7 +182,7 @@ describe("Core: Tasks", () => {
       }
 
       async stepOne() {
-        await sleep(100);
+        await utils.sleep(100);
         taskOutput.push("one");
       }
 
@@ -433,7 +439,7 @@ describe("Core: Tasks", () => {
       await task.enqueue("slowTask", { a: 1 });
       api.resque.multiWorker.start();
 
-      await sleep(2000);
+      await utils.sleep(2000);
 
       const details = await task.details();
 

@@ -1,5 +1,4 @@
-import { api, config } from "../index";
-import { sortGlobalMiddleware } from "./../utils/sortGlobalMiddleware";
+import { api, utils, config } from "../index";
 
 /**
  * var middleware = {
@@ -44,7 +43,7 @@ export namespace action {
     api.actions.middleware[data.name] = data;
     if (data.global === true) {
       api.actions.globalMiddleware.push(data.name);
-      sortGlobalMiddleware(
+      utils.sortGlobalMiddleware(
         api.actions.globalMiddleware,
         api.actions.middleware
       );

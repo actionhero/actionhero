@@ -1,8 +1,14 @@
 import * as glob from "glob";
 import * as path from "path";
-import { api, log, watchFileAndAct, Initializer, Action } from "../index";
+import {
+  api,
+  log,
+  utils,
+  watchFileAndAct,
+  Initializer,
+  Action
+} from "../index";
 import { ActionMiddleware } from "./../modules/action";
-import { ensureNoTsHeaderFiles } from "./../utils/ensureNoTsHeaderFiles";
 
 export interface ActionsApi {
   actions: {
@@ -112,7 +118,7 @@ export class Actions extends Initializer {
     for (const i in config.general.paths.action) {
       const p = config.general.paths.action[i];
       let files = glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"));
-      files = ensureNoTsHeaderFiles(files);
+      files = utils.ensureNoTsHeaderFiles(files);
       for (const j in files) {
         await api.actions.loadFile(files[j]);
       }
@@ -124,7 +130,7 @@ export class Actions extends Initializer {
         let files = glob.sync(
           path.join(pluginPath, "actions", "**", "**/*(*.js|*.ts)")
         );
-        files = ensureNoTsHeaderFiles(files);
+        files = utils.ensureNoTsHeaderFiles(files);
         for (const j in files) {
           await api.actions.loadFile(files[j]);
         }

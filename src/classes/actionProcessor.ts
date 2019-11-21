@@ -3,8 +3,8 @@ import { Connection } from "./connection";
 import { Action } from "./action";
 import { config } from "./../modules/config";
 import { log } from "../modules/log";
+import { utils } from "../modules/utils";
 import * as dotProp from "dot-prop";
-import { filterObjectForLogging } from "./../utils/filterObjectForLogging";
 
 let api: Api;
 
@@ -118,7 +118,7 @@ export class ActionProcessor {
       logLevel = this.actionTemplate.logLevel;
     }
 
-    const filteredParams = filterObjectForLogging(this.params);
+    const filteredParams = utils.filterObjectForLogging(this.params);
 
     const logLine = {
       to: this.connection.remoteIP,

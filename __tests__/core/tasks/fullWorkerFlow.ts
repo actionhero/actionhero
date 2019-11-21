@@ -1,6 +1,4 @@
-import * as request from "request-promise-native";
-import { Process, Task, config, task } from "./../../../src/index";
-import { sleep } from "./../../../src/utils/sleep";
+import { Process, Task, utils, config, task } from "./../../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -76,7 +74,7 @@ describe("Core: Tasks", () => {
         }
 
         async run(params) {
-          await sleep(5000);
+          await utils.sleep(5000);
           taskOutput.push("slowTask");
           return "slowTask";
         }
@@ -122,7 +120,7 @@ describe("Core: Tasks", () => {
       config.tasks.queues = ["*"];
       api.resque.multiWorker.start();
 
-      await sleep(500);
+      await utils.sleep(500);
 
       expect(taskOutput[0]).toEqual("first");
       await api.resque.multiWorker.stop();
@@ -136,7 +134,7 @@ describe("Core: Tasks", () => {
       await api.resque.startScheduler();
       await api.resque.multiWorker.start();
 
-      await sleep(1500);
+      await utils.sleep(1500);
       expect(taskOutput[0]).toEqual("delayed");
       await api.resque.multiWorker.stop();
       await api.resque.stopScheduler();
@@ -150,7 +148,7 @@ describe("Core: Tasks", () => {
       await api.resque.startScheduler();
       await api.resque.multiWorker.start();
 
-      await sleep(1500);
+      await utils.sleep(1500);
       expect(taskOutput[0]).toEqual("periodicTask");
       expect(taskOutput[1]).toEqual("periodicTask");
       expect(taskOutput[2]).toEqual("periodicTask");
