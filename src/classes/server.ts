@@ -2,6 +2,7 @@ import { EventEmitter } from "events";
 import { Connection } from "./connection";
 import { ActionProcessor } from "./actionProcessor";
 import { Api } from "./api";
+import { log } from "../modules/log";
 
 let api: Api;
 
@@ -16,10 +17,12 @@ export abstract class Server extends EventEmitter {
   /**The name & type of the server. */
   type: string;
   /**What connection verbs can connections of this type use? */
-  verbs: Array<string>;
+  verbs?: Array<string>;
   /**Shorthand for `api.config.servers[this.type]` */
-  config: ServerConfig;
-  options: object;
+  config?: ServerConfig;
+  options?: {
+    [key: string]: any;
+  };
   /** attributes of the server */
   attributes: {
     [key: string]: any;
@@ -36,6 +39,10 @@ export abstract class Server extends EventEmitter {
   connectionCustomMethods: {
     [key: string]: Function;
   };
+  /**An optional message to send to clients when they disconnect */
+  goodbye?: Function;
+  /**A place to store the actuall server object you create */
+  server?: any;
 
   constructor() {
     // Only in files required by `index.js` do we need to delay the loading of the API object
@@ -260,9 +267,9 @@ export abstract class Server extends EventEmitter {
   }
 
   /**
-   * Log a message from this server type.  A wrapper around api.log with a server prefix.
+   * Log a message from this server type.  A wrapper around log() with a server prefix.
    */
   log(message: string, severity?: string, data?: any) {
-    api.log(`[server: ${this.type}] ${message}`, severity, data);
+    log(`[server: ${this.type}] ${message}`, severity, data);
   }
 }

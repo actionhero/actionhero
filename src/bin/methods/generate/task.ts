@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { api, CLI } from "./../../../index";
+import { config, utils, CLI } from "./../../../index";
 
 export class GenerateTask extends CLI {
   constructor() {
@@ -34,16 +34,16 @@ export class GenerateTask extends CLI {
       testTemplate = testTemplate.replace(regex, params[v]);
     });
 
-    let message = api.utils.createFileSafely(
-      api.utils.replaceDistWithSrc(
-        api.config.general.paths.task[0] + "/" + params.name + ".ts"
+    let message = utils.fileUtils.createFileSafely(
+      utils.replaceDistWithSrc(
+        config.general.paths.task[0] + "/" + params.name + ".ts"
       ),
       taskTemplate
     );
     console.info(message);
 
-    message = api.utils.createFileSafely(
-      api.config.general.paths.test[0] + "/tasks/" + params.name + ".ts",
+    message = utils.fileUtils.createFileSafely(
+      config.general.paths.test[0] + "/tasks/" + params.name + ".ts",
       testTemplate
     );
     console.info(message);

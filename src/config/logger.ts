@@ -6,13 +6,13 @@ const winston = require("winston");
 // - https://github.com/winstonjs/winston/blob/master/docs/transports.md
 
 function buildConsoleLogger(level = "info") {
-  return function(api) {
+  return function(config) {
     return winston.createLogger({
       format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.colorize(),
         winston.format.printf(info => {
-          return `${api.id} @ ${info.timestamp} - ${info.level}: ${
+          return `${config.process.id} @ ${info.timestamp} - ${info.level}: ${
             info.message
           } ${stringifyExtraMessagePropertiesForConsole(info)}`;
         })
@@ -48,8 +48,8 @@ function buildFileLogger(
   maxFiles = undefined,
   maxsize = 20480
 ) {
-  return function(api) {
-    const filename = `${path}/${api.pids.title}-${api.env}.log`;
+  return function(config) {
+    const filename = `${path}/${config.process.id}-${config.process.env}.log`;
 
     return winston.createLogger({
       format: winston.format.combine(
@@ -70,14 +70,14 @@ function buildFileLogger(
 }
 
 export const DEFAULT = {
-  logger: api => {
+  logger: config => {
     const loggers = [];
 
     if (cluster.isMaster) {
       loggers.push(buildConsoleLogger());
     }
 
-    api.config.general.paths.log.forEach(p => {
+    config.general.paths.log.forEach(p => {
       loggers.push(buildFileLogger(p));
     });
 
@@ -91,10 +91,10 @@ export const DEFAULT = {
 };
 
 export const test = {
-  logger: api => {
+  logger: config => {
     const loggers = [];
 
-    api.config.general.paths.log.forEach(p => {
+    config.general.paths.log.forEach(p => {
       loggers.push(buildFileLogger(p, "debug", 1));
     });
 

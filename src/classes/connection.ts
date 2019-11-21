@@ -1,7 +1,7 @@
 import * as uuidv4 from "uuid/v4";
-import { Api } from "./api";
-
-let api: Api;
+import { api, chatRoom } from "./../index";
+import { config } from "./../modules/config";
+import { i18n } from "../modules/i18n";
 
 /**
  * The generic represenation of a connection for all server types is an ActionHero.Connection.  You will never be creating these yourself via an action or task, but you will find them in your Actons and Action Middleware.
@@ -44,10 +44,6 @@ export class Connection {
    * @param callCreateMethods The specifics of this connection will calls create methods in the constructor. This property will exist for backward compatibility. If you want to construct connection and call create methods within async, you can use `await ActionHero.Connection.createAsync(details)` for construction.
    */
   constructor(data, callCreateMethods = true) {
-    // Only in files required by `index.js` do we need to delay the loading of the API object
-    // This is due to cyclical require issues
-    api = require("../index").api;
-
     this.setup(data);
     if (callCreateMethods) {
       Connection.callConnectionCreateMethods(this);
@@ -92,7 +88,7 @@ export class Connection {
 
     ["remotePort", "remoteIP"].forEach(req => {
       if (data[req] === null || data[req] === undefined) {
-        if (api.config.general.enforceConnectionProperties === true) {
+        if (config.general.enforceConnectionProperties === true) {
           throw new Error(
             `${req} is required to create a new connection object`
           );
@@ -135,7 +131,7 @@ export class Connection {
       }
     }
 
-    api.i18n.invokeConnectionLocale(this);
+    i18n.invokeConnectionLocale(this);
   }
 
   /**
@@ -143,7 +139,7 @@ export class Connection {
    */
   localize(message: string) {
     // this.locale will be sourced automatically
-    return api.i18n.localize(message, this);
+    return i18n.localize(message, this);
   }
 
   /**
@@ -184,7 +180,7 @@ export class Connection {
       const promises = [];
       for (const i in this.rooms) {
         const room = this.rooms[i];
-        promises.push(api.chatRoom.removeMember(this.id, room));
+        promises.push(chatRoom.removeMember(this.id, room));
       }
       await Promise.all(promises);
     }
@@ -244,7 +240,7 @@ export class Connection {
           }
 
           if (
-            api.config.general.disableParamScrubbing ||
+            config.general.disableParamScrubbing ||
             api.params.postVariables.indexOf(key) >= 0
           ) {
             this.params[key] = value;
@@ -266,18 +262,16 @@ export class Connection {
           return;
         case "roomAdd":
           room = words[0];
-          return api.chatRoom.addMember(this.id, room);
+          return chatRoom.addMember(this.id, room);
         case "roomLeave":
           room = words[0];
-          return api.chatRoom.removeMember(this.id, room);
+          return chatRoom.removeMember(this.id, room);
         case "roomView":
           room = words[0];
           if (this.rooms.indexOf(room) >= 0) {
-            return api.chatRoom.roomStatus(room);
+            return chatRoom.roomStatus(room);
           }
-          throw new Error(
-            await api.config.errors.connectionNotInRoom(this, room)
-          );
+          throw new Error(await config.errors.connectionNotInRoom(this, room));
         case "detailsView":
           return {
             id: this.id,
@@ -298,12 +292,10 @@ export class Connection {
           return;
       }
 
-      const error = new Error(await api.config.errors.verbNotFound(this, verb));
+      const error = new Error(await config.errors.verbNotFound(this, verb));
       throw error;
     } else {
-      const error = new Error(
-        await api.config.errors.verbNotAllowed(this, verb)
-      );
+      const error = new Error(await config.errors.verbNotAllowed(this, verb));
       throw error;
     }
   }

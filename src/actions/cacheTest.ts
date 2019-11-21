@@ -1,4 +1,4 @@
-import { api, Action } from "./../index";
+import { cache, Action } from "./../index";
 
 export class CacheTest extends Action {
   constructor() {
@@ -47,14 +47,14 @@ export class CacheTest extends Action {
   }
 
   async run({ params, response }) {
-    const key = "cacheTest_" + params.key;
+    const key = `cacheTest_${params.key}`;
     const value = params.value;
 
     response.cacheTestResults = {
-      saveResp: await api.cache.save(key, value, 5000),
-      sizeResp: await api.cache.size(),
-      loadResp: await api.cache.load(key),
-      deleteResp: await api.cache.destroy(key)
+      saveResp: await cache.save(key, value, 5000),
+      sizeResp: await cache.size(),
+      loadResp: await cache.load(key),
+      deleteResp: await cache.destroy(key)
     };
   }
 }

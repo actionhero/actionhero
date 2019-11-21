@@ -1,4 +1,4 @@
-import { Process } from "./../../src/index";
+import { Process, config, utils, chatRoom } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -8,15 +8,13 @@ describe("Core", () => {
     beforeAll(async () => {
       api = await actionhero.start();
 
-      for (var room in api.config.general.startingChatRooms) {
+      for (var room in config.general.startingChatRooms) {
         try {
-          await api.chatRoom.destroy(room);
-          await api.chatRoom.add(room);
+          await chatRoom.destroy(room);
+          await chatRoom.add(room);
         } catch (error) {
           if (
-            !error
-              .toString()
-              .match(api.config.errors.connectionRoomExists(room))
+            !error.toString().match(config.errors.connectionRoomExists(room))
           ) {
             throw error;
           }
@@ -41,14 +39,14 @@ describe("Core", () => {
         client1.verbs("roomAdd", "defaultRoom");
         client2.verbs("roomAdd", "defaultRoom");
         client3.verbs("roomAdd", "defaultRoom");
-        await api.utils.sleep(100);
+        await utils.sleep(100);
       });
 
       afterAll(async () => {
         client1.destroy();
         client2.destroy();
         client3.destroy();
-        await api.utils.sleep(100);
+        await utils.sleep(100);
       });
 
       test("all connections can join the default room and client #1 can see them", async () => {
@@ -86,7 +84,7 @@ describe("Core", () => {
           "client",
           "1"
         ]);
-        await api.utils.sleep(100);
+        await utils.sleep(100);
 
         const { message, room, from } = client2.messages[
           client2.messages.length - 1
@@ -100,35 +98,35 @@ describe("Core", () => {
     describe("chat", () => {
       beforeEach(async () => {
         try {
-          await api.chatRoom.destroy("newRoom");
+          await chatRoom.destroy("newRoom");
         } catch (error) {
           // it's fine
         }
       });
 
       test("can check if rooms exist", async () => {
-        const found = await api.chatRoom.exists("defaultRoom");
+        const found = await chatRoom.exists("defaultRoom");
         expect(found).toEqual(true);
       });
 
       test("can check if a room does not exist", async () => {
-        const found = await api.chatRoom.exists("missingRoom");
+        const found = await chatRoom.exists("missingRoom");
         expect(found).toEqual(false);
       });
 
       test("server can create new room", async () => {
         const room = "newRoom";
         let found;
-        found = await api.chatRoom.exists(room);
+        found = await chatRoom.exists(room);
         expect(found).toEqual(false);
-        await api.chatRoom.add(room);
-        found = await api.chatRoom.exists(room);
+        await chatRoom.add(room);
+        found = await chatRoom.exists(room);
         expect(found).toEqual(true);
       });
 
       test("server cannot create already existing room", async () => {
         try {
-          await api.chatRoom.add("defaultRoom");
+          await chatRoom.add("defaultRoom");
           throw new Error("should not get here");
         } catch (error) {
           expect(error.toString()).toEqual("Error: room exists");
@@ -136,8 +134,8 @@ describe("Core", () => {
       });
 
       test("can enumerate all the rooms in the system", async () => {
-        await api.chatRoom.add("newRoom");
-        const rooms = await api.chatRoom.list();
+        await chatRoom.add("newRoom");
+        const rooms = await chatRoom.list();
         expect(rooms).toHaveLength(3);
         ["defaultRoom", "newRoom", "otherRoom"].forEach(r => {
           expect(rooms.indexOf(r)).toBeGreaterThan(-1);
@@ -147,7 +145,7 @@ describe("Core", () => {
       test("server can add connections to a LOCAL room", async () => {
         const client = await api.specHelper.Connection.createAsync();
         expect(client.rooms).toHaveLength(0);
-        const didAdd = await api.chatRoom.addMember(client.id, "defaultRoom");
+        const didAdd = await chatRoom.addMember(client.id, "defaultRoom");
         expect(didAdd).toEqual(true);
         expect(client.rooms[0]).toEqual("defaultRoom");
         client.destroy();
@@ -156,10 +154,10 @@ describe("Core", () => {
       test("will not re-add a member to a room", async () => {
         const client = await api.specHelper.Connection.createAsync();
         expect(client.rooms).toHaveLength(0);
-        let didAdd = await api.chatRoom.addMember(client.id, "defaultRoom");
+        let didAdd = await chatRoom.addMember(client.id, "defaultRoom");
         expect(didAdd).toEqual(true);
         try {
-          didAdd = await api.chatRoom.addMember(client.id, "defaultRoom");
+          didAdd = await chatRoom.addMember(client.id, "defaultRoom");
           throw new Error("should not get here");
         } catch (error) {
           expect(error.toString()).toEqual(
@@ -173,7 +171,7 @@ describe("Core", () => {
         const client = await api.specHelper.Connection.createAsync();
         expect(client.rooms).toHaveLength(0);
         try {
-          await api.chatRoom.addMember(client.id, "crazyRoom");
+          await chatRoom.addMember(client.id, "crazyRoom");
           throw new Error("should not get here");
         } catch (error) {
           expect(error.toString()).toEqual("Error: room does not exist");
@@ -184,7 +182,7 @@ describe("Core", () => {
       test("server will not remove a member not in a room", async () => {
         const client = await api.specHelper.Connection.createAsync();
         try {
-          await api.chatRoom.removeMember(client.id, "defaultRoom");
+          await chatRoom.removeMember(client.id, "defaultRoom");
           throw new Error("should not get here");
         } catch (error) {
           expect(error.toString()).toEqual(
@@ -196,12 +194,9 @@ describe("Core", () => {
 
       test("server can remove connections to a room", async () => {
         const client = await api.specHelper.Connection.createAsync();
-        const didAdd = await api.chatRoom.addMember(client.id, "defaultRoom");
+        const didAdd = await chatRoom.addMember(client.id, "defaultRoom");
         expect(didAdd).toEqual(true);
-        const didRemove = await api.chatRoom.removeMember(
-          client.id,
-          "defaultRoom"
-        );
+        const didRemove = await chatRoom.removeMember(client.id, "defaultRoom");
         expect(didRemove).toEqual(true);
         client.destroy();
       });
@@ -209,16 +204,16 @@ describe("Core", () => {
       test("server can destroy a room and connections will be removed", async () => {
         try {
           // to ensure it starts empty
-          await api.chatRoom.destroy("newRoom");
+          await chatRoom.destroy("newRoom");
         } catch (error) {}
 
         const client = await api.specHelper.Connection.createAsync();
-        await api.chatRoom.add("newRoom");
-        const didAdd = await api.chatRoom.addMember(client.id, "newRoom");
+        await chatRoom.add("newRoom");
+        const didAdd = await chatRoom.addMember(client.id, "newRoom");
         expect(didAdd).toEqual(true);
         expect(client.rooms[0]).toEqual("newRoom");
 
-        await api.chatRoom.destroy("newRoom");
+        await chatRoom.destroy("newRoom");
         expect(client.rooms).toHaveLength(0);
 
         // testing for the recepit of this message is a race condition with room.destroy and boradcast in test
@@ -231,13 +226,13 @@ describe("Core", () => {
       test("can get a list of room members", async () => {
         const client = await api.specHelper.Connection.createAsync();
         expect(client.rooms).toHaveLength(0);
-        await api.chatRoom.add("newRoom");
-        await api.chatRoom.addMember(client.id, "newRoom");
-        const { room, membersCount } = await api.chatRoom.roomStatus("newRoom");
+        await chatRoom.add("newRoom");
+        await chatRoom.addMember(client.id, "newRoom");
+        const { room, membersCount } = await chatRoom.roomStatus("newRoom");
         expect(room).toEqual("newRoom");
         expect(membersCount).toEqual(1);
         client.destroy();
-        await api.chatRoom.destroy("newRoom");
+        await chatRoom.destroy("newRoom");
       });
 
       describe("chat middleware", () => {
@@ -273,14 +268,14 @@ describe("Core", () => {
           await clientA.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomAdd", "defaultRoom");
           await clientA.verbs("say", ["defaultRoom", "hi there"]);
-          await api.utils.sleep(100);
+          await utils.sleep(100);
           const message = clientB.messages[clientB.messages.length - 1];
           expect(message.thing).toEqual("stuff");
           expect(message.message).toBeUndefined();
         });
 
         test("(join + leave) can add middleware to announce members", async () => {
-          api.chatRoom.addMiddleware({
+          chatRoom.addMiddleware({
             name: "add chat middleware",
             join: async (connection, room) => {
               await api.chatRoom.broadcast(
@@ -291,7 +286,7 @@ describe("Core", () => {
             }
           });
 
-          api.chatRoom.addMiddleware({
+          chatRoom.addMiddleware({
             name: "leave chat middleware",
             leave: async (connection, room) => {
               await api.chatRoom.broadcast(
@@ -305,7 +300,7 @@ describe("Core", () => {
           await clientA.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomLeave", "defaultRoom");
-          await api.utils.sleep(100);
+          await utils.sleep(100);
 
           expect(clientA.messages.pop().message).toEqual(
             "I have left the room: " + clientB.id
@@ -316,7 +311,7 @@ describe("Core", () => {
         });
 
         test("(say) can modify message payloads", async () => {
-          api.chatRoom.addMiddleware({
+          chatRoom.addMiddleware({
             name: "chat middleware",
             say: (connection, room, messagePayload) => {
               if (messagePayload.from !== 0) {
@@ -329,14 +324,14 @@ describe("Core", () => {
           await clientA.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("say", ["defaultRoom", "something", "awesome"]);
-          await api.utils.sleep(100);
+          await utils.sleep(100);
 
           const lastMessage = clientA.messages[clientA.messages.length - 1];
           expect(lastMessage.message).toEqual("something else");
         });
 
         test("can add middleware in a particular order and will be passed modified messagePayloads", async () => {
-          api.chatRoom.addMiddleware({
+          chatRoom.addMiddleware({
             name: "chat middleware 1",
             priority: 1000,
             say: (connection, room, messagePayload, callback) => {
@@ -345,7 +340,7 @@ describe("Core", () => {
             }
           });
 
-          api.chatRoom.addMiddleware({
+          chatRoom.addMiddleware({
             name: "chat middleware 2",
             priority: 2000,
             say: (connection, room, messagePayload) => {
@@ -357,14 +352,14 @@ describe("Core", () => {
           await clientA.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("say", ["defaultRoom", "something", "awesome"]);
-          await api.utils.sleep(100);
+          await utils.sleep(100);
 
           const lastMessage = clientA.messages[clientA.messages.length - 1];
           expect(lastMessage.message).toEqual("MIDDLEWARE 1 MIDDLEWARE 2");
         });
 
         test("say middleware can block excecution", async () => {
-          api.chatRoom.addMiddleware({
+          chatRoom.addMiddleware({
             name: "chat middleware",
             say: (connection, room, messagePayload) => {
               throw new Error("messages blocked");
@@ -374,7 +369,7 @@ describe("Core", () => {
           await clientA.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("say", ["defaultRoom", "something", "awesome"]);
-          await api.utils.sleep(100);
+          await utils.sleep(100);
 
           // welcome message is passed, no join/leave/or say messages
           expect(clientA.messages).toHaveLength(1);
@@ -382,7 +377,7 @@ describe("Core", () => {
         });
 
         test("join middleware can block excecution", async () => {
-          api.chatRoom.addMiddleware({
+          chatRoom.addMiddleware({
             name: "chat middleware",
             join: (connection, room) => {
               throw new Error("joining rooms blocked");
@@ -399,7 +394,7 @@ describe("Core", () => {
         });
 
         test("leave middleware can block excecution", async () => {
-          api.chatRoom.addMiddleware({
+          chatRoom.addMiddleware({
             name: "chat middleware",
             leave: (connection, room) => {
               throw new Error("Hotel California");
@@ -421,7 +416,7 @@ describe("Core", () => {
         });
 
         test("(say verb with async keyword) can modify message payloads", async () => {
-          api.chatRoom.addMiddleware({
+          chatRoom.addMiddleware({
             name: "chat middleware",
             say: async (connection, room, messagePayload) => {
               if (messagePayload.from !== 0) {
@@ -433,13 +428,13 @@ describe("Core", () => {
           await clientA.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("say", ["defaultRoom", "something", "awesome"]);
-          await api.utils.sleep(100);
+          await utils.sleep(100);
           const lastMessage = clientA.messages[clientA.messages.length - 1];
           expect(lastMessage.message).toEqual("something else");
         });
 
         test("can add middleware in a particular order and will be passed modified messagePayloads with both being async functions", async () => {
-          api.chatRoom.addMiddleware({
+          chatRoom.addMiddleware({
             name: "chat middleware 1",
             priority: 1000,
             say: async (connection, room, messagePayload, callback) => {
@@ -448,7 +443,7 @@ describe("Core", () => {
             }
           });
 
-          api.chatRoom.addMiddleware({
+          chatRoom.addMiddleware({
             name: "chat middleware 2",
             priority: 2000,
             say: async (connection, room, messagePayload) => {
@@ -460,14 +455,14 @@ describe("Core", () => {
           await clientA.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("say", ["defaultRoom", "something", "awesome"]);
-          await api.utils.sleep(100);
+          await utils.sleep(100);
 
           const lastMessage = clientA.messages[clientA.messages.length - 1];
           expect(lastMessage.message).toEqual("MIDDLEWARE 1 MIDDLEWARE 2");
         });
 
         test("say async function middleware can block execution", async () => {
-          api.chatRoom.addMiddleware({
+          chatRoom.addMiddleware({
             name: "chat middleware",
             say: async (connection, room, messagePayload) => {
               throw new Error("messages blocked");
@@ -477,7 +472,7 @@ describe("Core", () => {
           await clientA.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("say", ["defaultRoom", "something", "awesome"]);
-          await api.utils.sleep(100);
+          await utils.sleep(100);
 
           // welcome message is passed, no join/leave/or say messages
           expect(clientA.messages).toHaveLength(1);
@@ -485,7 +480,7 @@ describe("Core", () => {
         });
 
         test("join async function middleware can block execution", async () => {
-          api.chatRoom.addMiddleware({
+          chatRoom.addMiddleware({
             name: "chat middleware",
             join: async (connection, room) => {
               throw new Error("joining rooms blocked");
@@ -502,7 +497,7 @@ describe("Core", () => {
         });
 
         test("leave async function middleware can block execution", async () => {
-          api.chatRoom.addMiddleware({
+          chatRoom.addMiddleware({
             name: "chat middleware",
             leave: async (connection, room) => {
               throw new Error("Hotel California");

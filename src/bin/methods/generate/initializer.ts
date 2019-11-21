@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { api, CLI } from "./../../../index";
+import { config, utils, CLI } from "./../../../index";
 
 export class GenerateInitializer extends CLI {
   constructor() {
@@ -28,9 +28,9 @@ export class GenerateInitializer extends CLI {
       template = template.replace(regex, params[v]);
     });
 
-    const message = api.utils.createFileSafely(
-      api.utils.replaceDistWithSrc(
-        api.config.general.paths.initializer[0] + "/" + params.name + ".ts"
+    const message = utils.fileUtils.createFileSafely(
+      utils.replaceDistWithSrc(
+        config.general.paths.initializer[0] + "/" + params.name + ".ts"
       ),
       template
     );

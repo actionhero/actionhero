@@ -1,4 +1,4 @@
-import { Process } from "./../../src/index";
+import { Process, config, utils, chatRoom, redis } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -6,14 +6,13 @@ let api;
 describe("Core: Action Cluster", () => {
   beforeAll(async () => {
     api = await actionhero.start();
-    for (var room in api.config.general.startingChatRooms) {
+    for (var room in config.general.startingChatRooms) {
       try {
-        await api.chatRoom.destroy(room);
-        await api.chatRoom.add(room);
+        await chatRoom.destroy(room);
+        await chatRoom.add(room);
       } catch (error) {
-        if (
-          !error.toString().match(api.config.errors.connectionRoomExists(room))
-        ) {
+        console.log(error);
+        if (!error.toString().match(config.errors.connectionRoomExists(room))) {
           throw error;
         }
       }
@@ -34,8 +33,8 @@ describe("Core: Action Cluster", () => {
       api.rpcTestMethod = (arg1, arg2) => {
         data[1] = [arg1, arg2];
       };
-      await api.redis.doCluster("api.rpcTestMethod", ["arg1", "arg2"]);
-      await api.utils.sleep(100);
+      await redis.doCluster("api.rpcTestMethod", ["arg1", "arg2"]);
+      await utils.sleep(100);
 
       expect(data[1][0]).toEqual("arg1");
       expect(data[1][1]).toEqual("arg2");
@@ -48,12 +47,8 @@ describe("Core: Action Cluster", () => {
         data[1] = [arg1, arg2];
       };
 
-      await api.redis.doCluster(
-        "api.rpcTestMethod",
-        ["arg1", "arg2"],
-        client.id
-      );
-      await api.utils.sleep(100);
+      await redis.doCluster("api.rpcTestMethod", ["arg1", "arg2"], client.id);
+      await utils.sleep(100);
 
       expect(data[1][0]).toEqual("arg1");
       expect(data[1][1]).toEqual("arg2");
@@ -94,7 +89,7 @@ describe("Core: Action Cluster", () => {
 
     test("failing RPC calls with a callback will have a failure callback", async () => {
       try {
-        await api.redis.doCluster(
+        await redis.doCluster(
           "api.rpcTestMethod",
           [],
           "A missing clientId",

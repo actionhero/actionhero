@@ -1,5 +1,5 @@
 import * as REPL from "repl";
-import { CLI, api } from "./../../index";
+import { config, api, env, utils, CLI } from "./../../index";
 
 export class Console extends CLI {
   constructor() {
@@ -10,21 +10,21 @@ export class Console extends CLI {
   }
 
   async run() {
-    for (const i in api.config.servers) {
-      api.config.servers[i].enabled = false;
+    for (const i in config.servers) {
+      config.servers[i].enabled = false;
     }
-    api.config.general.developmentMode = false;
-    api.config.tasks.scheduler = false;
-    api.config.tasks.queues = [];
-    api.config.tasks.minTaskProcessors = 0;
-    api.config.tasks.maxTaskProcessors = 0;
+    config.general.developmentMode = false;
+    config.tasks.scheduler = false;
+    config.tasks.queues = [];
+    config.tasks.minTaskProcessors = 0;
+    config.tasks.maxTaskProcessors = 0;
 
-    await api.commands.start.call(api._context);
-    await api.utils.sleep(500);
+    await api.commands.start.call(api.process);
+    await utils.sleep(500);
 
     await new Promise((resolve, reject) => {
       const repl = REPL.start({
-        prompt: "[ AH::" + api.env + " ] >> ",
+        prompt: "[ AH::" + env + " ] >> ",
         input: process.stdin,
         output: process.stdout,
         useGlobal: false

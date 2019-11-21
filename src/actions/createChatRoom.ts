@@ -1,4 +1,4 @@
-import { api, Action } from "./../index";
+import { chatRoom, Action } from "./../index";
 
 export class CreateChatRoom extends Action {
   constructor() {
@@ -13,7 +13,6 @@ export class CreateChatRoom extends Action {
   }
 
   async run({ params, response }) {
-    const { chatRoom } = api;
     response.didCreate = await chatRoom.add(params.name);
   }
 }

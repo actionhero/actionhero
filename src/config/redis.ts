@@ -23,7 +23,7 @@ if (process.env.REDIS_URL) {
 }
 
 export const DEFAULT = {
-  redis: api => {
+  redis: config => {
     // konstructor: The redis client constructor method.  All redis methods must be promises
     // args: The arguments to pass to the constructor
     // buildNew: is it `new konstructor()` or just `konstructor()`?
@@ -35,7 +35,7 @@ export const DEFAULT = {
         if (process.env.NODE_ENV === "test") {
           console.error(error);
         } else {
-          api.log(error, "alert");
+          throw new Error(error);
         }
         return 5000;
       }

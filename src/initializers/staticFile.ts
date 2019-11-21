@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as Mime from "mime";
-import { api, Initializer } from "../index";
+import { api, log, Initializer } from "../index";
 import { Connection } from "./../classes/connection";
 
 async function asyncStats(file: string): Promise<{ [key: string]: any }> {
@@ -26,6 +26,17 @@ async function asyncReadLink(file: string): Promise<string> {
   });
 }
 
+export interface StaticFileApi {
+  searchLoactions: Array<string>;
+  get?: Function;
+  sendFile?: Function;
+  searchPath?: Function;
+  checkExistence?: Function;
+  sendFileNotFound?: Function;
+  logRequest?: Function;
+  fileLogger?: Function;
+}
+
 /**
  * Countains helpers for returning flies to connections.
  */
@@ -36,7 +47,7 @@ export class StaticFile extends Initializer {
     this.loadPriority = 510;
   }
 
-  async initialize() {
+  async initialize(config) {
     api.staticFile = {
       searchLoactions: []
     };
@@ -55,7 +66,7 @@ export class StaticFile extends Initializer {
       if (!connection.params.file || !api.staticFile.searchPath(counter)) {
         return api.staticFile.sendFileNotFound(
           connection,
-          await api.config.errors.fileNotProvided(connection)
+          await config.errors.fileNotProvided(connection)
         );
       }
 
@@ -115,7 +126,7 @@ export class StaticFile extends Initializer {
       } catch (error) {
         return api.staticFile.sendFileNotFound(
           connection,
-          await api.config.errors.fileReadError(connection, String(error))
+          await config.errors.fileReadError(connection, String(error))
         );
       }
     };
@@ -142,9 +153,9 @@ export class StaticFile extends Initializer {
       api.staticFile.logRequest("{not found}", connection, null, null, false);
       return {
         connection,
-        error: await api.config.errors.fileNotFound(connection),
+        error: await config.errors.fileNotFound(connection),
         mime: "text/html",
-        length: await api.config.errors.fileNotFound(connection).length
+        length: await config.errors.fileNotFound(connection).length
       };
     };
 
@@ -153,7 +164,7 @@ export class StaticFile extends Initializer {
         const stats = await asyncStats(file);
 
         if (stats.isDirectory()) {
-          const indexPath = file + "/" + api.config.general.directoryFileType;
+          const indexPath = file + "/" + config.general.directoryFileType;
           return api.staticFile.checkExistence(indexPath);
         }
 
@@ -180,32 +191,28 @@ export class StaticFile extends Initializer {
       duration: number,
       success: boolean
     ) => {
-      api.log(
-        `[ file @ ${connection.type} ]`,
-        api.config.general.fileRequestLogLevel,
-        {
-          to: connection.remoteIP,
-          file: file,
-          requestedFile: connection.params.file,
-          size: length,
-          duration: duration,
-          success: success
-        }
-      );
+      log(`[ file @ ${connection.type} ]`, config.general.fileRequestLogLevel, {
+        to: connection.remoteIP,
+        file: file,
+        requestedFile: connection.params.file,
+        size: length,
+        duration: duration,
+        success: success
+      });
     };
 
     // load in the explicit public paths first
-    if (api.config.general.paths !== undefined) {
-      api.config.general.paths.public.forEach(function(p) {
+    if (config.general.paths !== undefined) {
+      config.general.paths.public.forEach(function(p) {
         api.staticFile.searchLoactions.push(path.normalize(p));
       });
     }
 
     // source the public directories from plugins
-    for (const pluginName in api.config.plugins) {
-      if (api.config.plugins[pluginName].public !== false) {
+    for (const pluginName in config.plugins) {
+      if (config.plugins[pluginName].public !== false) {
         const pluginPublicPath = path.join(
-          api.config.plugins[pluginName].path,
+          config.plugins[pluginName].path,
           "public"
         );
         if (
@@ -217,7 +224,7 @@ export class StaticFile extends Initializer {
       }
     }
 
-    api.log(
+    log(
       "static files will be served from these directories",
       "debug",
       api.staticFile.searchLoactions

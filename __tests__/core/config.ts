@@ -1,12 +1,11 @@
 import { promisify } from "util";
 import * as fs from "fs";
 import * as path from "path";
-import * as request from "request-promise-native";
 import { Process } from "./../../src/index";
+import { buildConfig } from "./../../src/modules/config";
 
 const actionhero = new Process();
-let api;
-let url;
+let config;
 let configFolders;
 
 const newConfigFolderPaths = [
@@ -56,8 +55,8 @@ describe("Core: config folders", () => {
 
     process.env.ACTIONHERO_CONFIG = newConfigFolderPaths.join(",");
 
-    api = await actionhero.start();
-    url = "http://localhost:" + api.config.servers.web.port;
+    await actionhero.start();
+    config = buildConfig();
   });
 
   afterAll(async () => {
@@ -67,23 +66,12 @@ describe("Core: config folders", () => {
     process.env.ACTIONHERO_CONFIG = configFolders;
   });
 
-  test("can call a route in the normal config/route.ts", async () => {
-    const { id, problems, name, error } = await request.get({
-      uri: url + "/api/api-status",
-      json: true
+  test("routes should be rebuilt and contain both paths", async () => {
+    expect(config.routes).toEqual({
+      get: [
+        { path: "/api-status", action: "status" },
+        { path: "/random-number", action: "randomNumber" }
+      ]
     });
-    expect(error).toBeUndefined();
-    expect(problems).toHaveLength(0);
-    expect(id).toEqual(`test-server-${process.env.JEST_WORKER_ID || 0}`);
-    expect(name).toEqual("actionhero");
-  });
-
-  test("can call a different route in the new config/route.ts (on same verb)", async () => {
-    const { randomNumber } = await request.get({
-      uri: url + "/api/random-number",
-      json: true
-    });
-    expect(randomNumber).toBeGreaterThan(0);
-    expect(randomNumber).toBeLessThan(1);
   });
 });

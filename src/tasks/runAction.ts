@@ -1,4 +1,4 @@
-import { api, Task, Connection, ActionProcessor } from "./../index";
+import { log, Task, Connection, ActionProcessor } from "./../index";
 
 export class RunAction extends Task {
   constructor() {
@@ -28,11 +28,11 @@ export class RunAction extends Task {
     const { response } = await actionProcessor.processAction();
 
     if (response.error) {
-      api.log("task error: " + response.error, "error", {
+      log("task error: " + response.error, "error", {
         params: JSON.stringify(params)
       });
     } else {
-      api.log("[ action @ task ]", "debug", { params: JSON.stringify(params) });
+      log("[ action @ task ]", "debug", { params: JSON.stringify(params) });
     }
 
     connection.destroy();

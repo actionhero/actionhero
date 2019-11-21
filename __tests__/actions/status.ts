@@ -1,4 +1,4 @@
-import { Process } from "./../../src/index";
+import { Process, specHelper } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -13,7 +13,7 @@ describe("Action", () => {
     });
 
     test("returns node status", async () => {
-      const { id, problems, name, error } = await api.specHelper.runAction(
+      const { id, problems, name, error } = await specHelper.runAction(
         "status"
       );
       expect(error).toBeUndefined();

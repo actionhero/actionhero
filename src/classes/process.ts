@@ -1,22 +1,38 @@
 import * as path from "path";
 import * as glob from "glob";
 import { Api } from "./api";
+import { buildConfig, ConfigInterface } from "./../modules/config";
+import { log } from "../modules/log";
 import { Initializer } from "./initializer";
 import { Initializers } from "./initializers";
+import { utils } from "../modules/utils";
+
+import { id } from "./process/id";
+import { env } from "./process/env";
+import { pid, writePidFile, clearPidFile } from "./process/pid";
+import { watchFileAndAct, unWatchAllFiles } from "./process/watchFileAndAct";
 
 let api: Api;
+let config: ConfigInterface = {};
 
 export class Process {
+  running: boolean;
+  initialized: boolean;
+  shuttingDown: boolean;
+  bootTime: number;
   initializers: Initializers;
   startCount: number;
   loadInitializers: Array<Function>;
   startInitializers: Array<Function>;
   stopInitializers: Array<Function>;
+  _startingParams: {
+    [key: string]: any;
+  };
 
   constructor() {
     // Only in files required by `index.js` do we need to delay the loading of the API object
     // This is due to cyclical require issues
-    api = require("./../index").api;
+    api = require("../index").api;
 
     this.initializers = {};
     this.loadInitializers = [];
@@ -25,57 +41,35 @@ export class Process {
 
     this.startCount = 0;
 
-    api.commands = {
-      initialize: async (params: object) => {
-        return this.initialize(params);
-      },
-      start: async (params: object) => {
-        return this.start(params);
-      },
-      stop: async (callback: Function) => {
-        return this.stop();
-      },
-      restart: async (callback: Function) => {
-        return this.restart();
-      }
+    api.commands.initialize = async (...args): Promise<Api | void> => {
+      return this.initialize(...args);
     };
+
+    api.commands.start = async (...args): Promise<Api | void> => {
+      return this.start(...args);
+    };
+
+    api.commands.stop = async () => {
+      return this.stop();
+    };
+
+    api.commands.restart = async (): Promise<Api | void> => {
+      return this.restart();
+    };
+
+    api.process = this;
   }
 
   async initialize(params: object = {}) {
-    api._startingParams = params;
+    this._startingParams = params;
 
     const loadInitializerRankings = {};
     const startInitializerRankings = {};
     const stopInitializerRankings = {};
     let initializerFiles: Array<string> = [];
 
-    // we need to load the utils & config first
-    const files = [
-      path.resolve(__dirname, "..", "initializers", "utils"),
-      path.resolve(__dirname, "..", "initializers", "config")
-    ];
-
-    for (const file of files) {
-      delete require.cache[require.resolve(file)];
-      const exportedClasses = require(file);
-      for (const exportKey in exportedClasses) {
-        let initializer;
-        let InitializerClass = exportedClasses[exportKey];
-        try {
-          initializer = new InitializerClass();
-        } catch (error) {
-          this.fatalError(error, file);
-        }
-
-        try {
-          initializer.validate();
-          await initializer.initialize(api);
-          this.initializers[initializer.name] = initializer;
-        } catch (error) {
-          this.fatalError(error, initializer);
-        }
-      }
-    }
+    // rebuild config with startingParams
+    config = buildConfig(this._startingParams);
 
     // load initializers from core
     initializerFiles = initializerFiles.concat(
@@ -85,16 +79,16 @@ export class Process {
     );
 
     // load initializers from project
-    api.config.general.paths.initializer.forEach((startPath: string) => {
+    config.general.paths.initializer.forEach((startPath: string) => {
       initializerFiles = initializerFiles.concat(
         glob.sync(path.join(startPath, "**", "**/*(*.js|*.ts)"))
       );
     });
 
     // load initializers from plugins
-    for (const pluginName in api.config.plugins) {
-      if (api.config.plugins[pluginName] !== false) {
-        const pluginPath = api.config.plugins[pluginName].path;
+    for (const pluginName in config.plugins) {
+      if (config.plugins[pluginName] !== false) {
+        const pluginPath = config.plugins[pluginName].path;
         initializerFiles = initializerFiles.concat(
           glob.sync(
             path.join(pluginPath, "initializers", "**", "**/*(*.js|*.ts)")
@@ -103,19 +97,8 @@ export class Process {
       }
     }
 
-    initializerFiles = api.utils.arrayUniqueify(initializerFiles);
-    initializerFiles = initializerFiles.filter(file => {
-      if (file.match("initializers/utils")) {
-        return false;
-      }
-      if (file.match("initializers/config")) {
-        return false;
-      }
-
-      return true;
-    });
-
-    initializerFiles = api.utils.ensureNoTsHeaderFiles(initializerFiles);
+    initializerFiles = utils.arrayUniqueify(initializerFiles);
+    initializerFiles = utils.ensureNoTsHeaderFiles(initializerFiles);
 
     initializerFiles.forEach(f => {
       const file = path.normalize(f);
@@ -144,11 +127,7 @@ export class Process {
           // check if initializer already exists (exclude utils and config)
           if (this.initializers[initializer.name]) {
             const warningMessage = `an existing intializer with the same name \`${initializer.name}\` will be overridden by the file ${file}`;
-            if (api.log) {
-              api.log(warningMessage, "warning");
-            } else {
-              console.warn(warningMessage);
-            }
+            log(warningMessage, "warning");
           } else {
             initializer.validate();
             this.initializers[initializer.name] = initializer;
@@ -158,35 +137,26 @@ export class Process {
         }
 
         const initializeFunction = async () => {
-          api.watchFileAndAct(file, async () => {
-            api.log(
+          watchFileAndAct(file, async () => {
+            log(
               `*** Rebooting due to initializer change (${file}) ***`,
               "info"
             );
-            await api.commands.restart();
+            await this.restart();
           });
 
           if (typeof initializer.initialize === "function") {
-            if (typeof api.log === "function") {
-              api.log(
-                `Loading initializer: ${initializer.name}`,
-                "debug",
-                file
-              );
-            }
+            log(`Loading initializer: ${initializer.name}`, "debug", file);
+
             try {
-              await initializer.initialize();
+              await initializer.initialize(config);
               try {
-                api.log(
-                  `Loaded initializer: ${initializer.name}`,
-                  "debug",
-                  file
-                );
+                log(`Loaded initializer: ${initializer.name}`, "debug", file);
               } catch (e) {}
             } catch (error) {
               const message = `Exception occured in initializer \`${initializer.name}\` during load`;
               try {
-                api.log(message, "emerg", error.toString());
+                log(message, "emerg", error.toString());
               } catch (_error) {
                 console.error(message);
               }
@@ -197,22 +167,13 @@ export class Process {
 
         const startFunction = async () => {
           if (typeof initializer.start === "function") {
-            if (typeof api.log === "function") {
-              api.log(
-                `Starting initializer: ${initializer.name}`,
-                "debug",
-                file
-              );
-            }
+            log(`Starting initializer: ${initializer.name}`, "debug", file);
+
             try {
-              await initializer.start();
-              api.log(
-                `Started initializer: ${initializer.name}`,
-                "debug",
-                file
-              );
+              await initializer.start(config);
+              log(`Started initializer: ${initializer.name}`, "debug", file);
             } catch (error) {
-              api.log(
+              log(
                 `Exception occured in initializer \`${initializer.name}\` during start`,
                 "emerg",
                 error.toString()
@@ -224,22 +185,13 @@ export class Process {
 
         const stopFunction = async () => {
           if (typeof initializer.stop === "function") {
-            if (typeof api.log === "function") {
-              api.log(
-                `Stopping initializer: ${initializer.name}`,
-                "debug",
-                file
-              );
-            }
+            log(`Stopping initializer: ${initializer.name}`, "debug", file);
+
             try {
-              await initializer.stop();
-              api.log(
-                `Stopped initializer: ${initializer.name}`,
-                "debug",
-                file
-              );
+              await initializer.stop(config);
+              log(`Stopped initializer: ${initializer.name}`, "debug", file);
             } catch (error) {
-              api.log(
+              log(
                 `Exception occured in initializer \`${initializer.name}\` during stop`,
                 "emerg",
                 error.toString()
@@ -287,36 +239,39 @@ export class Process {
     );
 
     try {
-      await api.utils.asyncWaterfall(this.loadInitializers);
+      await utils.asyncWaterfall(this.loadInitializers);
     } catch (error) {
       return this.fatalError(error, "initialize");
     }
 
-    api.initialized = true;
-
+    this.initialized = true;
     return api;
   }
 
   async start(params = {}) {
-    if (api.initialized !== true) {
+    if (this.initialized !== true) {
       await this.initialize(params);
     }
 
+    writePidFile();
+    this.running = true;
     api.running = true;
-    api.log("*** Starting ActionHero ***", "info");
+    log(`environment: ${env}`, "notice");
+    log("*** Starting ActionHero ***", "info");
 
     this.startInitializers.push(() => {
-      api.bootTime = new Date().getTime();
+      this.bootTime = new Date().getTime();
       if (this.startCount === 0) {
-        api.log("*** ActionHero Started ***", "notice");
+        log(`server ID: ${id}`, "notice");
+        log("*** ActionHero Started ***", "notice");
         this.startCount++;
       } else {
-        api.log("*** ActionHero Restarted ***", "notice");
+        log("*** ActionHero Restarted ***", "notice");
       }
     });
 
     try {
-      await api.utils.asyncWaterfall(this.startInitializers);
+      await utils.asyncWaterfall(this.startInitializers);
     } catch (error) {
       return this.fatalError(error, "start");
     }
@@ -325,79 +280,69 @@ export class Process {
   }
 
   async stop() {
-    if (api.running === true) {
-      api.shuttingDown = true;
-      api.running = false;
-      api.initialized = false;
+    if (this.running) {
+      this.shuttingDown = true;
+      this.running = false;
+      this.initialized = false;
 
-      api.log("stopping process...", "notice");
+      log("stopping process...", "notice");
+
+      await utils.sleep(1000);
 
       this.stopInitializers.push(async () => {
-        api.pids.clearPidFile();
-        api.log("*** ActionHero Stopped ***", "notice");
-        delete api.shuttingDown;
+        clearPidFile();
+        log("*** ActionHero Stopped ***", "notice");
+        delete this.shuttingDown;
         // reset initializers to prevent duplicate check on restart
         this.initializers = {};
+        api.running = false;
+        await utils.sleep(1000);
       });
 
       try {
-        await api.utils.asyncWaterfall(this.stopInitializers);
+        unWatchAllFiles();
+        await utils.asyncWaterfall(this.stopInitializers);
       } catch (error) {
         return this.fatalError(error, "stop");
       }
-      return api;
-    } else if (api.shuttingDown === true) {
+    } else if (this.shuttingDown === true) {
       // double sigterm; ignore it
     } else {
       const message = "Cannot shut down actionhero, not running";
-      if (api.log) {
-        api.log(message, "error");
-      } else {
-        console.log(message);
-      }
-      return api;
+      log(message, "error");
     }
   }
 
   async restart() {
-    if (api.running === true) {
+    if (this.running === true) {
       await this.stop();
-      await this.start(api._startingParams);
+      await this.start(this._startingParams);
     } else {
-      await this.start(api._startingParams);
+      await this.start(this._startingParams);
     }
     return api;
   }
 
   // HELPERS
-
   async fatalError(errors, type) {
     if (errors && !(errors instanceof Array)) {
       errors = [errors];
     }
     if (errors) {
-      if (api.log) {
-        api.log(
-          `Error with initializer step: ${JSON.stringify(type)}`,
-          "emerg"
-        );
-        errors.forEach(error => {
-          api.log(error.stack, "emerg");
-        });
-      } else {
-        console.error(`Error with initializer step: ${JSON.stringify(type)}`);
-        errors.forEach(error => {
-          console.error(error.stack);
-        });
-      }
-      await api.commands.stop.call(api);
+      log(`Error with initializer step: ${JSON.stringify(type)}`, "emerg");
 
-      await api.utils.sleep(1000); // allow time for console.log to print
+      errors.forEach(error => {
+        log(error.stack, "emerg");
+      });
+
+      await this.stop();
+
+      await utils.sleep(1000); // allow time for console.log to print
       process.exit(1);
     }
   }
 
-  flattenOrderedInitialzer(collection) {
+  flattenOrderedInitialzer(collection: any) {
     const output = [];
     const keys = [];
     for (const key in collection) {
@@ -414,6 +359,6 @@ export class Process {
   }
 }
 
-function sortNumber(a, b) {
+function sortNumber(a: number, b: number) {
   return a - b;
 }

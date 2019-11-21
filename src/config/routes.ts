@@ -1,5 +1,5 @@
 export const DEFAULT = {
-  routes: api => {
+  routes: config => {
     return {
       /* ---------------------
       routes.js

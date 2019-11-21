@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@types/glob": "^7.1.1",
+    "@types/ioredis": "^4.0.19",
     "@types/node": "^12.12.7",
     "@types/uuid": "^3.4.6",
     "browser_fingerprint": "^1.0.5",
@@ -85,7 +86,7 @@
     "pretest": "npm run lint && npm run build",
     "dev": "ts-node ./src/bin/actionhero",
     "start": "node ./dist/bin/actionhero",
-    "build": "tsc --declaration",
+    "build": "rm -rf dist && ./node_modules/.bin/tsc --declaration",
     "docs": "typedoc --out docs --theme default --mode file --media tutorials",
     "lint": "prettier --check src/*/**.ts __test__/*/**.ts examples/*/**.ts config",
     "pretty": "prettier --write src/*/**.ts __test__/*/**.ts examples/*/**.ts config"

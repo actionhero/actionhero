@@ -10,8 +10,7 @@ import * as BrowserFingerprint from "browser_fingerprint";
 import * as Mime from "mime";
 import * as uuid from "uuid";
 import * as etag from "etag";
-import { api, Server } from "../index";
-import { Connection } from "./../classes/connection";
+import { api, config, utils, Server, Connection } from "../index";
 
 export class WebServer extends Server {
   server: any;
@@ -380,7 +379,7 @@ export class WebServer extends Server {
   handleRequest(req, res) {
     const { fingerprint, headersHash } = this.fingerprinter.fingerprint(req);
     const responseHeaders = [];
-    const cookies = api.utils.parseCookies(req);
+    const cookies = utils.parseCookies(req);
     const responseHttpCode = 200;
     const method = req.method.toUpperCase();
 
@@ -421,7 +420,7 @@ export class WebServer extends Server {
       }
     }
 
-    const { ip, port } = api.utils.parseHeadersForClientAddress(req.headers);
+    const { ip, port } = utils.parseHeadersForClientAddress(req.headers);
     const messageId = uuid.v4();
 
     this.buildConnection({
@@ -465,8 +464,8 @@ export class WebServer extends Server {
     ) {
       const stopTime = new Date().getTime();
       data.response.serverInformation = {
-        serverName: api.config.general.serverName,
-        apiVersion: api.config.general.apiVersion,
+        serverName: config.general.serverName,
+        apiVersion: config.general.apiVersion,
         requestDuration: stopTime - data.connection.connectedAt,
         currentTime: stopTime
       };
@@ -521,7 +520,7 @@ export class WebServer extends Server {
     }
 
     if (data.response.error) {
-      data.response.error = await api.config.errors.serializers.servers.web(
+      data.response.error = await config.errors.serializers.servers.web(
         data.response.error
       );
     }
@@ -626,7 +625,7 @@ export class WebServer extends Server {
 
     if (
       pathParts[0] &&
-      api.utils.arrayStartingMatch(urlPathForActionsParts, pathParts)
+      utils.arrayStartingMatch(urlPathForActionsParts, pathParts)
     ) {
       requestMode = "api";
       for (i = 0; i < urlPathForActionsParts.length; i++) {
@@ -634,7 +633,7 @@ export class WebServer extends Server {
       }
     } else if (
       pathParts[0] &&
-      api.utils.arrayStartingMatch(urlPathForFilesParts, pathParts)
+      utils.arrayStartingMatch(urlPathForFilesParts, pathParts)
     ) {
       requestMode = "file";
       for (i = 0; i < urlPathForFilesParts.length; i++) {
@@ -743,7 +742,7 @@ export class WebServer extends Server {
         connection.params.file[connection.params.file.length - 1] === "/"
       ) {
         connection.params.file =
-          connection.params.file + api.config.general.directoryFileType;
+          connection.params.file + config.general.directoryFileType;
       }
       try {
         connection.params.file = decodeURIComponent(connection.params.file);
@@ -756,7 +755,7 @@ export class WebServer extends Server {
 
   fillParamsFromWebRequest(connection, varsHash) {
     // helper for JSON posts
-    const collapsedVarsHash = api.utils.collapseObjectToArray(varsHash);
+    const collapsedVarsHash = utils.collapseObjectToArray(varsHash);
     if (collapsedVarsHash !== false) {
       varsHash = { payload: collapsedVarsHash }; // post was an array, lets call it "payload"
     }
@@ -795,7 +794,7 @@ export class WebServer extends Server {
 
     for (const p in connection.params) {
       if (
-        api.config.general.disableParamScrubbing === true ||
+        config.general.disableParamScrubbing === true ||
         api.params.postVariables.indexOf(p) >= 0
       ) {
         requesterInformation.receivedParams[p] = connection.params[p];
@@ -857,9 +856,5 @@ export class WebServer extends Server {
       .replace(/>/g, "&gt;")
       .replace(/\)/g, "")
       .replace(/\(/g, "");
-  }
-
-  goodbye() {
-    // disconnect handlers
   }
 }

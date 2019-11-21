@@ -1,5 +1,8 @@
 import * as path from "path";
-import { CLI } from "./../../index";
+// import { CLI } from "./../../index";
+// we need to load each component directly so we don't accidentalyy source `config... which doesn't exist`
+import { CLI } from "./../../classes/cli";
+
 const packageJSON = require(path.join(__dirname, "/../../../package.json"));
 
 export class Version extends CLI {

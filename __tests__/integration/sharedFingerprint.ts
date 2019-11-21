@@ -3,7 +3,7 @@
 
 import * as _Primus from "primus";
 import * as request from "request-promise-native";
-import { Process } from "./../../src/index";
+import { Process, config } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -14,7 +14,7 @@ let url;
 const connectClient = async (query = ""): Promise<any> => {
   const S = _Primus.createSocket();
   const clientSocket = new S(
-    `http://localhost:${api.config.servers.web.port}?${query}`
+    `http://localhost:${config.servers.web.port}?${query}`
   );
 
   let client = new ActionheroWebsocketClient({}, clientSocket); // eslint-disable-line
@@ -34,7 +34,7 @@ describe("Integration: Web Server + Websocket Socket shared fingerprint", () => 
   beforeAll(async () => {
     api = await actionhero.start();
     await api.redis.clients.client.flushdb();
-    url = "http://localhost:" + api.config.servers.web.port;
+    url = "http://localhost:" + config.servers.web.port;
     ActionheroWebsocketClient = eval(
       api.servers.servers.websocket.compileActionheroWebsocketClientJS()
     ); // eslint-disable-line
@@ -50,7 +50,7 @@ describe("Integration: Web Server + Websocket Socket shared fingerprint", () => 
       json: true
     });
     fingerprint = body.requesterInformation.fingerprint;
-    const query = `${api.config.servers.web.fingerprintOptions.cookieKey}=${fingerprint}`;
+    const query = `${config.servers.web.fingerprintOptions.cookieKey}=${fingerprint}`;
     const { client, connectResponse } = await connectClient(query);
     expect(connectResponse.status).toEqual("OK");
     expect(connectResponse.data.id).toBeTruthy();
@@ -71,7 +71,7 @@ describe("Integration: Web Server + Websocket Socket shared fingerprint", () => 
   });
 
   test("should exist as long as cookie is passed", async () => {
-    const query = `${api.config.servers.web.fingerprintOptions.cookieKey}=dummyValue`;
+    const query = `${config.servers.web.fingerprintOptions.cookieKey}=dummyValue`;
     const { client, connectResponse } = await connectClient(query);
     expect(connectResponse.status).toEqual("OK");
     expect(connectResponse.data.id).toBeTruthy();

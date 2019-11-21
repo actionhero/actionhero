@@ -1,5 +1,11 @@
 import { api, Action } from "./../index";
 
+function sleep(time: number): Promise<void> {
+  return new Promise(resolve => {
+    setTimeout(resolve, time);
+  });
+}
+
 export class CacheTest extends Action {
   constructor() {
     super();
@@ -28,7 +34,7 @@ export class CacheTest extends Action {
     const sleepDuration = params.sleepDuration;
     const sleepStarted = new Date().getTime();
 
-    await api.utils.sleep(sleepDuration);
+    await sleep(sleepDuration);
     const sleepEnded = new Date().getTime();
     const sleepDelta = sleepEnded - sleepStarted;
 

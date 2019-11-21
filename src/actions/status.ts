@@ -1,4 +1,4 @@
-import { api, Action } from "./../index";
+import { api, id, task, Action, actionheroVersion } from "./../index";
 import * as path from "path";
 const packageJSON = require(path.normalize(
   path.join(__dirname, "..", "..", "package.json")
@@ -36,22 +36,8 @@ module.exports = class RandomNumber extends Action {
     }
   }
 
-  async checkEventLoop(data) {
-    const eventLoopDelay = await api.utils.eventLoopDelay(10000);
-    data.response.eventLoopDelay = eventLoopDelay;
-    if (eventLoopDelay > maxEventLoopDelay) {
-      data.response.nodeStatus = data.connection.localize("Node Unhealthy");
-      data.response.problems.push(
-        data.connection.localize([
-          "EventLoop Blocked for more than {{maxEventLoopDelay}} ms",
-          { maxEventLoopDelay: maxEventLoopDelay }
-        ])
-      );
-    }
-  }
-
   async checkResqueQueues(data) {
-    const details = await api.tasks.details();
+    const details = await task.details();
     let length = 0;
     Object.keys(details.queues).forEach(q => {
       length += details.queues[q].length;
@@ -71,18 +57,17 @@ module.exports = class RandomNumber extends Action {
   }
 
   async run(data) {
+    data.response.uptime = new Date().getTime() - api.bootTime;
     data.response.nodeStatus = data.connection.localize("Node Healthy");
     data.response.problems = [];
 
-    data.response.id = api.id;
-    data.response.actionheroVersion = api.actionheroVersion;
-    data.response.uptime = new Date().getTime() - api.bootTime;
+    data.response.id = id;
+    data.response.actionheroVersion = actionheroVersion;
     data.response.name = packageJSON.name;
     data.response.description = packageJSON.description;
     data.response.version = packageJSON.version;
 
     await this.checkRam(data);
-    await this.checkEventLoop(data);
     await this.checkResqueQueues(data);
   }
 };

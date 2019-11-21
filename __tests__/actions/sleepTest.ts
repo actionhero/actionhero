@@ -1,4 +1,4 @@
-import { Process } from "./../../src/index";
+import { Process, specHelper } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -13,12 +13,12 @@ describe("Action", () => {
     });
 
     test("will return data from an async action", async () => {
-      const { sleepDuration } = await api.specHelper.runAction("sleepTest");
+      const { sleepDuration } = await specHelper.runAction("sleepTest");
       expect(sleepDuration).toEqual(1000);
     });
 
     test("can change sleepDuration", async () => {
-      const { sleepDuration } = await api.specHelper.runAction("sleepTest", {
+      const { sleepDuration } = await specHelper.runAction("sleepTest", {
         sleepDuration: 100
       });
       expect(sleepDuration).toEqual(100);

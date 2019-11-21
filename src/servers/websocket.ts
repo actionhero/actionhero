@@ -4,8 +4,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as util from "util";
 import * as uuid from "uuid";
-import { api, Server } from "../index";
-import { Connection } from "./../classes/connection";
+import { api, config, utils, log, Server, Connection } from "../index";
 
 export class WebSocketServer extends Server {
   server: any;
@@ -83,7 +82,7 @@ export class WebSocketServer extends Server {
 
   async sendMessage(connection: Connection, message, messageId: string) {
     if (message.error) {
-      message.error = api.config.errors.serializers.servers.websocket(
+      message.error = config.errors.serializers.servers.websocket(
         message.error
       );
     }
@@ -136,6 +135,7 @@ export class WebSocketServer extends Server {
     }
   }
 
+  //@ts-ignore
   goodbye(connection: Connection) {
     connection.rawConnection.end();
   }
@@ -194,15 +194,15 @@ export class WebSocketServer extends Server {
 
   writeClientJS() {
     if (
-      !api.config.general.paths.public ||
-      api.config.general.paths.public.length === 0
+      !config.general.paths.public ||
+      config.general.paths.public.length === 0
     ) {
       return;
     }
 
     if (this.config.clientJsPath && this.config.clientJsName) {
       const clientJSPath = path.normalize(
-        api.config.general.paths.public[0] +
+        config.general.paths.public[0] +
           path.sep +
           this.config.clientJsPath +
           path.sep
@@ -214,18 +214,14 @@ export class WebSocketServer extends Server {
           fs.mkdirSync(clientJSPath);
         }
         fs.writeFileSync(clientJSFullPath + ".js", this.renderClientJS(false));
-        api.log(`wrote ${clientJSFullPath}.js`, "debug");
+        log(`wrote ${clientJSFullPath}.js`, "debug");
         fs.writeFileSync(
           clientJSFullPath + ".min.js",
           this.renderClientJS(true)
         );
-        api.log(`wrote ${clientJSFullPath}.min.js`, "debug");
+        log(`wrote ${clientJSFullPath}.min.js`, "debug");
       } catch (e) {
-        api.log(
-          "Cannot write client-side JS for websocket server:",
-          "warning",
-          e
-        );
+        log("Cannot write client-side JS for websocket server:", "warning", e);
         throw e;
       }
     }
@@ -233,8 +229,8 @@ export class WebSocketServer extends Server {
 
   handleConnection(rawConnection) {
     const fingerprint =
-      rawConnection.query[api.config.servers.web.fingerprintOptions.cookieKey];
-    const { ip, port } = api.utils.parseHeadersForClientAddress(
+      rawConnection.query[config.servers.web.fingerprintOptions.cookieKey];
+    const { ip, port } = utils.parseHeadersForClientAddress(
       rawConnection.headers
     );
 

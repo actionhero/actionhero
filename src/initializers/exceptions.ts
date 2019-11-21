@@ -1,5 +1,13 @@
 import * as os from "os";
-import { api, Initializer } from "../index";
+import { api, log, Initializer } from "../index";
+
+export interface ExceptionHandlerAPI {
+  reporters: Array<any>;
+  report: Function;
+  loader?: Function;
+  action?: Function;
+  task?: Function;
+}
 
 /**
  * Handlers for when things go wrong.
@@ -15,9 +23,24 @@ export class Exceptions extends Initializer {
     return ["action", "remoteIP", "type", "params", "room"];
   }
 
-  async initialize() {
-    api.exceptionHandlers = {};
-    api.exceptionHandlers.reporters = [];
+  async initialize(config) {
+    api.exceptionHandlers = {
+      reporters: [],
+      report: (error, type, name, objects, severity) => {
+        if (!severity) {
+          severity = "error";
+        }
+        for (const i in api.exceptionHandlers.reporters) {
+          api.exceptionHandlers.reporters[i](
+            error,
+            type,
+            name,
+            objects,
+            severity
+          );
+        }
+      }
+    };
 
     const consoleReporter = (error, type, name, objects, severity) => {
       const extraMessages = [];
@@ -66,7 +89,7 @@ export class Exceptions extends Initializer {
       }
 
       for (const m in extraMessages) {
-        api.log(extraMessages[m], severity);
+        log(extraMessages[m], severity);
       }
       let lines;
       try {
@@ -76,27 +99,12 @@ export class Exceptions extends Initializer {
       }
       for (const l in lines) {
         const line = lines[l];
-        api.log("! " + line, severity);
+        log("! " + line, severity);
       }
-      api.log("*", severity);
+      log("*", severity);
     };
 
     api.exceptionHandlers.reporters.push(consoleReporter);
-
-    api.exceptionHandlers.report = (error, type, name, objects, severity) => {
-      if (!severity) {
-        severity = "error";
-      }
-      for (const i in api.exceptionHandlers.reporters) {
-        api.exceptionHandlers.reporters[i](
-          error,
-          type,
-          name,
-          objects,
-          severity
-        );
-      }
-    };
 
     api.exceptionHandlers.loader = (fullFilePath, error) => {
       const name = "loader:" + fullFilePath;
@@ -143,7 +151,7 @@ export class Exceptions extends Initializer {
         "task",
         name,
         { task: task, queue: queue, workerId: workerId },
-        api.config.tasks.workerLogging.failure
+        config.tasks.workerLogging.failure
       );
     };
   }

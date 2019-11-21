@@ -1,5 +1,12 @@
 import { api, Initializer } from "../index";
 
+export interface DocumentationApi {
+  documentation: {
+    [key: string]: any;
+  };
+  build: Function;
+}
+
 /**
  * Documentation of Actions.
  */

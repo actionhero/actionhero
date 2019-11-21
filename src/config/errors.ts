@@ -1,5 +1,5 @@
 export const DEFAULT = {
-  errors: api => {
+  errors: config => {
     return {
       _toExpand: false,
 
@@ -86,13 +86,6 @@ export const DEFAULT = {
         );
       },
 
-      dataLengthTooLarge: (maxLength, receivedLength) => {
-        return api.i18n.localize([
-          "actionhero.errors.dataLengthTooLarge",
-          { maxLength: maxLength, receivedLength: receivedLength }
-        ]);
-      },
-
       // Decorate your response based on Error here.
       // Any action that throws an Error will pass through this method before returning
       //   an error to the client. Reponse can be edited here, status codes changed, etc.
@@ -162,21 +155,19 @@ export const DEFAULT = {
       },
 
       connectionRoomHasBeenDeleted: room => {
-        return api.i18n.localize(
-          "actionhero.errors.connectionRoomHasBeenDeleted"
-        );
+        return "this room has been deleted";
       },
 
       connectionRoomNotExist: room => {
-        return api.i18n.localize("actionhero.errors.connectionRoomNotExist");
+        return "room does not exist";
       },
 
       connectionRoomExists: room => {
-        return api.i18n.localize("actionhero.errors.connectionRoomExists");
+        return "room exists";
       },
 
       connectionRoomRequired: room => {
-        return api.i18n.localize("actionhero.errors.connectionRoomRequired");
+        return "a room is required";
       }
     };
   }

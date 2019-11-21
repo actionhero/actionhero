@@ -1,4 +1,11 @@
-import { Process, Task } from "./../../src/index";
+import {
+  Process,
+  Task,
+  utils,
+  config,
+  task,
+  specHelper
+} from "../../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -54,7 +61,7 @@ describe("Core: Tasks", () => {
       }
 
       async run(params) {
-        await api.utils.sleep(5000);
+        await utils.sleep(5000);
         taskOutput.push("slowTask");
         return "slowTask";
       }
@@ -77,7 +84,7 @@ describe("Core: Tasks", () => {
     delete api.tasks.jobs.periodicTask;
     delete api.tasks.jobs.slowTask;
 
-    api.config.tasks.queues = [];
+    config.tasks.queues = [];
 
     api.resque.multiWorker.options.minTaskProcessors = 0;
     api.resque.multiWorker.options.maxTaskProcessors = 0;
@@ -134,7 +141,7 @@ describe("Core: Tasks", () => {
   });
 
   test("can run a task manually", async () => {
-    const response = await api.specHelper.runTask("regularTask", {
+    const response = await specHelper.runTask("regularTask", {
       word: "theWord"
     });
     expect(response).toEqual("theWord");
@@ -142,7 +149,7 @@ describe("Core: Tasks", () => {
   });
 
   test("can run a task fully", async () => {
-    const response = await api.specHelper.runFullTask("regularTask", {
+    const response = await specHelper.runFullTask("regularTask", {
       word: "theWord"
     });
     expect(response).toEqual("theWord");
@@ -150,16 +157,16 @@ describe("Core: Tasks", () => {
   });
 
   test("it can detect that a task was enqueued to run now", async () => {
-    await api.tasks.enqueue("regularTask", { word: "testing" });
-    const found = await api.specHelper.findEnqueuedTasks("regularTask");
+    await task.enqueue("regularTask", { word: "testing" });
+    const found = await specHelper.findEnqueuedTasks("regularTask");
     expect(found.length).toEqual(1);
     expect(found[0].args[0].word).toEqual("testing");
     expect(found[0].timestamp).toBeNull();
   });
 
   test("it can detect that a task was enqueued to run in the future", async () => {
-    await api.tasks.enqueueIn(1000, "regularTask", { word: "testing" });
-    const found = await api.specHelper.findEnqueuedTasks("regularTask");
+    await task.enqueueIn(1000, "regularTask", { word: "testing" });
+    const found = await specHelper.findEnqueuedTasks("regularTask");
     expect(found.length).toEqual(1);
     expect(found[0].args[0].word).toEqual("testing");
     expect(found[0].timestamp).toBeGreaterThan(1);
@@ -175,7 +182,7 @@ describe("Core: Tasks", () => {
       }
 
       async stepOne() {
-        await api.utils.sleep(100);
+        await utils.sleep(100);
         taskOutput.push("one");
       }
 
@@ -191,7 +198,7 @@ describe("Core: Tasks", () => {
     }
     api.tasks.tasks.taskWithMethod = new TaskWithMethod();
     api.tasks.jobs.taskWithMethod = api.tasks.jobWrapper("taskWithMethod");
-    await api.specHelper.runFullTask("taskWithMethod", {});
+    await specHelper.runFullTask("taskWithMethod", {});
     expect(taskOutput).toHaveLength(3);
     expect(taskOutput[0]).toEqual("one");
     expect(taskOutput[1]).toEqual("two");
@@ -208,14 +215,14 @@ describe("Core: Tasks", () => {
   });
 
   test("all periodic tasks can be enqueued at boot", async () => {
-    await api.tasks.enqueueAllRecurrentTasks();
+    await task.enqueueAllRecurrentTasks();
     const length = await api.resque.queue.length(queue);
     expect(length).toEqual(1);
   });
 
   test("re-enqueuing a periodic task should not enqueue it again", async () => {
-    const tryOne = await api.tasks.enqueue("periodicTask");
-    const tryTwo = await api.tasks.enqueue("periodicTask");
+    const tryOne = await task.enqueue("periodicTask", null);
+    const tryTwo = await task.enqueue("periodicTask", null);
     const length = await api.resque.queue.length(queue);
     expect(tryOne).toEqual(true);
     expect(tryTwo).toEqual(false);
@@ -223,14 +230,14 @@ describe("Core: Tasks", () => {
   });
 
   test("can add a normal job", async () => {
-    await api.tasks.enqueue("regularTask", { word: "first" });
+    await task.enqueue("regularTask", { word: "first" });
     const length = await api.resque.queue.length(queue);
     expect(length).toEqual(1);
   });
 
   test("can add a delayed job", async () => {
     const time = new Date().getTime() + 1000;
-    await api.tasks.enqueueAt(time, "regularTask", { word: "first" });
+    await task.enqueueAt(time, "regularTask", { word: "first" });
     const timestamps = await api.resque.queue.scheduledAt(
       queue,
       "regularTask",
@@ -247,27 +254,27 @@ describe("Core: Tasks", () => {
     const time = new Date().getTime() + 1000;
     const roundedTime = Math.round(time / 1000) * 1000;
 
-    await api.tasks.enqueueAt(time, "regularTask", { word: "first" });
-    const timestamps = await api.tasks.timestamps();
+    await task.enqueueAt(time, "regularTask", { word: "first" });
+    const timestamps = await task.timestamps();
     expect(timestamps).toHaveLength(1);
     expect(timestamps[0]).toEqual(roundedTime);
 
-    const { tasks } = await api.tasks.delayedAt(roundedTime);
+    const { tasks } = await task.delayedAt(roundedTime);
     expect(tasks).toHaveLength(1);
     expect(tasks[0].class).toEqual("regularTask");
 
-    const allTasks = await api.tasks.allDelayed();
+    const allTasks = await task.allDelayed();
     expect(Object.keys(allTasks)).toHaveLength(1);
     expect(Object.keys(allTasks)[0]).toEqual(String(roundedTime));
     expect(allTasks[roundedTime][0].class).toEqual("regularTask");
   });
 
   test("I can remove an enqueued job", async () => {
-    await api.tasks.enqueue("regularTask", { word: "first" });
+    await task.enqueue("regularTask", { word: "first" });
     const length = await api.resque.queue.length(queue);
     expect(length).toEqual(1);
 
-    const count = await api.tasks.del(queue, "regularTask", { word: "first" });
+    const count = await task.del(queue, "regularTask", { word: "first" });
     expect(count).toEqual(1);
 
     const lengthAgain = await api.resque.queue.length();
@@ -275,7 +282,7 @@ describe("Core: Tasks", () => {
   });
 
   test("I can remove a delayed job", async () => {
-    await api.tasks.enqueueIn(1000, "regularTask", { word: "first" });
+    await task.enqueueIn(1000, "regularTask", { word: "first" });
     const timestamps = await api.resque.queue.scheduledAt(
       queue,
       "regularTask",
@@ -283,26 +290,24 @@ describe("Core: Tasks", () => {
     );
     expect(timestamps).toHaveLength(1);
 
-    const timestampsDeleted = await api.tasks.delDelayed(queue, "regularTask", {
+    const timestampsDeleted = await task.delDelayed(queue, "regularTask", {
       word: "first"
     });
     expect(timestampsDeleted).toHaveLength(1);
     expect(timestampsDeleted).toEqual(timestamps);
 
-    const timestampsDeletedAgain = await api.tasks.delDelayed(
-      queue,
-      "regularTask",
-      { word: "first" }
-    );
+    const timestampsDeletedAgain = await task.delDelayed(queue, "regularTask", {
+      word: "first"
+    });
     expect(timestampsDeletedAgain).toHaveLength(0);
   });
 
   test("I can remove and stop a recurring task", async () => {
     // enqueue the delayed job 2x, one in each type of queue
-    await api.tasks.enqueue("periodicTask");
-    await api.tasks.enqueueIn(1000, "periodicTask");
+    await task.enqueue("periodicTask", null);
+    await task.enqueueIn(1000, "periodicTask", null);
 
-    const count = await api.tasks.stopRecurrentTask("periodicTask");
+    const count = await task.stopRecurrentTask("periodicTask");
     expect(count).toEqual(2);
   });
 
@@ -318,7 +323,7 @@ describe("Core: Tasks", () => {
           }
         };
 
-        api.tasks.addMiddleware(middleware);
+        task.addMiddleware(middleware);
 
         api.tasks.tasks.middlewareTask = {
           name: "middlewareTask",
@@ -341,7 +346,7 @@ describe("Core: Tasks", () => {
 
       test("can modify the behavior of enqueue with middleware.preEnqueue", async () => {
         try {
-          await api.tasks.enqueue("middlewareTask", {});
+          await task.enqueue("middlewareTask", {});
         } catch (error) {
           expect(error.toString()).toEqual("Error: You cannot enqueue me!");
         }
@@ -377,7 +382,7 @@ describe("Core: Tasks", () => {
           }
         };
 
-        api.tasks.addMiddleware(middleware);
+        task.addMiddleware(middleware);
 
         api.tasks.tasks.middlewareTask = {
           name: "middlewareTask",
@@ -402,7 +407,7 @@ describe("Core: Tasks", () => {
       });
 
       test("can modify parameters before a task and modify result after task completion", async () => {
-        const result = await api.specHelper.runFullTask("middlewareTask", {
+        const result = await specHelper.runFullTask("middlewareTask", {
           foo: "bar"
         });
         expect(result.run).toEqual(true);
@@ -412,14 +417,14 @@ describe("Core: Tasks", () => {
 
       test("can prevent the running of a task with error", async () => {
         try {
-          await api.specHelper.runFullTask("middlewareTask", { throw: true });
+          await specHelper.runFullTask("middlewareTask", { throw: true });
         } catch (error) {
           expect(error.toString()).toEqual("Error: thown!");
         }
       });
 
       test("can prevent the running of a task with return value", async () => {
-        const result = await api.specHelper.runFullTask("middlewareTask", {
+        const result = await specHelper.runFullTask("middlewareTask", {
           stop: true
         });
         expect(result).toBeUndefined();
@@ -429,14 +434,14 @@ describe("Core: Tasks", () => {
 
   describe("details view in a working system", () => {
     test("can use api.tasks.details to learn about the system", async () => {
-      api.config.tasks.queues = ["*"];
+      config.tasks.queues = ["*"];
 
-      await api.tasks.enqueue("slowTask", { a: 1 });
+      await task.enqueue("slowTask", { a: 1 });
       api.resque.multiWorker.start();
 
-      await api.utils.sleep(2000);
+      await utils.sleep(2000);
 
-      const details = await api.tasks.details();
+      const details = await task.details();
 
       expect(Object.keys(details.queues)).toEqual(["testQueue"]);
       expect(details.queues.testQueue).toHaveLength(0);
@@ -448,70 +453,5 @@ describe("Core: Tasks", () => {
 
       await api.resque.multiWorker.stop();
     }, 10000);
-  });
-
-  describe("full worker flow", () => {
-    test("normal tasks work", async () => {
-      await api.tasks.enqueue("regularTask", { word: "first" });
-      api.config.tasks.queues = ["*"];
-      api.resque.multiWorker.start();
-
-      await api.utils.sleep(500);
-
-      expect(taskOutput[0]).toEqual("first");
-      await api.resque.multiWorker.stop();
-    });
-
-    test("delayed tasks work", async () => {
-      await api.tasks.enqueueIn(100, "regularTask", { word: "delayed" });
-
-      api.config.tasks.queues = ["*"];
-      api.config.tasks.scheduler = true;
-      await api.resque.startScheduler();
-      await api.resque.multiWorker.start();
-
-      await api.utils.sleep(1500);
-      expect(taskOutput[0]).toEqual("delayed");
-      await api.resque.multiWorker.stop();
-      await api.resque.stopScheduler();
-    });
-
-    test("recurrent tasks work", async () => {
-      await api.tasks.enqueueRecurrentTask("periodicTask");
-
-      api.config.tasks.queues = ["*"];
-      api.config.tasks.scheduler = true;
-      await api.resque.startScheduler();
-      await api.resque.multiWorker.start();
-
-      await api.utils.sleep(1500);
-      expect(taskOutput[0]).toEqual("periodicTask");
-      expect(taskOutput[1]).toEqual("periodicTask");
-      expect(taskOutput[2]).toEqual("periodicTask");
-      // the task may have run more than 3 times, we just want to ensure that it happened more than once
-      await api.resque.multiWorker.stop();
-      await api.resque.stopScheduler();
-    });
-
-    test("trying to run an unknown job will return a failure, but not crash the server", async done => {
-      api.config.tasks.queues = ["*"];
-
-      const listener = async (workerId, queue, job, f) => {
-        expect(queue).toEqual(queue);
-        expect(job.class).toEqual("someCrazyTask");
-        expect(job.queue).toEqual("testQueue");
-        expect(String(f)).toEqual(
-          'Error: No job defined for class "someCrazyTask"'
-        );
-        api.resque.multiWorker.removeListener("failure", listener);
-        await api.resque.multiWorker.stop();
-        return done();
-      };
-
-      api.resque.multiWorker.on("failure", listener);
-
-      await api.resque.queue.enqueue(queue, "someCrazyTask");
-      api.resque.multiWorker.start();
-    });
   });
 });

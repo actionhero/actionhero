@@ -1,6 +1,6 @@
 import * as request from "request-promise-native";
 import * as stream from "stream";
-import { Process } from "./../../src/index";
+import { Process, config } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -9,7 +9,7 @@ let url;
 describe("Server: sendBuffer", () => {
   beforeAll(async () => {
     api = await actionhero.start();
-    url = "http://localhost:" + api.config.servers.web.port;
+    url = "http://localhost:" + config.servers.web.port;
   });
 
   afterAll(async () => {

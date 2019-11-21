@@ -2,7 +2,7 @@ const os = require("os");
 
 export const DEFAULT = {
   servers: {
-    web: api => {
+    web: config => {
       return {
         enabled: true,
         // HTTP or HTTPS?  This setting is to enable SSL termination directly in the actionhero app, not set redirection host headers
@@ -21,7 +21,7 @@ export const DEFAULT = {
         bindIP: "0.0.0.0",
         // Any additional headers you want actionhero to respond with
         httpHeaders: {
-          "X-Powered-By": api.config.general.serverName,
+          "X-Powered-By": config.general.serverName,
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Methods":
             "HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE",
@@ -95,7 +95,7 @@ export const DEFAULT = {
 
 export const production = {
   servers: {
-    web: api => {
+    web: config => {
       return {
         padding: null,
         metadataOptions: {
@@ -109,7 +109,7 @@ export const production = {
 
 export const test = {
   servers: {
-    web: api => {
+    web: config => {
       return {
         secure: false,
         port: 18080 + parseInt(process.env.JEST_WORKER_ID || "0"),

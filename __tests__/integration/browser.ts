@@ -3,7 +3,7 @@
  */
 
 import * as path from "path";
-import { Process } from "./../../src/index";
+import { Process, config } from "./../../src/index";
 const packageJSON = require(path.join(__dirname, "..", "..", "package.json"));
 
 const actionhero = new Process();
@@ -25,7 +25,7 @@ describe("browser integration tests", () => {
   beforeAll(async () => {
     api = await actionhero.start();
     await api.redis.clients.client.flushdb();
-    url = "http://localhost:" + api.config.servers.web.port;
+    url = "http://localhost:" + config.servers.web.port;
   });
 
   afterAll(async () => {

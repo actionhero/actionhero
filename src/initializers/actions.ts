@@ -1,33 +1,29 @@
 import * as glob from "glob";
 import * as path from "path";
-import { api, Initializer } from "../index";
+import {
+  api,
+  log,
+  utils,
+  watchFileAndAct,
+  Initializer,
+  Action
+} from "../index";
+import * as ActionModule from "./../modules/action";
 
-/**
- * var middleware = {
- *  name: 'userId checker',
- *  global: false,
- *  priority: 1000,
- *  preProcessor: async (data) => {
- *    if(!data.params.userId){
- *      throw new Error('All actions require a userId')
- *    }
- *  },
- *  postProcessor: async (data) => {
- *    if(data.thing.stuff == false){ data.toRender = false }
- *  }
- *}
- */
-export interface ActionMiddleware {
-  /**Unique name for the middleware. */
-  name: string;
-  /**Is this middleware applied to all actions? */
-  global: boolean;
-  /**Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`. */
-  priority?: number;
-  /**Called berore the action runs.  Has access to all params, before sanitizartion.  Can modify the data object for use in actions. */
-  preProcessor?: Function;
-  /**Called after the action runs. */
-  postProcessor?: Function;
+export interface ActionsApi {
+  actions: {
+    [key: string]: {
+      [key: string]: Action;
+    };
+  };
+  versions: {
+    [key: string]: Array<string | number>;
+  };
+  middleware: {
+    [key: string]: ActionModule.action.ActionMiddleware;
+  };
+  globalMiddleware: Array<string>;
+  loadFile?: Function;
 }
 
 export class Actions extends Initializer {
@@ -37,33 +33,12 @@ export class Actions extends Initializer {
     this.loadPriority = 410;
   }
 
-  async initialize() {
+  async initialize(config) {
     api.actions = {
       actions: {},
       versions: {},
       middleware: {},
       globalMiddleware: []
-    };
-
-    /**
-     * Add a middleware component avaialable to pre or post-process actions.
-     */
-    api.actions.addMiddleware = (data: ActionMiddleware) => {
-      if (!data.name) {
-        throw new Error("middleware.name is required");
-      }
-      if (!data.priority) {
-        data.priority = api.config.general.defaultMiddlewarePriority;
-      }
-      data.priority = Number(data.priority);
-      api.actions.middleware[data.name] = data;
-      if (data.global === true) {
-        api.actions.globalMiddleware.push(data.name);
-        api.utils.sortGlobalMiddleware(
-          api.actions.globalMiddleware,
-          api.actions.middleware
-        );
-      }
     };
 
     api.actions.loadFile = async (fullFilePath: string, reload: boolean) => {
@@ -73,26 +48,26 @@ export class Actions extends Initializer {
 
       const loadMessage = action => {
         if (reload) {
-          api.log(
+          log(
             `action reloaded: ${action.name} @ v${action.version}, ${fullFilePath}`,
             "info"
           );
         } else {
-          api.log(
+          log(
             `action loaded: ${action.name} @ v${action.version}, ${fullFilePath}`,
             "debug"
           );
         }
       };
 
-      api.watchFileAndAct(fullFilePath, async () => {
-        if (!api.config.general.developmentModeForceRestart) {
+      watchFileAndAct(fullFilePath, async () => {
+        if (!config.general.developmentModeForceRestart) {
           // reload by updating in-memory copy of our action
           api.actions.loadFile(fullFilePath, true);
           api.params.buildPostVariables();
           api.routes.loadRoutes();
         } else {
-          api.log(
+          log(
             `*** Rebooting due to action change (${fullFilePath}) ***`,
             "info"
           );
@@ -113,12 +88,13 @@ export class Actions extends Initializer {
           if (!api.actions.actions[action.name]) {
             api.actions.actions[action.name] = {};
           }
+
           if (!api.actions.versions[action.name]) {
             api.actions.versions[action.name] = [];
           }
 
           if (api.actions.actions[action.name][action.version] && !reload) {
-            api.log(
+            log(
               `an existing action with the same name \`${action.name}\` will be overridden by the file ${fullFilePath}`,
               "warning"
             );
@@ -139,22 +115,22 @@ export class Actions extends Initializer {
       }
     };
 
-    for (const i in api.config.general.paths.action) {
-      const p = api.config.general.paths.action[i];
+    for (const i in config.general.paths.action) {
+      const p = config.general.paths.action[i];
       let files = glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"));
-      files = api.utils.ensureNoTsHeaderFiles(files);
+      files = utils.ensureNoTsHeaderFiles(files);
       for (const j in files) {
         await api.actions.loadFile(files[j]);
       }
     }
 
-    for (const pluginName in api.config.plugins) {
-      if (api.config.plugins[pluginName].actions !== false) {
-        const pluginPath = api.config.plugins[pluginName].path;
+    for (const pluginName in config.plugins) {
+      if (config.plugins[pluginName].actions !== false) {
+        const pluginPath = config.plugins[pluginName].path;
         let files = glob.sync(
           path.join(pluginPath, "actions", "**", "**/*(*.js|*.ts)")
         );
-        files = api.utils.ensureNoTsHeaderFiles(files);
+        files = utils.ensureNoTsHeaderFiles(files);
         for (const j in files) {
           await api.actions.loadFile(files[j]);
         }

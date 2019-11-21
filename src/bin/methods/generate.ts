@@ -1,6 +1,14 @@
 import * as fs from "fs";
 import * as path from "path";
-import { api, CLI } from "./../../index";
+
+// import { api, projectRoot, CLI } from "./../../index";
+// we need to load each component directly so we don't accidentalyy source `config... which doesn't exist`
+import { CLI } from "./../../classes/cli";
+import { projectRoot } from "./../../classes/process/projectRoot";
+import {
+  createDirSafely,
+  createFileSafely
+} from "../../modules/utils/fileUtils";
 
 export class Generate extends CLI {
   constructor() {
@@ -97,7 +105,6 @@ export class Generate extends CLI {
       "/log",
       "/pids",
       "/locales",
-      "/src/servers",
       "/public",
       "/public/javascript",
       "/public/css",
@@ -107,7 +114,7 @@ export class Generate extends CLI {
       "/__tests__/tasks"
     ].forEach(dir => {
       try {
-        const message = api.utils.createDirSafely(api.projectRoot + dir);
+        const message = createDirSafely(projectRoot + dir);
         console.log(message);
       } catch (error) {
         console.log(error.toString());
@@ -143,8 +150,8 @@ export class Generate extends CLI {
 
     for (const file in newFileMap) {
       try {
-        const message = api.utils.createFileSafely(
-          api.projectRoot + file,
+        const message = createFileSafely(
+          projectRoot + file,
           documents[newFileMap[file]]
         );
         console.log(message);

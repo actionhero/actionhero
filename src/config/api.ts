@@ -1,15 +1,12 @@
 const path = require("path");
 
 export const DEFAULT = {
-  general: api => {
-    const packageJSON = require(api.projectRoot + path.sep + "package.json");
+  general: config => {
+    const packageJSON = require("./../../package.json");
 
     return {
       apiVersion: packageJSON.version,
       serverName: packageJSON.name,
-      // id can be set here, or it will be generated dynamically.
-      //  Be sure that every server you run has a unique ID (which will happen when generated dynamically)
-      //  id: 'myActionHeroServer',
       // A unique token to your application that servers will use to authenticate to each other
       serverToken: "change-me",
       // the redis prefix for actionhero's cache objects
@@ -75,9 +72,8 @@ export const DEFAULT = {
 };
 
 export const test = {
-  general: api => {
+  general: config => {
     return {
-      id: `test-server-${process.env.JEST_WORKER_ID || 0}`,
       serverToken: `serverToken-${process.env.JEST_WORKER_ID || 0}`,
       developmentMode: true,
       startingChatRooms: {
@@ -93,7 +89,7 @@ export const test = {
 };
 
 export const production = {
-  general: api => {
+  general: config => {
     return {
       fileRequestLogLevel: "debug",
       developmentMode: false

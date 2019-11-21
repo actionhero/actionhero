@@ -1,7 +1,7 @@
 import * as os from "os";
 import * as path from "path";
 import { ActionHeroCluster } from "./lib/actionheroCluster";
-import { api, CLI } from "../../../index";
+import { config, id, CLI } from "../../../index";
 
 /**
  * TO START IN CONSOLE: "./bin/actionhero start cluster"
@@ -56,8 +56,8 @@ export class StartCluster extends CLI {
       args: "start",
       silent: params.silent === "true" || params.silent === true,
       expectedWorkers: params.workers,
-      id: api.id,
-      pidPath: api.config.general.paths.pid[0],
+      id: id,
+      pidPath: config.general.paths.pid[0],
       buildEnv: workerId => {
         const env = {
           title: "",

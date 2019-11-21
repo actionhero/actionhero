@@ -1,6 +1,19 @@
 import * as path from "path";
 import * as glob from "glob";
-import { api, Initializer } from "../index";
+import {
+  api,
+  log,
+  utils,
+  watchFileAndAct,
+  Initializer,
+  Server
+} from "../index";
+
+export interface ServersApi {
+  servers: {
+    [key: string]: Server;
+  };
+}
 
 /**
  * Manages the servers in this ActionHero instance.
@@ -14,14 +27,14 @@ export class Servers extends Initializer {
     this.stopPriority = 100;
   }
 
-  async initialize() {
+  async initialize(config) {
     api.servers = {
       servers: {}
     };
 
     const serverFolders = [path.resolve(path.join(__dirname, "..", "servers"))];
 
-    api.config.general.paths.server.forEach(p => {
+    config.general.paths.server.forEach(p => {
       p = path.resolve(p);
       if (serverFolders.indexOf(p) < 0) {
         serverFolders.push(p);
@@ -32,16 +45,16 @@ export class Servers extends Initializer {
       const p = serverFolders[i];
       let files = glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"));
 
-      for (const pluginName in api.config.plugins) {
-        if (api.config.plugins[pluginName].servers !== false) {
-          const pluginPath = api.config.plugins[pluginName].path;
+      for (const pluginName in config.plugins) {
+        if (config.plugins[pluginName].servers !== false) {
+          const pluginPath = config.plugins[pluginName].path;
           files = files.concat(
             glob.sync(path.join(pluginPath, "servers", "**", "**/*(*.js|*.ts)"))
           );
         }
       }
 
-      files = api.utils.ensureNoTsHeaderFiles(files);
+      files = utils.ensureNoTsHeaderFiles(files);
 
       for (const j in files) {
         const filename = files[j];
@@ -54,23 +67,23 @@ export class Servers extends Initializer {
         }
 
         const server = new ExportedClasses[Object.keys(ExportedClasses)[0]]();
-        server.config = api.config.servers[server.type]; // shorthand access
+        server.config = config.servers[server.type]; // shorthand access
         if (server.config && server.config.enabled === true) {
           await server.initialize();
 
           if (api.servers.servers[server.type]) {
-            api.log(
+            log(
               `an existing server with the same type \`${server.type}\` will be overridden by the file ${filename}`,
               "warning"
             );
           }
 
           api.servers.servers[server.type] = server;
-          api.log(`Initialized server: ${server.type}`, "debug");
+          log(`Initialized server: ${server.type}`, "debug");
         }
 
-        api.watchFileAndAct(filename, () => {
-          api.log(
+        watchFileAndAct(filename, () => {
+          log(
             `*** Rebooting due to server (${server.type}) change ***`,
             "info"
           );
@@ -80,7 +93,7 @@ export class Servers extends Initializer {
     }
   }
 
-  async start() {
+  async start(config) {
     const serverNames = Object.keys(api.servers.servers);
     for (const i in serverNames) {
       const serverName = serverNames[i];
@@ -88,15 +101,15 @@ export class Servers extends Initializer {
       if (server && server.config.enabled === true) {
         let message = "";
         message += `Starting server: \`${serverName}\``;
-        if (api.config.servers[serverName].bindIP) {
-          message += ` @ ${api.config.servers[serverName].bindIP}`;
+        if (config.servers[serverName].bindIP) {
+          message += ` @ ${config.servers[serverName].bindIP}`;
         }
-        if (api.config.servers[serverName].port) {
-          message += `:${api.config.servers[serverName].port}`;
+        if (config.servers[serverName].port) {
+          message += `:${config.servers[serverName].port}`;
         }
-        api.log(message, "notice");
+        log(message, "notice");
         await server.start();
-        api.log(`Server started: ${serverName}`, "debug");
+        log(`Server started: ${serverName}`, "debug");
       }
     }
   }
@@ -107,10 +120,10 @@ export class Servers extends Initializer {
       const serverName = serverNames[i];
       const server = api.servers.servers[serverName];
       if ((server && server.config.enabled === true) || !server) {
-        api.log(`Stopping server: ${serverName}`, "notice");
+        log(`Stopping server: ${serverName}`, "notice");
         await server.stop();
         server.removeAllListeners();
-        api.log(`Server stopped: ${serverName}`, "debug");
+        log(`Server stopped: ${serverName}`, "debug");
       }
     }
   }

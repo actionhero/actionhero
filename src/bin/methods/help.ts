@@ -1,6 +1,7 @@
 import * as path from "path";
 import * as glob from "glob";
-import { CLI, api } from "./../../index";
+import { config, CLI } from "./../../index";
+import { utils } from "../../modules/utils";
 
 export class Help extends CLI {
   constructor() {
@@ -15,22 +16,22 @@ export class Help extends CLI {
 
     // CLI commands included with ActionHero
     console.log();
-    if (api.config.general.cliIncludeInternal !== false) {
+    if (config.general.cliIncludeInternal !== false) {
       glob.sync(path.join(__dirname, "**", "**/*(*.js|*.ts)")).forEach(f => {
         files.push(f);
       });
     }
 
     // CLI commands included in this project
-    api.config.general.paths.cli.forEach(cliPath => {
+    config.general.paths.cli.forEach(cliPath => {
       glob.sync(path.join(cliPath, "**", "*(*.js|*.ts)")).forEach(f => {
         files.push(f);
       });
     });
 
     // CLI commands from plugins
-    Object.keys(api.config.plugins).forEach(pluginName => {
-      const plugin = api.config.plugins[pluginName];
+    Object.keys(config.plugins).forEach(pluginName => {
+      const plugin = config.plugins[pluginName];
       if (plugin.cli !== false) {
         glob
           .sync(path.join(plugin.path, "bin", "**", "*(*.js|*.ts)"))
@@ -40,7 +41,7 @@ export class Help extends CLI {
       }
     });
 
-    files = api.utils.arrayUniqueify(files);
+    files = utils.arrayUniqueify(files);
 
     files.forEach(f => {
       try {

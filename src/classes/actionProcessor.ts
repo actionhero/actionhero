@@ -1,6 +1,10 @@
 import { Api } from "./api";
 import { Connection } from "./connection";
 import { Action } from "./action";
+import { config } from "./../modules/config";
+import { log } from "../modules/log";
+import { utils } from "../modules/utils";
+import * as dotProp from "dot-prop";
 
 let api: Api;
 
@@ -70,21 +74,21 @@ export class ActionProcessor {
 
     if (status instanceof Error) {
       error =
-        typeof api.config.errors.genericError === "function"
-          ? await api.config.errors.genericError(this, status)
+        typeof config.errors.genericError === "function"
+          ? await config.errors.genericError(this, status)
           : status;
     } else if (status === "server_shutting_down") {
-      error = await api.config.errors.serverShuttingDown(this);
+      error = await config.errors.serverShuttingDown(this);
     } else if (status === "too_many_requests") {
-      error = await api.config.errors.tooManyPendingActions(this);
+      error = await config.errors.tooManyPendingActions(this);
     } else if (status === "unknown_action") {
-      error = await api.config.errors.unknownAction(this);
+      error = await config.errors.unknownAction(this);
     } else if (status === "unsupported_server_type") {
-      error = await api.config.errors.unsupportedServerType(this);
+      error = await config.errors.unsupportedServerType(this);
     } else if (status === "missing_params") {
-      error = await api.config.errors.missingParams(this, this.missingParams);
+      error = await config.errors.missingParams(this, this.missingParams);
     } else if (status === "validator_errors") {
-      error = await api.config.errors.invalidParams(this, this.validatorErrors);
+      error = await config.errors.invalidParams(this, this.validatorErrors);
     } else if (status) {
       error = status;
     }
@@ -114,7 +118,7 @@ export class ActionProcessor {
       logLevel = this.actionTemplate.logLevel;
     }
 
-    const filteredParams = api.utils.filterObjectForLogging(this.params);
+    const filteredParams = utils.filterObjectForLogging(this.params);
 
     const logLine = {
       to: this.connection.remoteIP,
@@ -136,7 +140,7 @@ export class ActionProcessor {
       }
     }
 
-    api.log(`[ action @ ${this.connection.type} ]`, logLevel, logLine);
+    log(`[ action @ ${this.connection.type} ]`, logLevel, logLine);
   }
 
   private async preProcessAction() {
@@ -183,7 +187,7 @@ export class ActionProcessor {
     }
 
     const inputNames = Object.keys(inputs) || [];
-    if (api.config.general.disableParamScrubbing !== true) {
+    if (config.general.disableParamScrubbing !== true) {
       for (const p in params) {
         if (
           api.params.globalSafeParams.indexOf(p) < 0 &&
@@ -195,13 +199,13 @@ export class ActionProcessor {
     }
   }
 
-  private prepareStringMethod(method: string) {
+  private prepareStringMethod(method: string): Function {
     const cmdParts = method.split(".");
     const cmd = cmdParts.shift();
     if (cmd !== "api") {
       throw new Error("cannot operate on a method outside of the api object");
     }
-    return api.utils.dotProp.get(api, cmdParts.join("."));
+    return dotProp.get(api, cmdParts.join("."));
   }
 
   private async validateParam(props, params, key, schemaKey) {
@@ -272,7 +276,7 @@ export class ActionProcessor {
 
     // required
     if (props.required === true) {
-      if (api.config.general.missingParamChecks.indexOf(params[key]) >= 0) {
+      if (config.general.missingParamChecks.indexOf(params[key]) >= 0) {
         let missingKey = key;
         if (schemaKey) {
           missingKey = `${schemaKey}.${missingKey}`;
@@ -324,11 +328,12 @@ export class ActionProcessor {
         api.actions.actions[this.action][this.params.apiVersion];
     }
 
-    if (api.running !== true) {
-      return this.completeAction("server_shutting_down");
-    }
+    // TODO
+    // if (api.running !== true) {
+    //   return this.completeAction("server_shutting_down");
+    // }
 
-    if (this.getPendingActionCount() > api.config.general.simultaneousActions) {
+    if (this.getPendingActionCount() > config.general.simultaneousActions) {
       return this.completeAction("too_many_requests");
     }
 

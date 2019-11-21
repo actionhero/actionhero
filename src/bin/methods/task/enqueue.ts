@@ -1,4 +1,4 @@
-import { api, CLI } from "./../../../index";
+import { api, log, task, CLI } from "./../../../index";
 
 export class TaskEnqueue extends CLI {
   constructor() {
@@ -28,8 +28,8 @@ export class TaskEnqueue extends CLI {
     }
 
     await api.resque.startQueue();
-    const toRun = await api.tasks.enqueue(params.name, args);
-    api.log("response", "info", toRun);
+    const toRun = await task.enqueue(params.name, args);
+    log("response", "info", toRun);
     return true;
   }
 }

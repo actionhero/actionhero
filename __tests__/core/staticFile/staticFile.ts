@@ -1,8 +1,7 @@
 import * as request from "request-promise-native";
-import { Process } from "./../../src/index";
+import { Process, config, utils, specHelper } from "../../../src/index";
 
 const actionhero = new Process();
-let api;
 let url;
 
 async function exec(command) {
@@ -19,12 +18,12 @@ async function exec(command) {
 describe("Core", () => {
   describe("static file", () => {
     beforeAll(async () => {
-      api = await actionhero.start();
+      await actionhero.start();
       url =
         "http://localhost:" +
-        api.config.servers.web.port +
+        config.servers.web.port +
         "/" +
-        api.config.servers.web.urlPathForFiles;
+        config.servers.web.urlPathForFiles;
     });
 
     afterAll(async () => {
@@ -32,7 +31,7 @@ describe("Core", () => {
     });
 
     test("file: an HTML file", async () => {
-      const response = await api.specHelper.getStaticFile("simple.html");
+      const response = await specHelper.getStaticFile("simple.html");
       expect(response.mime).toEqual("text/html");
       expect(response.content).toEqual(
         "<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />"
@@ -40,23 +39,19 @@ describe("Core", () => {
     });
 
     test("file: 404 pages", async () => {
-      const response = await api.specHelper.getStaticFile("someRandomFile");
+      const response = await specHelper.getStaticFile("someRandomFile");
       expect(response.error).toEqual("That file is not found");
       expect(response.content).toBeNull();
     });
 
     test("I should not see files outside of the public dir", async () => {
-      const response = await api.specHelper.getStaticFile(
-        "../config/config.json"
-      );
+      const response = await specHelper.getStaticFile("../config/config.json");
       expect(response.error).toEqual("That file is not found");
       expect(response.content).toBeNull();
     });
 
     test("file: sub paths should work", async () => {
-      const response = await api.specHelper.getStaticFile(
-        "logo/actionhero.png"
-      );
+      const response = await specHelper.getStaticFile("logo/actionhero.png");
       expect(response.mime).toEqual("image/png");
       expect(response.length).toEqual(59273);
       // wacky per-OS encoding issues I guess?
@@ -159,67 +154,6 @@ describe("Core", () => {
       expect(secondResponse.body.length).toBeGreaterThan(1);
     });
 
-    describe("Compression", () => {
-      let serverCompressionState;
-      beforeAll(() => {
-        serverCompressionState = api.config.servers.web.compress;
-        api.config.servers.web.compress = true; // activate compression, default is likely to be false
-      });
-
-      afterAll(() => {
-        api.config.servers.web.compress = serverCompressionState;
-      });
-
-      test("should respect accept-encoding header priority with gzip as first in a list of encodings", async () => {
-        const response = await request.get(url + "/simple.html", {
-          headers: { "Accept-Encoding": "gzip, deflate, sdch, br" },
-          resolveWithFullResponse: true
-        });
-
-        expect(response.statusCode).toEqual(200);
-        expect(response.headers["content-encoding"]).toEqual("gzip");
-      });
-
-      test("should respect accept-encoding header priority with deflate as second in a list of encodings", async () => {
-        const response = await request.get(url + "/simple.html", {
-          headers: { "Accept-Encoding": "br, deflate, gzip" },
-          resolveWithFullResponse: true
-        });
-
-        expect(response.statusCode).toEqual(200);
-        expect(response.headers["content-encoding"]).toEqual("deflate"); // br is not a currently supported encoding
-      });
-
-      test("should respect accept-encoding header priority with gzip as only option", async () => {
-        const response = await request.get(url + "/simple.html", {
-          headers: { "Accept-Encoding": "gzip" },
-          resolveWithFullResponse: true
-        });
-
-        expect(response.statusCode).toEqual(200);
-        expect(response.headers["content-encoding"]).toEqual("gzip");
-      });
-
-      test("should not encode content without a valid a supported value in accept-encoding header", async () => {
-        const response = await request.get(url + "/simple.html", {
-          headers: { "Accept-Encoding": "sdch, br" },
-          resolveWithFullResponse: true
-        });
-
-        expect(response.statusCode).toEqual(200);
-        expect(response.headers["content-encoding"]).toBeUndefined();
-      });
-
-      test("should not encode content without accept-encoding header", async () => {
-        const response = await request.get(url + "/simple.html", {
-          resolveWithFullResponse: true
-        });
-
-        expect(response.statusCode).toEqual(200);
-        expect(response.headers["content-encoding"]).toBeUndefined();
-      });
-    });
-
     if (process.platform === "win32") {
       console.log(
         "*** CANNOT RUN FILE DESCRIPTOR TESTS ON WINDOWS.  Sorry. ***"
@@ -237,7 +171,7 @@ describe("Core", () => {
             resolveWithFullResponse: true
           });
           expect(response.statusCode).toEqual(200);
-          await api.utils.sleep(100);
+          await utils.sleep(100);
           expect(await lsofChk()).toEqual("0");
         }, 30000);
 
@@ -250,7 +184,7 @@ describe("Core", () => {
             throw new Error("should return 304");
           } catch (error) {
             expect(error.statusCode).toEqual(304);
-            await api.utils.sleep(100);
+            await utils.sleep(100);
             expect(await lsofChk()).toEqual("0");
           }
         }, 30000);

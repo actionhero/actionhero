@@ -1,7 +1,7 @@
 "use strict";
 // we need to use 'use strict' here because we are relying on EVAL to load a variable
 
-import { Process } from "./../../src/index";
+import { Process, config, chatRoom, utils } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -18,7 +18,7 @@ const connectClients = async () => {
   ); // eslint-disable-line
 
   const S = api.servers.servers.websocket.server.Socket;
-  url = "http://localhost:" + api.config.servers.web.port;
+  url = "http://localhost:" + config.servers.web.port;
   const clientAsocket = new S(url);
   const clientBsocket = new S(url);
   const clientCsocket = new S(url);
@@ -27,7 +27,7 @@ const connectClients = async () => {
   clientB = new ActionheroWebsocketClient({}, clientBsocket); // eslint-disable-line
   clientC = new ActionheroWebsocketClient({}, clientCsocket); // eslint-disable-line
 
-  await api.utils.sleep(100);
+  await utils.sleep(100);
 };
 
 const awaitMethod = async (
@@ -79,11 +79,11 @@ describe("Server: Web Socket", () => {
     api = await actionhero.start();
     await api.redis.clients.client.flushdb();
     await api.redis.clients.client.flushdb();
-    await api.chatRoom.add("defaultRoom");
-    await api.chatRoom.add("otherRoom");
+    await chatRoom.add("defaultRoom");
+    await chatRoom.add("otherRoom");
 
-    url = "http://localhost:" + api.config.servers.web.port;
-    api.config.servers.websocket.clientUrl = url;
+    url = "http://localhost:" + config.servers.web.port;
+    config.servers.websocket.clientUrl = url;
     await connectClients();
   });
 
@@ -142,7 +142,7 @@ describe("Server: Web Socket", () => {
       awaitRoom(clientA, "roomAdd", "defaultRoom");
       awaitRoom(clientA, "roomAdd", "defaultRoom");
 
-      await api.utils.sleep(500);
+      await utils.sleep(500);
 
       expect(clientA.rooms).toEqual(["defaultRoom"]);
     });
@@ -166,7 +166,7 @@ describe("Server: Web Socket", () => {
         bTime = new Date();
       });
 
-      await api.utils.sleep(2001);
+      await utils.sleep(2001);
 
       //@ts-ignore
       expect(responseA.messageId).toEqual(startingMessageId + 2);
@@ -233,7 +233,7 @@ describe("Server: Web Socket", () => {
         responses.push(response);
       });
 
-      await api.utils.sleep(1000);
+      await utils.sleep(1000);
 
       expect(responses).toHaveLength(6);
       for (const i in responses) {
@@ -267,7 +267,7 @@ describe("Server: Web Socket", () => {
 
     describe("chat", () => {
       beforeAll(() => {
-        api.chatRoom.addMiddleware({
+        chatRoom.addMiddleware({
           name: "join chat middleware",
           join: async (connection, room) => {
             await api.chatRoom.broadcast(
@@ -278,7 +278,7 @@ describe("Server: Web Socket", () => {
           }
         });
 
-        api.chatRoom.addMiddleware({
+        chatRoom.addMiddleware({
           name: "leave chat middleware",
           leave: async (connection, room) => {
             api.chatRoom.broadcast(
@@ -300,7 +300,7 @@ describe("Server: Web Socket", () => {
         await awaitRoom(clientB, "roomAdd", "defaultRoom");
         await awaitRoom(clientC, "roomAdd", "defaultRoom");
         // timeout to skip welcome messages as clients join rooms
-        await api.utils.sleep(100);
+        await utils.sleep(100);
       });
 
       afterEach(async () => {
@@ -421,7 +421,7 @@ describe("Server: Web Socket", () => {
         clientC.on("say", listener);
 
         clientB.say("otherRoom", "you should not hear this");
-        await api.utils.sleep(1000);
+        await utils.sleep(1000);
         clientC.removeListener("say", listener);
         done();
       });
@@ -446,7 +446,7 @@ describe("Server: Web Socket", () => {
 
         test("each listener receive custom message", async () => {
           let messagesReceived = 0;
-          api.chatRoom.addMiddleware({
+          chatRoom.addMiddleware({
             name: "say for each",
             say: async (connection, room, messagePayload) => {
               messagePayload.message += " - To: " + connection.id;
@@ -483,19 +483,19 @@ describe("Server: Web Socket", () => {
           clientC.on("say", listenerC);
           clientB.say("defaultRoom", "Test Message");
 
-          await api.utils.sleep(1000);
+          await utils.sleep(1000);
 
           expect(messagesReceived).toEqual(3);
         });
 
         test("only one message should be received per connection", async () => {
           let firstSayCall = true;
-          api.chatRoom.addMiddleware({
+          chatRoom.addMiddleware({
             name: "first say middleware",
             say: async (connection, room, messagePayload) => {
               if (firstSayCall) {
                 firstSayCall = false;
-                await api.utils.sleep(200);
+                await utils.sleep(200);
               }
             }
           });
@@ -521,14 +521,14 @@ describe("Server: Web Socket", () => {
           clientC.on("say", listenerC);
           clientB.say("defaultRoom", "Test Message");
 
-          await api.utils.sleep(1000);
+          await utils.sleep(1000);
 
           expect(messagesReceived).toEqual(7);
         });
 
         test("each listener receive same custom message", async () => {
           let messagesReceived = 0;
-          api.chatRoom.addMiddleware({
+          chatRoom.addMiddleware({
             name: "say for each",
             onSayReceive: (connection, room, messagePayload) => {
               messagePayload.message += " - To: " + connection.id;
@@ -565,13 +565,13 @@ describe("Server: Web Socket", () => {
           clientC.on("say", listenerC);
           clientB.say("defaultRoom", "Test Message");
 
-          await api.utils.sleep(1000);
+          await utils.sleep(1000);
 
           expect(messagesReceived).toEqual(3);
         });
 
         test("blocking middleware return an error", async () => {
-          api.chatRoom.addMiddleware({
+          chatRoom.addMiddleware({
             name: "blocking chat middleware",
             join: (connection, room) => {
               throw new Error("joining rooms blocked");
@@ -583,80 +583,18 @@ describe("Server: Web Socket", () => {
           expect(joinResponse.status).toEqual("Error: joining rooms blocked");
         });
       });
-
-      describe("custom room member data", () => {
-        let currentSanitize;
-        let currentGenerate;
-
-        beforeAll(async () => {
-          // Ensure that default behavior works
-          await awaitRoom(clientA, "roomAdd", "defaultRoom");
-          const response = await awaitRoom(clientA, "roomView", "defaultRoom");
-          expect(response.data.room).toEqual("defaultRoom");
-
-          for (const key in response.data.members) {
-            expect(response.data.members[key].type).toBeUndefined();
-          }
-
-          // save off current methods
-          currentSanitize = api.chatRoom.sanitizeMemberDetails;
-          currentGenerate = api.chatRoom.generateMemberDetails;
-
-          // override methods
-          api.chatRoom.sanitizeMemberDetails = connection => {
-            return {
-              id: connection.id,
-              joinedAt: connection.joinedAt,
-              type: connection.type,
-              fromSanitize: true
-            };
-          };
-
-          api.chatRoom.generateMemberDetails = connection => {
-            return {
-              id: connection.id,
-              joinedAt: new Date().getTime(),
-              type: connection.type,
-              fromGet: true
-            };
-          };
-
-          await awaitRoom(clientA, "roomLeave", "defaultRoom");
-        });
-
-        afterAll(() => {
-          api.chatRoom.joinCallbacks = {};
-          api.chatRoom.leaveCallbacks = {};
-
-          api.chatRoom.sanitizeMemberDetails = currentSanitize;
-          api.chatRoom.generateMemberDetails = currentGenerate;
-        });
-
-        test("should view non-default member data when overwritten", async () => {
-          await awaitRoom(clientA, "roomAdd", "defaultRoom");
-          const response = await awaitRoom(clientA, "roomView", "defaultRoom");
-          expect(response.data.room).toEqual("defaultRoom");
-
-          for (const key in response.data.members) {
-            expect(response.data.members[key].type).toEqual("websocket");
-            expect(response.data.members[key].fromSanitize).toEqual(true);
-          }
-
-          await awaitRoom(clientA, "roomLeave", "defaultRoom");
-        });
-      });
     });
 
     describe("param collisions", () => {
       let originalSimultaneousActions;
 
       beforeAll(() => {
-        originalSimultaneousActions = api.config.general.simultaneousActions;
-        api.config.general.simultaneousActions = 99999999;
+        originalSimultaneousActions = config.general.simultaneousActions;
+        config.general.simultaneousActions = 99999999;
       });
 
       afterAll(() => {
-        api.config.general.simultaneousActions = originalSimultaneousActions;
+        config.general.simultaneousActions = originalSimultaneousActions;
       });
 
       test("will not have param colisions", async () => {
@@ -695,7 +633,7 @@ describe("Server: Web Socket", () => {
         clientA.connect();
         clientB.connect();
         clientC.connect();
-        await api.utils.sleep(500);
+        await utils.sleep(500);
       });
 
       test("client can disconnect", async () => {
@@ -705,7 +643,7 @@ describe("Server: Web Socket", () => {
         clientB.disconnect();
         clientC.disconnect();
 
-        await api.utils.sleep(500);
+        await utils.sleep(500);
 
         expect(api.servers.servers.websocket.connections().length).toEqual(0);
       });
@@ -725,7 +663,7 @@ describe("Server: Web Socket", () => {
           throw new Error("should not get response");
         });
 
-        await api.utils.sleep(500);
+        await utils.sleep(500);
       });
     });
   });

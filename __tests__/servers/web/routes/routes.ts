@@ -2,7 +2,7 @@ import * as request from "request-promise-native";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import { Process } from "./../../../src/index";
+import { Process, config, route } from "../../../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -19,7 +19,7 @@ const toJson = async string => {
 describe("Server: Web", () => {
   beforeAll(async () => {
     api = await actionhero.start();
-    url = "http://localhost:" + api.config.servers.web.port;
+    url = "http://localhost:" + config.servers.web.port;
   });
 
   afterAll(async () => {
@@ -110,142 +110,8 @@ describe("Server: Web", () => {
       expect(api.params.postVariables).not.toContain("bogusID");
     });
 
-    describe("simple routing", () => {
-      describe("deep routes", () => {
-        beforeAll(() => {
-          api.config.servers.web.urlPathForActions = "namespace/actions";
-          api.config.servers.web.urlPathForFiles = "namespace/files";
-        });
-
-        afterAll(() => {
-          api.config.servers.web.urlPathForActions = "api";
-          api.config.servers.web.urlPathForFiles = "public";
-        });
-
-        test("old action routes stop working", async () => {
-          try {
-            await request.get(url + "/api/randomNumber");
-            throw new Error("should not get here");
-          } catch (error) {
-            expect(error.statusCode).toEqual(404);
-          }
-        });
-
-        test("can ask for nested URL actions", async () => {
-          const response = await request.get(
-            url + "/namespace/actions/randomNumber",
-            { resolveWithFullResponse: true }
-          );
-          expect(response.statusCode).toEqual(200);
-        });
-
-        test("old file routes stop working", async () => {
-          try {
-            await request.get(url + "/public/simple.html");
-            throw new Error("should not get here");
-          } catch (error) {
-            expect(error.statusCode).toEqual(404);
-          }
-        });
-
-        test("can ask for nested URL files", async () => {
-          const response = await request.get(
-            url + "/namespace/files/simple.html",
-            { resolveWithFullResponse: true }
-          );
-          expect(response.statusCode).toEqual(200);
-          expect(response.body).toEqual(
-            "<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />"
-          );
-        });
-
-        test("can ask for nested URL files with depth", async () => {
-          const response = await request.get(
-            url + "/namespace/files/css/cosmo.css",
-            { resolveWithFullResponse: true }
-          );
-          expect(response.statusCode).toEqual(200);
-        });
-
-        test("root route files still work", async () => {
-          const response = await request.get(url + "/simple.html", {
-            resolveWithFullResponse: true
-          });
-          expect(response.statusCode).toEqual(200);
-          expect(response.body).toEqual(
-            "<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />"
-          );
-        });
-      });
-
-      describe("very deep routes", () => {
-        beforeAll(() => {
-          api.config.servers.web.urlPathForActions = "/craz/y/action/path";
-          api.config.servers.web.urlPathForFiles = "/a/b/c";
-        });
-
-        afterAll(() => {
-          api.config.servers.web.urlPathForActions = "api";
-          api.config.servers.web.urlPathForFiles = "public";
-        });
-
-        test("old action routes stop working", async () => {
-          try {
-            await request.get(url + "/api/randomNumber");
-            throw new Error("should not get here");
-          } catch (error) {
-            expect(error.statusCode).toEqual(404);
-          }
-        });
-
-        test("can ask for nested URL actions", async () => {
-          const response = await request.get(
-            url + "/craz/y/action/path/randomNumber",
-            { resolveWithFullResponse: true }
-          );
-          expect(response.statusCode).toEqual(200);
-        });
-
-        test("old file routes stop working", async () => {
-          try {
-            await request.get(url + "/public/simple.html");
-            throw new Error("should not get here");
-          } catch (error) {
-            expect(error.statusCode).toEqual(404);
-          }
-        });
-
-        test("can ask for nested URL files", async () => {
-          const response = await request.get(url + "/a/b/c/simple.html", {
-            resolveWithFullResponse: true
-          });
-          expect(response.statusCode).toEqual(200);
-          expect(response.body).toEqual(
-            "<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />"
-          );
-        });
-
-        test("can ask for nested URL files with depth", async () => {
-          const response = await request.get(url + "/a/b/c/css/cosmo.css", {
-            resolveWithFullResponse: true
-          });
-          expect(response.statusCode).toEqual(200);
-        });
-
-        test("root route files still work", async () => {
-          const response = await request.get(url + "/simple.html", {
-            resolveWithFullResponse: true
-          });
-          expect(response.statusCode).toEqual(200);
-          expect(response.body).toEqual(
-            "<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />"
-          );
-        });
-      });
-    });
-
     test("'all' routes are duplicated properly", () => {
-      api.routes.registerRoute("all", "/other-login", "login");
+      route.registerRoute("all", "/other-login", "login", null);
       const loaded = {};
       const registered = {};
       api.routes.verbs.forEach(verb => {
@@ -504,7 +370,7 @@ describe("Server: Web", () => {
     describe("spaces in URL with public files", () => {
       const source = path.join(
         __dirname,
-        "/../../../public/logo/actionhero.png"
+        "/../../../../public/logo/actionhero.png"
       );
 
       beforeAll(async () => {
@@ -560,7 +426,7 @@ describe("Server: Web", () => {
     });
 
     test("it remembers manually loaded routes", async () => {
-      api.routes.registerRoute("get", "/a-custom-route", "randomNumber");
+      route.registerRoute("get", "/a-custom-route", "randomNumber", null);
       const response = await request.get(url + "/api/a-custom-route", {
         resolveWithFullResponse: true
       });

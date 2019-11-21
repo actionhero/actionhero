@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as ChildProcess from "child_process";
-import { Process } from "./../../src/index";
+import { Process, specHelper } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -41,7 +41,7 @@ describe("Core: Plugins", () => {
     });
 
     test("can load an action from a plugin", async () => {
-      const response = await api.specHelper.runAction("pluginAction");
+      const response = await specHelper.runAction("pluginAction");
       expect(response.error).toBeUndefined();
       expect(response.cool).toEqual(true);
     });
@@ -58,7 +58,7 @@ describe("Core: Plugins", () => {
     // test('can load a server from a plugin')
 
     test("can serve static files from a plugin", async () => {
-      const file = await api.specHelper.getStaticFile("plugin.html");
+      const file = await specHelper.getStaticFile("plugin.html");
       expect(file.content).toEqual("<h1>PLUGIN!<h1>\n");
       expect(file.mime).toEqual("text/html");
     });
@@ -117,7 +117,7 @@ describe("Core: Plugins", () => {
     });
 
     test("will not load an action from an un-loaded plugin", async () => {
-      const response = await api.specHelper.runAction("pluginAction");
+      const response = await specHelper.runAction("pluginAction");
       expect(response.error).toMatch(/unknown action or invalid apiVersion/);
     });
 
@@ -133,7 +133,7 @@ describe("Core: Plugins", () => {
     // test('will not load a server from an un-loaded plugin')
 
     test("will not serve static files from an un-loaded plugin", async () => {
-      const file = await api.specHelper.getStaticFile("plugin.html");
+      const file = await specHelper.getStaticFile("plugin.html");
       expect(file.error).toMatch(/file is not found/);
     });
 
@@ -178,7 +178,7 @@ describe("Core: Plugins", () => {
     });
 
     test("will not load an action from an un-loaded plugin", async () => {
-      const response = await api.specHelper.runAction("pluginAction");
+      const response = await specHelper.runAction("pluginAction");
       expect(response.error).toMatch(/unknown action or invalid apiVersion/);
     });
 
@@ -194,7 +194,7 @@ describe("Core: Plugins", () => {
     // test('will not load a server from an un-loaded plugin')
 
     test("will not serve static files from an un-loaded plugin", async () => {
-      const file = await api.specHelper.getStaticFile("plugin.html");
+      const file = await specHelper.getStaticFile("plugin.html");
       expect(file.error).toMatch(/file is not found/);
     });
 

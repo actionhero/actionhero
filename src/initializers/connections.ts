@@ -1,5 +1,4 @@
-import { api, Initializer } from "../index";
-import { Connection } from "./../classes/connection";
+import { api, redis, Initializer, Connection } from "../index";
 
 /**
  * ```js
@@ -26,6 +25,18 @@ export interface ConnectionMiddleware {
   destroy?: Function;
 }
 
+export interface ConnectionsApi {
+  connections: {
+    [key: string]: Connection;
+  };
+  middleware: {
+    [key: string]: ConnectionMiddleware;
+  };
+  globalMiddleware: Array<string>;
+  allowedVerbs: Array<string>;
+  cleanConnection: Function;
+}
+
 export class Connections extends Initializer {
   constructor() {
     super();
@@ -33,8 +44,8 @@ export class Connections extends Initializer {
     this.loadPriority = 400;
   }
 
-  async initialize() {
-    api.connections = {
+  async initialize(config) {
+    api.connections = <ConnectionsApi>{
       connections: {},
       middleware: {},
       globalMiddleware: [],
@@ -63,7 +74,7 @@ export class Connections extends Initializer {
         method: string,
         args: Array<any> = []
       ) => {
-        return api.redis.doCluster(
+        return redis.doCluster(
           "api.connections.applyResponder",
           [connectionId, method, args],
           connectionId,
@@ -96,7 +107,7 @@ export class Connections extends Initializer {
           throw new Error("middleware.name is required");
         }
         if (!data.priority) {
-          data.priority = api.config.general.defaultMiddlewarePriority;
+          data.priority = config.general.defaultMiddlewarePriority;
         }
         data.priority = Number(data.priority);
         api.connections.middleware[data.name] = data;

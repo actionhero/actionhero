@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { api, CLI } from "./../../../index";
+import { CLI, utils } from "./../../../index";
 
 const PackageJSON = require(path.join(
   __dirname,
@@ -42,9 +42,8 @@ export class GeneratePlugin extends CLI {
       "public"
     ].forEach(type => {
       try {
-        const message = api.utils.createDirSafely(
-          path.join(process.cwd(), type),
-          template
+        const message = utils.fileUtils.createDirSafely(
+          path.join(process.cwd(), type)
         );
         console.info(message);
       } catch (error) {
@@ -52,7 +51,7 @@ export class GeneratePlugin extends CLI {
       }
     });
 
-    const message = api.utils.createFileSafely(
+    const message = utils.fileUtils.createFileSafely(
       path.join(process.cwd(), "package.json"),
       template
     );
