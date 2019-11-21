@@ -29,7 +29,7 @@ npm uninstall standard
 };
 ```
 
-Remove the block about `standard` from your `package.json`. We are switching to [prettier](https://prettier.io/) because it has better typescript support.
+Remove the block about `standard` from your `package.json`. We are switching to [prettier](_https://prettier.io) because it has better typescript support.
 
 Remember - you will be using `npm run dev` now when developing locally.
 
@@ -67,19 +67,19 @@ Remember - you will be using `npm run dev` now when developing locally.
 
 ```json
 paths: {
-	action: [path.join(__dirname, "..", "actions")],
-	task: [path.join(__dirname, "..", "tasks")],
-	server: [path.join(__dirname, "..", "servers")],
-	cli: [path.join(__dirname, "..", "bin")],
-	initializer: [path.join(__dirname, "..", "initializers")],
-	public: [path.join(process.cwd(), "public")],
-	pid: [path.join(process.cwd(), "pids")],
-	log: [path.join(process.cwd(), "log")],
-	plugin: [path.join(process.cwd(), "node_modules")],
-	locale: [path.join(process.cwd(), "locales")],
-	test: [path.join(process.cwd(), "__tests__")],
-	src: path.join(process.cwd(), "src"),
-	dist: path.join(process.cwd(), "dist")
+  action: [path.join(__dirname, "..", "actions")],
+  task: [path.join(__dirname, "..", "tasks")],
+  server: [path.join(__dirname, "..", "servers")],
+  cli: [path.join(__dirname, "..", "bin")],
+  initializer: [path.join(__dirname, "..", "initializers")],
+  public: [path.join(process.cwd(), "public")],
+  pid: [path.join(process.cwd(), "pids")],
+  log: [path.join(process.cwd(), "log")],
+  plugin: [path.join(process.cwd(), "node_modules")],
+  locale: [path.join(process.cwd(), "locales")],
+  test: [path.join(process.cwd(), "__tests__")],
+  src: path.join(process.cwd(), "src"),
+  dist: path.join(process.cwd(), "dist")
 }
 ```
 
@@ -109,8 +109,8 @@ const authenticatedTeamMemberMiddleware = {
         where: { guid: sessionData.guid },
         include: Team
       });
-      data.session.data = sessionData; // <--- HERE
-      data.session.teamMember = teamMember; // <--- HERE
+      data.session.data = sessionData; /// <--- HERE/
+      data.session.teamMember = teamMember; /// <--- HERE/
     }
   }
 };
@@ -120,7 +120,9 @@ const authenticatedTeamMemberMiddleware = {
 
 A number of things have been moved off of the API object to simlify thier use by creating import/export modules you can require directly. In this way, you can get type hinting for various parts of actionhro! This is a logical seperation between `initailziers` - code that excecutes when your server boots up and loads or connects vs `modules` which provide an API for you to use in your code.
 
-For example, the `task` system has been split into 2 parts - both a `module` and `initializer`. The initializer continues to load your tasks into `api.tasks.tasks`, but doesn't expose any methods for you to use. Now, when you wan to call `task.enqueue()` you load it from the module via `import {task} from 'actionhero'`
+For example, the `task` system has been split into 2 parts - both a `module` and `initializer`. The initializer continues to load your tasks into `api.tasks.tasks`, but doesn’t expose any methods for you to use. Now, when you wan to call `task.enqueue()` you load it from the module via `import {task} from 'actionhero'`
+
+The `initialize`, `start`, and `stop` methods of your initializers will now be passed `config`. This is helpful in the off chance you are modifying `config` and cannot rely on the static export of that information (this is rare).
 
 ### Removed from the API object and are now directly exported by Actionhero as modules:
 
@@ -134,7 +136,7 @@ ie: `import { log, config } from 'actionhero'`
 - task
 - i18n
 - specHelper
-- id (the server's id)
+- id (the server’s id)
 - env (development, staging, production)
 - localize (method that accepts a string and a connection)
 - watchFileAndAct / unWatchAllFiles (methods)
@@ -145,9 +147,13 @@ ie: `import { log, config } from 'actionhero'`
 
 ### The API object
 
-what remains on the API object are truly things about your API - actions, tasks, servers, initializers. And now these elements are very typesafe. **You can no longer add and remove things randomly to the API object**. This means that in your project, you should create imports/and exorts directly and share them with your actions and tasks.
+what remains on the API object are truly things about your API - actions, tasks, servers, initializers. And now these elements are very typesafe. **_You can no longer add and remove things randomly to the API object_**. This means that in your project, you should create imports/and exorts directly and share them with your actions and tasks.
 
 ## Config
 
 - `config.general.id`: can no longer be set
 - `config.i18n.determineConnectionLocale`: this method should be set on the `i18n` object exported by actionhero.
+
+## Chat
+
+- `chatRoom.sanitizeMemberDetails()` is no longer overridable/customizable.
