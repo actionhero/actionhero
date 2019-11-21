@@ -147,7 +147,7 @@ export namespace chatRoom {
   }
 
   /**
-   * An overwritable method which configures what properties of connections in a room to return via `api.chatRoom.roomStatus`
+   * Configures what properties of connections in a room to return via `api.chatRoom.roomStatus`
    */
   export async function sanitizeMemberDetails(memberData) {
     return {
