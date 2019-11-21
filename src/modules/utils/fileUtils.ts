@@ -87,7 +87,7 @@ export function createLinkfileSafely(filePath: string, type: string): string {
  * Remove an ActionHero LinkFile, only if it exists.
  * Throws an error if the file does not exist, or encounters a filesystem problem.
  */
-export function emoveLinkfileSafely(filePath: string): string {
+export function removeLinkfileSafely(filePath: string): string {
   if (!fileExists(filePath)) {
     const error = new Error(`link file '${filePath}' doesn't exist`);
     // @ts-ignore

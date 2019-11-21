@@ -1,12 +1,12 @@
 import * as winston from "winston";
 import { config } from "./config";
-import { createDirSafely } from "../utils/fileUtils";
+import { utils } from "./utils";
 
 let loggers = [];
 
 config.general.paths.log.forEach((p: string) => {
   try {
-    createDirSafely(p);
+    utils.fileUtils.createDirSafely(p);
   } catch (error) {
     if (error.code !== "EEXIST") {
       throw error;

@@ -10,6 +10,7 @@ export { CLI } from "./classes/cli";
 export { ActionProcessor } from "./classes/actionProcessor";
 
 // export modules (lower case)
+export { utils } from "./modules/utils";
 export { config } from "./modules/config";
 export { log } from "./modules/log";
 export { action } from "./modules/action";

@@ -2,8 +2,8 @@ import * as fs from "fs";
 import * as path from "path";
 import * as glob from "glob";
 import { argv } from "optimist";
-import { hashMerge } from "./../utils/hashMerge";
-import { ensureNoTsHeaderFiles } from "./../utils/ensureNoTsHeaderFiles";
+import { utils } from "./utils";
+import { ensureNoTsHeaderFiles } from "./utils/ensureNoTsHeaderFiles";
 
 import { env } from "./../classes/process/env";
 import { id } from "./../classes/process/id";
@@ -28,7 +28,7 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
 
   const configPaths = [];
 
-  hashMerge(config, _startingParams);
+  utils.hashMerge(config, _startingParams);
   // We support multiple configuration paths as follows:
   //
   // 1. Use the project 'config' folder, if it exists.
@@ -93,11 +93,11 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
       let localRoutes: { [key: string]: any } = { routes: {} };
 
       if (localConfig.DEFAULT) {
-        localRoutes = hashMerge(localRoutes, localConfig.DEFAULT, config);
+        localRoutes = utils.hashMerge(localRoutes, localConfig.DEFAULT, config);
       }
 
       if (localConfig[env]) {
-        localRoutes = hashMerge(localRoutes, localConfig[env], config);
+        localRoutes = utils.hashMerge(localRoutes, localConfig[env], config);
       }
 
       Object.keys(localRoutes.routes).forEach(v => {
@@ -113,11 +113,11 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
       });
     } else {
       if (localConfig.DEFAULT) {
-        config = hashMerge(config, localConfig.DEFAULT, config);
+        config = utils.hashMerge(config, localConfig.DEFAULT, config);
       }
 
       if (localConfig[env]) {
-        config = hashMerge(config, localConfig[env], config);
+        config = utils.hashMerge(config, localConfig[env], config);
       }
     }
   };
@@ -201,15 +201,15 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
 
   // apply any configChanges
   if (_startingParams && _startingParams.configChanges) {
-    config = hashMerge(config, _startingParams.configChanges);
+    config = utils.hashMerge(config, _startingParams.configChanges);
   }
 
   if (process.env.configChanges) {
-    config = hashMerge(config, JSON.parse(process.env.configChanges));
+    config = utils.hashMerge(config, JSON.parse(process.env.configChanges));
   }
 
   if (argv.configChanges) {
-    config = hashMerge(config, JSON.parse(argv.configChanges));
+    config = utils.hashMerge(config, JSON.parse(argv.configChanges));
   }
 
   return config;

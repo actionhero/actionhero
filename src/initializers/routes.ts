@@ -1,6 +1,5 @@
 import * as path from "path";
-import { api, log, route, Initializer } from "../index";
-import { arrayUniqueify } from "./../utils/arrayUniqueify";
+import { api, log, utils, route, Initializer } from "../index";
 
 export interface RoutesApi {
   routes: { [key: string]: any };
@@ -193,7 +192,7 @@ export class Routes extends Initializer {
         }
       }
 
-      api.params.postVariables = arrayUniqueify(api.params.postVariables);
+      api.params.postVariables = utils.arrayUniqueify(api.params.postVariables);
 
       if (config.servers.web && config.servers.web.simpleRouting === true) {
         const simplePaths = [];

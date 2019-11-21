@@ -1,8 +1,7 @@
 import * as glob from "glob";
 import * as path from "path";
 import { Plugin } from "node-resque";
-import { api, log, task, Initializer, watchFileAndAct } from "../index";
-import { ensureNoTsHeaderFiles } from "./../utils/ensureNoTsHeaderFiles";
+import { api, log, utils, task, Initializer, watchFileAndAct } from "../index";
 
 const taskModule = task;
 
@@ -147,21 +146,25 @@ export class Tasks extends Initializer {
 
     api.tasks.loadTasks = reload => {
       config.general.paths.task.forEach(p => {
-        ensureNoTsHeaderFiles(
-          glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"))
-        ).forEach(f => {
-          api.tasks.loadFile(f, reload);
-        });
+        utils
+          .ensureNoTsHeaderFiles(
+            glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"))
+          )
+          .forEach(f => {
+            api.tasks.loadFile(f, reload);
+          });
       });
 
       for (const pluginName in config.plugins) {
         if (config.plugins[pluginName].tasks !== false) {
           const pluginPath = config.plugins[pluginName].path;
-          ensureNoTsHeaderFiles(
-            glob.sync(path.join(pluginPath, "tasks", "**", "**/*(*.js|*.ts)"))
-          ).forEach(f => {
-            api.tasks.loadFile(f, reload);
-          });
+          utils
+            .ensureNoTsHeaderFiles(
+              glob.sync(path.join(pluginPath, "tasks", "**", "**/*(*.js|*.ts)"))
+            )
+            .forEach(f => {
+              api.tasks.loadFile(f, reload);
+            });
         }
       }
     };

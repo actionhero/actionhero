@@ -10,12 +10,7 @@ import * as BrowserFingerprint from "browser_fingerprint";
 import * as Mime from "mime";
 import * as uuid from "uuid";
 import * as etag from "etag";
-import { api, config, Server } from "../index";
-import { Connection } from "./../classes/connection";
-import { parseCookies } from "./../utils/parseCookies";
-import { parseHeadersForClientAddress } from "./../utils/parseHeadersForClientAddress";
-import { arrayStartingMatch } from "./../utils/arrayStartingMatch";
-import { collapseObjectToArray } from "./../utils/collapseObjectToArray";
+import { api, config, utils, Server, Connection } from "../index";
 
 export class WebServer extends Server {
   server: any;
@@ -384,7 +379,7 @@ export class WebServer extends Server {
   handleRequest(req, res) {
     const { fingerprint, headersHash } = this.fingerprinter.fingerprint(req);
     const responseHeaders = [];
-    const cookies = parseCookies(req);
+    const cookies = utils.parseCookies(req);
     const responseHttpCode = 200;
     const method = req.method.toUpperCase();
 
@@ -425,7 +420,7 @@ export class WebServer extends Server {
       }
     }
 
-    const { ip, port } = parseHeadersForClientAddress(req.headers);
+    const { ip, port } = utils.parseHeadersForClientAddress(req.headers);
     const messageId = uuid.v4();
 
     this.buildConnection({
@@ -628,14 +623,17 @@ export class WebServer extends Server {
       }
     }
 
-    if (pathParts[0] && arrayStartingMatch(urlPathForActionsParts, pathParts)) {
+    if (
+      pathParts[0] &&
+      utils.arrayStartingMatch(urlPathForActionsParts, pathParts)
+    ) {
       requestMode = "api";
       for (i = 0; i < urlPathForActionsParts.length; i++) {
         pathParts.shift();
       }
     } else if (
       pathParts[0] &&
-      arrayStartingMatch(urlPathForFilesParts, pathParts)
+      utils.arrayStartingMatch(urlPathForFilesParts, pathParts)
     ) {
       requestMode = "file";
       for (i = 0; i < urlPathForFilesParts.length; i++) {
@@ -757,7 +755,7 @@ export class WebServer extends Server {
 
   fillParamsFromWebRequest(connection, varsHash) {
     // helper for JSON posts
-    const collapsedVarsHash = collapseObjectToArray(varsHash);
+    const collapsedVarsHash = utils.collapseObjectToArray(varsHash);
     if (collapsedVarsHash !== false) {
       varsHash = { payload: collapsedVarsHash }; // post was an array, lets call it "payload"
     }

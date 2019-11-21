@@ -141,10 +141,6 @@ ie: `import { log, config } from 'actionhero'`
 - localize (method that accepts a string and a connection)
 - watchFileAndAct / unWatchAllFiles (methods)
 
-### Removed from the API object with no replacement:
-
-- utils (these are private to actionhero)
-
 ### The API object
 
 what remains on the API object are truly things about your API - actions, tasks, servers, initializers. And now these elements are very typesafe. **_You can no longer add and remove things randomly to the API object_**. This means that in your project, you should create imports/and exorts directly and share them with your actions and tasks.

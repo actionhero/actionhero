@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as glob from "glob";
 import { config, CLI } from "./../../index";
-import { arrayUniqueify } from "./../../utils/arrayUniqueify";
+import { utils } from "../../modules/utils";
 
 export class Help extends CLI {
   constructor() {
@@ -41,7 +41,7 @@ export class Help extends CLI {
       }
     });
 
-    files = arrayUniqueify(files);
+    files = utils.arrayUniqueify(files);
 
     files.forEach(f => {
       try {
