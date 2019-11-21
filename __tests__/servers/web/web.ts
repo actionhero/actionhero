@@ -2,8 +2,8 @@ import * as request from "request-promise-native";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import { PassThrough } from "stream";
-import { Process } from "./../../../src/index";
+import { Process, config, route } from "./../../../src/index";
+import { sleep } from "./../../../src/utils/sleep";
 
 const actionhero = new Process();
 let api;
@@ -20,7 +20,7 @@ const toJson = async string => {
 describe("Server: Web", () => {
   beforeAll(async () => {
     api = await actionhero.start();
-    url = "http://localhost:" + api.config.servers.web.port;
+    url = "http://localhost:" + config.servers.web.port;
   });
 
   afterAll(async () => {
@@ -75,7 +75,7 @@ describe("Server: Web", () => {
 
   describe("will properly destroy connections", () => {
     beforeAll(() => {
-      api.config.servers.web.returnErrorCodes = true;
+      config.servers.web.returnErrorCodes = true;
       api.actions.versions.customRender = [1];
       api.actions.actions.customRender = {
         1: {
@@ -105,17 +105,17 @@ describe("Server: Web", () => {
       expect(Object.keys(api.connections.connections)).toHaveLength(0);
       request.get(url + "/api/sleepTest").then(toJson); // don't await
 
-      await api.utils.sleep(100);
+      await sleep(100);
       expect(Object.keys(api.connections.connections)).toHaveLength(1);
 
-      await api.utils.sleep(1000);
+      await sleep(1000);
       expect(Object.keys(api.connections.connections)).toHaveLength(0);
     });
 
     test("works for files", async () => {
       expect(Object.keys(api.connections.connections)).toHaveLength(0);
       await request.get(url + "/simple.html");
-      await api.utils.sleep(100);
+      await sleep(100);
       expect(Object.keys(api.connections.connections)).toHaveLength(0);
     });
 
@@ -123,7 +123,7 @@ describe("Server: Web", () => {
       expect(Object.keys(api.connections.connections)).toHaveLength(0);
       const body = await request.get(url + "/api/customRender").then(toJson);
       expect(body).toBeTruthy();
-      await api.utils.sleep(100);
+      await sleep(100);
       expect(Object.keys(api.connections.connections)).toHaveLength(0);
     });
   });
@@ -215,12 +215,12 @@ describe("Server: Web", () => {
   describe("if disableParamScrubbing is set", () => {
     let orig;
     beforeAll(() => {
-      orig = api.config.general.disableParamScrubbing;
-      api.config.general.disableParamScrubbing = true;
+      orig = config.general.disableParamScrubbing;
+      config.general.disableParamScrubbing = true;
     });
 
     afterAll(() => {
-      api.config.general.disableParamScrubbing = orig;
+      config.general.disableParamScrubbing = orig;
     });
 
     test("params are not ignored", async () => {
@@ -234,75 +234,6 @@ describe("Server: Web", () => {
           "something"
         );
       }
-    });
-  });
-
-  describe("JSONp", () => {
-    let orig;
-    beforeAll(() => {
-      orig = api.config.servers.web.metadataOptions.requesterInformation;
-      api.config.servers.web.metadataOptions.requesterInformation = false;
-    });
-
-    afterAll(() => {
-      api.config.servers.web.metadataOptions.requesterInformation = orig;
-    });
-
-    test("can ask for JSONp responses", async () => {
-      const response = await request.get(
-        url + "/api/randomNumber?callback=myCallback"
-      );
-      expect(response.indexOf("myCallback({")).toEqual(0);
-      expect(response.indexOf("Your random number is")).toBeGreaterThan(0);
-    });
-
-    test("JSONp responses cannot be used for XSS", async () => {
-      const response = await request.get(
-        url + "/api/randomNumber?callback=alert(%27hi%27);foo"
-      );
-      expect(response).not.toMatch(/alert\(/);
-      expect(response.indexOf("alert&#39;hi&#39;;foo(")).toEqual(0);
-    });
-  });
-
-  describe("request redirecton (allowedRequestHosts)", () => {
-    let orig;
-    beforeAll(() => {
-      orig = api.config.servers.web.allowedRequestHosts;
-      api.config.servers.web.allowedRequestHosts = ["https://www.site.com"];
-    });
-
-    afterAll(() => {
-      api.config.servers.web.allowedRequestHosts = orig;
-    });
-
-    test("will redirect clients if they do not request the proper host", async () => {
-      try {
-        await request.get({
-          followRedirect: false,
-          url: url + "/api/randomNumber",
-          headers: { Host: "lalala.site.com" }
-        });
-        throw new Error("should not get here");
-      } catch (error) {
-        expect(error.statusCode).toEqual(302);
-        expect(error.response.body).toMatch(
-          /You are being redirected to https:\/\/www.site.com\/api\/randomNumber/
-        );
-      }
-    });
-
-    test("will allow API access from the proper hosts", async () => {
-      const response = await request.get({
-        followRedirect: false,
-        url: url + "/api/randomNumber",
-        headers: {
-          Host: "www.site.com",
-          "x-forwarded-proto": "https"
-        }
-      });
-
-      expect(response).toMatch(/randomNumber/);
     });
   });
 
@@ -426,7 +357,7 @@ describe("Server: Web", () => {
           name: "paramTestAction",
           description: "I return connection.rawConnection.params",
           version: 1,
-          run: data => {
+          run: async data => {
             data.response = data.connection.rawConnection.params;
             if (data.connection.rawConnection.params.rawBody) {
               data.response.rawBody = data.connection.rawConnection.params.rawBody.toString();
@@ -461,191 +392,26 @@ describe("Server: Web", () => {
       expect(body.body.key).toEqual("value");
     });
 
-    describe("connection.rawConnection.rawBody", () => {
-      let orig;
-      beforeAll(() => {
-        orig = api.config.servers.web.saveRawBody;
-      });
-      afterAll(() => {
-        api.config.servers.web.saveRawBody = orig;
-      });
-
-      test(".rawBody will contain the raw POST body without parsing", async () => {
-        api.config.servers.web.saveRawBody = true;
-        const requestBody = '{"key":      "value"}';
-        const body = await request
-          .post(url + "/api/paramTestAction", {
-            body: requestBody,
-            headers: { "Content-type": "application/json" }
-          })
-          .then(toJson);
-        expect(body.body.key).toEqual("value");
-        expect(body.rawBody).toEqual('{"key":      "value"}');
-      });
-
-      test(".rawBody can be disabled", async () => {
-        api.config.servers.web.saveRawBody = false;
-        const requestBody = '{"key":      "value"}';
-        const body = await request
-          .post(url + "/api/paramTestAction", {
-            body: requestBody,
-            headers: { "Content-type": "application/json" }
-          })
-          .then(toJson);
-        expect(body.body.key).toEqual("value");
-        expect(body.rawBody).toEqual("");
-      });
-
-      describe("invalid/improper mime types", () => {
-        beforeAll(() => {
-          api.config.servers.web.saveRawBody = true;
-        });
-
-        test(".body will be empty if the content-type cannot be handled by formidable and not crash", async () => {
-          const requestBody = "<texty>this is like xml</texty>";
-          const body = await request
-            .post(url + "/api/paramTestAction", {
-              body: requestBody,
-              headers: { "Content-type": "text/xml" }
-            })
-            .then(toJson);
-          expect(body.body).toEqual({});
-          expect(body.rawBody).toEqual(requestBody);
-        });
-
-        test("will set the body properly if mime type is wrong (bad header)", async () => {
-          const requestBody = "<texty>this is like xml</texty>";
-          const body = await request
-            .post(url + "/api/paramTestAction", {
-              body: requestBody,
-              headers: { "Content-type": "application/json" }
-            })
-            .then(toJson);
-          expect(body.body).toEqual({});
-          expect(body.rawBody).toEqual(requestBody);
-        });
-
-        test("will set the body properly if mime type is wrong (text)", async () => {
-          const requestBody = "I am normal \r\n text with \r\n line breaks";
-          const body = await request
-            .post(url + "/api/paramTestAction", {
-              body: requestBody,
-              headers: { "Content-type": "text/plain" }
-            })
-            .then(toJson);
-          expect(body.body).toEqual({});
-          expect(body.rawBody).toEqual(requestBody);
-        });
-
-        test("rawBody will exist if the content-type cannot be handled by formidable", async () => {
-          const requestPart1 = "<texty><innerNode>more than";
-          const requestPart2 = " two words</innerNode></texty>";
-
-          const bufferStream = new PassThrough();
-          const req = request.post(url + "/api/paramTestAction", {
-            headers: { "Content-type": "text/xml" }
-          });
-          bufferStream.write(Buffer.from(requestPart1)); // write the first part
-          bufferStream.pipe(req);
-
-          setTimeout(() => {
-            bufferStream.end(Buffer.from(requestPart2)); // end signals no more is coming
-          }, 50);
-
-          await new Promise((resolve, reject) => {
-            bufferStream.on("finish", resolve);
-          });
-
-          const respString = await req;
-          const resp = JSON.parse(respString);
-          expect(resp.error).toBeUndefined();
-          expect(resp.body).toEqual({});
-          expect(resp.rawBody).toEqual(requestPart1 + requestPart2);
-        });
-
-        test("rawBody and form will process JSON with odd stream testing", async () => {
-          const requestJson = { a: 1, b: "two" };
-          const requestString = JSON.stringify(requestJson);
-          const middleIdx = Math.floor(requestString.length / 2);
-          const requestPart1 = requestString.substring(0, middleIdx);
-          const requestPart2 = requestString.substring(middleIdx);
-
-          const bufferStream = new PassThrough();
-          const req = request.post(url + "/api/paramTestAction", {
-            headers: { "Content-type": "application/json" }
-          });
-          bufferStream.write(Buffer.from(requestPart1)); // write the first part
-          bufferStream.pipe(req);
-
-          setTimeout(() => {
-            bufferStream.end(Buffer.from(requestPart2)); // end signals no more is coming
-          }, 50);
-
-          await new Promise((resolve, reject) => {
-            bufferStream.on("finish", resolve);
-          });
-
-          const respString = await req;
-          const resp = JSON.parse(respString);
-          expect(resp.error).toBeUndefined();
-          expect(resp.body).toEqual(requestJson);
-          expect(resp.rawBody).toEqual(requestString);
-        });
-
-        test("rawBody processing will not hang on writable error", async () => {
-          const requestPart1 = "<texty><innerNode>more than";
-
-          const bufferStream = new PassThrough();
-          const req = request.post(url + "/api/paramTestAction", {
-            headers: { "Content-type": "text/xml" }
-          });
-          bufferStream.write(Buffer.from(requestPart1)); // write the first part
-          bufferStream.pipe(req);
-
-          setTimeout(() => {
-            // bufferStream.destroy(new Error('This stream is broken.')) // sends an error and closes the stream
-            bufferStream.end();
-          }, 50);
-
-          await new Promise((resolve, reject) => {
-            bufferStream.on("finish", resolve);
-          });
-
-          const respString = await req;
-          const resp = JSON.parse(respString);
-          expect(resp.error).toBeUndefined();
-          expect(resp.body).toEqual({});
-          expect(resp.rawBody).toEqual(requestPart1); // stream ends with only one part processed
-        });
-      });
+    test(".rawBody can be disabled", async () => {
+      config.servers.web.saveRawBody = false;
+      const requestBody = '{"key":      "value"}';
+      const body = await request
+        .post(url + "/api/paramTestAction", {
+          body: requestBody,
+          headers: { "Content-type": "application/json" }
+        })
+        .then(toJson);
+      expect(body.body.key).toEqual("value");
+      expect(body.rawBody).toEqual("");
     });
   });
 
-  describe("errorCodes", () => {
-    let orig;
-    beforeAll(() => {
-      orig = api.config.servers.web.returnErrorCodes;
-    });
-    afterAll(() => {
-      api.config.servers.web.returnErrorCodes = orig;
-    });
-
-    test("returnErrorCodes false should still have a status of 200", async () => {
-      api.config.servers.web.returnErrorCodes = false;
-      const response = await request.del(url + "/api/", {
-        resolveWithFullResponse: true
-      });
-      expect(response.statusCode).toEqual(200);
-    });
-
-    test("returnErrorCodes can be opted to change http header codes", async () => {
-      api.config.servers.web.returnErrorCodes = true;
-      try {
-        await request.del(url + "/api/");
-      } catch (error) {
-        expect(error.statusCode).toEqual(404);
-      }
-    });
+  test("returnErrorCodes can be opted to change http header codes", async () => {
+    try {
+      await request.del(url + "/api/");
+    } catch (error) {
+      expect(error.statusCode).toEqual(404);
+    }
   });
 
   describe("http header", () => {
@@ -789,16 +555,11 @@ describe("Server: Web", () => {
   });
 
   describe("http returnErrorCodes true", () => {
-    let orig;
-
     class ErrorWithCode extends Error {
       code: number;
     }
 
     beforeAll(() => {
-      orig = api.config.servers.web.returnErrorCodes;
-      api.config.servers.web.returnErrorCodes = true;
-
       api.actions.versions.statusTestAction = [1];
       api.actions.actions.statusTestAction = {
         1: {
@@ -856,7 +617,6 @@ describe("Server: Web", () => {
     });
 
     afterAll(() => {
-      api.config.servers.web.returnErrorCodes = orig;
       delete api.actions.versions.statusTestAction;
       delete api.actions.actions.statusTestAction;
     });
@@ -1083,7 +843,8 @@ describe("Server: Web", () => {
           testFolderPublicPath + "/testFile.html",
           "ActionHero Route Test File"
         );
-        api.routes.registerRoute(
+
+        route.registerRoute(
           "get",
           "/my/public/route",
           null,

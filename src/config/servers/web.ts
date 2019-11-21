@@ -95,7 +95,7 @@ export const DEFAULT = {
 
 export const production = {
   servers: {
-    web: api => {
+    web: config => {
       return {
         padding: null,
         metadataOptions: {
@@ -109,7 +109,7 @@ export const production = {
 
 export const test = {
   servers: {
-    web: api => {
+    web: config => {
       return {
         secure: false,
         port: 18080 + parseInt(process.env.JEST_WORKER_ID || "0"),
