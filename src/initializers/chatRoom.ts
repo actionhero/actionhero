@@ -1,10 +1,10 @@
 import { api, id, log, chatRoom, redis, Initializer } from "../index";
 import { Connection } from "../classes/connection";
-import { ChatPubSubMessage, ChatMiddleware } from "../modules/chatRoom";
+import * as ChatModule from "./../modules/chatRoom";
 
 export interface ChatRoomApi {
   middleware: {
-    [key: string]: ChatMiddleware;
+    [key: string]: ChatModule.chatRoom.ChatMiddleware;
   };
   globalMiddleware: Array<string>;
   keys: { [keys: string]: string };
@@ -56,7 +56,7 @@ export class ChatRoom extends Initializer {
         connection.rooms === undefined ||
         connection.rooms.indexOf(room) > -1
       ) {
-        const payload: ChatPubSubMessage = {
+        const payload: ChatModule.chatRoom.ChatPubSubMessage = {
           messageType: "chat",
           serverToken: config.general.serverToken,
           serverId: id,
@@ -75,7 +75,7 @@ export class ChatRoom extends Initializer {
           "onSayReceive",
           messagePayload
         );
-        const payloadToSend: ChatPubSubMessage = {
+        const payloadToSend: ChatModule.chatRoom.ChatPubSubMessage = {
           messageType: "chat",
           serverToken: config.general.serverToken,
           serverId: id,
@@ -114,7 +114,7 @@ export class ChatRoom extends Initializer {
 
     api.chatRoom.incomingMessagePerConnection = async (
       connection: Connection,
-      messagePayload: ChatPubSubMessage
+      messagePayload: ChatModule.chatRoom.ChatPubSubMessage
     ) => {
       if (
         connection.canChat === true &&
@@ -138,9 +138,9 @@ export class ChatRoom extends Initializer {
       connection: Connection,
       room: string,
       direction: string,
-      messagePayload: ChatPubSubMessage
+      messagePayload: ChatModule.chatRoom.ChatPubSubMessage
     ) => {
-      let newMessagePayload: ChatPubSubMessage;
+      let newMessagePayload: ChatModule.chatRoom.ChatPubSubMessage;
       if (messagePayload) {
         newMessagePayload = Object.assign({}, messagePayload);
       }

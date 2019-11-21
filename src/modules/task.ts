@@ -1,6 +1,7 @@
 import { api, config, utils, log } from "./../index";
 
-/**
+export namespace task {
+  /**
  * An exmaple middleware
  * ```js
  * const middleware = {
@@ -29,24 +30,23 @@ import { api, config, utils, log } from "./../index";
  * api.tasks.addMiddleware(middleware)
 ```
  */
-export interface TaskMiddleware {
-  /**Unique name for the middleware. */
-  name: string;
-  /**Is this middleware applied to all tasks? */
-  global: boolean;
-  /**Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`. */
-  priority?: number;
-  /**Called berore the task runs.  Has access to all params, before sanitizartion.  Can modify the data object for use in tasks. */
-  preProcessor?: Function;
-  /**Called after the task runs.*/
-  postProcessor?: Function;
-  /**Called before a task using this middleware is enqueud. */
-  preEnqueue?: Function;
-  /**Called after a task using this middleware is enqueud. */
-  postEnqueue?: Function;
-}
+  export interface TaskMiddleware {
+    /**Unique name for the middleware. */
+    name: string;
+    /**Is this middleware applied to all tasks? */
+    global: boolean;
+    /**Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`. */
+    priority?: number;
+    /**Called berore the task runs.  Has access to all params, before sanitizartion.  Can modify the data object for use in tasks. */
+    preProcessor?: Function;
+    /**Called after the task runs.*/
+    postProcessor?: Function;
+    /**Called before a task using this middleware is enqueud. */
+    preEnqueue?: Function;
+    /**Called after a task using this middleware is enqueud. */
+    postEnqueue?: Function;
+  }
 
-export namespace task {
   /**
    * Enqueue a task to be performed in the background.
    * Will throw an error if redis cannot be reached.

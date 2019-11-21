@@ -1,16 +1,15 @@
 import * as glob from "glob";
 import * as path from "path";
 import { Plugin } from "node-resque";
+import * as TaskModule from "./../modules/task";
 import { api, log, utils, task, Initializer, watchFileAndAct } from "../index";
 
 const taskModule = task;
 
-import { TaskMiddleware } from "./../modules/task";
-
 export interface TaskApi {
   tasks: { [key: string]: any };
   jobs: { [key: string]: any };
-  middleware: { [key: string]: TaskMiddleware };
+  middleware: { [key: string]: TaskModule.task.TaskMiddleware };
   globalMiddleware: Array<string>;
   loadFile?: Function;
   jobWrapper?: Function;

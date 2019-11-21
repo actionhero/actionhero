@@ -3,7 +3,7 @@
 import * as IORedis from "ioredis";
 import * as dotProp from "dot-prop";
 import { api, id, log, Initializer, redis } from "../index";
-import { PubSubMessage } from "./../modules/redis";
+import * as RedisModile from "./../modules/redis";
 
 export interface RedisApi {
   clients: {
@@ -46,7 +46,9 @@ export class Redis extends Initializer {
       }
     };
 
-    api.redis.subscriptionHandlers.do = async (message: PubSubMessage) => {
+    api.redis.subscriptionHandlers.do = async (
+      message: RedisModile.redis.PubSubMessage
+    ) => {
       if (
         !message.connectionId ||
         (api.connections && api.connections.connections[message.connectionId])
@@ -79,7 +81,7 @@ export class Redis extends Initializer {
     };
 
     api.redis.subscriptionHandlers.doResponse = function(
-      message: PubSubMessage
+      message: RedisModile.redis.PubSubMessage
     ) {
       if (api.redis.rpcCallbacks[message.messageId]) {
         const { resolve, timer } = api.redis.rpcCallbacks[message.messageId];
@@ -129,7 +131,7 @@ export class Redis extends Initializer {
         messageChannel: string,
         stringifiedMessage: string
       ) => {
-        let message: PubSubMessage;
+        let message: RedisModile.redis.PubSubMessage;
         try {
           message = JSON.parse(stringifiedMessage);
         } catch (e) {

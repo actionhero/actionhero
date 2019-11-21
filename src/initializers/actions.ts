@@ -8,7 +8,7 @@ import {
   Initializer,
   Action
 } from "../index";
-import { ActionMiddleware } from "./../modules/action";
+import * as ActionModule from "./../modules/action";
 
 export interface ActionsApi {
   actions: {
@@ -20,7 +20,7 @@ export interface ActionsApi {
     [key: string]: Array<string | number>;
   };
   middleware: {
-    [key: string]: ActionMiddleware;
+    [key: string]: ActionModule.action.ActionMiddleware;
   };
   globalMiddleware: Array<string>;
   loadFile?: Function;

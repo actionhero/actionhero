@@ -1,21 +1,21 @@
 import * as fs from "fs";
 import { api, id, utils, config, i18n } from "../index";
 
-export interface CacheObject {
-  key: string;
-  value: any;
-  expireTimestamp: number;
-  createdAt: number;
-  lastReadAt: number;
-  readAt?: number;
-}
-
-export interface CacheOptions {
-  expireTimeMS?: number;
-  retry?: boolean | number;
-}
-
 export namespace cache {
+  export interface CacheObject {
+    key: string;
+    value: any;
+    expireTimestamp: number;
+    createdAt: number;
+    lastReadAt: number;
+    readAt?: number;
+  }
+
+  export interface CacheOptions {
+    expireTimeMS?: number;
+    retry?: boolean | number;
+  }
+
   export const redisPrefix = config.general.cachePrefix;
   export const lockPrefix = config.general.lockPrefix;
   export const lockDuration = config.general.lockDuration;

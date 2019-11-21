@@ -1,64 +1,64 @@
 import { api, config, id, redis, Connection } from "./../index";
-import { PubSubMessage } from "../modules/redis";
-
-/**
- * Middleware definition for processing chat events.  Can be of the
- *
- * ```js
- *  var chatMiddleware = {
- *    name: 'chat middleware',
- *    priority: 1000,
- *    join: (connection, room) => {
- *      // announce all connections entering a room
- *      api.chatRoom.broadcast({}, room, 'I have joined the room: ' + connection.id, callback)
- *    },
- *    leave:(connection, room, callback) => {
- *      // announce all connections leaving a room
- *      api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, callback)
- *    },
- *    // Will be executed once per client connection before delivering the message.
- *    say: (connection, room, messagePayload) => {
- *      // do stuff
- *      log(messagePayload)
- *    },
- *    // Will be executed only once, when the message is sent to the server.
- *    onSayReceive: (connection, room, messagePayload) => {
- *      // do stuff
- *      log(messagePayload)
- *    }
- * }
- * api.chatRoom.addMiddleware(chatMiddleware)
- * ```
- */
-
-export interface ChatMiddleware {
-  /**Unique name for the middleware. */
-  name: string;
-  /**Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`. */
-  priority?: number;
-  /**Called when a connection joins a room. */
-  join?: Function;
-  /**Called when a connection leaves a room. */
-  leave?: Function;
-  /**Called when a connection says a message to a room. */
-  onSayReceive?: Function;
-  /**Called when a connection is about to recieve a say message. */
-  say?: Function;
-}
-
-export interface ChatPubSubMessage extends PubSubMessage {
-  messageType: string;
-  serverToken: string;
-  serverId: string | number;
-  message: any;
-  sentAt: number;
-  connection: {
-    id: string;
-    room: string;
-  };
-}
+import * as RedisModule from "../modules/redis";
 
 export namespace chatRoom {
+  /**
+   * Middleware definition for processing chat events.  Can be of the
+   *
+   * ```js
+   *  var chatMiddleware = {
+   *    name: 'chat middleware',
+   *    priority: 1000,
+   *    join: (connection, room) => {
+   *      // announce all connections entering a room
+   *      api.chatRoom.broadcast({}, room, 'I have joined the room: ' + connection.id, callback)
+   *    },
+   *    leave:(connection, room, callback) => {
+   *      // announce all connections leaving a room
+   *      api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, callback)
+   *    },
+   *    // Will be executed once per client connection before delivering the message.
+   *    say: (connection, room, messagePayload) => {
+   *      // do stuff
+   *      log(messagePayload)
+   *    },
+   *    // Will be executed only once, when the message is sent to the server.
+   *    onSayReceive: (connection, room, messagePayload) => {
+   *      // do stuff
+   *      log(messagePayload)
+   *    }
+   * }
+   * api.chatRoom.addMiddleware(chatMiddleware)
+   * ```
+   */
+
+  export interface ChatMiddleware {
+    /**Unique name for the middleware. */
+    name: string;
+    /**Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`. */
+    priority?: number;
+    /**Called when a connection joins a room. */
+    join?: Function;
+    /**Called when a connection leaves a room. */
+    leave?: Function;
+    /**Called when a connection says a message to a room. */
+    onSayReceive?: Function;
+    /**Called when a connection is about to recieve a say message. */
+    say?: Function;
+  }
+
+  export interface ChatPubSubMessage extends RedisModule.redis.PubSubMessage {
+    messageType: string;
+    serverToken: string;
+    serverId: string | number;
+    message: any;
+    sentAt: number;
+    connection: {
+      id: string;
+      room: string;
+    };
+  }
+
   /**
    * Add a middleware component to connection handling.
    */

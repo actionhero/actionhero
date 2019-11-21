@@ -1,11 +1,11 @@
 import * as uuid from "uuid";
 import { config, api, id, log } from "./../index";
 
-export interface PubSubMessage {
-  [key: string]: any;
-}
-
 export namespace redis {
+  export interface PubSubMessage {
+    [key: string]: any;
+  }
+
   /**
    * Publish a message to all other ActionHero nodes in the clsuter.  Will be autneticated against `api.config.serverToken`
    * ```js
