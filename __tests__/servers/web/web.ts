@@ -2,8 +2,7 @@ import * as request from "request-promise-native";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import { Process, config, route } from "./../../../src/index";
-import { sleep } from "./../../../src/utils/sleep";
+import { Process, config, utils, route } from "./../../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -105,17 +104,17 @@ describe("Server: Web", () => {
       expect(Object.keys(api.connections.connections)).toHaveLength(0);
       request.get(url + "/api/sleepTest").then(toJson); // don't await
 
-      await sleep(100);
+      await utils.sleep(100);
       expect(Object.keys(api.connections.connections)).toHaveLength(1);
 
-      await sleep(1000);
+      await utils.sleep(1000);
       expect(Object.keys(api.connections.connections)).toHaveLength(0);
     });
 
     test("works for files", async () => {
       expect(Object.keys(api.connections.connections)).toHaveLength(0);
       await request.get(url + "/simple.html");
-      await sleep(100);
+      await utils.sleep(100);
       expect(Object.keys(api.connections.connections)).toHaveLength(0);
     });
 
@@ -123,7 +122,7 @@ describe("Server: Web", () => {
       expect(Object.keys(api.connections.connections)).toHaveLength(0);
       const body = await request.get(url + "/api/customRender").then(toJson);
       expect(body).toBeTruthy();
-      await sleep(100);
+      await utils.sleep(100);
       expect(Object.keys(api.connections.connections)).toHaveLength(0);
     });
   });

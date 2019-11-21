@@ -1,8 +1,7 @@
 import * as I18n from "i18n";
 import * as fs from "fs";
 import * as path from "path";
-import { Process, config, i18n, specHelper } from "./../../src/index";
-import { sleep } from "./../../src/utils/sleep";
+import { Process, config, i18n, utils, specHelper } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -115,7 +114,7 @@ describe("Core", () => {
 
     test("determineConnectionLocale cannot be an async method", async () => {
       i18n.determineConnectionLocale = async () => {
-        await sleep(1);
+        await utils.sleep(1);
         return "test-env-es";
       };
 

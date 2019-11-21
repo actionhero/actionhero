@@ -1,8 +1,7 @@
 "use strict";
 // we need to use 'use strict' here because we are relying on EVAL to load a variable
 
-import { Process, config, chatRoom } from "./../../src/index";
-import { sleep } from "./../../src/utils/sleep";
+import { Process, config, chatRoom, utils } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -28,7 +27,7 @@ const connectClients = async () => {
   clientB = new ActionheroWebsocketClient({}, clientBsocket); // eslint-disable-line
   clientC = new ActionheroWebsocketClient({}, clientCsocket); // eslint-disable-line
 
-  await sleep(100);
+  await utils.sleep(100);
 };
 
 const awaitMethod = async (
@@ -143,7 +142,7 @@ describe("Server: Web Socket", () => {
       awaitRoom(clientA, "roomAdd", "defaultRoom");
       awaitRoom(clientA, "roomAdd", "defaultRoom");
 
-      await sleep(500);
+      await utils.sleep(500);
 
       expect(clientA.rooms).toEqual(["defaultRoom"]);
     });
@@ -167,7 +166,7 @@ describe("Server: Web Socket", () => {
         bTime = new Date();
       });
 
-      await sleep(2001);
+      await utils.sleep(2001);
 
       //@ts-ignore
       expect(responseA.messageId).toEqual(startingMessageId + 2);
@@ -234,7 +233,7 @@ describe("Server: Web Socket", () => {
         responses.push(response);
       });
 
-      await sleep(1000);
+      await utils.sleep(1000);
 
       expect(responses).toHaveLength(6);
       for (const i in responses) {
@@ -301,7 +300,7 @@ describe("Server: Web Socket", () => {
         await awaitRoom(clientB, "roomAdd", "defaultRoom");
         await awaitRoom(clientC, "roomAdd", "defaultRoom");
         // timeout to skip welcome messages as clients join rooms
-        await sleep(100);
+        await utils.sleep(100);
       });
 
       afterEach(async () => {
@@ -422,7 +421,7 @@ describe("Server: Web Socket", () => {
         clientC.on("say", listener);
 
         clientB.say("otherRoom", "you should not hear this");
-        await sleep(1000);
+        await utils.sleep(1000);
         clientC.removeListener("say", listener);
         done();
       });
@@ -484,7 +483,7 @@ describe("Server: Web Socket", () => {
           clientC.on("say", listenerC);
           clientB.say("defaultRoom", "Test Message");
 
-          await sleep(1000);
+          await utils.sleep(1000);
 
           expect(messagesReceived).toEqual(3);
         });
@@ -496,7 +495,7 @@ describe("Server: Web Socket", () => {
             say: async (connection, room, messagePayload) => {
               if (firstSayCall) {
                 firstSayCall = false;
-                await sleep(200);
+                await utils.sleep(200);
               }
             }
           });
@@ -522,7 +521,7 @@ describe("Server: Web Socket", () => {
           clientC.on("say", listenerC);
           clientB.say("defaultRoom", "Test Message");
 
-          await sleep(1000);
+          await utils.sleep(1000);
 
           expect(messagesReceived).toEqual(7);
         });
@@ -566,7 +565,7 @@ describe("Server: Web Socket", () => {
           clientC.on("say", listenerC);
           clientB.say("defaultRoom", "Test Message");
 
-          await sleep(1000);
+          await utils.sleep(1000);
 
           expect(messagesReceived).toEqual(3);
         });
@@ -634,7 +633,7 @@ describe("Server: Web Socket", () => {
         clientA.connect();
         clientB.connect();
         clientC.connect();
-        await sleep(500);
+        await utils.sleep(500);
       });
 
       test("client can disconnect", async () => {
@@ -644,7 +643,7 @@ describe("Server: Web Socket", () => {
         clientB.disconnect();
         clientC.disconnect();
 
-        await sleep(500);
+        await utils.sleep(500);
 
         expect(api.servers.servers.websocket.connections().length).toEqual(0);
       });
@@ -664,7 +663,7 @@ describe("Server: Web Socket", () => {
           throw new Error("should not get response");
         });
 
-        await sleep(500);
+        await utils.sleep(500);
       });
     });
   });

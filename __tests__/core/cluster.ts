@@ -1,5 +1,4 @@
-import { Process, config, chatRoom, redis } from "./../../src/index";
-import { sleep } from "./../../src/utils/sleep";
+import { Process, config, utils, chatRoom, redis } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -35,7 +34,7 @@ describe("Core: Action Cluster", () => {
         data[1] = [arg1, arg2];
       };
       await redis.doCluster("api.rpcTestMethod", ["arg1", "arg2"]);
-      await sleep(100);
+      await utils.sleep(100);
 
       expect(data[1][0]).toEqual("arg1");
       expect(data[1][1]).toEqual("arg2");
@@ -49,7 +48,7 @@ describe("Core: Action Cluster", () => {
       };
 
       await redis.doCluster("api.rpcTestMethod", ["arg1", "arg2"], client.id);
-      await sleep(100);
+      await utils.sleep(100);
 
       expect(data[1][0]).toEqual("arg1");
       expect(data[1][1]).toEqual("arg2");
