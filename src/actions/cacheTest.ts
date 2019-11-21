@@ -47,7 +47,7 @@ export class CacheTest extends Action {
   }
 
   async run({ params, response }) {
-    const key = "cacheTest_" + params.key;
+    const key = `cacheTest_${params.key}`;
     const value = params.value;
 
     response.cacheTestResults = {

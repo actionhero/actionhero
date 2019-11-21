@@ -379,7 +379,7 @@ describe("Core: CLI", () => {
           await request(`http://localhost:${port}/api/showDocumentation`);
           throw new Error("should not get here");
         } catch (error) {
-          expect(error.toString()).toMatch(/ECONNREFUSED/);
+          expect(error.toString()).toMatch(/ECONNREFUSED|ECONNRESET/);
         }
       });
 
@@ -502,7 +502,7 @@ describe("Core: CLI", () => {
 
       test("can handle signals to stop", async () => {
         await doCommand(`kill ${clusterPid}`);
-        await sleep(2000);
+        await sleep(8000);
 
         const { stdout } = await doCommand("ps awx");
         const parents = stdout.split("\n").filter(l => {
