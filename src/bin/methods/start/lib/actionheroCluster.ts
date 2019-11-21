@@ -15,11 +15,13 @@ export class ActionHeroCluster {
   };
   loggers: Array<winston.Logger>;
   flapTimer: NodeJS.Timeout;
+  state: string;
 
   constructor(args) {
     this.workers = [];
     this.workersToRestart = [];
     this.flapCount = 0;
+    this.state = "stopped";
 
     this.options = this.defaults();
 
@@ -140,6 +142,7 @@ export class ActionHeroCluster {
   }
 
   async start() {
+    this.state = "started";
     this.log(JSON.stringify(this.options), "debug");
 
     cluster.setupMaster({
@@ -150,11 +153,17 @@ export class ActionHeroCluster {
 
     process.on("SIGINT", async () => {
       this.log("Signal: SIGINT", "info");
+      if (this.state === "stopping" || this.state === "stopped") {
+        return;
+      }
       await this.stop();
     });
 
     process.on("SIGTERM", async () => {
       this.log("Signal: SIGTERM", "info");
+      if (this.state === "stopping" || this.state === "stopped") {
+        return;
+      }
       await this.stop();
     });
 
@@ -234,9 +243,15 @@ export class ActionHeroCluster {
   }
 
   async stop() {
+    this.state = "stopping";
     if (this.workers.length === 0) {
       this.log("all workers stopped", "notice");
-      await this.clearPidFile();
+      try {
+        await this.clearPidFile();
+      } catch (error) {
+        console.log(error);
+      }
+      this.state = "stopped";
       await this.sleep(100);
       process.exit();
     }

@@ -29,7 +29,6 @@ interface Runner {
     }
   }
 
-  const { config, Process } = require(path.join(__dirname, "..", "index"));
   const actionheroRoot = path.normalize(path.join(__dirname, ".."));
 
   const formatParams = (runner: Runner) => {
@@ -90,7 +89,7 @@ interface Runner {
       ]();
       const params = formatParams(runner);
       await runner.run({ params: params });
-      setTimeout(process.exit, 500, 0);
+      setTimeout(process.exit, 100, 0);
     } catch (error) {
       console.error(error.toString());
       process.exit(1);
@@ -98,6 +97,8 @@ interface Runner {
   };
 
   const handleMethod = async (commands: Array<string>) => {
+    const { config, Process } = require(path.join(__dirname, "..", "index"));
+
     try {
       const actionHeroProcess = new Process();
       await actionHeroProcess.initialize();

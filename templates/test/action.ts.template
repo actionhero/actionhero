@@ -1,4 +1,4 @@
-import { Process } from "actionhero";
+import { Process, specHelper } from "actionhero";
 const actionhero = new Process();
 let api;
 
@@ -13,7 +13,7 @@ describe("Action", () => {
     });
 
     test("returns OK", async () => {
-      const { ok } = await api.specHelper.runAction("%%name%%");
+      const { ok } = await specHelper.runAction("%%name%%");
       expect(ok).toEqual(true);
     });
   });

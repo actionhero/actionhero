@@ -1,4 +1,4 @@
-import { Process } from "actionhero";
+import { Process, env, id, specHelper } from "actionhero";
 const actionhero = new Process();
 let api;
 
@@ -12,12 +12,12 @@ describe("actionhero Tests", () => {
 
   test("should have booted into the test env", () => {
     expect(process.env.NODE_ENV).toEqual("test");
-    expect(api.env).toEqual("test");
-    expect(api.id).toBeTruthy();
+    expect(env).toEqual("test");
+    expect(id).toBeTruthy();
   });
 
   test("can retrieve server uptime via the status action", async () => {
-    const { uptime } = await api.specHelper.runAction("status");
+    const { uptime } = await specHelper.runAction("status");
     expect(uptime).toBeGreaterThan(0);
   });
 });

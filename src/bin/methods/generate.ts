@@ -1,7 +1,11 @@
 import * as fs from "fs";
 import * as path from "path";
-import { api, projectRoot, CLI } from "./../../index";
 import { createFileSafely, createDirSafely } from "./../../utils/fileUtils";
+
+// import { api, projectRoot, CLI } from "./../../index";
+// we need to load each component directly so we don't accidentalyy source `config... which doesn't exist`
+import { CLI } from "./../../classes/cli";
+import { projectRoot } from "./../../classes/process/projectRoot";
 
 export class Generate extends CLI {
   constructor() {
@@ -98,7 +102,6 @@ export class Generate extends CLI {
       "/log",
       "/pids",
       "/locales",
-      "/src/servers",
       "/public",
       "/public/javascript",
       "/public/css",

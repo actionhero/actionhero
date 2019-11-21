@@ -123,6 +123,11 @@ describe("Core: CLI", () => {
       }
     }, 120000);
 
+    test("can call the version command (before generate)", async () => {
+      const { stdout } = await doCommand(`${binary} version`);
+      expect(stdout).toContain(pacakgeJSON.version);
+    }, 20000);
+
     test("can generate a new project", async () => {
       const { stdout } = await doCommand(`${binary} generate`);
       expect(stdout).toMatch("<3, the Actionhero Team");
@@ -179,7 +184,7 @@ describe("Core: CLI", () => {
       expect(stdout).toMatch(/actionhero generate server/);
     }, 20000);
 
-    test("can call the version command", async () => {
+    test("can call the version command (after generate)", async () => {
       const { stdout } = await doCommand(`${binary} version`);
       expect(stdout).toContain(pacakgeJSON.version);
     }, 20000);
@@ -357,7 +362,7 @@ describe("Core: CLI", () => {
 
       test("can handle signals to reboot", async () => {
         await doCommand(`kill -s USR2 ${serverPid}`);
-        await sleep(1000);
+        await sleep(3000);
         const response = await request(
           `http://localhost:${port}/api/showDocumentation`,
           { json: true }
@@ -365,7 +370,7 @@ describe("Core: CLI", () => {
         expect(response.serverInformation.serverName).toEqual(
           "my_actionhero_project"
         );
-      });
+      }, 5000);
 
       test("can handle signals to stop", async () => {
         await doCommand(`kill ${serverPid}`);
@@ -451,7 +456,7 @@ describe("Core: CLI", () => {
 
       test("can handle signals to reboot (graceful)", async () => {
         await doCommand(`kill -s USR2 ${clusterPid}`);
-        await sleep(2000);
+        await sleep(3000);
 
         const { stdout } = await doCommand("ps awx");
         const parents = stdout.split("\n").filter(l => {
@@ -474,7 +479,7 @@ describe("Core: CLI", () => {
 
       test("can handle signals to reboot (hup)", async () => {
         await doCommand(`kill -s WINCH ${clusterPid}`);
-        await sleep(2000);
+        await sleep(3000);
 
         const { stdout } = await doCommand("ps awx");
         const parents = stdout.split("\n").filter(l => {
