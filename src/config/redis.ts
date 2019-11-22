@@ -4,7 +4,6 @@ let host = process.env.REDIS_HOST || "127.0.0.1";
 let port = process.env.REDIS_PORT || 6379;
 let db = process.env.REDIS_DB || process.env.JEST_WORKER_ID || "0";
 let password = process.env.REDIS_PASSWORD || null;
-const maxBackoff = 1000;
 
 if (process.env.REDIS_URL) {
   const parsed = new URL(process.env.REDIS_URL);
@@ -28,7 +27,15 @@ export const DEFAULT = {
     // args: The arguments to pass to the constructor
     // buildNew: is it `new konstructor()` or just `konstructor()`?
 
-    // you can learn more about retryStrategy @ https://github.com/luin/ioredis#auto-reconnect
+    const commonArgs = {
+      port,
+      host,
+      password,
+      db: parseInt(db),
+      enableOfflineQueue: false,
+      // you can learn more about retryStrategy @ https://github.com/luin/ioredis#auto-reconnect
+      retryStrategy: null
+    };
 
     return {
       enabled: true,
@@ -36,41 +43,17 @@ export const DEFAULT = {
       _toExpand: false,
       client: {
         konstructor: require("ioredis"),
-        args: [
-          {
-            port: port,
-            host: host,
-            password: password,
-            db: parseInt(db),
-            retryStrategy: null
-          }
-        ],
+        args: [commonArgs],
         buildNew: true
       },
       subscriber: {
         konstructor: require("ioredis"),
-        args: [
-          {
-            port: port,
-            host: host,
-            password: password,
-            db: parseInt(db),
-            retryStrategy: null
-          }
-        ],
+        args: [commonArgs],
         buildNew: true
       },
       tasks: {
         konstructor: require("ioredis"),
-        args: [
-          {
-            port: port,
-            host: host,
-            password: password,
-            db: parseInt(db),
-            retryStrategy: null
-          }
-        ],
+        args: [commonArgs],
         buildNew: true
       }
     };
