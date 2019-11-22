@@ -33,7 +33,7 @@ function stringifyExtraMessagePropertiesForConsole(info) {
     if (skpippedProperties.includes(key)) {
       continue;
     }
-    if (value === undefined || value === null) {
+    if (value === undefined || value === null || value === "") {
       continue;
     }
     response += `${key}=${value} `;
