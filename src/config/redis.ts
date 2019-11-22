@@ -28,19 +28,7 @@ export const DEFAULT = {
     // args: The arguments to pass to the constructor
     // buildNew: is it `new konstructor()` or just `konstructor()`?
 
-    function retryStrategy(times) {
-      if (times === 1) {
-        const error =
-          "Unable to connect to Redis - please check your Redis config!";
-        if (process.env.NODE_ENV === "test") {
-          console.error(error);
-        } else {
-          throw new Error(error);
-        }
-        return 5000;
-      }
-      return Math.min(times * 50, maxBackoff);
-    }
+    // you can learn more about retryStrategy @ https://github.com/luin/ioredis#auto-reconnect
 
     return {
       enabled: true,
@@ -54,7 +42,7 @@ export const DEFAULT = {
             host: host,
             password: password,
             db: parseInt(db),
-            retryStrategy: retryStrategy
+            retryStrategy: null
           }
         ],
         buildNew: true
@@ -67,7 +55,7 @@ export const DEFAULT = {
             host: host,
             password: password,
             db: parseInt(db),
-            retryStrategy: retryStrategy
+            retryStrategy: null
           }
         ],
         buildNew: true
@@ -80,7 +68,7 @@ export const DEFAULT = {
             host: host,
             password: password,
             db: parseInt(db),
-            retryStrategy: retryStrategy
+            retryStrategy: null
           }
         ],
         buildNew: true
