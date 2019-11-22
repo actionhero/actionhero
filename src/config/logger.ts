@@ -90,16 +90,16 @@ export const DEFAULT = {
   }
 };
 
-// export const test = {
-//   logger: config => {
-//     const loggers = [];
+export const test = {
+  logger: config => {
+    const loggers = [];
 
-//     config.general.paths.log.forEach(p => {
-//       loggers.push(buildFileLogger(p, "debug", 1));
-//     });
+    config.general.paths.log.forEach(p => {
+      loggers.push(buildFileLogger(p, "debug", 1));
+    });
 
-//     return {
-//       loggers
-//     };
-//   }
-// };
+    return {
+      loggers
+    };
+  }
+};

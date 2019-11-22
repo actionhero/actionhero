@@ -32,7 +32,6 @@ export const DEFAULT = {
       host,
       password,
       db: parseInt(db),
-      enableOfflineQueue: false,
       // you can learn more about retryStrategy @ https://github.com/luin/ioredis#auto-reconnect
       retryStrategy: null
     };
