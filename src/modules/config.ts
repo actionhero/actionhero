@@ -14,6 +14,7 @@ import { projectRoot } from "./../classes/process/projectRoot";
 export interface ConfigInterface {
   [key: string]: any;
 }
+export const configPaths = [];
 
 export function buildConfig(_startingParams: ConfigInterface = {}) {
   let config: ConfigInterface = {
@@ -25,8 +26,6 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
       actionheroVersion
     }
   };
-
-  const configPaths = [];
 
   utils.hashMerge(config, _startingParams);
   // We support multiple configuration paths as follows:
