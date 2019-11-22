@@ -109,6 +109,22 @@ export class Redis extends Initializer {
         api.redis.clients[r].on("connect", () => {
           log(`Redis connection \`${r}\` connected`, "debug");
         });
+
+        api.redis.clients[r].on("ready", () => {
+          log(`Redis connection \`${r}\` ready`, "debug");
+        });
+
+        api.redis.clients[r].on("close", () => {
+          log(`Redis connection \`${r}\` closed`, "debug");
+        });
+
+        api.redis.clients[r].on("end", () => {
+          log(`Redis connection \`${r}\` ended`, "debug");
+        });
+
+        api.redis.clients[r].on("reconnecting", () => {
+          log(`Redis connection \`${r}\` reconnecting`, "info");
+        });
       } else {
         api.redis.clients[r] = config.redis[r].konstructor.apply(
           null,

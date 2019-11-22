@@ -97,12 +97,15 @@ interface Runner {
   };
 
   const handleMethod = async (commands: Array<string>) => {
+    console.log("₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋");
+    console.log(`ACTIONHERO COMMAND >> ${commands.join(" ")}`);
+    console.log("⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻");
+
     const { config, Process } = require(path.join(__dirname, "..", "index"));
+    const actionHeroProcess = new Process();
+    await actionHeroProcess.initialize();
 
     try {
-      const actionHeroProcess = new Process();
-      await actionHeroProcess.initialize();
-
       let ExportedClasses;
 
       let p: string;
@@ -154,10 +157,6 @@ interface Runner {
         console.error("run `actionhero help` to learn more");
         setTimeout(process.exit, 500, 1);
       } else {
-        console.log("₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋");
-        console.log(`ACTIONHERO COMMAND >> ${commands.join(" ")}`);
-        console.log("⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻");
-
         if (optimist.argv.daemon) {
           const newArgs: Array<string> = process.argv.splice(2);
           for (const i in newArgs) {
