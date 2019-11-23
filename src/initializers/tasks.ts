@@ -168,24 +168,20 @@ export class Tasks extends Initializer {
 
           // old style at the root of the project
           let files = glob.sync(
-            path.join(pluginPath, "actions", "**", "**/*(*.js|*.ts)")
+            path.join(pluginPath, "tasks", "**", "**/*(*.js|*.ts)")
           );
 
           // dist files if running in JS mode
           if (!typescript) {
             files = files.concat(
-              glob.sync(
-                path.join(pluginPath, "dist", "actions", "**", "**/*.js")
-              )
+              glob.sync(path.join(pluginPath, "dist", "tasks", "**", "**/*.js"))
             );
           }
 
           // src files if running in TS mode
           if (typescript) {
             files = files.concat(
-              glob.sync(
-                path.join(pluginPath, "src", "actions", "**", "**/*.ts")
-              )
+              glob.sync(path.join(pluginPath, "src", "tasks", "**", "**/*.ts"))
             );
           }
 
