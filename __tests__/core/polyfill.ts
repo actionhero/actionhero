@@ -25,4 +25,16 @@ describe("Ployfill", () => {
 
         expect(api.log).toBeInstanceOf(Function);
     })
+
+    test('should be able to use functions through legacy api', async () => {
+        const resp = await api.cache.save("legacyKey", "check");
+        expect(resp).toEqual(true);
+
+        const { value } = await api.cache.load("legacyKey");
+        expect(value).toEqual("check");
+    })
+
+    test('config should be available', () => {
+        expect(api.config.process.env).toEqual("test");
+    })
 })
