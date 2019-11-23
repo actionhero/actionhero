@@ -352,7 +352,7 @@ describe("Core: Middleware", () => {
         }
       });
 
-      connection = await api.specHelper.Connection.createAsync();
+      connection = await specHelper.buildConnection();
 
       expect(middlewareRan).toEqual(true);
       expect(connection.touched).toEqual("connect");
@@ -401,7 +401,7 @@ describe("Core: Middleware", () => {
         }
       });
 
-      const connection = await api.specHelper.Connection.createAsync();
+      const connection = await specHelper.buildConnection();
 
       // create
       expect(middlewareRan).toEqual(true);

@@ -1,4 +1,11 @@
-import { Process, config, utils, chatRoom, redis } from "./../../src/index";
+import {
+  Process,
+  config,
+  utils,
+  specHelper,
+  chatRoom,
+  redis
+} from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -41,7 +48,7 @@ describe("Core: Action Cluster", () => {
     });
 
     test("can call remote methods only on one other cluster who holds a specific connectionId", async () => {
-      const client = await api.specHelper.Connection.createAsync();
+      const client = await specHelper.buildConnection();
       const data = {};
       api.rpcTestMethod = (arg1, arg2) => {
         data[1] = [arg1, arg2];
@@ -56,7 +63,7 @@ describe("Core: Action Cluster", () => {
     });
 
     test("can get information about connections connected to other servers", async () => {
-      const client = await api.specHelper.Connection.createAsync();
+      const client = await specHelper.buildConnection();
 
       const { id, type, canChat } = await api.connections.apply(client.id);
       expect(id).toEqual(client.id);
@@ -65,7 +72,7 @@ describe("Core: Action Cluster", () => {
     });
 
     test("can call remote methods on/about connections connected to other servers", async () => {
-      const client = await api.specHelper.Connection.createAsync();
+      const client = await specHelper.buildConnection();
       expect(client.auth).toBeUndefined();
 
       const connection = await api.connections.apply(client.id, "set", [
@@ -78,7 +85,7 @@ describe("Core: Action Cluster", () => {
     });
 
     test("can send arbitraty messages to connections connected to other servers", async () => {
-      const client = await api.specHelper.Connection.createAsync();
+      const client = await specHelper.buildConnection();
 
       const connection = await api.connections.apply(client.id, "sendMessage", {
         message: "hi"

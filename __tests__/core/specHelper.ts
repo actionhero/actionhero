@@ -18,7 +18,7 @@ describe("Core: specHelper", () => {
   });
 
   test("will stack up messages recieved", async () => {
-    const connection = await api.specHelper.Connection.createAsync();
+    const connection = await specHelper.buildConnection();
     connection.params.thing = "stuff";
     const { error } = await specHelper.runAction("x", connection);
     expect(connection.messages).toHaveLength(2);
@@ -229,7 +229,7 @@ describe("Core: specHelper", () => {
     const messageIds = [];
 
     test("can make a requset with a spec'd connection", async () => {
-      connection = await api.specHelper.Connection.createAsync();
+      connection = await specHelper.buildConnection();
       connection.params = {
         key: "someKey",
         value: "someValue"
