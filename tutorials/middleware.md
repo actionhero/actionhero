@@ -4,10 +4,10 @@
 
 There are 4 types of middleware in ActionHero:
 
-* **Action**
-* **Connection**
-* **Chat**
-* **Task**
+- **Action**
+- **Connection**
+- **Chat**
+- **Task**
 
 Each type of middleware is distinct from the others, and operates on distinct parts of a client's lifecycle. For a logical example, please inspect the following connection lifecycle:
 
@@ -41,29 +41,31 @@ Each type of middleware is distinct from the others, and operates on distinct pa
 
 ```js
 const middleware = {
-  name: 'userId checker',
+  name: "userId checker",
   global: false,
   priority: 1000,
-  preProcessor: (data) => {
-    if(!data.params.userId){
-      throw new Error('All actions require a userId')
+  preProcessor: data => {
+    if (!data.params.userId) {
+      throw new Error("All actions require a userId");
     }
   },
-  postProcessor: (data) => {
-    if(data.thing.stuff == false){ data.toRender = false }
+  postProcessor: data => {
+    if (data.thing.stuff == false) {
+      data.toRender = false;
+    }
   }
-}
+};
 
-api.actions.addMiddleware(middleware)
+api.actions.addMiddleware(middleware);
 ```
 
 ActionHero provides hooks for you to execute custom code both before and after the execution of all or some actions. This is a great place to write authentication logic or custom loggers.
 
 Action middleware requires a `name` and at least one of `preProcessor` or `postProcessor`. Middleware can be `global`, or you can choose to apply each middleware to an action specifically via `action.middleware = []` in the action's definition. You supply a list of middleware names, like `action.middleware = ['userId checker']` in the example above.
 
-Each processor is passed `data`. Just like within actions, you can modify the `data` object to add to `data.response` to create a response to the client. If an error is thrown, the action will not execute, and `data.response.error` will contain the error.  If a `preProcessor` has an error, the action will never be called.
+Each processor is passed `data`. Just like within actions, you can modify the `data` object to add to `data.response` to create a response to the client. If an error is thrown, the action will not execute, and `data.response.error` will contain the error. If a `preProcessor` has an error, the action will never be called.
 
-The priority of a middleware orders it with all other middleware which might fire for an action. All global middleware happen before locally defined middleware on an action.  Lower numbers happen first. If you do not provide a priority, the default from `api.config.general.defaultProcessorPriority` will be used.
+The priority of a middleware orders it with all other middleware which might fire for an action. All global middleware happen before locally defined middleware on an action. Lower numbers happen first. If you do not provide a priority, the default from `api.config.general.defaultProcessorPriority` will be used.
 
 ### The Data Object
 
@@ -72,31 +74,62 @@ The priority of a middleware orders it with all other middleware which might fir
 ```js
 data = {
   connection: {},
-  action: 'randomNumber',
+  action: "randomNumber",
   toRender: true,
   messageId: 1,
-  params: { action: 'randomNumber', apiVersion: 1 },
+  params: { action: "randomNumber", apiVersion: 1 },
   actionStartTime: 1429531553417,
   actionTemplate: {}, // the actual object action definition
   response: {},
-}
+  session: {}
+};
+```
+
+If your middleware wants to pass information about the connection to the action, place that data withinin the `session` object. For example, you might have a middleware that sets `session.user` for use in your actions:
+
+```ts
+const authenticatedUserMiddleware = {
+  name: "authenticated-team-member",
+  global: false,
+  priority: 1000,
+  preProcessor: async data => {
+    const { Team, TeamMember } = api.models;
+    const sessionData = await api.session.load(data.connection);
+    if (!sessionData) {
+      throw new Error("Please log in to continue");
+    } else if (
+      !data.params.csrfToken ||
+      data.params.csrfToken !== sessionData.csrfToken
+    ) {
+      throw new Error("CSRF error");
+    } else {
+      const teamMember = await TeamMember.findOne({
+        where: { guid: sessionData.guid },
+        include: Team
+      });
+      data.session = { data: sessionData, teamMember };
+    }
+  }
+};
+
+api.actions.addMiddleware(authenticatedUserMiddleware);
 ```
 
 ## Connection Middleware
 
 ```js
 const connectionMiddleware = {
-  name: 'connection middleware',
+  name: "connection middleware",
   priority: 1000,
-  create: async (connection) => {
-    api.log('connection joined')
+  create: async connection => {
+    api.log("connection joined");
   },
-  destroy: async (connection) => {
-    api.log('connection left')
+  destroy: async connection => {
+    api.log("connection left");
   }
 };
 
-api.connections.addMiddleware(connectionMiddleware)
+api.connections.addMiddleware(connectionMiddleware);
 ```
 
 Like the action middleware above, you can also create middleware to react to the creation or destruction of all connections.
@@ -150,12 +183,12 @@ More detail and nuance on chat middleware can be found in the [chat tutorial](tu
 
 ### Chat Middleware Notes
 
-* In the example above, I want to announce the member joining the room, but he has not yet been added to the room, as the join logic is still firing. If the connection itself were to make the broadcast, it would fail because the connection is not in the room. Instead, an empty `{}` connection is used to proxy the message coming from the 'server'.
-* Only the `sayCallbacks` return `messagePayload`. This allows you to modify the message being sent to your clients.
-  * `messagePayload` will be modified and and passed on to all middlewares inline, so you can append and modify it as you go
-* If you have a number of callbacks (`say`, `onSayReceive`, `join` or `leave`), the priority maters, and you can block subsequent methods from firing by throwing an error.
-* `sayCallbacks` are executed once per client connection. This makes it suitable for customizing the message based on the individual client.
-* `onSayReceiveCallbacks` are executed only once, when the message is sent to the server.
+- In the example above, I want to announce the member joining the room, but he has not yet been added to the room, as the join logic is still firing. If the connection itself were to make the broadcast, it would fail because the connection is not in the room. Instead, an empty `{}` connection is used to proxy the message coming from the 'server'.
+- Only the `sayCallbacks` return `messagePayload`. This allows you to modify the message being sent to your clients.
+  - `messagePayload` will be modified and and passed on to all middlewares inline, so you can append and modify it as you go
+- If you have a number of callbacks (`say`, `onSayReceive`, `join` or `leave`), the priority maters, and you can block subsequent methods from firing by throwing an error.
+- `sayCallbacks` are executed once per client connection. This makes it suitable for customizing the message based on the individual client.
+- `onSayReceiveCallbacks` are executed only once, when the message is sent to the server.
 
 ```js
 // in this example no one will be able to join any room, and the \`say\` middleware will never be invoked.

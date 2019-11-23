@@ -1,0 +1,41 @@
+{
+  "author": "YOU <YOU@example.com>",
+  "name": "my_actionhero_project",
+  "description": "my actionhero project",
+  "version": "0.1.0",
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "dependencies": {
+
+    "actionhero": "%%versionNumber%%",
+    "ws": "latest",
+    "ioredis": "latest",
+    "winston": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/jest": "latest",
+    "jest": "latest",
+    "prettier": "latest",
+    "ts-jest": "latest",
+    "ts-node": "latest",
+    "typescript": "latest"
+  },
+  "scripts": {
+    "dev": "ts-node ./node_modules/.bin/actionhero start",
+    "start": "actionhero start",
+    "actionhero": "actionhero",
+    "test": "jest",
+    "pretest": "npm run build && npm run lint",
+    "build": "tsc --declaration",
+    "lint": "prettier --check src/*/** __test__/*/**",
+    "pretty": "prettier --write src/*/** __test__/*/**"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {
+      "^.+\\.ts?$": "ts-jest"
+    }
+  }
+}
