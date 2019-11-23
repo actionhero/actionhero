@@ -262,7 +262,7 @@ export namespace task {
    * How many jobs are in the failed queue.
    * Will throw an error if redis cannot be reached.
    */
-  export async function ailedCount(): Promise<number> {
+  export async function failedCount(): Promise<number> {
     return api.resque.queue.failedCount();
   }
 
