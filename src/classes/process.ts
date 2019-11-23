@@ -307,8 +307,7 @@ export class Process {
       this.initialized = false;
 
       log("stopping process...", "notice");
-
-      await utils.sleep(1000);
+      await utils.sleep(100);
 
       this.stopInitializers.push(async () => {
         clearPidFile();
@@ -317,7 +316,7 @@ export class Process {
         // reset initializers to prevent duplicate check on restart
         this.initializers = {};
         api.running = false;
-        await utils.sleep(1000);
+        await utils.sleep(100);
       });
 
       try {
