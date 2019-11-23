@@ -4,6 +4,13 @@ import { api, config, task } from "./../index";
 
 export namespace specHelper {
   /**
+   * Generate a connection to use in your tests
+   */
+  export async function buildConnection() {
+    return api.specHelper.Connection.createAsync();
+  }
+
+  /**
    * Run an action via the specHelper server.
    */
   export async function runAction(
@@ -15,7 +22,7 @@ export namespace specHelper {
     if (input.id && input.type === "testServer") {
       connection = input;
     } else {
-      connection = await api.specHelper.Connection.createAsync();
+      connection = await specHelper.buildConnection();
       connection.params = input;
     }
 
@@ -34,7 +41,7 @@ export namespace specHelper {
    * Mock a specHelper connection requesting a file from the server.
    */
   export async function getStaticFile(file: string): Promise<any> {
-    const connection = await api.specHelper.Connection.createAsync();
+    const connection = await specHelper.buildConnection();
     connection.params.file = file;
 
     connection.messageCount = uuid.v4();
