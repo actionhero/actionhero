@@ -2,7 +2,15 @@ import * as glob from "glob";
 import * as path from "path";
 import { Plugin } from "node-resque";
 import * as TaskModule from "./../modules/task";
-import { api, log, utils, task, Initializer, watchFileAndAct } from "../index";
+import {
+  api,
+  log,
+  utils,
+  task,
+  Initializer,
+  typescript,
+  watchFileAndAct
+} from "../index";
 
 const taskModule = task;
 
@@ -157,13 +165,33 @@ export class Tasks extends Initializer {
       for (const pluginName in config.plugins) {
         if (config.plugins[pluginName].tasks !== false) {
           const pluginPath = config.plugins[pluginName].path;
-          utils
-            .ensureNoTsHeaderFiles(
-              glob.sync(path.join(pluginPath, "tasks", "**", "**/*(*.js|*.ts)"))
-            )
-            .forEach(f => {
-              api.tasks.loadFile(f, reload);
-            });
+
+          // old style at the root of the project
+          let files = glob.sync(
+            path.join(pluginPath, "actions", "**", "**/*(*.js|*.ts)")
+          );
+
+          // dist files if running in JS mode
+          if (!typescript) {
+            files = files.concat(
+              glob.sync(
+                path.join(pluginPath, "dist", "actions", "**", "**/*.js")
+              )
+            );
+          }
+
+          // src files if running in TS mode
+          if (typescript) {
+            files = files.concat(
+              glob.sync(
+                path.join(pluginPath, "src", "actions", "**", "**/*.ts")
+              )
+            );
+          }
+
+          utils.ensureNoTsHeaderFiles(files).forEach(f => {
+            api.tasks.loadFile(f, reload);
+          });
         }
       }
     };

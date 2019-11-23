@@ -11,6 +11,7 @@ import { id } from "./process/id";
 import { env } from "./process/env";
 import { pid, writePidFile, clearPidFile } from "./process/pid";
 import { watchFileAndAct, unWatchAllFiles } from "./process/watchFileAndAct";
+import { typescript } from "./process/typescript";
 
 let api: Api;
 let config: ConfigInterface = {};
@@ -88,12 +89,32 @@ export class Process {
     // load initializers from plugins
     for (const pluginName in config.plugins) {
       if (config.plugins[pluginName] !== false) {
-        const pluginPath = config.plugins[pluginName].path;
+        const pluginPath: string = config.plugins[pluginName].path;
+
+        // old style at the root of the project
         initializerFiles = initializerFiles.concat(
           glob.sync(
             path.join(pluginPath, "initializers", "**", "**/*(*.js|*.ts)")
           )
         );
+
+        // dist files if running in JS mode
+        if (!typescript) {
+          initializerFiles = initializerFiles.concat(
+            glob.sync(
+              path.join(pluginPath, "dist", "initializers", "**", "*.js")
+            )
+          );
+        }
+
+        // src files if running in TS mode
+        if (typescript) {
+          initializerFiles = initializerFiles.concat(
+            glob.sync(
+              path.join(pluginPath, "src", "initializers", "**", "*.ts")
+            )
+          );
+        }
       }
     }
 

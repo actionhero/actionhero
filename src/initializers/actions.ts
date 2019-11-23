@@ -6,7 +6,8 @@ import {
   utils,
   watchFileAndAct,
   Initializer,
-  Action
+  Action,
+  typescript
 } from "../index";
 import * as ActionModule from "./../modules/action";
 
@@ -41,11 +42,10 @@ export class Actions extends Initializer {
       globalMiddleware: []
     };
 
-    api.actions.loadFile = async (fullFilePath: string, reload: boolean) => {
-      if (reload === null) {
-        reload = false;
-      }
-
+    api.actions.loadFile = async (
+      fullFilePath: string,
+      reload: boolean = false
+    ) => {
       const loadMessage = action => {
         if (reload) {
           log(
@@ -127,13 +127,28 @@ export class Actions extends Initializer {
     for (const pluginName in config.plugins) {
       if (config.plugins[pluginName].actions !== false) {
         const pluginPath = config.plugins[pluginName].path;
+        // old style at the root of the project
         let files = glob.sync(
           path.join(pluginPath, "actions", "**", "**/*(*.js|*.ts)")
         );
-        files = utils.ensureNoTsHeaderFiles(files);
-        for (const j in files) {
-          await api.actions.loadFile(files[j]);
+
+        // dist files if running in JS mode
+        if (!typescript) {
+          files = files.concat(
+            glob.sync(path.join(pluginPath, "dist", "actions", "**", "*.js"))
+          );
         }
+
+        // src files if running in TS mode
+        if (typescript) {
+          files = files.concat(
+            glob.sync(path.join(pluginPath, "src", "actions", "**", "*.ts"))
+          );
+        }
+
+        utils
+          .ensureNoTsHeaderFiles(files)
+          .forEach(f => api.actions.loadFile(f));
       }
     }
   }
