@@ -66,7 +66,12 @@ export const DEFAULT = {
       startingChatRooms: {
         // format is {roomName: {authKey, authValue}}
         // 'secureRoom': {authorized: true},
-      }
+      },
+
+      // Polyfill the api object with all of the Actionhero namespaces.
+      // NOTE: This behavior will be deprecated in the furture and the
+      // default will be changed to false.
+      legacyApiPolyfill: true
     };
   }
 };
