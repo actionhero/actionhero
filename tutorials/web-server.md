@@ -151,6 +151,31 @@ exports['default'] = {
         },
         // When true, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null.
         // You can also set connection.rawConnection.responseHttpCode to specify a code per request.
+        /**
+         *  To create custom Error objects with custom response code you need to add the your response status code in the error object.
+         *  // Note: Error code in error object will overwrite the response's status code.
+         *  @example
+         *
+         *       // Your action
+         *         {
+         *          ...
+         *          const raiseNotFound = <your-condition>
+         *          if(raiseNotFound) {
+         *            const notFoundError = new Error(<msg>)
+         *            notFoundError.code = 404
+         *            throw notFoundError
+         *          }
+         *          ...
+         *          const raiseSuspiciousActivity = <your-condition>
+         *          if(raiseSuspiciousActivity) {
+         *              const suspiciousActivity = new Error(<msg>)
+         *              suspiciousActivity.code = 402
+         *              throw suspiciousActivity
+         *          }
+         *          ...
+         *        }
+         *        // Only the values between 100 and 599 are accepted for status code, otherwise, it will be ignored.
+         *  */
         returnErrorCodes: true,
         // should this node server attempt to gzip responses if the client can accept them?
         // this will slow down the performance of actionhero, and if you need this funcionality, it is recommended that you do this upstream with nginx or your load balancer

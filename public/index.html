@@ -1,136 +1,138 @@
 <html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta http-equiv="content-language" content="en" />
-    <meta name="description" content="ActionHero.js" />
-    <link rel="stylesheet" href="/public/css/cosmo.css" type="text/css">
-    <link rel="icon" href="/public/favicon.ico">
-    <title>ActionHero.js</title>
 
-    <script src="/public/javascript/ActionheroWebsocketClient.min.js"></script>
-  </head>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <meta http-equiv="content-language" content="en" />
+  <meta name="description" content="ActionHero.js" />
+  <link rel="stylesheet" href="/public/css/cosmo.css" type="text/css">
+  <link rel="icon" href="/public/favicon.ico">
+  <title>ActionHero.js</title>
 
-  <body>
-    <div class="alert alert-warning" style="display:none; font-weight:bold; position:fixed; top: 0px; left: 0px; width: 100%; z-index:9999; " id="error-container">
-      <p id="error"/>
-    </div>
+  <script src="/public/javascript/ActionheroWebsocketClient.min.js"></script>
+</head>
 
-    <div class="container">
-      <br />
-      <div class="jumbotron">
-        <div class="row">
-          <div class="col-md-4">
-            <img src="/public/logo/actionhero.png" height="300" />
-          </div>
-          <div class="col-md-8">
-            <h1>Your ActionHero Server is working.</h1>
-            <h2>Congratulations!</h2>
-          </div>
-        </div>
-      </div>
+<body>
+  <div class="alert alert-warning"
+    style="display:none; font-weight:bold; position:fixed; top: 0px; left: 0px; width: 100%; z-index:9999; "
+    id="error-container">
+    <p id="error" />
+  </div>
 
+  <div class="container">
+    <br />
+    <div class="jumbotron">
       <div class="row">
-
         <div class="col-md-4">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">This Server</h3>
-            </div>
-            <div class="panel-body">
-              <pre>
-  Server Name:        <span class="right" id="serverName"></span>
-  API Version:        <span class="right" id="serverVersion"></span>
-  Actionhero Version  <span class="right" id="actionheroVersion"></span>
-  Uptime (min):       <span class="right" id="uptime"></span>
-              </pre>
-            </div>
-          </div>
+          <img src="/public/logo/actionhero.png" style="max-width: 100%" />
         </div>
-
         <div class="col-md-8">
+          <h1>Your Actionhero Server is working.</h1>
+          <h2>Congratulations!</h2>
+          <br />
+          <br />
+          <p>ActionHero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks.
+          </p>
+          <p>ActionHero was built from the ground up to include all the features you expect from a modern API
+            framework. This includes all the features listed below and more. ActionHero also knows when to get out
+            of the way to allow you to customize your stack to fit your needs.</p>
+          <br />
+          <br />
           <div class="row">
-
-            <div class="col-md-12">
-              <div class="panel panel-default">
-                <div class="panel-heading">
-                  <h3 class="panel-title">About ActionHero</h3>
-                </div>
-                <div class="panel-body">
-                  <p>ActionHero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks.</p>
-                  <p>ActionHero was built from the ground up to include all the features you expect from a modern API framework. This includes all the features listed below and more.  ActionHero also knows when to get out of the way to allow you to customize your stack to fit your needs.</p>
-                </div>
-              </div>
-            </div>
-
             <div class="col-md-6">
               <a href="/chat.html" class="btn btn-primary">Try a realtime-chat with websockets</a>
             </div>
 
             <div class="col-md-6">
-              <a href="http://www.actionherojs.com" class="btn btn-primary">Learn More about ActionHero</a>
+              <a href="http://www.actionherojs.com" target="_blank" class="btn btn-success">Learn More about
+                ActionHero</a>
             </div>
           </div>
         </div>
-
       </div>
-
-      <hr />
-
-      <h2>Actions on This Server:</h2>
-      <row id="actions"></row>
-
     </div>
 
-    <script type="text/javascript">
-      var populateStatus = function(data){
-        if(data.serverInformation){
-          document.getElementById('serverVersion').innerHTML = data.serverInformation.apiVersion;
-          document.getElementById('serverName').innerHTML = data.serverInformation.serverName;
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card border-primary">
+          <div class="card-header">This Server</div>
+          <div class="card-body">
+            <pre class="card-text">
+  Server Name:        <span class="right" id="serverName"></span>
+  API Version:        <span class="right" id="serverVersion"></span>
+  Actionhero Version  <span class="right" id="actionheroVersion"></span>
+  Uptime (min):       <span class="right" id="uptime"></span>
+            </pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr />
+
+    <div class="row">
+      <div class="col-md-12">
+        <h2>Actions on This Server:</h2>
+
+        <div class="list-group" id="actions" />
+      </div>
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+    var populateStatus = function (data) {
+      if (data.serverInformation) {
+        document.getElementById('serverVersion').innerHTML = data.serverInformation.apiVersion;
+        document.getElementById('serverName').innerHTML = data.serverInformation.serverName;
+      }
+      document.getElementById('actionheroVersion').innerHTML = data.actionheroVersion;
+      document.getElementById('uptime').innerHTML = Math.round(data.uptime / 1000 / 60);
+    }
+
+    var populateDocumentation = function (data) {
+      for (var actionName in data.documentation) {
+        for (var version in data.documentation[actionName]) {
+          var action = data.documentation[actionName][version];
+          var row = '';
+          row += '<a href="/api/' + action.name + '?apiVersion=' + version + '" class="list-group-item list-group-item-action flex-column align-items-start>';
+          row += '  <div class="d-flex w-100 justify-content-between">';
+          row += '    <h3 class="mb-1">' + action.name + ' <small>v' + version + '</small></h3>';
+          row += '    </div>';
+          row += '   <p class="mb-1">' + action.description + '</p>';
+          row += '   <div class="row">';
+          row += '     <div class="col-md-6">';
+          row += '       <h5>Inputs</h5>';
+          row += '       <pre>' + JSON.stringify(action.inputs, null, 4) + '</pre></p>';
+          row += '     </div>';
+          row += '     <div class="col-md-6">';
+          row += '       <h5>Output Example</h5>';
+          row += '       <pre>' + JSON.stringify(action.outputExample, null, 4) + '</pre></p>';
+          row += '     </div>';
+          row += '   </div>';
+          row += '</a >'
+
+          document.getElementById('actions').innerHTML += row;
         }
-        document.getElementById('actionheroVersion').innerHTML = data.actionheroVersion;
-        document.getElementById('uptime').innerHTML = Math.round( data.uptime / 1000 / 60 );
       }
+    }
 
-      var populateDocumentation = function(data){
-        for(var actionName in data.documentation){
-          for(var version in data.documentation[actionName]){
-            var action = data.documentation[actionName][version];
-            var row = '';
-            row += '<div class="col-md-6">';
-            row += '  <div class="panel panel-default">';
-            row += '    <div class="panel-heading">';
-            row += '      <a href="/api/' + action.name + '?apiVersion=' + version + '"><h3 class="panel-title">' + action.name + ' (v' + version + ')</h3></a>';
-            row += '    </div>';
-            row += '    <div class="panel-body">';
-            row += '      <p><strong>Description: </strong>' + action.description + '</p>';
-            row += '      <p><strong>Inputs</strong>: <pre>' + JSON.stringify(action.inputs, null, 4) + '</pre></p>';
-            row += '      <p><strong>Output Example</strong>: <pre>' + JSON.stringify(action.outputExample, null, 4) + '</pre></p>';
-            row += '    </div>';
-            row += '  </div>';
-            row += '</div>';
+    var renderError = function (error) {
+      console.error(error)
+      document.getElementById('error').innerHTML = error.toString();
+      document.getElementById('error-container').style.display = 'block';
+    }
 
-            document.getElementById('actions').innerHTML += row;
-          }
-        }
-      }
+    var client = new ActionheroWebsocketClient();
+    client.action('showDocumentation', function (data) {
+      if (data.error) { return renderError(data.error); }
+      populateDocumentation(data)
+    });
 
-      var renderError = function (error) {
-        console.error(error)
-        document.getElementById('error').innerHTML = error.toString();
-        document.getElementById('error-container').style.display = 'block';
-      }
+    client.action('status', function (data) {
+      if (data.error) { return renderError(data.error); }
+      populateStatus(data)
+    });
+  </script>
+</body>
 
-      var client = new ActionheroWebsocketClient();
-      client.action('showDocumentation', function(data){
-        if(data.error){ return renderError(data.error); }
-        populateDocumentation(data)
-      });
-
-      client.action('status', function(data){
-        if(data.error){ return renderError(data.error); }
-        populateStatus(data)
-      });
-    </script>
-
-  </body>
 </html>

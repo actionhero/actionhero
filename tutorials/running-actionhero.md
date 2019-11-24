@@ -129,19 +129,19 @@ Descriptions:
 
 * version
   description: return the ActionHero version within this project
-  ```
+```
 
 ## Linking the ActionHero Binary
 
-ActionHero is not designed to function when installed globally.  Do not install ActionHero globally, using `npm install -g`.  Modern versions of NPM (v5+) allow you to also use the `npx` command, ie: `npx actionhero start cluster --workers=2`, which is a simple way to get to the ActionHero binary from the top-level of your project.  Otherwise defining `scripts` referencing actionhero in your `package.json` is the best way to run ActionHero:
+ActionHero is not designed to function when installed globally. Do not install ActionHero globally, using `npm install -g`. Modern versions of NPM (v5+) allow you to also use the `npx` command, ie: `npx actionhero start cluster --workers=2`, which is a simple way to get to the ActionHero binary from the top-level of your project. Otherwise defining `scripts` referencing actionhero in your `package.json` is the best way to run ActionHero:
 
 ```js
 {
   "name": "my ActionHero project",
   "scripts": {
     "start" : "actionhero start",
-    "help" : "actionhero help",
-    "pretest": "standard",
+    "dev" : "ts-node ./node_modules/.bin actionhero start",
+    "pretest": "prettier",
     "test" : "jest"
   }
 }
@@ -154,30 +154,30 @@ By default, ActionHero will use the settings found in the `exports.default` bloc
 
 The load order of configs is:
 
-* default values in `/config`
-* environment-specific values in `/config`
-* options passed in to boot with `actionhero.start({configChanges: configChanges})`
+- default values in `/config`
+- environment-specific values in `/config`
+- options passed in to boot with `actionhero.start({configChanges: configChanges})`
 
-You can `{configChanges: {}}` to a new ActionHero.Process' `start` or `initialize` methods.  This can be helpful when creating tests. When using CLI commands, you can also set `process.env.configChanges` or pass `--configChanges` on the command line. In these cases, `configChanges` should be stringified JSON.
+You can `{configChanges: {}}` to a new ActionHero.Process' `start` or `initialize` methods. This can be helpful when creating tests. When using CLI commands, you can also set `process.env.configChanges` or pass `--configChanges` on the command line. In these cases, `configChanges` should be stringified JSON.
 
 ```js
 // from ./config/namespace.js
-exports['default'] = {
-  namespace: function (api) {
+exports["default"] = {
+  namespace: function(api) {
     return {
       enabled: true,
       safe: false
-    }
+    };
   }
-}
+};
 
 exports.production = {
-  namespace: function (api) {
+  namespace: function(api) {
     return {
       safe: true
-    }
+    };
   }
-}
+};
 ```
 
 In the example above, we are defining `api.config.namespace.enabled` and `api.config.namespace.safe`. In all environments (NODE_ENV) `api.config.namespace.enabled = true` Only in production would `api.config.namespace.safe = true`, it is `false` everywhere else.
@@ -187,30 +187,32 @@ In the example above, we are defining `api.config.namespace.enabled` and `api.co
 While **NOT** encouraged, you can always instantiate an ActionHero process yourself. Perhaps you wish to combine ActionHero with an existing project. Here is how! Take note that using these methods will not work for a cluster process, and only a single instance will be started within your project.
 
 ```js
-const {Process} = require("actionhero")
-const actionhero = new Process()
+const { Process } = require("actionhero");
+const actionhero = new Process();
 
-const sleep = (time) => {
-  if (!time) { time = 5000 }
-  return new Promise((resolve) => {
-    setTimeout(resolve, time)
-  })
-}
+const sleep = time => {
+  if (!time) {
+    time = 5000;
+  }
+  return new Promise(resolve => {
+    setTimeout(resolve, time);
+  });
+};
 
-const api = await actionhero.start({configChanges})
+const api = await actionhero.start({ configChanges });
 
-api.log(" >> Boot Successful!")
-await sleep()
+api.log(" >> Boot Successful!");
+await sleep();
 
-api.log(" >> restarting server...")
-await actionhero.restart()
-api.log(" >> Restarted!")
-await sleep()
+api.log(" >> restarting server...");
+await actionhero.restart();
+api.log(" >> Restarted!");
+await sleep();
 
-api.log(" >> stopping server...")
-await actionhero.stop()
-api.log(" >> Stopped!")
-process.exit()
+api.log(" >> stopping server...");
+await actionhero.stop();
+api.log(" >> Stopped!");
+process.exit();
 ```
 
 Feel free to look at the source of `./node_modules/actionhero/bin/methods/start` to see how the main ActionHero server is implemented for more information.
@@ -264,18 +266,18 @@ ActionHero is intended to be run on `*nix` operating systems. The `start` and `s
 
 **actionhero start**
 
-*   `kill` / `term` / `int` : Process will attempt to "gracefully" shut down. That is, the worker will close all server connections (possibly sending a shutdown message to clients, depending on server type), stop all task workers, and eventually shut down. This action may take some time to fully complete.
-*   `USR2`: Process will restart itself. The process will preform the "graceful shutdown" above, and they restart.
+- `kill` / `term` / `int` : Process will attempt to "gracefully" shut down. That is, the worker will close all server connections (possibly sending a shutdown message to clients, depending on server type), stop all task workers, and eventually shut down. This action may take some time to fully complete.
+- `USR2`: Process will restart itself. The process will preform the "graceful shutdown" above, and they restart.
 
 **actionhero start cluster**
 
 All signals should be sent to the cluster master process. You can still signal the termination of a worker, but the cluster manager will start a new one in its place.
 
-*   `kill` / `term` / `int`: Will signal the master to "gracefully terminate" all workers. Master will terminate once all workers have completed
-*   `HUP` : Restart all workers.
-*   `USR2` : "Hot reload". Worker will kill off existing workers one-by-one, and start a new worker in their place. This is used for 0-downtime restarts. Keep in mind that for a short while, your server will be running both old and new code while the workers are rolling.
-*   `TTOU`: remove one worker
-*   `TTIN`: add one worker
+- `kill` / `term` / `int`: Will signal the master to "gracefully terminate" all workers. Master will terminate once all workers have completed
+- `HUP` : Restart all workers.
+- `USR2` : "Hot reload". Worker will kill off existing workers one-by-one, and start a new worker in their place. This is used for 0-downtime restarts. Keep in mind that for a short while, your server will be running both old and new code while the workers are rolling.
+- `TTOU`: remove one worker
+- `TTIN`: add one worker
 
 ## Shutting Down
 
@@ -285,4 +287,4 @@ Because things sometimes go wrong, `actionhero start` and `actionhero start clus
 
 ## Windows Specific Notes
 
-*   Sometimes ActionHero may require a git-based module (rather than a NPM module). You will need to have git installed. Depending on how you installed git, it may not be available to the node shell. Be sure to have also installed references to git. You can also run node/npm install from the git shell.*   Sometimes, npm will not install the actionhero binary @ `/node_modules/.bin/actionhero`, but rather it will attempt to create a windows executable and wrapper. You can launch ActionHero directly with `./node_modules/actionhero/bin/actionhero`
+- Sometimes ActionHero may require a git-based module (rather than a NPM module). You will need to have git installed. Depending on how you installed git, it may not be available to the node shell. Be sure to have also installed references to git. You can also run node/npm install from the git shell.\* Sometimes, npm will not install the actionhero binary @ `/node_modules/.bin/actionhero`, but rather it will attempt to create a windows executable and wrapper. You can launch ActionHero directly with `./node_modules/actionhero/bin/actionhero`

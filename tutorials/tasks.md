@@ -184,7 +184,7 @@ You can create you own tasks by placing them in a `./tasks/` directory at the ro
 
 `task.run` contains the actual work that the task does. It takes the following arguments:
 
-* `params`: An array of parameters that the task was enqueued with. This is whatever was passed as the second argument to `api.tasks.enqueue`.  
+* `params`: An array of parameters that the task was enqueued with. This is whatever was passed as the second argument to `api.tasks.enqueue`.
 
 Throwing an error will stop the task, and log it as a failure in resque, which you can inspect via the various [tasks](api.tasks.html) methods.  If a periodic task throws an error, it will not be run again.
 
@@ -246,6 +246,29 @@ const result = api.tasks.cleanOldWorkers(removeStuckWorkersOlderThan)
 if(Object.keys(result).length > 0){
   api.log('removed stuck workers with errors: ', 'info', result);
 }
+```
+
+## Testing Tasks
+
+Taks are expected to be as lean as possible, with most of thier logic living in other methods you've created via initializers or middleware (or included via packages).  This helps keep your task logic concicse, limited to excecution and scueduling... and the excecuting functions easier to test.
+
+Actionhero ships with a method to help you check if a task is enqueued, `api.specHelper.findEnqueuedTasks(taskName)`:
+
+```js
+describe('task testing', () => {
+  beforeEach(async () => {
+    // if you are testing taks, you likely want to start each test with an empty test redis
+    await api.resque.queue.connection.redis.flushdb()
+  })
+
+  test('detect that a task was enqueued to run now', async () => {
+    await api.tasks.enqueue('regularTask', { word: 'testing' })
+    const found = await api.specHelper.findEnqueuedTasks('regularTask')
+    expect(found.length).toEqual(1)
+    expect(found[0].args[0].word).toEqual('testing')
+    expect(found[0].timestamp).toBeNull()
+  })
+})
 ```
 
 ## Notes

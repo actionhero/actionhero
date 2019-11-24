@@ -1,0 +1,19 @@
+import { Initializer, api } from "actionhero";
+
+export class MyInitializer extends Initializer {
+  constructor() {
+    super();
+    this.name = "%%name%%";
+    this.loadPriority = %%loadPriority%%;
+    this.startPriority = %%startPriority%%;
+    this.stopPriority = %%stopPriority%%;
+  }
+
+  async initialize() {
+    api["%%name%%"] = {};
+  }
+
+  async start() {}
+
+  async stop() {}
+}

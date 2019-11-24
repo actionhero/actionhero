@@ -5,7 +5,6 @@
 ```js
 // A simple Action
 
-'use strict'
 const {Action, api} = require('actionhero')
 
 module.exports = class MyAction extends Action {
@@ -362,6 +361,7 @@ data = {
   params: { action: 'randomNumber', apiVersion: 1 },
   actionStartTime: 123,
   response: {},
+  session: {}
 }
 ```
 
@@ -385,7 +385,7 @@ You can [learn more about middleware here](tutorial-middleware.html).
 
 ## Notes
 
-* Actions' run method are async, and have `data` as their only argument.  Completing an action is as simple returning from the method.  
+* Actions' run method are async, and have `data` as their only argument.  Completing an action is as simple returning from the method.
 * If you throw an error, be sure that it is a `new Error()` object, and not a string.  Thrown errors will automatically be sent to the client in `response.error`. Also, throw Errors are processed at `config/errors.js` in `genericError(data, error)`. Here you can check your error add to the response (`requestIds`, status codes, etc.)
 * The metadata `outputExample` is used in reflexive and self-documenting actions in the API, available via the `documentation` verb (and showDocumenation action).
 * You can limit how many actions a persistent client (websocket, tcp, etc) can have pending at once with `api.config.general.simultaneousActions`
