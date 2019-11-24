@@ -31,10 +31,6 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "@types/glob": "^7.1.1",
-    "@types/ioredis": "^4.0.19",
-    "@types/node": "^12.12.7",
-    "@types/uuid": "^3.4.6",
     "browser_fingerprint": "^1.0.5",
     "dot-prop": "^5.2.0",
     "etag": "^1.8.1",
@@ -55,6 +51,10 @@
   },
   "devDependencies": {
     "@types/jest": "^24.0.22",
+    "@types/glob": "^7.1.1",
+    "@types/ioredis": "^4.0.19",
+    "@types/node": "^12.12.7",
+    "@types/uuid": "^3.4.6",
     "docdash": "1.1.1",
     "jest": "^24.9.0",
     "jest-environment-webdriver": "^0.2.0",
