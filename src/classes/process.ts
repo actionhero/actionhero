@@ -9,8 +9,7 @@ import { utils } from "../modules/utils";
 
 import { id } from "./process/id";
 import { env } from "./process/env";
-import { pid, writePidFile, clearPidFile } from "./process/pid";
-import { watchFileAndAct, unWatchAllFiles } from "./process/watchFileAndAct";
+import { writePidFile, clearPidFile } from "./process/pid";
 import { typescript } from "./process/typescript";
 
 let api: Api;
@@ -158,14 +157,6 @@ export class Process {
         }
 
         const initializeFunction = async () => {
-          watchFileAndAct(file, async () => {
-            log(
-              `*** Rebooting due to initializer change (${file}) ***`,
-              "info"
-            );
-            await this.restart();
-          });
-
           if (typeof initializer.initialize === "function") {
             log(`Loading initializer: ${initializer.name}`, "debug", file);
 
@@ -320,7 +311,6 @@ export class Process {
       });
 
       try {
-        unWatchAllFiles();
         await utils.asyncWaterfall(this.stopInitializers);
       } catch (error) {
         return this.fatalError(error, "stop");

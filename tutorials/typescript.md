@@ -139,11 +139,16 @@ ie: `import { log, config } from 'actionhero'`
 - id (the server’s id)
 - env (development, staging, production)
 - localize (method that accepts a string and a connection)
-- watchFileAndAct / unWatchAllFiles (methods)
 
 ### The API object
 
 what remains on the API object are truly things about your API - actions, tasks, servers, initializers. And now these elements are very typesafe. **_You can no longer add and remove things randomly to the API object_**. This means that in your project, you should create imports/and exorts directly and share them with your actions and tasks.
+
+### Polyfill
+
+A polyfill will be included in the first few releases of actionhero in typescript to port the new exports back to the `api` object. A warning will be displayed.
+
+A new config setting to enable or disable the plyfill is located at `config.general.legacyApiPolyfill`
 
 ## Config
 
@@ -153,3 +158,9 @@ what remains on the API object are truly things about your API - actions, tasks,
 ## Chat
 
 - `chatRoom.sanitizeMemberDetails()` is no longer overridable/customizable.
+
+## WatchFileAndAct
+
+We have removed the custom module loaders for Actionhero's development mode, `watchFileAndAct`. Now that we need to transpile our applications from typescript to javascriopt, we can rely on some of the excellent packages already developed for this purpose. Newly generated Actionhero projects will make use of `node-ts-dev` (https://github.com/whitecolor/ts-node-dev) to boot and reload your projects when running in typescript mode.
+
+Javascript proejcts can do a simialr thing via the nodemon (https://nodemon.io/) package

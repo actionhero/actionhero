@@ -1,14 +1,6 @@
 import * as glob from "glob";
 import * as path from "path";
-import {
-  api,
-  log,
-  utils,
-  watchFileAndAct,
-  Initializer,
-  Action,
-  typescript
-} from "../index";
+import { api, log, utils, Initializer, Action, typescript } from "../index";
 import * as ActionModule from "./../modules/action";
 
 export interface ActionsApi {
@@ -59,21 +51,6 @@ export class Actions extends Initializer {
           );
         }
       };
-
-      watchFileAndAct(fullFilePath, async () => {
-        if (!config.general.developmentModeForceRestart) {
-          // reload by updating in-memory copy of our action
-          api.actions.loadFile(fullFilePath, true);
-          api.params.buildPostVariables();
-          api.routes.loadRoutes();
-        } else {
-          log(
-            `*** Rebooting due to action change (${fullFilePath}) ***`,
-            "info"
-          );
-          await api.commands.restart();
-        }
-      });
 
       let action;
 

@@ -15,22 +15,11 @@ Development mode, when enabled, will poll for changes in your actions, tasks and
 Changes to actions and tasks will override the existing version in memory. Changes to a configs, initializers and servers will reboot the actionhero process automatically.
 You can also force a reboot on change of actions and tasks with `api.config.developmentModeForceRestart` enabled.
 
-*   Development Mode uses `fs.watchFile()` and may not work on all OSs / file systems.
-*   New files won't be loaded in, only existing files when the app was booted will be monitored
-*   As deleting a file might crash your application, we will not attempt to re-load deleted files
-*   If you have changed the `task.frequency` of a periodic task, you will continue to use the old value until the task fires at least once after the change
-*   Changing configs, initializers, or servers, will attempt to do a "full" reboot the server rather than just reload that component.
-
-## Watching Custom Files
-
-```js
-api.watchFileAndAct(path_to_file, () => {
-  api.log('rebooting due to config change: ' + path_to_file, 'info')
-  api.commands.restart()
-});
-```
-
-You can use ActionHero's `api.watchFileAndAct()` method to watch additional files your application may have.  Use this to extend developmentMode when adding new types of files, like database models.
+- Development Mode uses `fs.watchFile()` and may not work on all OSs / file systems.
+- New files won't be loaded in, only existing files when the app was booted will be monitored
+- As deleting a file might crash your application, we will not attempt to re-load deleted files
+- If you have changed the `task.frequency` of a periodic task, you will continue to use the old value until the task fires at least once after the change
+- Changing configs, initializers, or servers, will attempt to do a "full" reboot the server rather than just reload that component.
 
 ## Debugging
 
@@ -66,13 +55,13 @@ Running "console" task
 ‘status' ]
 ```
 
-ActionHero has a command-line interface called a REPL! This means you can spin up a new instance of ActionHero and manually call all the methods on the `api` namespace. This combined with the new RPC tools make this a powerful debugging and development tool. Running `actionhero console` will load up a version of ActionHero in your terminal where you have access to the `api` object. This version of the server will `boot`, `initialize`, and `start`, but will skip booting any `servers`.  You will be connected to any databases per your initializers.
+ActionHero has a command-line interface called a REPL! This means you can spin up a new instance of ActionHero and manually call all the methods on the `api` namespace. This combined with the new RPC tools make this a powerful debugging and development tool. Running `actionhero console` will load up a version of ActionHero in your terminal where you have access to the `api` object. This version of the server will `boot`, `initialize`, and `start`, but will skip booting any `servers`. You will be connected to any databases per your initializers.
 
 The REPL will:
 
-*   source `NODE_ENV` properly to load the config
-*   will connect to redis and load any user-defined initializers
-*   will load any plugins
-*   will **not** boot any servers
+- source `NODE_ENV` properly to load the config
+- will connect to redis and load any user-defined initializers
+- will load any plugins
+- will **not** boot any servers
 
 If you are familiar with rails, this is very similar to `rails console`
