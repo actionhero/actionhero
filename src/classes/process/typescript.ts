@@ -10,7 +10,7 @@ function isTypescript(): boolean {
 
   // are we running via a ts-node/ts-node-dev shim?
   const lastArg = process.execArgv[process.execArgv.length - 1];
-  if (lastArg && path.parse(lastArg).name.indexOf("ts-node") > 0) {
+  if (lastArg && path.parse(lastArg).name.indexOf("ts-node") >= 0) {
     return true;
   }
 
