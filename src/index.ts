@@ -28,10 +28,6 @@ export { actionheroVersion } from "./classes/process/actionheroVersion";
 export { projectRoot } from "./classes/process/projectRoot";
 export { typescript } from "./classes/process/typescript";
 export { id } from "./classes/process/id";
-export {
-  watchFileAndAct,
-  unWatchAllFiles
-} from "./classes/process/watchFileAndAct";
 
 // API object to hold connections, actions, tasks, initializers, and servers
 import { Api } from "./classes/api";

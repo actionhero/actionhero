@@ -2,15 +2,7 @@ import * as glob from "glob";
 import * as path from "path";
 import { Plugin } from "node-resque";
 import * as TaskModule from "./../modules/task";
-import {
-  api,
-  log,
-  utils,
-  task,
-  Initializer,
-  typescript,
-  watchFileAndAct
-} from "../index";
+import { api, log, utils, task, Initializer, typescript } from "../index";
 
 const taskModule = task;
 
@@ -44,16 +36,6 @@ export class Tasks extends Initializer {
     };
 
     api.tasks.loadFile = (fullFilePath: string, reload: boolean = false) => {
-      watchFileAndAct(fullFilePath, async () => {
-        if (!config.general.developmentModeForceRestart) {
-          // reload by updating in-memory copy of our task
-          api.tasks.loadFile(fullFilePath, true);
-        } else {
-          log(`*** Rebooting due to task change (${fullFilePath}) ***`, "info");
-          await api.commands.restart();
-        }
-      });
-
       let task;
       let collection = require(fullFilePath);
       for (const i in collection) {
