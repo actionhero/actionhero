@@ -4,6 +4,7 @@ let host = process.env.REDIS_HOST || "127.0.0.1";
 let port = process.env.REDIS_PORT || 6379;
 let db = process.env.REDIS_DB || process.env.JEST_WORKER_ID || "0";
 let password = process.env.REDIS_PASSWORD || null;
+const maxBackoff = 1000;
 
 if (process.env.REDIS_URL) {
   const parsed = new URL(process.env.REDIS_URL);
@@ -33,7 +34,15 @@ export const DEFAULT = {
       password,
       db: parseInt(db),
       // you can learn more about retryStrategy @ https://github.com/luin/ioredis#auto-reconnect
-      retryStrategy: null
+      retryStrategy: times => {
+        if (times === 1) {
+          console.error(
+            "Unable to connect to Redis - please check your Redis config!"
+          );
+          return 5000;
+        }
+        return Math.min(times * 50, maxBackoff);
+      }
     };
 
     return {
