@@ -4,7 +4,6 @@ import * as path from "path";
 import * as fs from "fs";
 import * as optimist from "optimist";
 import { spawn } from "child_process";
-import { projectRoot } from "./../classes/process/projectRoot";
 
 interface RunnerInputs {
   [propName: string]: any;
@@ -14,6 +13,22 @@ interface Runner {
   name: string;
   inputs: RunnerInputs;
 }
+
+// cnanot import this until we know where to load from!
+function determineProjectRoot() {
+  let projectRoot = process.cwd();
+  if (process.env.project_root) {
+    projectRoot = process.env.project_root;
+  } else if (process.env.projectRoot) {
+    projectRoot = process.env.projectRoot;
+  } else if (process.env.PROJECT_ROOT) {
+    projectRoot = process.env.PROJECT_ROOT;
+  }
+
+  return projectRoot;
+}
+
+const projectRoot = determineProjectRoot();
 
 (async () => {
   const bootFilePaths = [
