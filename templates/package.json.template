@@ -23,6 +23,7 @@
     "typescript": "latest"
   },
   "scripts": {
+    "postinstall": "npm run build",
     "dev": "ts-node-dev --transpile-only ./node_modules/.bin/actionhero start",
     "start": "actionhero start",
     "actionhero": "actionhero",
