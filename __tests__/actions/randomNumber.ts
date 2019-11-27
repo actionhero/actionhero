@@ -1,13 +1,13 @@
 import { Process, specHelper } from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 
 describe("Action", () => {
   describe("randomNumber", () => {
     beforeAll(async () => {
-      api = await actionhero.start();
+      await actionhero.start();
     });
+
     afterAll(async () => {
       await actionhero.stop();
     });
