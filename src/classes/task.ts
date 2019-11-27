@@ -25,6 +25,10 @@ export abstract class Task {
   frequency: number;
   /**The Middleware specific to this Task (default: []).  Middleware is descibed by the string names of the middleware */
   middleware: Array<string>;
+  /**Plugins from node-resque to use on this task (default: []).  Plugins like `QueueLock can be applied` */
+  plugins: Array<string>;
+  /**Options for the node-resque plugins. */
+  pluginOptions: Array<string>;
   /**The default queue to run this Task on (default: 'default') */
   queue: string;
   /**Re-enqueuing a periodic task in the case of an exception.  (default: false) */
@@ -57,6 +61,8 @@ export abstract class Task {
       frequency: 0,
       queue: "default",
       middleware: [],
+      plugins: [],
+      pluginOptions: [],
       reEnqueuePeriodicTaskIfException: true
     };
   }
