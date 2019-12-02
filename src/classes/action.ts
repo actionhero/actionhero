@@ -27,21 +27,21 @@ export abstract class Action {
   /**The description of the Action (default this.name)*/
   description: string;
   /**The version of this Action (default: 1) */
-  version: number;
+  version: number | string;
   //*An example response payload  (default: {})
-  outputExample: object | null;
+  outputExample: object;
   /**The inputs of the Action (default: {}) */
-  inputs: Inputs | null;
+  inputs: Inputs;
   /**The Middleware specifit to this Action (default: []).  Middleware is descibed by the string names of the middleware. */
-  middleware: Array<string> | null;
+  middleware: Array<string>;
   /**Are there connections from any servers which cannot use this Action (default: [])? */
-  blockedConnectionTypes: Array<string> | null;
+  blockedConnectionTypes: Array<string>;
   /**Under what level should connections to this Action be logged (default 'info')? */
-  logLevel: string | null;
+  logLevel: string;
   /**If this Action is responding to a `web` request, and that request has a file extension like *.jpg, should ActionHero set the response headers to match that extension (default: true)? */
-  matchExtensionMimeType: boolean | null;
+  matchExtensionMimeType: boolean;
   /**Should this Action appear in api.documenation.documenation? (default: true)? */
-  toDocument: boolean | null;
+  toDocument: boolean;
 
   constructor() {
     // Only in files required by `index.js` do we need to delay the loading of the API object
