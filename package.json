@@ -44,15 +44,15 @@
     "optimist": "^0.6.1",
     "primus": "^7.3.4",
     "qs": "^6.9.1",
-    "uglify-js": "^3.7.0",
+    "uglify-js": "^3.7.1",
     "uuid": "^3.3.3",
     "winston": "^3.2.1",
     "ws": "^7.2.0"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",
-    "@types/ioredis": "^4.0.19",
-    "@types/jest": "^24.0.22",
+    "@types/ioredis": "^4.0.20",
+    "@types/jest": "^24.0.23",
     "@types/node": "^12.12.14",
     "@types/uuid": "^3.4.6",
     "docdash": "1.1.1",
