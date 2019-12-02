@@ -27,7 +27,7 @@ export abstract class Action {
   /**The description of the Action (default this.name)*/
   description: string;
   /**The version of this Action (default: 1) */
-  version: number;
+  version: number | string;
   //*An example response payload  (default: {})
   outputExample: object;
   /**The inputs of the Action (default: {}) */
