@@ -1,5 +1,5 @@
 /**
- Compare the first n elements of an array with another, logner array
+ Compare the first n elements of an array with another, longer array
 */
 export function arrayStartingMatch(a: Array<any>, b: Array<any>): boolean {
   if (a.length === 0) {

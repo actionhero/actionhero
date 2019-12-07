@@ -25,12 +25,12 @@ function buildConsoleLogger(level = "info") {
 }
 
 function stringifyExtraMessagePropertiesForConsole(info) {
-  const skpippedProperties = ["message", "timestamp", "level"];
+  const skippedProperties = ["message", "timestamp", "level"];
   let response = "";
 
   for (const key in info) {
     const value = info[key];
-    if (skpippedProperties.includes(key)) {
+    if (skippedProperties.includes(key)) {
       continue;
     }
     if (value === undefined || value === null || value === "") {
@@ -46,7 +46,7 @@ function buildFileLogger(
   path,
   level = "info",
   maxFiles = undefined,
-  maxsize = 20480
+  maxSize = 20480
 ) {
   return function(config) {
     const filename = `${path}/${config.process.id}-${config.process.env}.log`;
@@ -61,7 +61,7 @@ function buildFileLogger(
       transports: [
         new winston.transports.File({
           filename,
-          maxsize,
+          maxSize,
           maxFiles
         })
       ]

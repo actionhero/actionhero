@@ -97,8 +97,8 @@ export namespace specHelper {
 
   /**
    * Use the specHelper to find enqueued instances of a task
-   * This will return an array of intances of the task which have been enqueued either in the normal queues or delayed queues
-   * If a task is enqued in a delayed queue, it will have a 'timestamp' propery
+   * This will return an array of instances of the task which have been enqueued either in the normal queues or delayed queues
+   * If a task is enqueued in a delayed queue, it will have a 'timestamp' property
    * i.e. [ { class: 'regularTask', queue: 'testQueue', args: [ [Object] ] } ]
    */
   export async function findEnqueuedTasks(taskName: string) {

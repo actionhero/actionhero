@@ -1,5 +1,5 @@
 /**
- * Is the JS Object passed in truly just an obejct?
+ * Is the JS Object passed in truly just an object?
  */
 export function isPlainObject(o: any) {
   const safeTypes = [

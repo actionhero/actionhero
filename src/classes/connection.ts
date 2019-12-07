@@ -4,7 +4,7 @@ import { config } from "./../modules/config";
 import { i18n } from "../modules/i18n";
 
 /**
- * The generic represenation of a connection for all server types is an ActionHero.Connection.  You will never be creating these yourself via an action or task, but you will find them in your Actons and Action Middleware.
+ * The generic representation of a connection for all server types is an ActionHero.Connection.  You will never be creating these yourself via an action or task, but you will find them in your Actions and Action Middleware.
  */
 export class Connection {
   /**A unique string identifer for this connection. */
@@ -135,7 +135,7 @@ export class Connection {
   }
 
   /**
-   * Localize a key for this connection's locale.  Keys usually look like `messages.errors.notFound`, and are defined in your locales directory.  Strings can be interploated as well, connection.localize('the count was {{count}}', {count: 4})
+   * Localize a key for this connection's locale.  Keys usually look like `messages.errors.notFound`, and are defined in your locales directory.  Strings can be interpolated as well, connection.localize('the count was {{count}}', {count: 4})
    */
   localize(message: string) {
     // this.locale will be sourced automatically
@@ -147,14 +147,14 @@ export class Connection {
    * Uses Server#processFile and will set `connection.params.file = path`
    */
   async sendFile(path: string) {
-    throw new Error("not implamented");
+    throw new Error("not implemented");
   }
 
   /**
    * Send a message to a connection.  Uses Server#sendMessage.
    */
   async sendMessage(message: string | object | Array<any>, verb?: string) {
-    throw new Error("not implamented");
+    throw new Error("not implemented");
   }
 
   private generateID() {
@@ -224,7 +224,7 @@ export class Connection {
         params: JSON.stringify(words)
       });
 
-      // TODO: investigate allowedVerbs being an array of Constatnts or Symbols
+      // TODO: investigate allowedVerbs being an array of Constants or Symbols
 
       switch (verb) {
         case "quit":

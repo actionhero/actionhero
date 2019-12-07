@@ -21,7 +21,7 @@ With that in mind, all new features to ActionHero must also include additions to
 **Every contribution to the codebase should have an associated test**
 
 Be sure that your changes pass the test suite! Run `npm test` to run the full test suite.
-You will need redis and node.js installed. We also have an integration which relies on chromedriver (an automated chrome browser). You can install this on OSX via `brew install chromedriver` No other external dependancies are needed.
+You will need redis and node.js installed. We also have an integration which relies on chromedriver (an automated chrome browser). You can install this on OSX via `brew install chromedriver` No other external dependencies are needed.
 
 If you need help writing tests, please ask for help in the [slack team](http://slack.actionherojs.com)
 

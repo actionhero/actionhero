@@ -9,11 +9,11 @@ export const DEFAULT = {
       serverName: packageJSON.name,
       // A unique token to your application that servers will use to authenticate to each other
       serverToken: "change-me",
-      // the redis prefix for actionhero's cache objects
+      // the redis prefix for Actionhero cache objects
       cachePrefix: "actionhero:cache:",
-      // the redis prefix for actionhero's cache/lock objects
+      // the redis prefix for Actionhero cache/lock objects
       lockPrefix: "actionhero:lock:",
-      // how long will a lock last before it exipres (ms)?
+      // how long will a lock last before it expires (ms)?
       lockDuration: 1000 * 10, // 10 seconds
       // Watch for changes in actions, configs, initializers, servers and tasks; and reload/restart them on the fly
       developmentMode: true,

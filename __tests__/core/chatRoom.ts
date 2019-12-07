@@ -173,7 +173,7 @@ describe("Core", () => {
         }
       });
 
-      test("will not add a member to a non-existant room", async () => {
+      test("will not add a member to a non-existent room", async () => {
         const client = await specHelper.buildConnection();
         expect(client.rooms).toHaveLength(0);
         try {
@@ -222,7 +222,7 @@ describe("Core", () => {
         await chatRoom.destroy("newRoom");
         expect(client.rooms).toHaveLength(0);
 
-        // testing for the recepit of this message is a race condition with room.destroy and boradcast in test
+        // testing for the receipt of this message is a race condition with room.destroy and broadcast in test
         // client.messages[1].message.should.equal('this room has been deleted')
         // client.messages[1].room.should.equal('newRoom')
 
@@ -364,7 +364,7 @@ describe("Core", () => {
           expect(lastMessage.message).toEqual("MIDDLEWARE 1 MIDDLEWARE 2");
         });
 
-        test("say middleware can block excecution", async () => {
+        test("say middleware can block execution", async () => {
           chatRoom.addMiddleware({
             name: "chat middleware",
             say: (connection, room, messagePayload) => {
@@ -382,7 +382,7 @@ describe("Core", () => {
           expect(clientA.messages[0].welcome).toMatch(/Welcome/);
         });
 
-        test("join middleware can block excecution", async () => {
+        test("join middleware can block execution", async () => {
           chatRoom.addMiddleware({
             name: "chat middleware",
             join: (connection, room) => {
@@ -399,7 +399,7 @@ describe("Core", () => {
           }
         });
 
-        test("leave middleware can block excecution", async () => {
+        test("leave middleware can block execution", async () => {
           chatRoom.addMiddleware({
             name: "chat middleware",
             leave: (connection, room) => {

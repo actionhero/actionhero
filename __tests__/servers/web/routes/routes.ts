@@ -192,7 +192,7 @@ describe("Server: Web", () => {
       expect(body.matchedRoute.action).toEqual("mimeTestAction");
     });
 
-    test("route actions have the matched route availalbe to the action", async () => {
+    test("route actions have the matched route available to the action", async () => {
       const body = await request
         .get(url + "/api/mimeTestAction/thing.json")
         .then(toJson);
@@ -396,7 +396,7 @@ describe("Server: Web", () => {
       beforeAll(async () => {
         const tmpDir = os.tmpdir();
         const readStream = fs.createReadStream(source);
-        api.staticFile.searchLoactions.push(tmpDir);
+        api.staticFile.searchLocations.push(tmpDir);
 
         await new Promise(resolve => {
           readStream.pipe(
@@ -410,7 +410,7 @@ describe("Server: Web", () => {
 
       afterAll(() => {
         fs.unlinkSync(os.tmpdir() + path.sep + "actionhero with space.png");
-        api.staticFile.searchLoactions.pop();
+        api.staticFile.searchLocations.pop();
       });
 
       test("will decode %20 or plus sign to a space so that file system can read", async () => {

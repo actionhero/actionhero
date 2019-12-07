@@ -899,12 +899,12 @@ describe("Server: Web", () => {
         fs.createReadStream(source).pipe(
           fs.createWriteStream(os.tmpdir() + path.sep + "tmpTestFile.html")
         );
-        api.staticFile.searchLoactions.push(os.tmpdir());
+        api.staticFile.searchLocations.push(os.tmpdir());
       });
 
       afterAll(() => {
         fs.unlinkSync(os.tmpdir() + path.sep + "tmpTestFile.html");
-        api.staticFile.searchLoactions.pop();
+        api.staticFile.searchLocations.pop();
       });
 
       test("works for secondary paths", async () => {

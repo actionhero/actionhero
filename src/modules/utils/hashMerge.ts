@@ -1,7 +1,7 @@
 import { isPlainObject } from "./isPlainObject";
 
 /**
- * Recursivley merge 2 Objects together.  Will resolve functions if they are present, unless the parent Object has the propery `_toExpand = false`.
+ * Recursively merge 2 Objects together.  Will resolve functions if they are present, unless the parent Object has the property `_toExpand = false`.
  * ActionHero uses this internally to construct and resolve the config.
  * Matching keys in B override A.
  */
@@ -16,7 +16,7 @@ export function hashMerge(
 
   for (i in a) {
     if (isPlainObject(a[i])) {
-      // can't be anded into above condition, or empty objects will overwrite and not merge
+      // can't be added into above condition, or empty objects will overwrite and not merge
       // also make sure empty objects are created
       c[i] = Object.keys(a[i]).length > 0 ? hashMerge(c[i], a[i], arg) : {};
     } else {
@@ -36,7 +36,7 @@ export function hashMerge(
   }
   for (i in b) {
     if (isPlainObject(b[i])) {
-      // can't be anded into above condition, or empty objects will overwrite and not merge
+      // can't be added into above condition, or empty objects will overwrite and not merge
       if (Object.keys(b[i]).length > 0) c[i] = hashMerge(c[i], b[i], arg);
       // make sure empty objects are only created, when no key exists yet
       else if (!(i in c)) c[i] = {};

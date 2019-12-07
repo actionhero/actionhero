@@ -459,7 +459,7 @@ describe("Server: Web Socket", () => {
             clientA.removeListener("say", listenerA);
             expect(response.message).toEqual(
               "Test Message - To: " + clientA.id
-            ); // clientA.id (Receiever)
+            ); // clientA.id (Receiver)
           };
 
           const listenerB = response => {
@@ -467,7 +467,7 @@ describe("Server: Web Socket", () => {
             clientB.removeListener("say", listenerB);
             expect(response.message).toEqual(
               "Test Message - To: " + clientB.id
-            ); // clientB.id (Receiever)
+            ); // clientB.id (Receiver)
           };
 
           const listenerC = response => {
@@ -475,7 +475,7 @@ describe("Server: Web Socket", () => {
             clientC.removeListener("say", listenerC);
             expect(response.message).toEqual(
               "Test Message - To: " + clientC.id
-            ); // clientC.id (Receiever)
+            ); // clientC.id (Receiver)
           };
 
           clientA.on("say", listenerA);
@@ -597,7 +597,7 @@ describe("Server: Web Socket", () => {
         config.general.simultaneousActions = originalSimultaneousActions;
       });
 
-      test("will not have param colisions", async () => {
+      test("will not have param collisions", async () => {
         let completed = 0;
         let started = 0;
         const sleeps = [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110];

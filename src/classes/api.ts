@@ -42,7 +42,7 @@ export class Api {
   specHelper: SpecHelperApi;
 
   // this is left in as way for older methods to still extend the api object
-  // going forward, all interfacaes should be exposed via export to be consumed directly
+  // going forward, all interfaces should be exposed via export to be consumed directly
   [key: string]: any;
 
   constructor() {

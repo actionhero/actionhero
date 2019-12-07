@@ -3,7 +3,7 @@
 import * as IORedis from "ioredis";
 import * as dotProp from "dot-prop";
 import { api, id, log, Initializer, redis } from "../index";
-import * as RedisModile from "./../modules/redis";
+import * as RedisModule from "./../modules/redis";
 
 export interface RedisApi {
   clients: {
@@ -47,7 +47,7 @@ export class Redis extends Initializer {
     };
 
     api.redis.subscriptionHandlers.do = async (
-      message: RedisModile.redis.PubSubMessage
+      message: RedisModule.redis.PubSubMessage
     ) => {
       if (
         !message.connectionId ||
@@ -61,9 +61,9 @@ export class Redis extends Initializer {
           );
         }
 
-        const callabaleApi = Object.assign(api, { log });
+        const callableApi = Object.assign(api, { log });
 
-        const method: Function = dotProp.get(callabaleApi, cmdParts.join("."));
+        const method: Function = dotProp.get(callableApi, cmdParts.join("."));
         let args = message.args;
         if (args === null) {
           args = [];
@@ -81,7 +81,7 @@ export class Redis extends Initializer {
     };
 
     api.redis.subscriptionHandlers.doResponse = function(
-      message: RedisModile.redis.PubSubMessage
+      message: RedisModule.redis.PubSubMessage
     ) {
       if (api.redis.rpcCallbacks[message.messageId]) {
         const { resolve, timer } = api.redis.rpcCallbacks[message.messageId];
@@ -147,7 +147,7 @@ export class Redis extends Initializer {
         messageChannel: string,
         stringifiedMessage: string
       ) => {
-        let message: RedisModile.redis.PubSubMessage;
+        let message: RedisModule.redis.PubSubMessage;
         try {
           message = JSON.parse(stringifiedMessage);
         } catch (e) {

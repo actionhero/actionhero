@@ -7,7 +7,7 @@ export class Help extends CLI {
   constructor() {
     super();
     this.name = "help";
-    this.description = "get actonhero CLI help; will display this document";
+    this.description = "get actionhero CLI help; will display this document";
   }
 
   async run() {

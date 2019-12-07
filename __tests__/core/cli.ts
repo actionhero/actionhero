@@ -44,9 +44,9 @@ const doCommand = async (
 
     let env = process.env;
     // we don't want the CLI commands to source typescript files
-    // when running jest, it will reset NDOE_ENV=test
+    // when running jest, it will reset NODE_ENV=test
     delete env.NODE_ENV;
-    // but somtimes we do /shrug/
+    // but sometimes we do /shrug/
     env = Object.assign(env, extraEnv);
 
     const cmd = spawn(bin, args, {

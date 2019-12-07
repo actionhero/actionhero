@@ -15,7 +15,7 @@ let api: Api;
  *    this.description = 'I am an API method which will generate a random number'
  *    this.outputExample = { randomNumber: 0.1234 }
  *  }
- *  async run ({ esponse }) {
+ *  async run ({ response }) {
  *    response.randomNumber = Math.random()
  *  }
  *}
@@ -32,7 +32,7 @@ export abstract class Action {
   outputExample: object;
   /**The inputs of the Action (default: {}) */
   inputs: Inputs;
-  /**The Middleware specifit to this Action (default: []).  Middleware is descibed by the string names of the middleware. */
+  /**The Middleware specific to this Action (default: []).  Middleware is described by the string names of the middleware. */
   middleware: Array<string>;
   /**Are there connections from any servers which cannot use this Action (default: [])? */
   blockedConnectionTypes: Array<string>;
@@ -40,7 +40,7 @@ export abstract class Action {
   logLevel: string;
   /**If this Action is responding to a `web` request, and that request has a file extension like *.jpg, should ActionHero set the response headers to match that extension (default: true)? */
   matchExtensionMimeType: boolean;
-  /**Should this Action appear in api.documenation.documenation? (default: true)? */
+  /**Should this Action appear in api.documentation.documentation? (default: true)? */
   toDocument: boolean;
 
   constructor() {

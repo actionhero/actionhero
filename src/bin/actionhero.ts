@@ -14,7 +14,7 @@ interface Runner {
   inputs: RunnerInputs;
 }
 
-// cnanot import this until we know where to load from!
+// cannot import this until we know where to load from!
 function determineProjectRoot() {
   let projectRoot = process.cwd();
   if (process.env.project_root) {
@@ -88,7 +88,7 @@ const projectRoot = determineProjectRoot();
 
   const handleUnbuiltProject = async (commands: Array<string>) => {
     try {
-      // when generating the project from scratch, we cannot rely on the normal initilizers
+      // when generating the project from scratch, we cannot rely on the normal initializers
       const ExportedRunnerClasses = require(path.join(
         __dirname,
         "methods",

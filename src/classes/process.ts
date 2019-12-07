@@ -133,7 +133,7 @@ export class Process {
 
       if (Object.keys(exportedClasses).length === 0) {
         this.fatalError(
-          new Error(`no exported intializers found in ${file}`),
+          new Error(`no exported initializers found in ${file}`),
           file
         );
       }
@@ -146,7 +146,7 @@ export class Process {
 
           // check if initializer already exists (exclude utils and config)
           if (this.initializers[initializer.name]) {
-            const warningMessage = `an existing intializer with the same name \`${initializer.name}\` will be overridden by the file ${file}`;
+            const warningMessage = `an existing initializer with the same name \`${initializer.name}\` will be overridden by the file ${file}`;
             log(warningMessage, "warning");
           } else {
             initializer.validate();
@@ -166,7 +166,7 @@ export class Process {
                 log(`Loaded initializer: ${initializer.name}`, "debug", file);
               } catch (e) {}
             } catch (error) {
-              const message = `Exception occured in initializer \`${initializer.name}\` during load`;
+              const message = `Exception occurred in initializer \`${initializer.name}\` during load`;
               try {
                 log(message, "emerg", error.toString());
               } catch (_error) {
@@ -186,7 +186,7 @@ export class Process {
               log(`Started initializer: ${initializer.name}`, "debug", file);
             } catch (error) {
               log(
-                `Exception occured in initializer \`${initializer.name}\` during start`,
+                `Exception occurred in initializer \`${initializer.name}\` during start`,
                 "emerg",
                 error.toString()
               );
@@ -204,7 +204,7 @@ export class Process {
               log(`Stopped initializer: ${initializer.name}`, "debug", file);
             } catch (error) {
               log(
-                `Exception occured in initializer \`${initializer.name}\` during stop`,
+                `Exception occurred in initializer \`${initializer.name}\` during stop`,
                 "emerg",
                 error.toString()
               );

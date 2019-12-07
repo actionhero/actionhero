@@ -11,13 +11,13 @@ describe("Core: specHelper", () => {
     await actionhero.stop();
   });
 
-  test("can make a requset with just params", async () => {
+  test("can make a request with just params", async () => {
     const { randomNumber } = await specHelper.runAction("randomNumber");
     expect(randomNumber).toBeGreaterThanOrEqual(0);
     expect(randomNumber).toBeLessThan(1);
   });
 
-  test("will stack up messages recieved", async () => {
+  test("will stack up messages received", async () => {
     const connection = await specHelper.buildConnection();
     connection.params.thing = "stuff";
     const { error } = await specHelper.runAction("x", connection);
@@ -31,7 +31,7 @@ describe("Core: specHelper", () => {
     expect(error).toEqual("Error: unknown action or invalid apiVersion");
   });
 
-  describe("metadata, type-saftey, and errors", () => {
+  describe("metadata, type-safety, and errors", () => {
     beforeAll(() => {
       api.actions.versions.stringResponseTestAction = [1];
       api.actions.actions.stringResponseTestAction = {
