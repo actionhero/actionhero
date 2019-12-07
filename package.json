@@ -31,7 +31,7 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "browser_fingerprint": "^1.0.5",
+    "browser_fingerprint": "^2.0.1",
     "dot-prop": "^5.2.0",
     "etag": "^1.8.1",
     "formidable": "^1.2.1",

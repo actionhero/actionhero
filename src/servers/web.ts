@@ -6,15 +6,15 @@ import * as fs from "fs";
 import * as zlib from "zlib";
 import * as path from "path";
 import * as formidable from "formidable";
-import * as BrowserFingerprint from "browser_fingerprint";
 import * as Mime from "mime";
 import * as uuid from "uuid";
 import * as etag from "etag";
+import { BrowserFingerprint } from "browser_fingerprint";
 import { api, config, utils, Server, Connection } from "../index";
 
 export class WebServer extends Server {
   server: any;
-  fingerprinter: any;
+  fingerPrinter: BrowserFingerprint;
 
   constructor() {
     super();
@@ -64,7 +64,7 @@ export class WebServer extends Server {
       );
     }
 
-    this.fingerprinter = new BrowserFingerprint(this.config.fingerprintOptions);
+    this.fingerPrinter = new BrowserFingerprint(this.config.fingerprintOptions);
   }
 
   async start() {
@@ -377,7 +377,7 @@ export class WebServer extends Server {
   }
 
   handleRequest(req, res) {
-    const { fingerprint, headersHash } = this.fingerprinter.fingerprint(req);
+    const { fingerprint, headersHash } = this.fingerPrinter.fingerprint(req);
     const responseHeaders = [];
     const cookies = utils.parseCookies(req);
     const responseHttpCode = 200;
