@@ -43,7 +43,7 @@ describe("Server: Web", () => {
     await actionhero.stop();
   });
 
-  describe("request redirecton (allowedRequestHosts)", () => {
+  describe("request redirection (allowedRequestHosts)", () => {
     test("will redirect clients if they do not request the proper host", async () => {
       try {
         await request.get({

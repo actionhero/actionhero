@@ -2,7 +2,7 @@ import { api, config, utils, log } from "./../index";
 
 export namespace task {
   /**
- * An exmaple middleware
+ * An example middleware
  * ```js
  * const middleware = {
  *   name: 'timer',
@@ -21,7 +21,7 @@ export namespace task {
  *   },
  *   preEnqueue: async function () {
  *     const arg = this.args[0]
- *     return (arg === 'ok') // returing `false` will prevent the task from enqueing
+ *     return (arg === 'ok') // returning `false` will prevent the task from enqueueing
  *   },
  *   postEnqueue: async function () {
  *     log("Task successfully enqueued!")
@@ -37,13 +37,13 @@ export namespace task {
     global: boolean;
     /**Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`. */
     priority?: number;
-    /**Called berore the task runs.  Has access to all params, before sanitizartion.  Can modify the data object for use in tasks. */
+    /**Called berore the task runs.  Has access to all params, before sanitization.  Can modify the data object for use in tasks. */
     preProcessor?: Function;
     /**Called after the task runs.*/
     postProcessor?: Function;
-    /**Called before a task using this middleware is enqueud. */
+    /**Called before a task using this middleware is enqueued. */
     preEnqueue?: Function;
-    /**Called after a task using this middleware is enqueud. */
+    /**Called after a task using this middleware is enqueued. */
     postEnqueue?: Function;
   }
 
@@ -84,7 +84,7 @@ export namespace task {
    * Will throw an error if redis cannot be reached.
    *
    * Inputs:
-   * * timestamp: At what time the task is able to be run.  Does not gaurentee that the task will be run at this time. (in ms)
+   * * timestamp: At what time the task is able to be run.  Does not guarantee that the task will be run at this time. (in ms)
    * * taskName: The name of the task.
    * * params: Params to pass to the task.
    * * queue: (Optional) Which queue/priority to run this instance of the task on.
@@ -105,7 +105,7 @@ export namespace task {
    *
    * Inputs:
    * * q: Which queue/priority is the task stored on?
-   * * taskName: The name of the job, likley to be the same name as a tak.
+   * * taskName: The name of the job, likely to be the same name as a tak.
    * * args: The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing.  It is best to read job properties first via `api.tasks.queued` or similar method.
    * * count: Of the jobs that match q, taskName, and args, up to what position should we delete? (Default 0; this command is 0-indexed)
    */
@@ -125,7 +125,7 @@ export namespace task {
    *
    * Inputs:
    * * q: Which queue/priority is to run on?
-   * * taskName: The name of the job, likley to be the same name as a tak.
+   * * taskName: The name of the job, likely to be the same name as a tak.
    * * args  The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing. It is best to read job properties first via `api.tasks.delayedAt` or similar method.
    */
   export async function delDelayed(
@@ -143,7 +143,7 @@ export namespace task {
    *
    * Inputs:
    * * q: Which queue/priority is to run on?
-   * * taskName: The name of the job, likley to be the same name as a tak.
+   * * taskName: The name of the job, likely to be the same name as a tak.
    * * args: The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing.  It is best to read job properties first via `api.tasks.delayedAt` or similar method.
    */
   export async function scheduledAt(
@@ -156,7 +156,7 @@ export namespace task {
   }
 
   /**
-   * Return all resque stats for this namespace (how jobs failed, jobs succeded, etc)
+   * Return all resque stats for this namespace (how jobs failed, jobs succeeded, etc)
    * Will throw an error if redis cannot be reached.
    */
   export async function stats() {
@@ -222,7 +222,7 @@ export namespace task {
   }
 
   /**
-   * Retrun all delayed jobs, orginized by the timetsamp at where they are to run at.
+   * Return all delayed jobs, organized by the timestamp at where they are to run at.
    * Note: This is a very slow command.
    * Will throw an error if redis cannot be reached.
    */
@@ -231,7 +231,7 @@ export namespace task {
   }
 
   /**
-   * Retrun all workers registered by all members of this cluster.
+   * Return all workers registered by all members of this cluster.
    * Note: MultiWorker processors each register as a unique worker.
    * Will throw an error if redis cannot be reached.
    */
@@ -295,7 +295,7 @@ export namespace task {
 
   /**
    * If a worker process crashes, it will leave its state in redis as "working".
-   * You can remove workers from redis you know to be over, by specificing an age which would make them too old to exist.
+   * You can remove workers from redis you know to be over, by specificizing an age which would make them too old to exist.
    * This method will remove the data created by a 'stuck' worker and move the payload to the error queue.
    * However, it will not actually remove any processes which may be running.  A job *may* be running that you have removed.
    * Will throw an error if redis cannot be reached.

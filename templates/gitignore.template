@@ -13,7 +13,7 @@ dist
 # Node / NPM
 npm-debug.log
 
-# OS-specific wierdness
+# OS-specific weirdness
 .DS_Store
 
 # Redis

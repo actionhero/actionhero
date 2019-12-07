@@ -12,7 +12,7 @@ let fingerprint;
 let url;
 
 const connectClient = async (query = ""): Promise<any> => {
-  const S = _Primus.createSocket();
+  const S = _Primus.createSocket(undefined);
   const clientSocket = new S(
     `http://localhost:${config.servers.web.port}?${query}`
   );

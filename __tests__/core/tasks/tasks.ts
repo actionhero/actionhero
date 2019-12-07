@@ -250,7 +250,7 @@ describe("Core: Tasks", () => {
     expect(Number(timestamps[0])).toBeLessThan(completeTime + 2);
   });
 
-  test("can see enqueued timestmps & see jobs within those timestamps (single + batch)", async () => {
+  test("can see enqueued timestamps & see jobs within those timestamps (single + batch)", async () => {
     const time = new Date().getTime() + 1000;
     const roundedTime = Math.round(time / 1000) * 1000;
 

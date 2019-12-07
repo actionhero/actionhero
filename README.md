@@ -4,7 +4,7 @@ _The reusable, scalable, and quick node.js API server for stateless and stateful
 
 ---
 
-The Typescript verion of Actionhero is availavle by `npm install actionhero@next`. It should be considered beta quality.
+The Typescript version of Actionhero is available by `npm install actionhero@next`. It should be considered beta quality.
 
 ---
 

@@ -220,7 +220,7 @@ describe("Core", () => {
         await cache.unlock(key);
       });
 
-      test("things can be locked, checked, and unlocked aribitrarily", async () => {
+      test("things can be locked, checked, and unlocked arbitrarily", async () => {
         let lockOk;
         lockOk = await cache.lock(key, 100);
         expect(lockOk).toEqual(true);

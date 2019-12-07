@@ -158,7 +158,7 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
     }
 
     // We load the config twice. Utilize configuration files load order that succeeded on the first pass.
-    // This is to allow 'literal' values to be loaded whenever possible, and then for refrences to be resolved
+    // This is to allow 'literal' values to be loaded whenever possible, and then for references to be resolved
     configFiles.forEach(loadConfigFile);
 
     // Remove duplicate routes since we might be loading from multiple config directories, also we load every

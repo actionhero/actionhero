@@ -84,7 +84,7 @@ describe("Core: Action Cluster", () => {
       client.destroy();
     });
 
-    test("can send arbitraty messages to connections connected to other servers", async () => {
+    test("can send arbitrary messages to connections connected to other servers", async () => {
       const client = await specHelper.buildConnection();
 
       const connection = await api.connections.apply(client.id, "sendMessage", {

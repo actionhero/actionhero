@@ -2,7 +2,7 @@ import { api } from "./../index";
 
 export namespace route {
   /**
-   * Programatically define a route, rather than using `api.config.routes`.  This is useful for plugins which may define routes as well.
+   * Programmatically define a route, rather than using `api.config.routes`.  This is useful for plugins which may define routes as well.
    * You can use both `api.routes.registerRoute` and `api.config.routes` in the same project.
    *
    * * method:                 HTTP verb (get, put, etc)

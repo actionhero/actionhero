@@ -107,7 +107,7 @@ export class ChatRoom extends Initializer {
       const messagePayload = api.chatRoom.generateMessagePayload(message);
       Object.keys(api.connections.connections).forEach(connetionId => {
         const connection = api.connections.connections[connetionId];
-        // we can parallize this, no need to await
+        // we can parallelize this, no need to await
         api.chatRoom.incomingMessagePerConnection(connection, messagePayload);
       });
     };

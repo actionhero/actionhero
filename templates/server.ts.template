@@ -16,7 +16,7 @@ export class MyServer extends Server {
   }
 
   async initialize() {
-    this.on("connection", conection => {});
+    this.on("connection", connection => {});
 
     this.on("actionComplete", data => {});
   }

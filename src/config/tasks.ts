@@ -37,7 +37,7 @@ export const DEFAULT = {
       maxTaskProcessors: 0,
       // how often should we check the event loop to spawn more taskProcessors?
       checkTimeout: 500,
-      // how many ms would constitue an event loop delay to halt taskProcessors spawning?
+      // how many ms would constitute an event loop delay to halt taskProcessors spawning?
       maxEventLoopDelay: 5,
       // how long before we mark a resque worker / task processor as stuck/dead?
       stuckWorkerTimeout: 1000 * 60 * 60,

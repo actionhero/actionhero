@@ -21,17 +21,17 @@ export abstract class Initializer {
   }
 
   /**
-   * Method run as part of the `initialize` lifecycle of your server.  Ususally sets api['YourNamespace']
+   * Method run as part of the `initialize` lifecycle of your server.  Usually sets api['YourNamespace']
    */
   async initialize?(config: ConfigInterface): Promise<void>;
 
   /**
-   * Method run as part of the `start` lifecycle of your server.  Ususally connects to remote servers or processes..
+   * Method run as part of the `start` lifecycle of your server.  Usually connects to remote servers or processes..
    */
   async start?(config: ConfigInterface): Promise<void>;
 
   /**
-   * Method run as part of the `initialize` lifecycle of your server.  Ususally disconnects from remote servers or processes.
+   * Method run as part of the `initialize` lifecycle of your server.  Usually disconnects from remote servers or processes.
    */
   async stop?(config: ConfigInterface): Promise<void>;
 

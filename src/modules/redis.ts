@@ -7,7 +7,7 @@ export namespace redis {
   }
 
   /**
-   * Publish a message to all other ActionHero nodes in the clsuter.  Will be autneticated against `api.config.serverToken`
+   * Publish a message to all other ActionHero nodes in the cluster.  Will be authenticated against `api.config.serverToken`
    * ```js
    * let payload = {
    *   messageType: 'myMessageType',

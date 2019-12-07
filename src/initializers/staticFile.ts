@@ -27,7 +27,7 @@ async function asyncReadLink(file: string): Promise<string> {
 }
 
 export interface StaticFileApi {
-  searchLoactions: Array<string>;
+  searchLocations: Array<string>;
   get?: Function;
   sendFile?: Function;
   searchPath?: Function;
@@ -49,12 +49,12 @@ export class StaticFile extends Initializer {
 
   async initialize(config) {
     api.staticFile = {
-      searchLoactions: []
+      searchLocations: []
     };
 
     /**
-     * For a connection with `connecton.params.file` set, return a file if we can find it, or a not-found message.
-     * `searchLoactions` will be cheked in the following order: first paths in this project, then plugins.
+     * For a connection with `connection.params.file` set, return a file if we can find it, or a not-found message.
+     * `searchLocations` will be checked in the following order: first paths in this project, then plugins.
      * This can be used in Actions to return files to clients.  If done, set `data.toRender = false` within the action.
      * return is of the form: {connection, error, fileStream, mime, length}
      */
@@ -94,12 +94,12 @@ export class StaticFile extends Initializer {
 
     api.staticFile.searchPath = (counter: number = 0) => {
       if (
-        api.staticFile.searchLoactions.length === 0 ||
-        counter >= api.staticFile.searchLoactions.length
+        api.staticFile.searchLocations.length === 0 ||
+        counter >= api.staticFile.searchLocations.length
       ) {
         return null;
       } else {
-        return api.staticFile.searchLoactions[counter];
+        return api.staticFile.searchLocations[counter];
       }
     };
 
@@ -204,7 +204,7 @@ export class StaticFile extends Initializer {
     // load in the explicit public paths first
     if (config.general.paths !== undefined) {
       config.general.paths.public.forEach(function(p) {
-        api.staticFile.searchLoactions.push(path.normalize(p));
+        api.staticFile.searchLocations.push(path.normalize(p));
       });
     }
 
@@ -217,9 +217,9 @@ export class StaticFile extends Initializer {
         );
         if (
           fs.existsSync(pluginPublicPath) &&
-          api.staticFile.searchLoactions.indexOf(pluginPublicPath) < 0
+          api.staticFile.searchLocations.indexOf(pluginPublicPath) < 0
         ) {
-          api.staticFile.searchLoactions.push(pluginPublicPath);
+          api.staticFile.searchLocations.push(pluginPublicPath);
         }
       }
     }
@@ -227,7 +227,7 @@ export class StaticFile extends Initializer {
     log(
       "static files will be served from these directories",
       "debug",
-      api.staticFile.searchLoactions
+      api.staticFile.searchLocations
     );
   }
 }

@@ -96,7 +96,7 @@ describe("Core", () => {
         delete api.actions.versions.versionedAction;
       });
 
-      test("will default actions to version 1 when no version is provided by the defintion", async () => {
+      test("will default actions to version 1 when no version is provided by the definition", async () => {
         const response = await specHelper.runAction("randomNumber");
         expect(response.requesterInformation.receivedParams.apiVersion).toEqual(
           1

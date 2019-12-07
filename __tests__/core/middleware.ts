@@ -68,7 +68,7 @@ describe("Core: Middleware", () => {
       expect(_preProcessorNote).toBeUndefined();
     });
 
-    describe("midleware can read properties of the action template", () => {
+    describe("middleware can read properties of the action template", () => {
       const sessions = [];
 
       beforeAll(() => {
@@ -324,7 +324,7 @@ describe("Core: Middleware", () => {
           resolve();
         }, 1000);
         specHelper.runAction("randomNumber").then(() => {
-          throw new Error("shold.not.get.here");
+          throw new Error("should.not.get.here");
         });
       });
     });

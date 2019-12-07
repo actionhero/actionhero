@@ -302,7 +302,7 @@ export class WebServer extends Server {
       acceptEncoding = "";
     }
 
-    // Note: this is not a conformant accept-encoding parser.
+    // Note: this is not a conforming accept-encoding parser.
     // https://nodejs.org/api/zlib.html#zlib_zlib_createinflate_options
     // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.3
     if (this.config.compress === true) {
@@ -325,12 +325,12 @@ export class WebServer extends Server {
       }
     }
 
-    // the 'finish' event deontes a successful transfer
+    // the 'finish' event denotes a successful transfer
     connection.rawConnection.res.on("finish", () => {
       connection.destroy();
     });
 
-    // the 'close' event deontes a failed transfer, but it is probably the client's fault
+    // the 'close' event denotes a failed transfer, but it is probably the client's fault
     connection.rawConnection.res.on("close", () => {
       connection.destroy();
     });

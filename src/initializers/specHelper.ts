@@ -9,7 +9,7 @@ export interface SpecHelperApi {
 }
 
 /**
- * A speical "mock" server which enables you to test actions and tasks in a simple way.  Only availalbe in the TEST environment.
+ * A special "mock" server which enables you to test actions and tasks in a simple way.  Only available in the TEST environment.
  */
 export class SpecHelper extends Initializer {
   enabled: boolean;

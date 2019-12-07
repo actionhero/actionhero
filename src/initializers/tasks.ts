@@ -17,7 +17,7 @@ export interface TaskApi {
 }
 
 /**
- * Tools for enquing and inspecting the task sytem (delayed jobs).
+ * Tools for enqueuing and inspecting the task system (delayed jobs).
  */
 export class Tasks extends Initializer {
   constructor() {

@@ -10,7 +10,7 @@ export interface RoutesApi {
 }
 
 /**
- * Countains routing options for web clients.  Can associate routes with actions or files.
+ * Contains routing options for web clients.  Can associate routes with actions or files.
  */
 export class Routes extends Initializer {
   constructor() {

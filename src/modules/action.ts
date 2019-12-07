@@ -23,14 +23,14 @@ export namespace action {
     global: boolean;
     /**Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`. */
     priority?: number;
-    /**Called berore the action runs.  Has access to all params, before sanitizartion.  Can modify the data object for use in actions. */
+    /**Called before the action runs.  Has access to all params, before sanitization.  Can modify the data object for use in actions. */
     preProcessor?: Function;
     /**Called after the action runs. */
     postProcessor?: Function;
   }
 
   /**
-   * Add a middleware component avaialable to pre or post-process actions.
+   * Add a middleware component available to pre or post-process actions.
    */
   export function addMiddleware(data: ActionMiddleware) {
     if (!data.name) {
