@@ -33,8 +33,12 @@ export class Help extends CLI {
     Object.keys(config.plugins).forEach(pluginName => {
       const plugin = config.plugins[pluginName];
       if (plugin.cli !== false) {
+        glob.sync(path.join(plugin.path, "bin", "**", "*.js")).forEach(f => {
+          files.push(f);
+        });
+
         glob
-          .sync(path.join(plugin.path, "bin", "**", "*(*.js|*.ts)"))
+          .sync(path.join(plugin.path, "dist", "bin", "**", "*.js"))
           .forEach(f => {
             files.push(f);
           });

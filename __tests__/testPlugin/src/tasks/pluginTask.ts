@@ -1,4 +1,4 @@
-import { Task } from "./../../../src/index";
+import { Task } from "../../../../src/index";
 
 export class PluginTask extends Task {
   constructor() {

@@ -1,4 +1,4 @@
-import { CLI } from "./../../../src/index";
+import { CLI } from "../../../../src/index";
 
 export class Version extends CLI {
   constructor() {

@@ -92,28 +92,13 @@ export class Process {
 
         // old style at the root of the project
         initializerFiles = initializerFiles.concat(
-          glob.sync(
-            path.join(pluginPath, "initializers", "**", "**/*(*.js|*.ts)")
-          )
+          glob.sync(path.join(pluginPath, "initializers", "**", "*.js"))
         );
 
-        // dist files if running in JS mode
-        if (!typescript) {
-          initializerFiles = initializerFiles.concat(
-            glob.sync(
-              path.join(pluginPath, "dist", "initializers", "**", "*.js")
-            )
-          );
-        }
-
-        // src files if running in TS mode
-        if (typescript) {
-          initializerFiles = initializerFiles.concat(
-            glob.sync(
-              path.join(pluginPath, "src", "initializers", "**", "*.ts")
-            )
-          );
-        }
+        // new TS dist files
+        initializerFiles = initializerFiles.concat(
+          glob.sync(path.join(pluginPath, "dist", "initializers", "**", "*.js"))
+        );
       }
     }
 

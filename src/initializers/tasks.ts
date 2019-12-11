@@ -149,23 +149,11 @@ export class Tasks extends Initializer {
           const pluginPath = config.plugins[pluginName].path;
 
           // old style at the root of the project
-          let files = glob.sync(
-            path.join(pluginPath, "tasks", "**", "**/*(*.js|*.ts)")
+          let files = glob.sync(path.join(pluginPath, "tasks", "**", "*.js"));
+
+          files = files.concat(
+            glob.sync(path.join(pluginPath, "dist", "tasks", "**", "*.js"))
           );
-
-          // dist files if running in JS mode
-          if (!typescript) {
-            files = files.concat(
-              glob.sync(path.join(pluginPath, "dist", "tasks", "**", "**/*.js"))
-            );
-          }
-
-          // src files if running in TS mode
-          if (typescript) {
-            files = files.concat(
-              glob.sync(path.join(pluginPath, "src", "tasks", "**", "**/*.ts"))
-            );
-          }
 
           utils.ensureNoTsHeaderFiles(files).forEach(f => {
             api.tasks.loadFile(f, reload);

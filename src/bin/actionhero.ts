@@ -157,7 +157,12 @@ const projectRoot = determineProjectRoot();
               ExportedClasses = require(p);
             }
 
-            p = path.join(pluginPath, "bin", commands.join(path.sep) + ".ts");
+            p = path.join(
+              pluginPath,
+              "dist",
+              "bin",
+              commands.join(path.sep) + ".js"
+            );
             if (fs.existsSync(p)) {
               ExportedClasses = require(p);
             }

@@ -1,4 +1,4 @@
-import { Action } from "./../../../src/index";
+import { Action } from "../../../../src/index";
 
 module.exports = class PluginAction extends Action {
   constructor() {
