@@ -105,23 +105,11 @@ export class Actions extends Initializer {
       if (config.plugins[pluginName].actions !== false) {
         const pluginPath = config.plugins[pluginName].path;
         // old style at the root of the project
-        let files = glob.sync(
-          path.join(pluginPath, "actions", "**", "**/*(*.js|*.ts)")
+        let files = glob.sync(path.join(pluginPath, "actions", "**", "*.js"));
+
+        files = files.concat(
+          glob.sync(path.join(pluginPath, "dist", "actions", "**", "*.js"))
         );
-
-        // dist files if running in JS mode
-        if (!typescript) {
-          files = files.concat(
-            glob.sync(path.join(pluginPath, "dist", "actions", "**", "*.js"))
-          );
-        }
-
-        // src files if running in TS mode
-        if (typescript) {
-          files = files.concat(
-            glob.sync(path.join(pluginPath, "src", "actions", "**", "*.ts"))
-          );
-        }
 
         utils
           .ensureNoTsHeaderFiles(files)

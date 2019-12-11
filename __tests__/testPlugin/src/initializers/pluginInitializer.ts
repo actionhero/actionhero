@@ -1,4 +1,4 @@
-import { api, Initializer } from "./../../../src/index";
+import { api, Initializer } from "../../../../src/index";
 
 export class PluginInitializer extends Initializer {
   constructor() {

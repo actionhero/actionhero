@@ -43,22 +43,12 @@ export class Servers extends Initializer {
           const pluginPath = config.plugins[pluginName].path;
           // old style at the root of the project
           files = files.concat(
-            glob.sync(path.join(pluginPath, "servers", "**", "**/*(*.js|*.ts)"))
+            glob.sync(path.join(pluginPath, "servers", "**", "*.js|"))
           );
 
-          // dist files if running in JS mode
-          if (!typescript) {
-            files = files.concat(
-              glob.sync(path.join(pluginPath, "dist", "servers", "**", "*.js"))
-            );
-          }
-
-          // src files if running in TS mode
-          if (typescript) {
-            files = files.concat(
-              glob.sync(path.join(pluginPath, "src", "servers", "**", "*.ts"))
-            );
-          }
+          files = files.concat(
+            glob.sync(path.join(pluginPath, "dist", "servers", "**", "*.js"))
+          );
         }
       }
 

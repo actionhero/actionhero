@@ -2,7 +2,7 @@
   "author": "Evan Tahler <evantahler@gmail.com>",
   "name": "actionhero",
   "description": "actionhero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks",
-  "version": "21.0.7",
+  "version": "21.0.8",
   "homepage": "http://www.actionherojs.com",
   "license": "Apache-2.0",
   "repository": {
