@@ -83,7 +83,7 @@
     "test": "jest",
     "prepare": "npm run build && npm run docs",
     "pretest": "npm run lint && npm run build",
-    "dev": "ts-node-dev --transpile-only ./src/bin/actionhero",
+    "dev": "ts-node-dev --transpile-only --no-deps ./src/bin/actionhero",
     "start": "node ./dist/bin/actionhero",
     "build": "rm -rf dist && ./node_modules/.bin/tsc --declaration",
     "docs": "typedoc --out docs --theme default --mode file",
