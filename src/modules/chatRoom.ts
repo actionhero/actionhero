@@ -167,7 +167,9 @@ export namespace chatRoom {
       const found = await chatRoom.exists(room);
       if (found === true) {
         const key = api.chatRoom.keys.members + room;
-        const members = await api.redis.clients.client.hgetall(key);
+        const members = (await api.redis.clients.client.hgetall(key)) as {
+          [key: string]: string;
+        };
         const cleanedMembers = {};
         let count = 0;
 

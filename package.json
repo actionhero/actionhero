@@ -44,18 +44,17 @@
     "optimist": "^0.6.1",
     "primus": "^7.3.4",
     "qs": "^6.9.1",
-    "uglify-js": "^3.7.1",
+    "uglify-js": "^3.7.2",
     "uuid": "^3.3.3",
     "winston": "^3.2.1",
     "ws": "^7.2.0"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",
-    "@types/ioredis": "^4.0.20",
+    "@types/ioredis": "^4.14.2",
     "@types/jest": "^24.0.23",
-    "@types/node": "^12.12.14",
+    "@types/node": "^12.12.17",
     "@types/uuid": "^3.4.6",
-    "docdash": "1.1.1",
     "jest": "^24.9.0",
     "jest-environment-webdriver": "^0.2.0",
     "prettier": "^1.19.1",
@@ -63,8 +62,8 @@
     "request-promise-native": "^1.0.8",
     "ts-jest": "^24.2.0",
     "ts-node-dev": "^1.0.0-pre.44",
-    "typedoc": "^0.15.3",
-    "typescript": "^3.7.2"
+    "typedoc": "^0.15.4",
+    "typescript": "^3.7.3"
   },
   "optionalDependencies": {},
   "bin": {
