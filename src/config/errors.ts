@@ -23,13 +23,6 @@ export const DEFAULT = {
               return error;
             }
           },
-          socket: error => {
-            if (error.message) {
-              return String(error.message);
-            } else {
-              return error;
-            }
-          },
           specHelper: error => {
             if (error.message) {
               return "Error: " + String(error.message);
