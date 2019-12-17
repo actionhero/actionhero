@@ -1,5 +1,6 @@
 import * as path from "path";
 import * as glob from "glob";
+import * as fs from "fs";
 import { Api } from "./api";
 import { buildConfig, ConfigInterface } from "./../modules/config";
 import { log } from "../modules/log";
@@ -88,7 +89,13 @@ export class Process {
     // load initializers from plugins
     for (const pluginName in config.plugins) {
       if (config.plugins[pluginName] !== false) {
-        const pluginPath: string = config.plugins[pluginName].path;
+        const pluginPath: string = path.normalize(
+          config.plugins[pluginName].path
+        );
+
+        if (!fs.existsSync(pluginPath)) {
+          throw new Error(`plugin path does not exist: ${pluginPath}`);
+        }
 
         // old style at the root of the project
         initializerFiles = initializerFiles.concat(
