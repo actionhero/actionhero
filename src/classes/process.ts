@@ -102,7 +102,7 @@ export class Process {
       }
     }
 
-    initializerFiles = utils.arrayUniqueify(initializerFiles);
+    initializerFiles = utils.arrayUnique(initializerFiles);
     initializerFiles = utils.ensureNoTsHeaderFiles(initializerFiles);
 
     initializerFiles.forEach(f => {

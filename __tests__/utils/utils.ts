@@ -11,10 +11,10 @@ describe("Utils", () => {
     });
   });
 
-  describe("utils.arrayUniqueify", () => {
+  describe("utils.arrayUnique", () => {
     test("works", () => {
       const a = [1, 2, 3, 3, 4, 4, 4, 5, 5, 5];
-      expect(utils.arrayUniqueify(a)).toEqual([1, 2, 3, 4, 5]);
+      expect(utils.arrayUnique(a)).toEqual([1, 2, 3, 4, 5]);
     });
   });
 

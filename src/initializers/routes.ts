@@ -192,7 +192,7 @@ export class Routes extends Initializer {
         }
       }
 
-      api.params.postVariables = utils.arrayUniqueify(api.params.postVariables);
+      api.params.postVariables = utils.arrayUnique(api.params.postVariables);
 
       if (config.servers.web && config.servers.web.simpleRouting === true) {
         const simplePaths = [];

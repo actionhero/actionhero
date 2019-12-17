@@ -45,7 +45,7 @@ export class Help extends CLI {
       }
     });
 
-    files = utils.arrayUniqueify(files);
+    files = utils.arrayUnique(files);
 
     files.forEach(f => {
       try {
