@@ -15,13 +15,6 @@ export const DEFAULT = {
       lockPrefix: "actionhero:lock:",
       // how long will a lock last before it expires (ms)?
       lockDuration: 1000 * 10, // 10 seconds
-      // Watch for changes in actions, configs, initializers, servers and tasks; and reload/restart them on the fly
-      developmentMode: true,
-      // When developmentMode is active, actionhero tries to swap actions and tasks in-memory for their updated version
-      // (without restarting the whole application). If you're having trouble with unwanted side effects after in-memory
-      // reloading, then set this to true to force an application restart on change.
-      // Changes to configs/initializers/servers while in developmentMode will force an application restart in any case.
-      developmentModeForceRestart: false,
       // How many pending actions can a single connection be working on
       simultaneousActions: 5,
       // allow connections to be created without remoteIp and remotePort (they will be set to 0)
@@ -69,7 +62,7 @@ export const DEFAULT = {
       },
 
       // Polyfill the api object with all of the Actionhero namespaces.
-      // NOTE: This behavior will be deprecated in the furture and the
+      // NOTE: This behavior will be deprecated in the future and the
       // default will be changed to false.
       legacyApiPolyfill: true
     };
