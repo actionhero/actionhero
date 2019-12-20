@@ -2,7 +2,7 @@ import * as glob from "glob";
 import * as path from "path";
 import { Plugin } from "node-resque";
 import * as TaskModule from "./../modules/task";
-import { api, log, utils, task, Initializer, typescript } from "../index";
+import { api, log, utils, task, Initializer } from "../index";
 
 const taskModule = task;
 

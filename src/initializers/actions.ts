@@ -1,6 +1,6 @@
 import * as glob from "glob";
 import * as path from "path";
-import { api, log, utils, Initializer, Action, typescript } from "../index";
+import { api, log, utils, Initializer, Action } from "../index";
 import * as ActionModule from "./../modules/action";
 
 export interface ActionsApi {
