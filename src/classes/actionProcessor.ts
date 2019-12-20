@@ -1,12 +1,10 @@
-import { Api } from "./api";
 import { Connection } from "./connection";
 import { Action } from "./action";
 import { config } from "./../modules/config";
 import { log } from "../modules/log";
 import { utils } from "../modules/utils";
 import * as dotProp from "dot-prop";
-
-let api: Api;
+import { api } from "../index";
 
 export class ActionProcessor {
   connection: Connection;
@@ -32,10 +30,6 @@ export class ActionProcessor {
   session: any;
 
   constructor(connection: Connection) {
-    /// Only in files required by `index.js` do we need to delay the loading of the API object
-    // This is due to cyclical require issues
-    api = require("../index").api;
-
     this.connection = connection;
     this.action = null;
     this.toProcess = true;

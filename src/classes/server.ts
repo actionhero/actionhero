@@ -1,10 +1,8 @@
 import { EventEmitter } from "events";
 import { Connection } from "./connection";
 import { ActionProcessor } from "./actionProcessor";
-import { Api } from "./api";
+import { api } from "../index";
 import { log } from "../modules/log";
-
-let api: Api;
 
 interface ServerConfig {
   [key: string]: any;
@@ -45,10 +43,6 @@ export abstract class Server extends EventEmitter {
   server?: any;
 
   constructor() {
-    // Only in files required by `index.js` do we need to delay the loading of the API object
-    // This is due to cyclical require issues
-    api = require("../index").api;
-
     super();
 
     this.options = {};

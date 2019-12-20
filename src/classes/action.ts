@@ -1,8 +1,6 @@
-import { Api } from "./api";
 import { Inputs } from "./inputs";
 import { ActionProcessor } from "./actionProcessor";
-
-let api: Api;
+import { api } from "../index";
 
 /**
  * Create a new ActionHero Action. The required properties of an action. These can be defined statically (this.name) or as methods which return a value.
@@ -44,10 +42,6 @@ export abstract class Action {
   toDocument: boolean;
 
   constructor() {
-    // Only in files required by `index.js` do we need to delay the loading of the API object
-    // This is due to cyclical require issues
-    api = require("../index").api;
-
     const coreProperties = this.defaults();
     for (const key in coreProperties) {
       if (!this[key]) {

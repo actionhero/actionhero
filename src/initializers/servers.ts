@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as glob from "glob";
-import { api, log, utils, Initializer, Server, typescript } from "../index";
+import { api, log, utils, Initializer, Server } from "../index";
 
 export interface ServersApi {
   servers: {
