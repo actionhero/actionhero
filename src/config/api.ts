@@ -73,7 +73,6 @@ export const test = {
   general: config => {
     return {
       serverToken: `serverToken-${process.env.JEST_WORKER_ID || 0}`,
-      developmentMode: true,
       startingChatRooms: {
         defaultRoom: {},
         otherRoom: {}
@@ -89,8 +88,7 @@ export const test = {
 export const production = {
   general: config => {
     return {
-      fileRequestLogLevel: "debug",
-      developmentMode: false
+      fileRequestLogLevel: "debug"
     };
   }
 };
