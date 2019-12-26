@@ -9,7 +9,7 @@ const maxEventLoopDelay = process.env.eventLoopDelay || 10;
 const maxMemoryAlloted = process.env.maxMemoryAlloted || 500;
 const maxResqueQueueLength = process.env.maxResqueQueueLength || 1000;
 
-module.exports = class RandomNumber extends Action {
+module.exports = class Status extends Action {
   constructor() {
     super();
     this.name = "status";
