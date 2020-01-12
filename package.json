@@ -62,7 +62,7 @@
     "request-promise-native": "^1.0.8",
     "ts-jest": "^24.2.0",
     "ts-node-dev": "^1.0.0-pre.44",
-    "typedoc": "^0.15.5",
+    "typedoc": "^0.16.0",
     "typescript": "^3.7.4"
   },
   "optionalDependencies": {},
