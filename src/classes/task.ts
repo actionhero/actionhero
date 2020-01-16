@@ -28,7 +28,7 @@ export abstract class Task {
   /**Plugins from node-resque to use on this task (default: []).  Plugins like `QueueLock can be applied` */
   plugins: Array<string>;
   /**Options for the node-resque plugins. */
-  pluginOptions: Array<string>;
+  pluginOptions: { [key: string]: any };
   /**The default queue to run this Task on (default: 'default') */
   queue: string;
   /**Re-enqueuing a periodic task in the case of an exception.  (default: false) */
@@ -62,7 +62,7 @@ export abstract class Task {
       queue: "default",
       middleware: [],
       plugins: [],
-      pluginOptions: [],
+      pluginOptions: {},
       reEnqueuePeriodicTaskIfException: true
     };
   }
