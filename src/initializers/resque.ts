@@ -1,5 +1,5 @@
 import { Queue, Scheduler, MultiWorker, JobEmit } from "node-resque";
-import { api, log, Initializer } from "../index";
+import { api, log, config, Initializer } from "../index";
 
 export interface ResqueApi {
   connectionDetails: {
@@ -29,6 +29,17 @@ export class Resque extends Initializer {
     this.loadPriority = 600;
     this.startPriority = 200;
     this.stopPriority = 100;
+  }
+
+  filterTaskParams(params: { [key: string]: any }) {
+    const filteredParams = Object.assign({}, params);
+    for (const key in params) {
+      if (config.general.filteredParams.indexOf(key) >= 0) {
+        filteredParams[key] = "[FILTERED]";
+      }
+    }
+
+    return filteredParams;
   }
 
   async initialize(config) {
@@ -174,7 +185,8 @@ export class Resque extends Initializer {
           log(`[ worker ] working job ${queue}`, api.resque.workerLogging.job, {
             workerId,
             class: job.class,
-            queue: job.queue
+            queue: job.queue,
+            args: JSON.stringify(this.filterTaskParams(job.args[0]))
           });
         });
         api.resque.multiWorker.on(
@@ -215,6 +227,7 @@ export class Resque extends Initializer {
               workerId,
               class: job.class,
               queue: job.queue,
+              args: JSON.stringify(this.filterTaskParams(job.args[0])),
               result
             };
 
