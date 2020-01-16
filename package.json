@@ -40,7 +40,7 @@
     "ioredis": "^4.14.1",
     "is-running": "^2.1.0",
     "mime": "^2.4.4",
-    "node-resque": "^6.0.6",
+    "node-resque": "^6.0.7",
     "optimist": "^0.6.1",
     "primus": "^7.3.4",
     "qs": "^6.9.1",
@@ -52,8 +52,8 @@
   "devDependencies": {
     "@types/glob": "^7.1.1",
     "@types/ioredis": "^4.14.3",
-    "@types/jest": "^24.0.25",
-    "@types/node": "^13.1.6",
+    "@types/jest": "^24.9.0",
+    "@types/node": "^13.1.7",
     "@types/uuid": "^3.4.6",
     "jest": "^24.9.0",
     "jest-environment-webdriver": "^0.2.0",
@@ -62,7 +62,7 @@
     "request-promise-native": "^1.0.8",
     "ts-jest": "^24.3.0",
     "ts-node-dev": "^1.0.0-pre.44",
-    "typedoc": "^0.16.1",
+    "typedoc": "^0.16.6",
     "typescript": "^3.7.4"
   },
   "optionalDependencies": {},
