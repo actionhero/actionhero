@@ -64,7 +64,7 @@ export class Tasks extends Initializer {
 
       const middleware = task.middleware || [];
       const plugins = task.plugins || [];
-      const pluginOptions = task.pluginOptions || [];
+      const pluginOptions = task.pluginOptions || {};
 
       if (task.frequency > 0) {
         if (plugins.indexOf("JobLock") < 0) {
@@ -113,8 +113,8 @@ export class Tasks extends Initializer {
       middleware.forEach(processMiddleware);
 
       return {
-        plugins: plugins,
-        pluginOptions: pluginOptions,
+        plugins,
+        pluginOptions,
         perform: async function() {
           const combinedArgs = [].concat(Array.prototype.slice.call(arguments));
           combinedArgs.push(this);
