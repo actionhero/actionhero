@@ -1,33 +1,64 @@
-version: "2"
+version: "3.1"
 services:
-  haproxy:
-    image: dockercloud/haproxy
-    links:
-      - actionhero
+  redis:
+    image: redis
+    networks:
+      - actionhero_backend
+
+  actionhero:
+    image: actionhero/actionhero
+    environment:
+      REDIS_HOST: redis
     ports:
-      - 80:8080
+      - 8080
+    environment:
+      SERVICE_PORTS: 8080
+      REDIS_HOST: redis
+    depends_on:
+      - redis
+    deploy:
+      mode: replicated
+      replicas: 3
+    networks:
+      - actionhero_frontend
+      - actionhero_backend
+
+  # OR, Build it locally:
+  #
+  # actionhero:
+  #   build: ./
+  #   ports:
+  #     - 80:8080
+  #   environment:
+  #     TCP_PORTS: 8080
+  #     REDIS_HOST: redis
+  #     REDIS_PORT: 6379
+  #     REDIS_DB: 0
+
+  proxy:
+    image: dockercloud/haproxy
+    depends_on:
+      - actionhero
+    environment:
+      - BALANCE=leastconn
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 80:80
+      - 433:433
       - 1936:1936
     environment:
       STATS_AUTH: actionhero:actionhero
       STATS_PORT: 1936
       MONITOR_URI: /api/status
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - actionhero_frontend
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
-  redis:
-    image: redis
-
-  actionhero:
-    build: ./
-    ports:
-      - 8080
-    depends_on:
-      - redis
-    links:
-      - redis
-    environment:
-      TCP_PORTS: 8080,5000
-      ENABLE_TCP_SERVER: "true"
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_DB: 0
+networks:
+  actionhero_frontend:
+    driver: overlay
+  actionhero_backend:
+    driver: overlay
