@@ -1,16 +1,7 @@
 version: "3.1"
 services:
   redis:
-    image: 'bitnami/redis:latest'
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-    networks:
-      - actionhero_backend
-
-  redis_sentinel:
-    image: 'bitnami/redis-sentinel:latest'
-    environment:
-      - REDIS_MASTER_HOST=redis
+    image: redis
     networks:
       - actionhero_backend
 
@@ -22,9 +13,9 @@ services:
       - 8080
     environment:
       SERVICE_PORTS: 8080
-      REDIS_HOST: redis_sentinel
+      REDIS_HOST: redis
     depends_on:
-      - redis_sentinel
+      - redis
     deploy:
       mode: replicated
       replicas: 3
