@@ -7,7 +7,7 @@ export class Help extends CLI {
   constructor() {
     super();
     this.name = "help";
-    this.description = "get actonhero CLI help; will display this document";
+    this.description = "get actionhero CLI help; will display this document";
   }
 
   async run() {
@@ -33,15 +33,19 @@ export class Help extends CLI {
     Object.keys(config.plugins).forEach(pluginName => {
       const plugin = config.plugins[pluginName];
       if (plugin.cli !== false) {
+        glob.sync(path.join(plugin.path, "bin", "**", "*.js")).forEach(f => {
+          files.push(f);
+        });
+
         glob
-          .sync(path.join(plugin.path, "bin", "**", "*(*.js|*.ts)"))
+          .sync(path.join(plugin.path, "dist", "bin", "**", "*.js"))
           .forEach(f => {
             files.push(f);
           });
       }
     });
 
-    files = utils.arrayUniqueify(files);
+    files = utils.arrayUnique(files);
 
     files.forEach(f => {
       try {

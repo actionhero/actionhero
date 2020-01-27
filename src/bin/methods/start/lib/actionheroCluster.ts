@@ -3,7 +3,7 @@ import * as os from "os";
 import * as readline from "readline";
 import * as winston from "winston";
 import * as cluster from "cluster";
-import * as isrunning from "is-running";
+import * as isRunning from "is-running";
 import { ClusterWorker } from "./clusterWorker";
 
 export class ActionHeroCluster {
@@ -112,7 +112,7 @@ export class ActionHeroCluster {
 
     if (fs.existsSync(file)) {
       const oldpid = parseInt(fs.readFileSync(file).toString());
-      if (isrunning(oldpid)) {
+      if (isRunning(oldpid)) {
         throw new Error(
           "actionHeroCluster already running (pid " + oldpid + ")"
         );

@@ -1,8 +1,6 @@
-import { Api } from "./api";
 import { Inputs } from "./inputs";
 import { ActionProcessor } from "./actionProcessor";
-
-let api: Api;
+import { api } from "../index";
 
 /**
  * Create a new ActionHero Action. The required properties of an action. These can be defined statically (this.name) or as methods which return a value.
@@ -15,7 +13,7 @@ let api: Api;
  *    this.description = 'I am an API method which will generate a random number'
  *    this.outputExample = { randomNumber: 0.1234 }
  *  }
- *  async run ({ esponse }) {
+ *  async run ({ response }) {
  *    response.randomNumber = Math.random()
  *  }
  *}
@@ -27,27 +25,23 @@ export abstract class Action {
   /**The description of the Action (default this.name)*/
   description: string;
   /**The version of this Action (default: 1) */
-  version: number;
+  version: number | string;
   //*An example response payload  (default: {})
-  outputExample: object | null;
+  outputExample: object;
   /**The inputs of the Action (default: {}) */
-  inputs: Inputs | null;
-  /**The Middleware specifit to this Action (default: []).  Middleware is descibed by the string names of the middleware. */
-  middleware: Array<string> | null;
+  inputs: Inputs;
+  /**The Middleware specific to this Action (default: []).  Middleware is described by the string names of the middleware. */
+  middleware: Array<string>;
   /**Are there connections from any servers which cannot use this Action (default: [])? */
-  blockedConnectionTypes: Array<string> | null;
+  blockedConnectionTypes: Array<string>;
   /**Under what level should connections to this Action be logged (default 'info')? */
-  logLevel: string | null;
+  logLevel: string;
   /**If this Action is responding to a `web` request, and that request has a file extension like *.jpg, should ActionHero set the response headers to match that extension (default: true)? */
-  matchExtensionMimeType: boolean | null;
-  /**Should this Action appear in api.documenation.documenation? (default: true)? */
-  toDocument: boolean | null;
+  matchExtensionMimeType: boolean;
+  /**Should this Action appear in api.documentation.documentation? (default: true)? */
+  toDocument: boolean;
 
   constructor() {
-    // Only in files required by `index.js` do we need to delay the loading of the API object
-    // This is due to cyclical require issues
-    api = require("../index").api;
-
     const coreProperties = this.defaults();
     for (const key in coreProperties) {
       if (!this[key]) {

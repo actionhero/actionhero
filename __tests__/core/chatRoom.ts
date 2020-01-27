@@ -1,4 +1,10 @@
-import { Process, config, utils, chatRoom } from "./../../src/index";
+import {
+  Process,
+  config,
+  utils,
+  specHelper,
+  chatRoom
+} from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -32,9 +38,9 @@ describe("Core", () => {
       let client3;
 
       beforeAll(async () => {
-        client1 = await api.specHelper.Connection.createAsync();
-        client2 = await api.specHelper.Connection.createAsync();
-        client3 = await api.specHelper.Connection.createAsync();
+        client1 = await specHelper.buildConnection();
+        client2 = await specHelper.buildConnection();
+        client3 = await specHelper.buildConnection();
 
         client1.verbs("roomAdd", "defaultRoom");
         client2.verbs("roomAdd", "defaultRoom");
@@ -143,7 +149,7 @@ describe("Core", () => {
       });
 
       test("server can add connections to a LOCAL room", async () => {
-        const client = await api.specHelper.Connection.createAsync();
+        const client = await specHelper.buildConnection();
         expect(client.rooms).toHaveLength(0);
         const didAdd = await chatRoom.addMember(client.id, "defaultRoom");
         expect(didAdd).toEqual(true);
@@ -152,7 +158,7 @@ describe("Core", () => {
       });
 
       test("will not re-add a member to a room", async () => {
-        const client = await api.specHelper.Connection.createAsync();
+        const client = await specHelper.buildConnection();
         expect(client.rooms).toHaveLength(0);
         let didAdd = await chatRoom.addMember(client.id, "defaultRoom");
         expect(didAdd).toEqual(true);
@@ -167,8 +173,8 @@ describe("Core", () => {
         }
       });
 
-      test("will not add a member to a non-existant room", async () => {
-        const client = await api.specHelper.Connection.createAsync();
+      test("will not add a member to a non-existent room", async () => {
+        const client = await specHelper.buildConnection();
         expect(client.rooms).toHaveLength(0);
         try {
           await chatRoom.addMember(client.id, "crazyRoom");
@@ -180,7 +186,7 @@ describe("Core", () => {
       });
 
       test("server will not remove a member not in a room", async () => {
-        const client = await api.specHelper.Connection.createAsync();
+        const client = await specHelper.buildConnection();
         try {
           await chatRoom.removeMember(client.id, "defaultRoom");
           throw new Error("should not get here");
@@ -193,7 +199,7 @@ describe("Core", () => {
       });
 
       test("server can remove connections to a room", async () => {
-        const client = await api.specHelper.Connection.createAsync();
+        const client = await specHelper.buildConnection();
         const didAdd = await chatRoom.addMember(client.id, "defaultRoom");
         expect(didAdd).toEqual(true);
         const didRemove = await chatRoom.removeMember(client.id, "defaultRoom");
@@ -207,7 +213,7 @@ describe("Core", () => {
           await chatRoom.destroy("newRoom");
         } catch (error) {}
 
-        const client = await api.specHelper.Connection.createAsync();
+        const client = await specHelper.buildConnection();
         await chatRoom.add("newRoom");
         const didAdd = await chatRoom.addMember(client.id, "newRoom");
         expect(didAdd).toEqual(true);
@@ -216,7 +222,7 @@ describe("Core", () => {
         await chatRoom.destroy("newRoom");
         expect(client.rooms).toHaveLength(0);
 
-        // testing for the recepit of this message is a race condition with room.destroy and boradcast in test
+        // testing for the receipt of this message is a race condition with room.destroy and broadcast in test
         // client.messages[1].message.should.equal('this room has been deleted')
         // client.messages[1].room.should.equal('newRoom')
 
@@ -224,7 +230,7 @@ describe("Core", () => {
       });
 
       test("can get a list of room members", async () => {
-        const client = await api.specHelper.Connection.createAsync();
+        const client = await specHelper.buildConnection();
         expect(client.rooms).toHaveLength(0);
         await chatRoom.add("newRoom");
         await chatRoom.addMember(client.id, "newRoom");
@@ -242,8 +248,8 @@ describe("Core", () => {
 
         beforeEach(async () => {
           originalGenerateMessagePayload = api.chatRoom.generateMessagePayload;
-          clientA = await api.specHelper.Connection.createAsync();
-          clientB = await api.specHelper.Connection.createAsync();
+          clientA = await specHelper.buildConnection();
+          clientB = await specHelper.buildConnection();
         });
 
         afterEach(() => {
@@ -358,7 +364,7 @@ describe("Core", () => {
           expect(lastMessage.message).toEqual("MIDDLEWARE 1 MIDDLEWARE 2");
         });
 
-        test("say middleware can block excecution", async () => {
+        test("say middleware can block execution", async () => {
           chatRoom.addMiddleware({
             name: "chat middleware",
             say: (connection, room, messagePayload) => {
@@ -376,7 +382,7 @@ describe("Core", () => {
           expect(clientA.messages[0].welcome).toMatch(/Welcome/);
         });
 
-        test("join middleware can block excecution", async () => {
+        test("join middleware can block execution", async () => {
           chatRoom.addMiddleware({
             name: "chat middleware",
             join: (connection, room) => {
@@ -393,7 +399,7 @@ describe("Core", () => {
           }
         });
 
-        test("leave middleware can block excecution", async () => {
+        test("leave middleware can block execution", async () => {
           chatRoom.addMiddleware({
             name: "chat middleware",
             leave: (connection, room) => {

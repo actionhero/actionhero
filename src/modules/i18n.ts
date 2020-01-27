@@ -13,7 +13,7 @@ I18n.setLocale(config.i18n.defaultLocale);
 export namespace i18n {
   // simplistic determination of locale for connection
   export function determineConnectionLocale(connection: Connection) {
-    // perhpas you want to look at the `accept-language` headers from a web requests
+    // perhaps you want to look at the `accept-language` headers from a web requests
     // perhaps your API can use a certain cookie or URL to determine locale
     return config.i18n.defaultLocale;
   }

@@ -19,11 +19,12 @@
     "jest": "latest",
     "prettier": "latest",
     "ts-jest": "latest",
-    "ts-node": "latest",
+    "ts-node-dev": "latest",
     "typescript": "latest"
   },
   "scripts": {
-    "dev": "ts-node ./node_modules/.bin/actionhero start",
+    "postinstall": "npm run build",
+    "dev": "ts-node-dev --no-deps --transpile-only ./node_modules/.bin/actionhero start",
     "start": "actionhero start",
     "actionhero": "actionhero",
     "test": "jest",

@@ -1,10 +1,10 @@
 import { asyncWaterfall } from "./asyncWaterfall";
 
 /**
- * Returns the averge delay between a tick of the node.js event loop, as measured for N calls of `process.nextTick`
+ * Returns the average delay between a tick of the node.js event loop, as measured for N calls of `process.nextTick`
  */
 export async function eventLoopDelay(
-  itterations: number = 10000
+  iterations: number = 10000
 ): Promise<number> {
   const jobs = [];
 
@@ -20,7 +20,7 @@ export async function eventLoopDelay(
   };
 
   let i = 0;
-  while (i < itterations) {
+  while (i < iterations) {
     jobs.push(sleepyFunc);
     i++;
   }

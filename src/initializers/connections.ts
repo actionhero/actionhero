@@ -19,9 +19,9 @@ export interface ConnectionMiddleware {
   name: string;
   /**Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`. */
   priority?: number;
-  /**Called for each new connection when it is created. Connection is passed to the event handeler*/
+  /**Called for each new connection when it is created. Connection is passed to the event handler*/
   create?: Function;
-  /**Called for each connection before it is destroyed. Connection is passed to the event handeler*/
+  /**Called for each connection before it is destroyed. Connection is passed to the event handler*/
   destroy?: Function;
 }
 

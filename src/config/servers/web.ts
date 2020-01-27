@@ -45,13 +45,13 @@ export const DEFAULT = {
         // The cache or (if etags are enabled) next-revalidation time to be returned for all flat files served from /public; defined in seconds
         flatFileCacheDuration: 60,
         // Add an etag header to requested flat files which acts as fingerprint that changes when the file is updated;
-        // Client will revalidate the fingerprint at latest after flatFileCacheDuration and reload it if the etag (and therfore the file) changed
+        // Client will revalidate the fingerprint at latest after flatFileCacheDuration and reload it if the etag (and therefore the file) changed
         // or continue to use the cached file if it's still valid
         enableEtag: true,
         // should we save the un-parsed HTTP POST/PUT payload to connection.rawConnection.params.rawBody?
         saveRawBody: false,
         // How many times should we try to boot the server?
-        // This might happen if the port is in use by another process or the socketfile is claimed
+        // This might happen if the port is in use by another process or the socket file is claimed
         bootAttempts: 1,
         // Settings for determining the id of an http(s) request (browser-fingerprint)
         fingerprintOptions: {
@@ -83,7 +83,7 @@ export const DEFAULT = {
         // You can also set connection.rawConnection.responseHttpCode to specify a code per request.
         returnErrorCodes: true,
         // should this node server attempt to gzip responses if the client can accept them?
-        // this will slow down the performance of actionhero, and if you need this funcionality, it is recommended that you do this upstream with nginx or your load balancer
+        // this will slow down the performance of actionhero, and if you need this functionality, it is recommended that you do this upstream with nginx or your load balancer
         compress: false,
         // options to pass to the query parser
         // learn more about the options @ https://github.com/hapijs/qs
@@ -112,7 +112,9 @@ export const test = {
     web: config => {
       return {
         secure: false,
-        port: 18080 + parseInt(process.env.JEST_WORKER_ID || "0"),
+        port: process.env.PORT
+          ? process.env.PORT
+          : 18080 + parseInt(process.env.JEST_WORKER_ID || "0"),
         matchExtensionMime: true,
         metadataOptions: {
           serverInformation: true,

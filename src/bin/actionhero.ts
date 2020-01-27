@@ -4,7 +4,6 @@ import * as path from "path";
 import * as fs from "fs";
 import * as optimist from "optimist";
 import { spawn } from "child_process";
-import { projectRoot } from "./../classes/process/projectRoot";
 
 interface RunnerInputs {
   [propName: string]: any;
@@ -14,6 +13,22 @@ interface Runner {
   name: string;
   inputs: RunnerInputs;
 }
+
+// cannot import this until we know where to load from!
+function determineProjectRoot() {
+  let projectRoot = process.cwd();
+  if (process.env.project_root) {
+    projectRoot = process.env.project_root;
+  } else if (process.env.projectRoot) {
+    projectRoot = process.env.projectRoot;
+  } else if (process.env.PROJECT_ROOT) {
+    projectRoot = process.env.PROJECT_ROOT;
+  }
+
+  return projectRoot;
+}
+
+const projectRoot = determineProjectRoot();
 
 (async () => {
   const bootFilePaths = [
@@ -73,7 +88,7 @@ interface Runner {
 
   const handleUnbuiltProject = async (commands: Array<string>) => {
     try {
-      // when generating the project from scratch, we cannot rely on the normal initilizers
+      // when generating the project from scratch, we cannot rely on the normal initializers
       const ExportedRunnerClasses = require(path.join(
         __dirname,
         "methods",
@@ -142,7 +157,12 @@ interface Runner {
               ExportedClasses = require(p);
             }
 
-            p = path.join(pluginPath, "bin", commands.join(path.sep) + ".ts");
+            p = path.join(
+              pluginPath,
+              "dist",
+              "bin",
+              commands.join(path.sep) + ".js"
+            );
             if (fs.existsSync(p)) {
               ExportedClasses = require(p);
             }
@@ -156,33 +176,14 @@ interface Runner {
         );
         console.error("run `actionhero help` to learn more");
         setTimeout(process.exit, 500, 1);
+      } else if (Object.keys(ExportedClasses).length > 1) {
+        throw new Error("actionhero CLI files should only export one method");
       } else {
-        if (optimist.argv.daemon) {
-          const newArgs: Array<string> = process.argv.splice(2);
-          for (const i in newArgs) {
-            if (newArgs[i].indexOf("--daemon") >= 0) {
-              newArgs.splice(parseInt(i), 1);
-            }
-          }
-          newArgs.push("--isDaemon=true");
-          const command = path.normalize(actionheroRoot + "/bin/actionhero");
-          const child = spawn(command, newArgs, {
-            detached: true,
-            cwd: process.cwd(),
-            env: process.env,
-            stdio: "ignore"
-          });
-          console.log(`spawned child process with pid ${child.pid}`, "notice");
-          process.nextTick(process.exit);
-        } else if (Object.keys(ExportedClasses).length > 1) {
-          throw new Error("actionhero CLI files should only export one method");
-        } else {
-          const runner = new ExportedClasses[Object.keys(ExportedClasses)[0]]();
-          const params = formatParams(runner);
-          const toStop = await runner.run({ params: params });
-          if (toStop || toStop === null || toStop === undefined) {
-            setTimeout(process.exit, 500, 0);
-          }
+        const runner = new ExportedClasses[Object.keys(ExportedClasses)[0]]();
+        const params = formatParams(runner);
+        const toStop = await runner.run({ params: params });
+        if (toStop || toStop === null || toStop === undefined) {
+          setTimeout(process.exit, 500, 0);
         }
       }
     } catch (error) {

@@ -6,7 +6,7 @@ function sleep(time: number): Promise<void> {
   });
 }
 
-export class CacheTest extends Action {
+export class SleepTest extends Action {
   constructor() {
     super();
     this.name = "sleepTest";

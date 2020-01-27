@@ -1,5 +1,6 @@
 import * as path from "path";
 import * as glob from "glob";
+import * as fs from "fs";
 import { Api } from "./api";
 import { buildConfig, ConfigInterface } from "./../modules/config";
 import { log } from "../modules/log";
@@ -9,11 +10,10 @@ import { utils } from "../modules/utils";
 
 import { id } from "./process/id";
 import { env } from "./process/env";
-import { pid, writePidFile, clearPidFile } from "./process/pid";
-import { watchFileAndAct, unWatchAllFiles } from "./process/watchFileAndAct";
-import { typescript } from "./process/typescript";
+import { writePidFile, clearPidFile } from "./process/pid";
 
-let api: Api;
+import { api } from "../index";
+
 let config: ConfigInterface = {};
 
 export class Process {
@@ -31,10 +31,6 @@ export class Process {
   };
 
   constructor() {
-    // Only in files required by `index.js` do we need to delay the loading of the API object
-    // This is due to cyclical require issues
-    api = require("../index").api;
-
     this.initializers = {};
     this.loadInitializers = [];
     this.startInitializers = [];
@@ -89,36 +85,27 @@ export class Process {
     // load initializers from plugins
     for (const pluginName in config.plugins) {
       if (config.plugins[pluginName] !== false) {
-        const pluginPath: string = config.plugins[pluginName].path;
+        const pluginPath: string = path.normalize(
+          config.plugins[pluginName].path
+        );
+
+        if (!fs.existsSync(pluginPath)) {
+          throw new Error(`plugin path does not exist: ${pluginPath}`);
+        }
 
         // old style at the root of the project
         initializerFiles = initializerFiles.concat(
-          glob.sync(
-            path.join(pluginPath, "initializers", "**", "**/*(*.js|*.ts)")
-          )
+          glob.sync(path.join(pluginPath, "initializers", "**", "*.js"))
         );
 
-        // dist files if running in JS mode
-        if (!typescript) {
-          initializerFiles = initializerFiles.concat(
-            glob.sync(
-              path.join(pluginPath, "dist", "initializers", "**", "*.js")
-            )
-          );
-        }
-
-        // src files if running in TS mode
-        if (typescript) {
-          initializerFiles = initializerFiles.concat(
-            glob.sync(
-              path.join(pluginPath, "src", "initializers", "**", "*.ts")
-            )
-          );
-        }
+        // new TS dist files
+        initializerFiles = initializerFiles.concat(
+          glob.sync(path.join(pluginPath, "dist", "initializers", "**", "*.js"))
+        );
       }
     }
 
-    initializerFiles = utils.arrayUniqueify(initializerFiles);
+    initializerFiles = utils.arrayUnique(initializerFiles);
     initializerFiles = utils.ensureNoTsHeaderFiles(initializerFiles);
 
     initializerFiles.forEach(f => {
@@ -134,7 +121,7 @@ export class Process {
 
       if (Object.keys(exportedClasses).length === 0) {
         this.fatalError(
-          new Error(`no exported intializers found in ${file}`),
+          new Error(`no exported initializers found in ${file}`),
           file
         );
       }
@@ -147,7 +134,7 @@ export class Process {
 
           // check if initializer already exists (exclude utils and config)
           if (this.initializers[initializer.name]) {
-            const warningMessage = `an existing intializer with the same name \`${initializer.name}\` will be overridden by the file ${file}`;
+            const warningMessage = `an existing initializer with the same name \`${initializer.name}\` will be overridden by the file ${file}`;
             log(warningMessage, "warning");
           } else {
             initializer.validate();
@@ -158,14 +145,6 @@ export class Process {
         }
 
         const initializeFunction = async () => {
-          watchFileAndAct(file, async () => {
-            log(
-              `*** Rebooting due to initializer change (${file}) ***`,
-              "info"
-            );
-            await this.restart();
-          });
-
           if (typeof initializer.initialize === "function") {
             log(`Loading initializer: ${initializer.name}`, "debug", file);
 
@@ -175,7 +154,7 @@ export class Process {
                 log(`Loaded initializer: ${initializer.name}`, "debug", file);
               } catch (e) {}
             } catch (error) {
-              const message = `Exception occured in initializer \`${initializer.name}\` during load`;
+              const message = `Exception occurred in initializer \`${initializer.name}\` during load`;
               try {
                 log(message, "emerg", error.toString());
               } catch (_error) {
@@ -195,7 +174,7 @@ export class Process {
               log(`Started initializer: ${initializer.name}`, "debug", file);
             } catch (error) {
               log(
-                `Exception occured in initializer \`${initializer.name}\` during start`,
+                `Exception occurred in initializer \`${initializer.name}\` during start`,
                 "emerg",
                 error.toString()
               );
@@ -213,7 +192,7 @@ export class Process {
               log(`Stopped initializer: ${initializer.name}`, "debug", file);
             } catch (error) {
               log(
-                `Exception occured in initializer \`${initializer.name}\` during stop`,
+                `Exception occurred in initializer \`${initializer.name}\` during stop`,
                 "emerg",
                 error.toString()
               );
@@ -307,8 +286,7 @@ export class Process {
       this.initialized = false;
 
       log("stopping process...", "notice");
-
-      await utils.sleep(1000);
+      await utils.sleep(100);
 
       this.stopInitializers.push(async () => {
         clearPidFile();
@@ -317,11 +295,10 @@ export class Process {
         // reset initializers to prevent duplicate check on restart
         this.initializers = {};
         api.running = false;
-        await utils.sleep(1000);
+        await utils.sleep(100);
       });
 
       try {
-        unWatchAllFiles();
         await utils.asyncWaterfall(this.stopInitializers);
       } catch (error) {
         return this.fatalError(error, "stop");

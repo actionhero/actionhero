@@ -10,7 +10,7 @@ const actionhero = new Process();
 let api;
 let url;
 
-// stub the selenium ingected variables
+// stub the selenium infected variables
 declare var browser: any;
 declare var by: any;
 

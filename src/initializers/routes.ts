@@ -10,7 +10,7 @@ export interface RoutesApi {
 }
 
 /**
- * Countains routing options for web clients.  Can associate routes with actions or files.
+ * Contains routing options for web clients.  Can associate routes with actions or files.
  */
 export class Routes extends Initializer {
   constructor() {
@@ -192,7 +192,7 @@ export class Routes extends Initializer {
         }
       }
 
-      api.params.postVariables = utils.arrayUniqueify(api.params.postVariables);
+      api.params.postVariables = utils.arrayUnique(api.params.postVariables);
 
       if (config.servers.web && config.servers.web.simpleRouting === true) {
         const simplePaths = [];

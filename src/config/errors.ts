@@ -23,13 +23,6 @@ export const DEFAULT = {
               return error;
             }
           },
-          socket: error => {
-            if (error.message) {
-              return String(error.message);
-            } else {
-              return error;
-            }
-          },
           specHelper: error => {
             if (error.message) {
               return "Error: " + String(error.message);
@@ -78,7 +71,7 @@ export const DEFAULT = {
         return data.connection.localize("actionhero.errors.serverShuttingDown");
       },
 
-      // action failed because this client already has too many pending acitons
+      // action failed because this client already has too many pending actions
       // limit defined in api.config.general.simultaneousActions
       tooManyPendingActions: data => {
         return data.connection.localize(
@@ -88,7 +81,7 @@ export const DEFAULT = {
 
       // Decorate your response based on Error here.
       // Any action that throws an Error will pass through this method before returning
-      //   an error to the client. Reponse can be edited here, status codes changed, etc.
+      //   an error to the client. Response can be edited here, status codes changed, etc.
       async genericError(data, error) {
         return error;
       },
@@ -98,7 +91,7 @@ export const DEFAULT = {
       // ///////////////
 
       // The body message to accompany 404 (file not found) errors regarding flat files
-      // You may want to load in the contnet of 404.html or similar
+      // You may want to load in the content of 404.html or similar
       fileNotFound: connection => {
         return connection.localize(["actionhero.errors.fileNotFound"]);
       },

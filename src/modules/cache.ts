@@ -139,7 +139,7 @@ export namespace cache {
 
   /**
    * Load an item from the cache.  Will throw an error if the item named by `key` cannot be found.
-   * Automatically handels `api.cache.redisPrefix`
+   * Automatically handles `api.cache.redisPrefix`
    */
   export async function load(
     key: string,
@@ -205,7 +205,7 @@ export namespace cache {
 
   /**
    * Delete an item in the cache.  Will throw an error if the item named by `key` is locked.
-   * Automatically handels `api.cache.redisPrefix`
+   * Automatically handles `api.cache.redisPrefix`
    */
   export async function destroy(key: string): Promise<boolean> {
     const lockOk = await cache.checkLock(key, null);
@@ -221,8 +221,8 @@ export namespace cache {
   }
 
   /**
-   * Save an item in the cache.  If an item is already in the cache with the same key, it will be overritten.  Throws an error if the object is already in the cache and is locked.
-   * Automatically handels `api.cache.redisPrefix`
+   * Save an item in the cache.  If an item is already in the cache with the same key, it will be overwritten.  Throws an error if the object is already in the cache and is locked.
+   * Automatically handles `api.cache.redisPrefix`
    */
   export async function save(
     key: string,
@@ -256,7 +256,7 @@ export namespace cache {
 
   /**
    * Push an item to a shared queue/list in redis.
-   * Automatically handels `api.cache.redisPrefix`
+   * Automatically handles `api.cache.redisPrefix`
    */
   export async function push(key: string, item: any): Promise<boolean> {
     const object = JSON.stringify({ data: item });
@@ -266,7 +266,7 @@ export namespace cache {
 
   /**
    * Pop (get) an item to a shared queue/list in redis.
-   * Automatically handels `api.cache.redisPrefix`
+   * Automatically handles `api.cache.redisPrefix`
    */
   export async function pop(key: string): Promise<boolean> {
     const object = await client().lpop(redisPrefix + key);

@@ -48,7 +48,7 @@ export class Params extends Initializer {
         }
       }
 
-      api.params.postVariables = utils.arrayUniqueify(postVariables);
+      api.params.postVariables = utils.arrayUnique(postVariables);
       return api.params.postVariables;
     };
 

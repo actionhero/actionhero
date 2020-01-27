@@ -2,15 +2,7 @@ import * as glob from "glob";
 import * as path from "path";
 import { Plugin } from "node-resque";
 import * as TaskModule from "./../modules/task";
-import {
-  api,
-  log,
-  utils,
-  task,
-  Initializer,
-  typescript,
-  watchFileAndAct
-} from "../index";
+import { api, log, utils, task, Initializer } from "../index";
 
 const taskModule = task;
 
@@ -25,7 +17,7 @@ export interface TaskApi {
 }
 
 /**
- * Tools for enquing and inspecting the task sytem (delayed jobs).
+ * Tools for enqueuing and inspecting the task system (delayed jobs).
  */
 export class Tasks extends Initializer {
   constructor() {
@@ -44,16 +36,6 @@ export class Tasks extends Initializer {
     };
 
     api.tasks.loadFile = (fullFilePath: string, reload: boolean = false) => {
-      watchFileAndAct(fullFilePath, async () => {
-        if (!config.general.developmentModeForceRestart) {
-          // reload by updating in-memory copy of our task
-          api.tasks.loadFile(fullFilePath, true);
-        } else {
-          log(`*** Rebooting due to task change (${fullFilePath}) ***`, "info");
-          await api.commands.restart();
-        }
-      });
-
       let task;
       let collection = require(fullFilePath);
       for (const i in collection) {
@@ -82,7 +64,7 @@ export class Tasks extends Initializer {
 
       const middleware = task.middleware || [];
       const plugins = task.plugins || [];
-      const pluginOptions = task.pluginOptions || [];
+      const pluginOptions = task.pluginOptions || {};
 
       if (task.frequency > 0) {
         if (plugins.indexOf("JobLock") < 0) {
@@ -131,8 +113,8 @@ export class Tasks extends Initializer {
       middleware.forEach(processMiddleware);
 
       return {
-        plugins: plugins,
-        pluginOptions: pluginOptions,
+        plugins,
+        pluginOptions,
         perform: async function() {
           const combinedArgs = [].concat(Array.prototype.slice.call(arguments));
           combinedArgs.push(this);
@@ -167,23 +149,11 @@ export class Tasks extends Initializer {
           const pluginPath = config.plugins[pluginName].path;
 
           // old style at the root of the project
-          let files = glob.sync(
-            path.join(pluginPath, "tasks", "**", "**/*(*.js|*.ts)")
+          let files = glob.sync(path.join(pluginPath, "tasks", "**", "*.js"));
+
+          files = files.concat(
+            glob.sync(path.join(pluginPath, "dist", "tasks", "**", "*.js"))
           );
-
-          // dist files if running in JS mode
-          if (!typescript) {
-            files = files.concat(
-              glob.sync(path.join(pluginPath, "dist", "tasks", "**", "**/*.js"))
-            );
-          }
-
-          // src files if running in TS mode
-          if (typescript) {
-            files = files.concat(
-              glob.sync(path.join(pluginPath, "src", "tasks", "**", "**/*.ts"))
-            );
-          }
 
           utils.ensureNoTsHeaderFiles(files).forEach(f => {
             api.tasks.loadFile(f, reload);

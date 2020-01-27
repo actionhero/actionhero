@@ -80,12 +80,6 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
     );
   }
 
-  // const rebootHandler = file => {
-  //   log(`*** rebooting due to config change (${file}) ***`, "info");
-  //   delete require.cache[require.resolve(file)];
-  //   api.commands.restart();
-  // };
-
   const loadConfigFile = (f: string) => {
     const localConfig = require(f);
     if (f.includes("routes.js") || f.includes("routes.ts")) {
@@ -161,15 +155,10 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
         configFiles.push(configFiles.splice(i--, 1)[0]);
         continue;
       }
-
-      // if (watch) {
-      //   // configuration file loaded: set watch
-      //   api.watchFileAndAct(f, rebootHandler);
-      // }
     }
 
     // We load the config twice. Utilize configuration files load order that succeeded on the first pass.
-    // This is to allow 'literal' values to be loaded whenever possible, and then for refrences to be resolved
+    // This is to allow 'literal' values to be loaded whenever possible, and then for references to be resolved
     configFiles.forEach(loadConfigFile);
 
     // Remove duplicate routes since we might be loading from multiple config directories, also we load every

@@ -11,7 +11,7 @@ export const DEFAULT = {
         // Path should start with "/" and will be built starting from api.config..general.paths.public
         clientJsPath: "javascript/",
         // the name of the client-side JS file to render.  Both `.js` and `.min.js` versions will be created
-        // do not include the file exension
+        // do not include the file extension
         // set to `undefined` to not render the client-side JS on boot
         clientJsName: "ActionheroWebsocketClient",
         // should the server signal clients to not reconnect when the server is shutdown/reboot

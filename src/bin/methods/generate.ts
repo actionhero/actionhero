@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 
 // import { api, projectRoot, CLI } from "./../../index";
-// we need to load each component directly so we don't accidentalyy source `config... which doesn't exist`
+// we need to load each component directly so we don't accidentally source `config... which doesn't exist`
 import { CLI } from "./../../classes/cli";
 import { projectRoot } from "./../../classes/process/projectRoot";
 import {
@@ -176,7 +176,7 @@ export class Generate extends CLI {
     console.log(
       `
 -------------------------------------------------------------------------------------------------------------------
-You need to run \`npm install\` to install dependancies, and then \`npm run build\` to build the .js from this .ts project.
+You need to run \`npm install\` to install dependencies, and then \`npm run build\` to build the .js from this .ts project.
 Then, run 'npm run dev' to start your server
 
 <3, the Actionhero Team

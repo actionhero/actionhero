@@ -1,5 +1,5 @@
 import { arrayStartingMatch } from "./utils/arrayStartingMatch";
-import { arrayUniqueify } from "./utils/arrayUniqueify";
+import { arrayUnique } from "./utils/arrayUnique";
 import { asyncWaterfall } from "./utils/asyncWaterfall";
 import { collapseObjectToArray } from "./utils/collapseObjectToArray";
 import { ensureNoTsHeaderFiles } from "./utils/ensureNoTsHeaderFiles";
@@ -30,7 +30,7 @@ import {
  */
 export const utils = {
   arrayStartingMatch,
-  arrayUniqueify,
+  arrayUnique,
   asyncWaterfall,
   collapseObjectToArray,
   ensureNoTsHeaderFiles,

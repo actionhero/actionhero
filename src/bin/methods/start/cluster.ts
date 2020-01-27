@@ -15,8 +15,6 @@ import { config, id, CLI } from "../../../index";
  *   -- HTTP/HTTPS/TCP clients will be allowed to finish the action they are working on before the server goes down
  * - TTOU and TTIN signals to subtract/add workers
  * - TCP, HTTP(S), and Web-socket clients will all be shared across the cluster
- * - Can be run as a daemon or in-console
- *   -- Simple Daemon: "actionhero start cluster --daemon"
  * * Setting process titles does not work on windows or OSX
  * This tool was heavily inspired by Ruby Unicorns [[ http://unicorn.bogomips.org/ ]]
  */
@@ -26,7 +24,7 @@ export class StartCluster extends CLI {
     this.name = "start cluster";
     this.description = "start an actionhero cluster";
     this.example =
-      "actionhero start cluster --workers=[numWorkers] --workerTitlePrefix=[title] --daemon";
+      "actionhero start cluster --workers=[numWorkers] --workerTitlePrefix=[title]";
     this.inputs = {
       workers: {
         required: true,
@@ -41,10 +39,6 @@ export class StartCluster extends CLI {
       workerTitlePrefix: {
         required: true,
         default: "actionhero-worker-"
-      },
-      daemon: {
-        required: false,
-        note: "to fork and run as a new background process defaults to false"
       },
       silent: { required: false }
     };

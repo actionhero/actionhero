@@ -1,14 +1,6 @@
 import * as path from "path";
 import * as glob from "glob";
-import {
-  api,
-  log,
-  utils,
-  watchFileAndAct,
-  Initializer,
-  Server,
-  typescript
-} from "../index";
+import { api, log, utils, Initializer, Server } from "../index";
 
 export interface ServersApi {
   servers: {
@@ -51,22 +43,12 @@ export class Servers extends Initializer {
           const pluginPath = config.plugins[pluginName].path;
           // old style at the root of the project
           files = files.concat(
-            glob.sync(path.join(pluginPath, "servers", "**", "**/*(*.js|*.ts)"))
+            glob.sync(path.join(pluginPath, "servers", "**", "*.js|"))
           );
 
-          // dist files if running in JS mode
-          if (!typescript) {
-            files = files.concat(
-              glob.sync(path.join(pluginPath, "dist", "servers", "**", "*.js"))
-            );
-          }
-
-          // src files if running in TS mode
-          if (typescript) {
-            files = files.concat(
-              glob.sync(path.join(pluginPath, "src", "servers", "**", "*.ts"))
-            );
-          }
+          files = files.concat(
+            glob.sync(path.join(pluginPath, "dist", "servers", "**", "*.js"))
+          );
         }
       }
 
@@ -97,14 +79,6 @@ export class Servers extends Initializer {
           api.servers.servers[server.type] = server;
           log(`Initialized server: ${server.type}`, "debug");
         }
-
-        watchFileAndAct(filename, () => {
-          log(
-            `*** Rebooting due to server (${server.type}) change ***`,
-            "info"
-          );
-          api.commands.restart();
-        });
       }
     }
   }

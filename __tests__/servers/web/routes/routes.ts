@@ -52,6 +52,7 @@ describe("Server: Web", () => {
         1: {
           name: "login",
           description: "login",
+          version: 1,
           matchExtensionMimeType: true,
           inputs: {
             user_id: { required: true }
@@ -59,12 +60,14 @@ describe("Server: Web", () => {
           outputExample: {},
           run: data => {
             data.response.user_id = data.params.user_id;
+            data.response.version = 1;
           }
         },
 
         2: {
           name: "login",
           description: "login",
+          version: 2,
           matchExtensionMimeType: true,
           inputs: {
             userID: { required: true }
@@ -72,6 +75,22 @@ describe("Server: Web", () => {
           outputExample: {},
           run: data => {
             data.response.userID = data.params.userID;
+            data.response.version = 2;
+          }
+        },
+
+        three: {
+          name: "login",
+          description: "login",
+          version: "three",
+          matchExtensionMimeType: true,
+          inputs: {
+            userID: { required: true }
+          },
+          outputExample: {},
+          run: data => {
+            data.response.userID = data.params.userID;
+            data.response.version = "three";
           }
         }
       };
@@ -86,6 +105,7 @@ describe("Server: Web", () => {
           { path: "/mimeTestAction/:key", action: "mimeTestAction" },
           { path: "/thing", action: "thing" },
           { path: "/thing/stuff", action: "thingStuff" },
+          { path: "/:apiVersion/login", action: "login" },
           { path: "/old_login", action: "login", apiVersion: "1" },
           {
             path: "/a/wild/:key/:path(^.*$)",
@@ -172,7 +192,7 @@ describe("Server: Web", () => {
       expect(body.matchedRoute.action).toEqual("mimeTestAction");
     });
 
-    test("route actions have the matched route availalbe to the action", async () => {
+    test("route actions have the matched route available to the action", async () => {
       const body = await request
         .get(url + "/api/mimeTestAction/thing.json")
         .then(toJson);
@@ -376,7 +396,7 @@ describe("Server: Web", () => {
       beforeAll(async () => {
         const tmpDir = os.tmpdir();
         const readStream = fs.createReadStream(source);
-        api.staticFile.searchLoactions.push(tmpDir);
+        api.staticFile.searchLocations.push(tmpDir);
 
         await new Promise(resolve => {
           readStream.pipe(
@@ -390,7 +410,7 @@ describe("Server: Web", () => {
 
       afterAll(() => {
         fs.unlinkSync(os.tmpdir() + path.sep + "actionhero with space.png");
-        api.staticFile.searchLoactions.pop();
+        api.staticFile.searchLocations.pop();
       });
 
       test("will decode %20 or plus sign to a space so that file system can read", async () => {
@@ -412,6 +432,33 @@ describe("Server: Web", () => {
           expect(typeof error.response.body).toEqual("string");
           expect(error.response.body).toMatch(/^That file is not found/);
         }
+      });
+    });
+
+    describe("versions", () => {
+      test("versions can be numbers", async () => {
+        const body = await request
+          .get(url + "/api/1/login?user_id=123")
+          .then(toJson);
+        expect(body.version).toEqual(1);
+        expect(body.user_id).toEqual("123");
+      });
+
+      test("versions can be strings", async () => {
+        const body = await request
+          .get(url + "/api/three/login?userID=123")
+          .then(toJson);
+        expect(body.version).toEqual("three");
+        expect(body.userID).toEqual("123");
+      });
+
+      test("routes with no version will default to the highest version number", async () => {
+        // sorting numerically, 2 > 'three'
+        const body = await request
+          .get(url + "/api/login?userID=123")
+          .then(toJson);
+        expect(body.version).toEqual(2);
+        expect(body.userID).toEqual("123");
       });
     });
   });

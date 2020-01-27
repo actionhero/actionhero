@@ -6,14 +6,14 @@ import { api, CLI } from "./../../index";
 export class Start extends CLI {
   state: string;
   shutdownTimeout: number;
-  checkForInernalStopTimer: NodeJS.Timeout;
+  checkForInternalStopTimer: NodeJS.Timeout;
 
   constructor() {
     super();
     this.name = "start";
     this.description = "start this ActionHero server";
     this.example =
-      "actionhero start --config=[/path/to/config] --title=[processTitle] --daemon";
+      "actionhero start --config=[/path/to/config] --title=[processTitle]";
     this.inputs = {
       config: {
         required: false,
@@ -24,10 +24,6 @@ export class Start extends CLI {
         required: false,
         note:
           "process title to use for ActionHero's ID, ps, log, and pidFile defaults. Must be unique for each member of the cluster. You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows"
-      },
-      daemon: {
-        required: false,
-        note: "to fork and run as a new background process defaults to false"
       }
     };
 
@@ -52,7 +48,7 @@ export class Start extends CLI {
     await api.commands.start();
     this.state = "started";
     this.sendState();
-    this.checkForInernalStop();
+    this.checkForInternalStop();
   }
 
   async stopServer() {
@@ -84,14 +80,14 @@ export class Start extends CLI {
     process.exit();
   }
 
-  checkForInernalStop() {
-    // check for an internal stop which doesn't close the processs
-    clearTimeout(this.checkForInernalStopTimer);
+  checkForInternalStop() {
+    // check for an internal stop which doesn't close the process
+    clearTimeout(this.checkForInternalStopTimer);
     if (api.running !== true && this.state === "started") {
       process.exit(0);
     }
-    this.checkForInernalStopTimer = setTimeout(() => {
-      this.checkForInernalStop();
+    this.checkForInternalStopTimer = setTimeout(() => {
+      this.checkForInternalStop();
     }, this.shutdownTimeout);
   }
 

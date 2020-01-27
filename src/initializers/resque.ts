@@ -1,5 +1,5 @@
-import { Queue, Scheduler, MultiWorker } from "node-resque";
-import { api, log, Initializer } from "../index";
+import { Queue, Scheduler, MultiWorker, JobEmit } from "node-resque";
+import { api, log, config, Initializer } from "../index";
 
 export interface ResqueApi {
   connectionDetails: {
@@ -29,6 +29,17 @@ export class Resque extends Initializer {
     this.loadPriority = 600;
     this.startPriority = 200;
     this.stopPriority = 100;
+  }
+
+  filterTaskParams(params: { [key: string]: any }) {
+    const filteredParams = Object.assign({}, params);
+    for (const key in params) {
+      if (config.general.filteredParams.indexOf(key) >= 0) {
+        filteredParams[key] = "[FILTERED]";
+      }
+    }
+
+    return filteredParams;
   }
 
   async initialize(config) {
@@ -61,7 +72,7 @@ export class Resque extends Initializer {
         );
 
         api.resque.queue.on("error", error => {
-          log(error, "error", "[api.resque.queue]");
+          log(error.toString(), "error", "[api.resque.queue]");
         });
 
         await api.resque.queue.connect();
@@ -87,7 +98,7 @@ export class Resque extends Initializer {
           });
 
           api.resque.scheduler.on("error", error => {
-            log(error, "error", "[api.resque.scheduler]");
+            log(error.toString(), "error", "[api.resque.scheduler]");
           });
 
           await api.resque.scheduler.connect();
@@ -100,20 +111,7 @@ export class Resque extends Initializer {
           api.resque.scheduler.on("poll", () => {
             log("resque scheduler polling", api.resque.schedulerLogging.poll);
           });
-          api.resque.scheduler.on("working_timestamp", timestamp => {
-            log(
-              `resque scheduler working timestamp ${timestamp}`,
-              api.resque.schedulerLogging.working_timestamp
-            );
-          });
-          api.resque.scheduler.on("transferred_job", (timestamp, job) => {
-            log(
-              `resque scheduler enqueuing job ${timestamp}`,
-              api.resque.schedulerLogging.transferred_job,
-              job
-            );
-          });
-          api.resque.scheduler.on("master", state => {
+          api.resque.scheduler.on("master", () => {
             log("This node is now the Resque scheduler master", "notice");
           });
           api.resque.scheduler.on(
@@ -183,16 +181,17 @@ export class Resque extends Initializer {
             workerId
           });
         });
-        api.resque.multiWorker.on("job", (workerId, queue, job) => {
+        api.resque.multiWorker.on("job", (workerId, queue, job: JobEmit) => {
           log(`[ worker ] working job ${queue}`, api.resque.workerLogging.job, {
             workerId,
             class: job.class,
-            queue: job.queue
+            queue: job.queue,
+            args: JSON.stringify(this.filterTaskParams(job.args[0]))
           });
         });
         api.resque.multiWorker.on(
           "reEnqueue",
-          (workerId, queue, job, plugin) => {
+          (workerId, queue, job: JobEmit, plugin) => {
             log(
               "[ worker ] reEnqueue job",
               api.resque.workerLogging.reEnqueue,
@@ -221,25 +220,26 @@ export class Resque extends Initializer {
           api.exceptionHandlers.task(error, queue, job, workerId);
         });
 
-        api.resque.multiWorker.on("success", (workerId, queue, job, result) => {
-          const payload = {
-            workerId,
-            class: job.class,
-            queue: job.queue,
-            result
-          };
+        api.resque.multiWorker.on(
+          "success",
+          (workerId, queue, job: JobEmit, result) => {
+            const payload = {
+              workerId,
+              class: job.class,
+              queue: job.queue,
+              args: JSON.stringify(this.filterTaskParams(job.args[0])),
+              result
+            };
 
-          log(
-            "[ worker ] job success",
-            api.resque.workerLogging.success,
-            payload
-          );
-        });
+            log(
+              "[ worker ] job success",
+              api.resque.workerLogging.success,
+              payload
+            );
+          }
+        );
 
         // multiWorker emitters
-        api.resque.multiWorker.on("internalError", error => {
-          log(error, api.resque.workerLogging.internalError);
-        });
         api.resque.multiWorker.on("multiWorkerAction", (verb, delay) => {
           log(
             `[ multiworker ] checked for worker status: ${verb} (event loop delay: ${delay}ms)`,
