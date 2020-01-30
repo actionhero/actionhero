@@ -60,7 +60,7 @@
     "prettier": "^1.19.1",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.8",
-    "ts-jest": "^24.3.0",
+    "ts-jest": "^25.1.0",
     "ts-node-dev": "^1.0.0-pre.44",
     "typedoc": "^0.16.6",
     "typescript": "^3.7.4"
