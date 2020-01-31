@@ -1,4 +1,4 @@
-import { Process, specHelper } from "./../../src/index";
+import { Process, specHelper, task } from "./../../src/index";
 
 const actionhero = new Process();
 let api;
@@ -294,6 +294,34 @@ describe("Core: specHelper", () => {
       const response = await specHelper.runTask("testTask", {});
       expect(response).toEqual("OK");
       expect(taskRan).toEqual(true);
+    });
+
+    describe("flushed redis", () => {
+      beforeEach(async () => {
+        await api.redis.clients.client.flushdb();
+      });
+
+      test("findEnqueuedTasks (normal queues)", async () => {
+        await task.enqueue("testTask", { a: 1 });
+        const foundTasks = await specHelper.findEnqueuedTasks("testTask");
+        expect(foundTasks.length).toBe(1);
+        expect(foundTasks[0].args[0]).toEqual({ a: 1 });
+      });
+
+      test("findEnqueuedTasks (delayed queues)", async () => {
+        await task.enqueueIn(1, "testTask", { a: 1 });
+        const foundTasks = await specHelper.findEnqueuedTasks("testTask");
+        expect(foundTasks.length).toBe(1);
+        expect(foundTasks[0].args[0]).toEqual({ a: 1 });
+      });
+
+      test("deleteEnqueuedTasks", async () => {
+        await task.enqueue("testTask", { a: 1 });
+        await task.enqueueAt(10, "testTask", { a: 1 });
+        await specHelper.deleteEnqueuedTasks("testTask", { a: 1 });
+        const foundTasks = await specHelper.findEnqueuedTasks("testTask");
+        expect(foundTasks.length).toBe(0);
+      });
     });
   });
 });

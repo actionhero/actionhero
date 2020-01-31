@@ -131,4 +131,16 @@ export namespace specHelper {
 
     return found;
   }
+
+  /**
+   * Delete all enqueued instances of a task, both in all the normal queues and all of the delayed queues
+   */
+  export async function deleteEnqueuedTasks(taskName: string, params: {}) {
+    const queues = await api.resque.queue.queues();
+    for (const i in queues) {
+      const q = queues[i];
+      await api.resque.queue.del(q, taskName, [params]);
+      await api.resque.queue.delDelayed(q, taskName, [params]);
+    }
+  }
 }
