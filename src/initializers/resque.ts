@@ -197,7 +197,7 @@ export class Resque extends Initializer {
               api.resque.workerLogging.reEnqueue,
               {
                 workerId,
-                plugin: plugin,
+                plugin: JSON.stringify(plugin),
                 class: job.class,
                 queue: job.queue
               }
