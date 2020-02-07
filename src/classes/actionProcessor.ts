@@ -4,6 +4,7 @@ import { config } from "./../modules/config";
 import { log } from "../modules/log";
 import { utils } from "../modules/utils";
 import * as dotProp from "dot-prop";
+import { EOL } from "os";
 import { api } from "../index";
 
 export class ActionProcessor {
@@ -124,7 +125,7 @@ export class ActionProcessor {
 
     if (error) {
       if (error instanceof Error) {
-        logLine.error = String(error);
+        logLine.error = error.toString();
       } else {
         try {
           logLine.error = JSON.stringify(error);
@@ -135,6 +136,9 @@ export class ActionProcessor {
     }
 
     log(`[ action @ ${this.connection.type} ]`, logLevel, logLine);
+    if (error?.stack) {
+      error.stack.split(EOL).map(l => log(` ! ${l}`, "error"));
+    }
   }
 
   private async preProcessAction() {
