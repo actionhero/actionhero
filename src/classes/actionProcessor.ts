@@ -124,7 +124,7 @@ export class ActionProcessor {
 
     if (error) {
       if (error instanceof Error) {
-        logLine.error = String(error);
+        logLine.error = error.toString();
       } else {
         try {
           logLine.error = JSON.stringify(error);
@@ -135,6 +135,9 @@ export class ActionProcessor {
     }
 
     log(`[ action @ ${this.connection.type} ]`, logLevel, logLine);
+    if (error?.stack) {
+      error.stack.split("\n").map(l => log(` ! ${l}`, "error"));
+    }
   }
 
   private async preProcessAction() {
