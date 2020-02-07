@@ -4,6 +4,7 @@ import { config } from "./../modules/config";
 import { log } from "../modules/log";
 import { utils } from "../modules/utils";
 import * as dotProp from "dot-prop";
+import { EOL } from "os";
 import { api } from "../index";
 
 export class ActionProcessor {
@@ -136,7 +137,7 @@ export class ActionProcessor {
 
     log(`[ action @ ${this.connection.type} ]`, logLevel, logLine);
     if (error?.stack) {
-      error.stack.split("\n").map(l => log(` ! ${l}`, "error"));
+      error.stack.split(EOL).map(l => log(` ! ${l}`, "error"));
     }
   }
 
