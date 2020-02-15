@@ -38,7 +38,7 @@ references:
           command: npm run prepare
       - run:
           name: test
-          command: ./node_modules/.bin/jest --ci --reporters=jest-junit --reporters=default --runInBand
+          command: ./node_modules/.bin/jest --ci --reporters=jest-junit --reporters=default --maxWorkers 8
           environment:
             NODE_ENV: test
             SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub

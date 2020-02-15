@@ -4,7 +4,7 @@ tmp/*
 log/*
 cache/*
 coverage/*
-node_modules/*
+node_modules
 locales/test-env-*
 public/javascript/ActionheroWebsocketClient.js
 public/javascript/ActionheroWebsocketClient.min.js
