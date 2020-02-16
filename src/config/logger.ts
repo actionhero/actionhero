@@ -42,7 +42,7 @@ function buildConsoleLogger(level = "info") {
         winston.format.timestamp(),
         winston.format.colorize(),
         winston.format.printf(info => {
-          return `${config.process.id} @ ${info.timestamp} - ${info.level}: ${
+          return `${info.timestamp} - ${info.level}: ${
             info.message
           } ${stringifyExtraMessagePropertiesForConsole(info)}`;
         })
