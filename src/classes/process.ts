@@ -321,6 +321,57 @@ export class Process {
     return api;
   }
 
+  /**
+   * Register listeners for process signals and uncaught exceptions & rejections.
+   * Try to gracefully shut down when signaled to do so
+   */
+  registerProcessSignals() {
+    function awaitHardStop() {
+      const timeout = process.env.ACTIONHERO_SHUTDOWN_TIMEOUT
+        ? parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT)
+        : 1000 * 30;
+      return setTimeout(() => {
+        console.error(
+          `Process did not terminate within ${timeout}ms. Stopping now!`
+        );
+        process.nextTick(process.exit(1));
+      }, timeout);
+    }
+
+    // handle errors & rejections
+    process.on("uncaughtException", (error: Error) => {
+      log(error.stack, "fatal");
+      process.nextTick(process.exit(1));
+    });
+
+    process.on("unhandledRejection", (rejection: Error) => {
+      log(rejection.stack, "fatal");
+      process.nextTick(process.exit(1));
+    });
+
+    // handle signals
+    process.on("SIGINT", async () => {
+      log(`[ SIGNAL ] - SIGINT`, "notice");
+      let timer = awaitHardStop();
+      await this.stop();
+      clearTimeout(timer);
+    });
+
+    process.on("SIGTERM", async () => {
+      log(`[ SIGNAL ] - SIGTERM`, "notice");
+      let timer = awaitHardStop();
+      await this.stop();
+      clearTimeout(timer);
+    });
+
+    process.on("SIGUSR2", async () => {
+      log(`[ SIGNAL ] - SIGUSR2`, "notice");
+      let timer = awaitHardStop();
+      await this.restart();
+      clearTimeout(timer);
+    });
+  }
+
   // HELPERS
   async fatalError(errors, type) {
     if (errors && !(errors instanceof Array)) {
