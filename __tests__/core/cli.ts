@@ -163,8 +163,7 @@ describe("Core: CLI", () => {
         "locales/en.json",
         "__tests__",
         "__tests__/actions/status.ts",
-        ".gitignore",
-        "boot.js"
+        ".gitignore"
       ].forEach(f => {
         expect(fs.existsSync(testDir + "/" + f)).toEqual(true);
       });
@@ -292,37 +291,6 @@ describe("Core: CLI", () => {
         expect(data).toMatch(/async stop\(\) {/);
       }, 20000);
     });
-
-    test("can ensure no boot.js does not break, will console.log message", async () => {
-      const origBootjs = String(fs.readFileSync(`${testDir}/boot.js`));
-      await doCommand(`rm ${testDir}/boot.js`, false);
-
-      const { stdout } = await doCommand(`${binary} version`);
-      expect(stdout).toContain(pacakgeJSON.version);
-
-      // replace with orig boot.js
-      fs.writeFileSync(`${testDir}/boot.js`, origBootjs);
-    }, 20000);
-
-    test("can ensure a custom boot.js runs before everything else", async () => {
-      const origBootjs = String(fs.readFileSync(`${testDir}/boot.js`));
-      fs.writeFileSync(
-        `${testDir}/boot.js`,
-        `exports.default = async function BOOT() {
-          await new Promise((resolve)=> setTimeout(resolve,500))
-          console.log('BOOTING')
-        }`
-      );
-
-      const { stdout } = await doCommand(`${binary} version`);
-      expect({ stdout, start: stdout.startsWith("BOOTING") }).toEqual({
-        stdout,
-        start: true
-      });
-      expect(stdout).toContain(pacakgeJSON.version);
-      // replace with orig boot.js
-      fs.writeFileSync(`${testDir}/boot.js`, origBootjs);
-    }, 20000);
 
     test("can call npm test in the new project and not fail", async () => {
       // jest writes to stderr for some reason, so we need to test for the exit code here

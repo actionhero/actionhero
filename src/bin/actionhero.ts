@@ -31,21 +31,6 @@ function determineProjectRoot() {
 const projectRoot = determineProjectRoot();
 
 (async () => {
-  const bootFilePaths = [
-    `${projectRoot}/boot.js`,
-    `${projectRoot}/dist/boot.js`
-  ];
-
-  for (const i in bootFilePaths) {
-    const bootFile = bootFilePaths[i];
-    if (fs.existsSync(bootFile)) {
-      const Exports = require(bootFile);
-      await Exports[Object.keys(Exports)[0]]();
-    }
-  }
-
-  const actionheroRoot = path.normalize(path.join(__dirname, ".."));
-
   const formatParams = (runner: Runner) => {
     const params: any = {};
 
