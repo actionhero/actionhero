@@ -133,6 +133,8 @@ describe("Core: CLI", () => {
       expect(stdout).toMatch("<3, the Actionhero Team");
 
       [
+        "tsconfig.json",
+        "src/server.ts",
         "src/actions",
         "src/tasks",
         "src/initializers",
@@ -303,7 +305,7 @@ describe("Core: CLI", () => {
       }
     }, 120000);
 
-    describe("can run a single server", () => {
+    describe("can run the server", () => {
       let serverPid;
 
       beforeAll(async function() {
@@ -318,7 +320,7 @@ describe("Core: CLI", () => {
         }
       });
 
-      test("can boot a single server", async () => {
+      test("can boot the server", async () => {
         const response = await request(
           `http://localhost:${port}/api/showDocumentation`,
           { json: true }
@@ -354,139 +356,6 @@ describe("Core: CLI", () => {
       });
 
       // test('will shutdown after the alloted time')
-    });
-
-    describe("can run a cluster", () => {
-      let clusterPid;
-      beforeAll(async function() {
-        doCommand(`${binary} start cluster --workers=2`, true, { PORT: port });
-        await sleep(10000);
-        clusterPid = pid;
-      }, 30000);
-
-      afterAll(async () => {
-        if (isrunning(clusterPid)) {
-          await doCommand(`kill ${clusterPid}`);
-        }
-      });
-
-      test("should be running the cluster with 2 nodes", async () => {
-        const { stdout } = await doCommand("ps awx");
-        const parents = stdout.split("\n").filter(l => {
-          return l.indexOf("actionhero start cluster") >= 0;
-        });
-        const children = stdout.split("\n").filter(l => {
-          return l.indexOf("actionhero start") >= 0 && l.indexOf("cluster") < 0;
-        });
-        expect(parents.length).toEqual(1);
-        expect(children.length).toEqual(2);
-
-        const response = await request(
-          `http://localhost:${port}/api/showDocumentation`,
-          { json: true }
-        );
-        expect(response.serverInformation.serverName).toEqual(
-          "my_actionhero_project"
-        );
-      });
-
-      test("can handle signals to add a worker", async () => {
-        await doCommand(`kill -s TTIN ${clusterPid}`);
-        await sleep(2000);
-
-        const { stdout } = await doCommand("ps awx");
-        const parents = stdout.split("\n").filter(l => {
-          return l.indexOf("bin/actionhero start cluster") >= 0;
-        });
-        const children = stdout.split("\n").filter(l => {
-          return (
-            l.indexOf("bin/actionhero start") >= 0 && l.indexOf("cluster") < 0
-          );
-        });
-        expect(parents.length).toEqual(1);
-        expect(children.length).toEqual(3);
-      }, 20000);
-
-      test("can handle signals to remove a worker", async () => {
-        await doCommand(`kill -s TTOU ${clusterPid}`);
-        await sleep(2000);
-
-        const { stdout } = await doCommand("ps awx");
-        const parents = stdout.split("\n").filter(l => {
-          return l.indexOf("bin/actionhero start cluster") >= 0;
-        });
-        const children = stdout.split("\n").filter(l => {
-          return (
-            l.indexOf("bin/actionhero start") >= 0 && l.indexOf("cluster") < 0
-          );
-        });
-        expect(parents.length).toEqual(1);
-        expect(children.length).toEqual(2);
-      }, 20000);
-
-      test("can handle signals to reboot (graceful)", async () => {
-        await doCommand(`kill -s USR2 ${clusterPid}`);
-        await sleep(3000);
-
-        const { stdout } = await doCommand("ps awx");
-        const parents = stdout.split("\n").filter(l => {
-          return l.indexOf("actionhero start cluster") >= 0;
-        });
-        const children = stdout.split("\n").filter(l => {
-          return l.indexOf("actionhero start") >= 0 && l.indexOf("cluster") < 0;
-        });
-        expect(parents.length).toEqual(1);
-        expect(children.length).toEqual(2);
-
-        const response = await request(
-          `http://localhost:${port}/api/showDocumentation`,
-          { json: true }
-        );
-        expect(response.serverInformation.serverName).toEqual(
-          "my_actionhero_project"
-        );
-      }, 20000);
-
-      test("can handle signals to reboot (hup)", async () => {
-        await doCommand(`kill -s WINCH ${clusterPid}`);
-        await sleep(3000);
-
-        const { stdout } = await doCommand("ps awx");
-        const parents = stdout.split("\n").filter(l => {
-          return l.indexOf("actionhero start cluster") >= 0;
-        });
-        const children = stdout.split("\n").filter(l => {
-          return l.indexOf("actionhero start") >= 0 && l.indexOf("cluster") < 0;
-        });
-        expect(parents.length).toEqual(1);
-        expect(children.length).toEqual(2);
-
-        const response = await request(
-          `http://localhost:${port}/api/showDocumentation`,
-          { json: true }
-        );
-        expect(response.serverInformation.serverName).toEqual(
-          "my_actionhero_project"
-        );
-      }, 20000);
-
-      test("can handle signals to stop", async () => {
-        await doCommand(`kill ${clusterPid}`);
-        await sleep(8000);
-
-        const { stdout } = await doCommand("ps awx");
-        const parents = stdout.split("\n").filter(l => {
-          return l.indexOf("actionhero start cluster") >= 0;
-        });
-        const children = stdout.split("\n").filter(l => {
-          return l.indexOf("actionhero start") >= 0 && l.indexOf("cluster") < 0;
-        });
-        expect(parents.length).toEqual(0);
-        expect(children.length).toEqual(0);
-      }, 20000);
-
-      // test('can detect flapping and exit')
-      // test('can reboot and abosrb code changes without downtime')
     });
   }
 });

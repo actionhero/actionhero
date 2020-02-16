@@ -29,6 +29,7 @@ export class Generate extends CLI {
 
     const oldFileMap = {
       tsconfig: "tsconfig.json",
+      serverJs: "/templates/projectServer.ts.template",
       configApiJs: "/src/config/api.ts",
       configLoggerJs: "/src/config/logger.ts",
       configRedisJs: "/src/config/redis.ts",
@@ -117,6 +118,7 @@ export class Generate extends CLI {
 
     const newFileMap = {
       "/tsconfig.json": "tsconfig",
+      "/src/server.ts": "serverJs",
       "/src/config/api.ts": "configApiJs",
       "/src/config/logger.ts": "configLoggerJs",
       "/src/config/redis.ts": "configRedisJs",

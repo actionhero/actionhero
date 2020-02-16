@@ -24,8 +24,8 @@
   },
   "scripts": {
     "postinstall": "npm run build",
-    "dev": "ts-node-dev --no-deps --transpile-only ./node_modules/.bin/actionhero start",
-    "start": "actionhero start",
+    "dev": "ts-node-dev --no-deps --transpile-only ./src/server.ts",
+    "start": "node ./dist/server.js",
     "actionhero": "actionhero",
     "test": "jest",
     "pretest": "npm run build && npm run lint",
