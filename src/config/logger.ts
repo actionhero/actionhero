@@ -1,9 +1,39 @@
-const cluster = require("cluster");
 const winston = require("winston");
 
 // learn more about winston v3 loggers @
 // - https://github.com/winstonjs/winston
 // - https://github.com/winstonjs/winston/blob/master/docs/transports.md
+
+export const DEFAULT = {
+  logger: config => {
+    const loggers = [];
+    loggers.push(buildConsoleLogger());
+    config.general.paths.log.forEach(p => {
+      loggers.push(buildFileLogger(p));
+    });
+
+    return {
+      loggers,
+
+      // the maximum length of param to log (we will truncate)
+      maxLogStringLength: 100
+    };
+  }
+};
+
+export const test = {
+  logger: config => {
+    const loggers = [];
+
+    config.general.paths.log.forEach(p => {
+      loggers.push(buildFileLogger(p, "debug", 1));
+    });
+
+    return {
+      loggers
+    };
+  }
+};
 
 function buildConsoleLogger(level = "info") {
   return function(config) {
@@ -68,38 +98,3 @@ function buildFileLogger(
     });
   };
 }
-
-export const DEFAULT = {
-  logger: config => {
-    const loggers = [];
-
-    if (cluster.isMaster) {
-      loggers.push(buildConsoleLogger());
-    }
-
-    config.general.paths.log.forEach(p => {
-      loggers.push(buildFileLogger(p));
-    });
-
-    return {
-      loggers,
-
-      // the maximum length of param to log (we will truncate)
-      maxLogStringLength: 100
-    };
-  }
-};
-
-export const test = {
-  logger: config => {
-    const loggers = [];
-
-    config.general.paths.log.forEach(p => {
-      loggers.push(buildFileLogger(p, "debug", 1));
-    });
-
-    return {
-      loggers
-    };
-  }
-};
