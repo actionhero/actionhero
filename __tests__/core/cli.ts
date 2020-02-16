@@ -178,7 +178,7 @@ describe("Core: CLI", () => {
 
     test("can call the help command", async () => {
       const { stdout } = await doCommand(`${binary} help`);
-      expect(stdout).toMatch(/actionhero start cluster/);
+      expect(stdout).toMatch(/generate action/);
       expect(stdout).toMatch(
         /The reusable, scalable, and quick node.js API server for stateless and stateful applications/
       );
