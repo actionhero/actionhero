@@ -193,7 +193,7 @@ export class Resque extends Initializer {
           "reEnqueue",
           (workerId, queue, job: JobEmit, plugin) => {
             log(
-              "[ worker ] reEnqueue job",
+              "[ worker ] reEnqueue task",
               api.resque.workerLogging.reEnqueue,
               {
                 workerId,
@@ -222,17 +222,18 @@ export class Resque extends Initializer {
 
         api.resque.multiWorker.on(
           "success",
-          (workerId, queue, job: JobEmit, result) => {
+          (workerId, queue, job: JobEmit, result, duration) => {
             const payload = {
               workerId,
               class: job.class,
               queue: job.queue,
               args: JSON.stringify(this.filterTaskParams(job.args[0])),
-              result
+              result,
+              duration
             };
 
             log(
-              "[ worker ] job success",
+              "[ worker ] task success",
               api.resque.workerLogging.success,
               payload
             );
