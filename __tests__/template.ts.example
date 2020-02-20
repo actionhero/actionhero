@@ -2,6 +2,8 @@ import { Process, env, id, specHelper } from "actionhero";
 const actionhero = new Process();
 let api;
 
+console.log(process.env)
+
 describe("actionhero Tests", () => {
   beforeAll(async () => {
     api = await actionhero.start();
