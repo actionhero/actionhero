@@ -146,6 +146,12 @@ export namespace cache {
     options: CacheOptions = {}
   ): Promise<CacheObject> {
     let cacheObj: CacheObject;
+
+    let lockOk = await cache.checkLock(key, options.retry);
+    if (lockOk !== true) {
+      throw new Error(i18n.localize("actionhero.cache.objectLocked"));
+    }
+
     let cachedStringifiedObjet = await client().get(`${redisPrefix}${key}`);
     try {
       cacheObj = JSON.parse(cachedStringifiedObjet);
@@ -177,7 +183,7 @@ export namespace cache {
       }
     }
 
-    const lockOk = await cache.checkLock(key, options.retry);
+    lockOk = await cache.checkLock(key, options.retry);
     if (lockOk !== true) {
       throw new Error(i18n.localize("actionhero.cache.objectLocked"));
     }
