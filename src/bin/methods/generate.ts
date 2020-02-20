@@ -15,7 +15,7 @@ export class Generate extends CLI {
     super();
     this.name = "generate";
     this.description =
-      "will prepare an empty directory with a template ActionHero project";
+      "will prepare an empty directory with a template Actionhero project";
   }
 
   async run() {

@@ -11,7 +11,7 @@ export class Start extends CLI {
   constructor() {
     super();
     this.name = "start";
-    this.description = "start this ActionHero server";
+    this.description = "start this Actionhero server";
     this.example =
       "actionhero start --config=[/path/to/config] --title=[processTitle]";
     this.inputs = {
@@ -23,7 +23,7 @@ export class Start extends CLI {
       title: {
         required: false,
         note:
-          "process title to use for ActionHero's ID, ps, log, and pidFile defaults. Must be unique for each member of the cluster. You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows"
+          "process title to use for Actionhero's ID, ps, log, and pidFile defaults. Must be unique for each member of the cluster. You can also use ENV[ACTIONHERO_TITLE]. Process renaming does not work on OSX/Windows"
       }
     };
 

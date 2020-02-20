@@ -250,11 +250,9 @@ describe("Server: Web Socket", () => {
       test("can request file data", async () => {
         const data = await awaitFile(clientA, "simple.html");
         expect(data.error).toBeUndefined();
-        expect(data.content).toEqual(
-          "<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />"
-        );
+        expect(data.content).toContain("<h1>Actionhero</h1>");
         expect(data.mime).toEqual("text/html");
-        expect(data.length).toEqual(101);
+        expect(data.length).toEqual(102);
       });
 
       test("missing files", async () => {

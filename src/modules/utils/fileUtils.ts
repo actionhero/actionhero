@@ -68,7 +68,7 @@ export function createFileSafely(
 }
 
 /**
- * Create an ActionHero LinkFile, only if it doesn't exist yet.
+ * Create an Actionhero LinkFile, only if it doesn't exist yet.
  * Throws an error if the file already exists, or encounters a filesystem problem.
  */
 export function createLinkfileSafely(filePath: string, type: string): string {
@@ -84,7 +84,7 @@ export function createLinkfileSafely(filePath: string, type: string): string {
 }
 
 /**
- * Remove an ActionHero LinkFile, only if it exists.
+ * Remove an Actionhero LinkFile, only if it exists.
  * Throws an error if the file does not exist, or encounters a filesystem problem.
  */
 export function removeLinkfileSafely(filePath: string): string {

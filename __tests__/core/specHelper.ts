@@ -208,11 +208,9 @@ describe("Core: specHelper", () => {
     test("can request file data", async () => {
       const data = await specHelper.getStaticFile("simple.html");
       expect(data.error).toBeUndefined();
-      expect(data.content).toEqual(
-        "<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />"
-      );
+      expect(data.content).toContain("<h1>Actionhero</h1>");
       expect(data.mime).toEqual("text/html");
-      expect(data.length).toEqual(101);
+      expect(data.length).toEqual(102);
     });
 
     test("missing files", async () => {
@@ -228,7 +226,7 @@ describe("Core: specHelper", () => {
     let connId;
     const messageIds = [];
 
-    test("can make a requset with a spec'd connection", async () => {
+    test("can make a request with a specified connection", async () => {
       connection = await specHelper.buildConnection();
       connection.params = {
         key: "someKey",

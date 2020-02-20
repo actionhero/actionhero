@@ -14,7 +14,7 @@ export class Help extends CLI {
     let files = [];
     const methods = {};
 
-    // CLI commands included with ActionHero
+    // CLI commands included with Actionhero
     console.log();
     if (config.general.cliIncludeInternal !== false) {
       glob.sync(path.join(__dirname, "**", "**/*(*.js|*.ts)")).forEach(f => {
@@ -68,7 +68,7 @@ export class Help extends CLI {
     const methodNames = Object.keys(methods).sort();
 
     console.log(
-      "ActionHero - The reusable, scalable, and quick node.js API server for stateless and stateful applications"
+      "Actionhero - The reusable, scalable, and quick node.js API server for stateless and stateful applications"
     );
     console.log("Learn more @ www.actionherojs.com");
     console.log("");

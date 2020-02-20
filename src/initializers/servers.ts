@@ -9,7 +9,7 @@ export interface ServersApi {
 }
 
 /**
- * Manages the servers in this ActionHero instance.
+ * Manages the servers in this Actionhero instance.
  */
 export class Servers extends Initializer {
   constructor() {

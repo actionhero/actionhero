@@ -3,7 +3,7 @@ import { ActionProcessor } from "./actionProcessor";
 import { api } from "../index";
 
 /**
- * Create a new ActionHero Action. The required properties of an action. These can be defined statically (this.name) or as methods which return a value.
+ * Create a new Actionhero Action. The required properties of an action. These can be defined statically (this.name) or as methods which return a value.
  *```js
  * const { Action } = require('actionhero')
  * module.exports = class RandomNumber extends Action {
@@ -36,7 +36,7 @@ export abstract class Action {
   blockedConnectionTypes: Array<string>;
   /**Under what level should connections to this Action be logged (default 'info')? */
   logLevel: string;
-  /**If this Action is responding to a `web` request, and that request has a file extension like *.jpg, should ActionHero set the response headers to match that extension (default: true)? */
+  /**If this Action is responding to a `web` request, and that request has a file extension like *.jpg, should Actionhero set the response headers to match that extension (default: true)? */
   matchExtensionMimeType: boolean;
   /**Should this Action appear in api.documentation.documentation? (default: true)? */
   toDocument: boolean;
