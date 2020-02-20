@@ -326,10 +326,9 @@ export class ActionProcessor {
         api.actions.actions[this.action][this.params.apiVersion];
     }
 
-    // TODO
-    // if (api.running !== true) {
-    //   return this.completeAction("server_shutting_down");
-    // }
+    if (api.running !== true) {
+      return this.completeAction("server_shutting_down");
+    }
 
     if (this.getPendingActionCount() > config.general.simultaneousActions) {
       return this.completeAction("too_many_requests");

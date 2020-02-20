@@ -111,8 +111,8 @@ export class Resque extends Initializer {
           api.resque.scheduler.on("poll", () => {
             log("resque scheduler polling", api.resque.schedulerLogging.poll);
           });
-          api.resque.scheduler.on("master", () => {
-            log("This node is now the Resque scheduler master", "notice");
+          api.resque.scheduler.on("leader", () => {
+            log("This node is now the Resque scheduler leader", "notice");
           });
           api.resque.scheduler.on(
             "cleanStuckWorker",
