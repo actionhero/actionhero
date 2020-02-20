@@ -1,3 +1,5 @@
+import { Inputs } from "./inputs";
+
 /**
  * Create a new Actionhero Task. The required properties of an task. These can be defined statically (this.name) or as methods which return a value.
  * ```js
@@ -15,7 +17,6 @@
  * }
  * ```
  */
-
 export abstract class Task {
   /**The name of the Task */
   name: string;
@@ -23,6 +24,8 @@ export abstract class Task {
   description: string;
   /**How often to run this Task, in ms.  0 is non-recurring. (default: 0) */
   frequency: number;
+  /**The inputs of the Task (default: {}) */
+  inputs: Inputs;
   /**The Middleware specific to this Task (default: []).  Middleware is described by the string names of the middleware */
   middleware: Array<string>;
   /**Plugins from node-resque to use on this task (default: []).  Plugins like `QueueLock can be applied` */

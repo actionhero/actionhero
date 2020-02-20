@@ -1,4 +1,6 @@
 import { api, config, utils, log } from "./../index";
+import { Inputs } from "./../classes/inputs";
+import { Task } from "./../classes/Task";
 
 export namespace task {
   /**
@@ -53,11 +55,11 @@ export namespace task {
    */
   export async function enqueue(
     taskName: string,
-    params: { [key: string]: any },
+    inputs: { [key: string]: any },
     queue: string = api.tasks.tasks[taskName].queue
   ) {
-    //@ts-ignore
-    return api.resque.queue.enqueue(queue, taskName, params);
+    await validateInput(taskName, inputs);
+    return api.resque.queue.enqueue(queue, taskName, [inputs]);
   }
 
   /**
@@ -66,17 +68,17 @@ export namespace task {
    *
    * Inputs:
    * * taskName: The name of the task.
-   * * params: Params to pass to the task.
+   * * inputs: inputs to pass to the task.
    * * queue: (Optional) Which queue/priority to run this instance of the task on.
    */
   export async function enqueueAt(
     timestamp: number,
     taskName: string,
-    params: { [key: string]: any },
+    inputs: { [key: string]: any },
     queue: string = api.tasks.tasks[taskName].queue
   ) {
-    //@ts-ignore
-    return api.resque.queue.enqueueAt(timestamp, queue, taskName, params);
+    await validateInput(taskName, inputs);
+    return api.resque.queue.enqueueAt(timestamp, queue, taskName, [inputs]);
   }
 
   /**
@@ -86,17 +88,17 @@ export namespace task {
    * Inputs:
    * * timestamp: At what time the task is able to be run.  Does not guarantee that the task will be run at this time. (in ms)
    * * taskName: The name of the task.
-   * * params: Params to pass to the task.
+   * * inputs: inputs to pass to the task.
    * * queue: (Optional) Which queue/priority to run this instance of the task on.
    */
   export async function enqueueIn(
     time: number,
     taskName: string,
-    params: { [key: string]: any },
+    inputs: { [key: string]: any },
     queue: string = api.tasks.tasks[taskName].queue
   ) {
-    //@ts-ignore
-    return api.resque.queue.enqueueIn(time, queue, taskName, params);
+    await validateInput(taskName, inputs);
+    return api.resque.queue.enqueueIn(time, queue, taskName, [inputs]);
   }
 
   /**
@@ -115,8 +117,7 @@ export namespace task {
     args?: { [key: string]: any },
     count?: number
   ) {
-    //@ts-ignore
-    return api.resque.queue.del(q, taskName, args, count);
+    return api.resque.queue.del(q, taskName, [args], count);
   }
 
   /**
@@ -126,15 +127,14 @@ export namespace task {
    * Inputs:
    * * q: Which queue/priority is to run on?
    * * taskName: The name of the job, likely to be the same name as a tak.
-   * * args  The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing. It is best to read job properties first via `api.tasks.delayedAt` or similar method.
+   * * inputs  The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing. It is best to read job properties first via `api.tasks.delayedAt` or similar method.
    */
   export async function delDelayed(
     q: string,
     taskName: string,
-    args?: { [key: string]: any }
+    inputs?: { [key: string]: any }
   ) {
-    // @ts-ignore
-    return api.resque.queue.delDelayed(q, taskName, args);
+    return api.resque.queue.delDelayed(q, taskName, [inputs]);
   }
 
   /**
@@ -144,15 +144,14 @@ export namespace task {
    * Inputs:
    * * q: Which queue/priority is to run on?
    * * taskName: The name of the job, likely to be the same name as a tak.
-   * * args: The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing.  It is best to read job properties first via `api.tasks.delayedAt` or similar method.
+   * * inputs: The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing.  It is best to read job properties first via `api.tasks.delayedAt` or similar method.
    */
   export async function scheduledAt(
     q: string,
     taskName: string,
-    args: { [key: string]: any }
+    inputs: { [key: string]: any }
   ): Promise<Array<number>> {
-    //@ts-ignore
-    return api.resque.queue.scheduledAt(q, taskName, args);
+    return api.resque.queue.scheduledAt(q, taskName, [inputs]);
   }
 
   /**
@@ -409,5 +408,70 @@ export namespace task {
       );
     }
     api.tasks.loadTasks(true);
+  }
+
+  async function validateInput(taskName: string, inputs: Inputs) {
+    const task: Task = api.tasks.tasks[taskName];
+
+    if (!task) {
+      throw new Error(`task ${taskName} not found`);
+    }
+
+    for (const key in task.inputs) {
+      // default
+      if (inputs[key] === undefined && task.inputs[key].default !== undefined) {
+        if (typeof task.inputs[key].default === "function") {
+          inputs[key] = await task.inputs[key].default.call(
+            api,
+            inputs[key],
+            this
+          );
+        } else {
+          inputs[key] = task.inputs[key].default;
+        }
+      }
+
+      // validator
+      if (
+        inputs[key] !== undefined &&
+        task.inputs[key].validator !== undefined
+      ) {
+        let validatorResponse;
+        if (typeof task.inputs[key].validator === "function") {
+          // allowed to throw too
+          validatorResponse = await task.inputs[key].validator.call(
+            api,
+            inputs[key],
+            this
+          );
+        } else {
+          const method = this.prepareStringMethod(task.inputs[key].validator);
+          validatorResponse = await method.call(api, inputs[key], this);
+        }
+
+        // validator function returned nothing; assume param is OK
+        if (validatorResponse === null || validatorResponse === undefined) {
+          // ok
+        }
+
+        // validator returned something that was not `true`
+        else if (validatorResponse !== true) {
+          if (validatorResponse === false) {
+            throw new Error(
+              `${inputs[key]} is not a valid value for ${key} in task ${taskName}`
+            );
+          } else {
+            throw new Error(validatorResponse);
+          }
+        }
+      }
+
+      // required
+      if (task.inputs[key].required === true) {
+        if (config.general.missingParamChecks.indexOf(inputs[key]) >= 0) {
+          throw new Error(`${key} is a required input for task ${taskName}`);
+        }
+      }
+    }
   }
 }
