@@ -210,7 +210,7 @@ describe("Core: specHelper", () => {
       expect(data.error).toBeUndefined();
       expect(data.content).toContain("<h1>Actionhero</h1>");
       expect(data.mime).toEqual("text/html");
-      expect(data.length).toEqual(102);
+      expect(data.length).toEqual(101);
     });
 
     test("missing files", async () => {
