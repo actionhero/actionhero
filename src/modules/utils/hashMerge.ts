@@ -2,7 +2,7 @@ import { isPlainObject } from "./isPlainObject";
 
 /**
  * Recursively merge 2 Objects together.  Will resolve functions if they are present, unless the parent Object has the property `_toExpand = false`.
- * ActionHero uses this internally to construct and resolve the config.
+ * Actionhero uses this internally to construct and resolve the config.
  * Matching keys in B override A.
  */
 export function hashMerge(

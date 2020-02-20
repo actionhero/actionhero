@@ -257,16 +257,16 @@ export class Process {
     this.running = true;
     api.running = true;
     log(`environment: ${env}`, "notice");
-    log("*** Starting ActionHero ***", "info");
+    log("*** Starting Actionhero ***", "info");
 
     this.startInitializers.push(() => {
       this.bootTime = new Date().getTime();
       if (this.startCount === 0) {
         log(`server ID: ${id}`, "notice");
-        log("*** ActionHero Started ***", "notice");
+        log("*** Actionhero Started ***", "notice");
         this.startCount++;
       } else {
-        log("*** ActionHero Restarted ***", "notice");
+        log("*** Actionhero Restarted ***", "notice");
       }
     });
 
@@ -290,7 +290,7 @@ export class Process {
 
       this.stopInitializers.push(async () => {
         clearPidFile();
-        log("*** ActionHero Stopped ***", "notice");
+        log("*** Actionhero Stopped ***", "notice");
         delete this.shuttingDown;
         // reset initializers to prevent duplicate check on restart
         this.initializers = {};

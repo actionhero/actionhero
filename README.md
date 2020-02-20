@@ -9,7 +9,7 @@ Please take a moment to fill out our [2020 Developer Survey](https://forms.gle/x
 ---
 
 <div align="center">
-  <img src="https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png" alt="ActionHero Logo" />
+  <img src="https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png" alt="Actionhero Logo" />
 </div>
 
 <br />
@@ -41,9 +41,9 @@ Please take a moment to fill out our [2020 Developer Survey](https://forms.gle/x
 
 </div>
 
-## Who is the ActionHero?
+## Who is the Actionhero?
 
-ActionHero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs for HTTP, WebSockets, and more. Clients connected to an actionhero server can [**consume the api**](https://www.actionherojs.com/tutorials/actions), [**consume static content**](https://www.actionherojs.com/tutorials/file-server), and [**communicate with each other**](https://www.actionherojs.com/tutorials/chat). ActionHero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more. ActionHero provides a simple Async/Await API for managing every type of connection and background task.
+Actionhero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making **reusable** & **scalable** APIs for HTTP, WebSockets, and more. Clients connected to an actionhero server can [**consume the api**](https://www.actionherojs.com/tutorials/actions), [**consume static content**](https://www.actionherojs.com/tutorials/file-server), and [**communicate with each other**](https://www.actionherojs.com/tutorials/chat). Actionhero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more. Actionhero provides a simple Async/Await API for managing every type of connection and background task.
 
 Currently actionhero supports the following out of the box...
 
@@ -84,10 +84,10 @@ Or deploy a free API server now:
 ## Learn More 📚
 
 - [Getting Started @ www.actionherojs.com](https://www.actionherojs.com/get-started)
-  - ActionHero's marketing site can be found @ [https://github.com/actionhero/www.actionherojs.com/](https://github.com/actionhero/www.actionherojs.com/). If you want to contribute to this site, visit the [related project](https://github.com/actionhero/www.actionherojs.com)
-- [Read the documentation @ docs.actionherojs.com](http://docs.actionherojs.com/)
+  - Actionhero's website can be found @ [https://github.com/actionhero/www.actionherojs.com/](https://github.com/actionhero/www.actionherojs.com/). If you want to contribute to this site, visit the [related project](https://github.com/actionhero/www.actionherojs.com)
+- [Read the typedoc documentation @ docs.actionherojs.com](http://docs.actionherojs.com/)
   - ---> Start with the [Tutorials](https://www.actionherojs.com/tutorials) <---
-  - Starting with ActionHero version 18, the documentation for each version is included in this repository (and the NPM package) in the `/docs` folder. The current version of this documentation is also automatically deployed to https://docs.actionherojs.com.
+  - Starting with Actionhero version 18, the documentation for each version is included in this repository (and the NPM package) in the `/docs` folder. The current version of this documentation is also automatically deployed to https://docs.actionherojs.com.
 - [Find community-based resources](https://github.com/l0oky/awesome-actionhero)
 - [Interact with the Community & View the Release History](https://www.actionherojs.com/community)
 - [Server Client](https://github.com/actionhero/actionhero-client)
@@ -117,7 +117,7 @@ Or deploy a free API server now:
 
 ### Testing, Deployment, and Operations
 
-- [Running ActionHero](https://www.actionherojs.com/tutorials/running-actionhero)
+- [Running Actionhero](https://www.actionherojs.com/tutorials/running-actionhero)
 - [Development Mode & REPL](https://www.actionherojs.com/tutorials#configuration)
 - [Testing & SpecHelper](https://www.actionherojs.com/tutorials/testing)
 - [Production Notes](https://www.actionherojs.com/tutorials/production-notes)
@@ -132,12 +132,12 @@ Or deploy a free API server now:
 
 ## Who?
 
-- Many folks [have helped](https://github.com/actionhero/actionhero/graphs/contributors) to make ActionHero a reality.
+- Many folks [have helped](https://github.com/actionhero/actionhero/graphs/contributors) to make Actionhero a reality.
 - If you want to contribute to actionhero, contribute to the conversation on [github](https://github.com/actionhero/actionhero) and join us on [slack](https://slack.actionherojs.com)
 
 ## Contributing
 
-- Contributing to ActionHero is easy! [You can learn more about contributing to ActionHero here](https://github.com/actionhero/actionhero/blob/master/.github/CONTRIBUTING.md)
+- Contributing to Actionhero is easy! [You can learn more about contributing to Actionhero here](https://github.com/actionhero/actionhero/blob/master/.github/CONTRIBUTING.md)
 
 ## License
 

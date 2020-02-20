@@ -33,9 +33,7 @@ describe("Core", () => {
     test("file: an HTML file", async () => {
       const response = await specHelper.getStaticFile("simple.html");
       expect(response.mime).toEqual("text/html");
-      expect(response.content).toEqual(
-        "<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />"
-      );
+      expect(response.content).toContain("<h1>Actionhero</h1>");
     });
 
     test("file: 404 pages", async () => {
@@ -97,9 +95,7 @@ describe("Core", () => {
         resolveWithFullResponse: true
       });
       expect(response.statusCode).toEqual(200);
-      expect(response.body).toEqual(
-        "<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />"
-      );
+      expect(response.body).toContain("<h1>Actionhero</h1>");
       expect(response.headers.etag).toBeTruthy();
 
       const etag = response.headers.etag;

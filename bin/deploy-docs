@@ -17,7 +17,7 @@ function build_branch() {
 
 ## git config
 GIT_REMOTE=$(git config remote.origin.url)
-GIT_USER_NAME='CircleCI for ActionHero'
+GIT_USER_NAME='CircleCI for Actionhero'
 GIT_USER_EMAIL='admin@actionherojs.com'
 
 ## Configure a new direcotry to hold the site

@@ -769,9 +769,7 @@ describe("Server: Web", () => {
         resolveWithFullResponse: true
       });
       expect(response.statusCode).toEqual(200);
-      expect(response.body).toEqual(
-        "<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />"
-      );
+      expect(response.body).toContain("<h1>Actionhero</h1>");
     });
 
     test("404 pages", async () => {
@@ -817,7 +815,7 @@ describe("Server: Web", () => {
       });
       expect(response.statusCode).toEqual(200);
       expect(response.body).toMatch(
-        /ActionHero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks/
+        /Actionhero.js is a multi-transport API Server/
       );
     });
 
@@ -827,7 +825,7 @@ describe("Server: Web", () => {
       });
       expect(response.statusCode).toEqual(200);
       expect(response.body).toMatch(
-        /ActionHero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks/
+        /Actionhero.js is a multi-transport API Server/
       );
     });
 
@@ -840,7 +838,7 @@ describe("Server: Web", () => {
         fs.mkdirSync(testFolderPublicPath);
         fs.writeFileSync(
           testFolderPublicPath + "/testFile.html",
-          "ActionHero Route Test File"
+          "Actionhero Route Test File"
         );
 
         route.registerRoute(
@@ -868,7 +866,7 @@ describe("Server: Web", () => {
           { resolveWithFullResponse: true }
         );
         expect(response.statusCode).toEqual(200);
-        expect(response.body).toEqual("ActionHero Route Test File");
+        expect(response.body).toEqual("Actionhero Route Test File");
       });
 
       test("returns 404 for files not available in route mapped paths", async () => {
@@ -912,9 +910,7 @@ describe("Server: Web", () => {
           resolveWithFullResponse: true
         });
         expect(response.statusCode).toEqual(200);
-        expect(response.body).toEqual(
-          "<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />"
-        );
+        expect(response.body).toContain("<h1>Actionhero</h1>");
       });
     });
   });

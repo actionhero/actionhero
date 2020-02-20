@@ -6,6 +6,7 @@ describe("actionhero Tests", () => {
   beforeAll(async () => {
     api = await actionhero.start();
   });
+
   afterAll(async () => {
     await actionhero.stop();
   });

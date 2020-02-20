@@ -9,7 +9,7 @@ interface ServerConfig {
 }
 
 /**
- * Create a new ActionHero Server. The required properties of an server. These can be defined statically (this.name) or as methods which return a value.
+ * Create a new Actionhero Server. The required properties of an server. These can be defined statically (this.name) or as methods which return a value.
  */
 export abstract class Server extends EventEmitter {
   /**The name & type of the server. */
@@ -61,15 +61,15 @@ export abstract class Server extends EventEmitter {
   }
 
   /**
-   * Event called when a formal new connection is created for this server type.  This is a response to calling ActionHero.Server#buildConnection
+   * Event called when a formal new connection is created for this server type.  This is a response to calling Actionhero.Server#buildConnection
    *
-   * @event ActionHero.Server#connection
+   * @event Actionhero.Server#connection
    */
 
   /**
    * Event called when a an action is complete for a connection created by this server.  You may want to send a response to the client as a response to this event.
    *
-   * @event ActionHero.Server#actionComplete
+   * @event Actionhero.Server#actionComplete
    * @property {object} data - The same data from the Action.  Includes the connection, response, etc.
    */
 
@@ -141,7 +141,7 @@ export abstract class Server extends EventEmitter {
   }
 
   /**
-   *   * Build a the ActionHero.Connection from the raw parts provided by the server.
+   *   * Build a the Actionhero.Connection from the raw parts provided by the server.
    * ```js
    *this.buildConnection({
    *  rawConnection: {
@@ -230,7 +230,7 @@ export abstract class Server extends EventEmitter {
   }
 
   /**
-   * When a connection has called an File command, and all properties are set.  Connection should have `params.file` set at least.  Will eventually call ActionHero.Server#sendFile.
+   * When a connection has called an File command, and all properties are set.  Connection should have `params.file` set at least.  Will eventually call Actionhero.Server#sendFile.
    */
   async processFile(connection: Connection) {
     const results = await api.staticFile.get(connection);

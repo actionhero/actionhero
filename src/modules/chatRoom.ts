@@ -252,7 +252,7 @@ export namespace chatRoom {
 
   /**
    * Remote a connection (via id) from a room.  Throws errors if the room does not exist, or the connection is not in the room.  Middleware errors also throw.
-   * toWaitRemote: Should this method wait until the remote ActionHero server (the one the connection is connected too) responds?
+   * toWaitRemote: Should this method wait until the remote Actionhero server (the one the connection is connected too) responds?
    */
   export async function removeMember(
     connectionId: string,

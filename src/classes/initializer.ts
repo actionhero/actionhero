@@ -1,16 +1,16 @@
 import { ConfigInterface } from "./../modules/config";
 
 /**
- * Create a new ActionHero Initializer. The required properties of an initializer. These can be defined statically (this.name) or as methods which return a value.
+ * Create a new Actionhero Initializer. The required properties of an initializer. These can be defined statically (this.name) or as methods which return a value.
  */
 export abstract class Initializer {
   /**The name of the Initializer. */
   name: string;
-  /**What order should this Initializer load at (Default: 1000, ActionHero core methods are < 1000) */
+  /**What order should this Initializer load at (Default: 1000, Actionhero core methods are < 1000) */
   loadPriority?: number;
-  /**What order should this Initializer start at (Default: 1000, ActionHero core methods are < 1000) */
+  /**What order should this Initializer start at (Default: 1000, Actionhero core methods are < 1000) */
   startPriority?: number;
-  /**What order should this Initializer stop at (Default: 1000, ActionHero core methods are < 1000) */
+  /**What order should this Initializer stop at (Default: 1000, Actionhero core methods are < 1000) */
   stopPriority?: number;
 
   constructor() {

@@ -35,7 +35,7 @@ export const DEFAULT = {
       channel: "actionhero",
       // How long to wait for an RPC call before considering it a failure
       rpcTimeout: 5000,
-      // should CLI methods and help include internal ActionHero CLI methods?
+      // should CLI methods and help include internal Actionhero CLI methods?
       cliIncludeInternal: true,
       // configuration for your actionhero project structure
       paths: {

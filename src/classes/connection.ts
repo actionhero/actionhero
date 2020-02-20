@@ -4,7 +4,7 @@ import { config } from "./../modules/config";
 import { i18n } from "../modules/i18n";
 
 /**
- * The generic representation of a connection for all server types is an ActionHero.Connection.  You will never be creating these yourself via an action or task, but you will find them in your Actions and Action Middleware.
+ * The generic representation of a connection for all server types is an Actionhero.Connection.  You will never be creating these yourself via an action or task, but you will find them in your Actions and Action Middleware.
  */
 export class Connection {
   /**A unique string identifer for this connection. */
@@ -41,7 +41,7 @@ export class Connection {
 
   /**
    * @param data The specifics of this connection
-   * @param callCreateMethods The specifics of this connection will calls create methods in the constructor. This property will exist for backward compatibility. If you want to construct connection and call create methods within async, you can use `await ActionHero.Connection.createAsync(details)` for construction.
+   * @param callCreateMethods The specifics of this connection will calls create methods in the constructor. This property will exist for backward compatibility. If you want to construct connection and call create methods within async, you can use `await Actionhero.Connection.createAsync(details)` for construction.
    */
   constructor(data, callCreateMethods = true) {
     this.setup(data);
