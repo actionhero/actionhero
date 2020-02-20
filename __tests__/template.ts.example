@@ -1,26 +1,24 @@
 import { Process, env, id, specHelper } from "actionhero";
 const actionhero = new Process();
-const testTimeout = 10 * 1000
-
 let api;
 
 describe("actionhero Tests", () => {
   beforeAll(async () => {
     api = await actionhero.start();
-  }, testTimeout);
+  });
 
   afterAll(async () => {
     await actionhero.stop();
-  }, testTimeout);
+  });
 
   test("should have booted into the test env", () => {
     expect(process.env.NODE_ENV).toEqual("test");
     expect(env).toEqual("test");
     expect(id).toBeTruthy();
-  }, testTimeout);
+  });
 
   test("can retrieve server uptime via the status action", async () => {
     const { uptime } = await specHelper.runAction("status");
     expect(uptime).toBeGreaterThan(0);
-  }, testTimeout);
+  });
 });
