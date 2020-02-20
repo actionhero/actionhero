@@ -1,6 +1,6 @@
 import { api, config, utils, log } from "./../index";
 import { Inputs } from "./../classes/inputs";
-import { Task } from "./../classes/Task";
+import { Task } from "./../classes/task";
 
 export namespace task {
   /**
