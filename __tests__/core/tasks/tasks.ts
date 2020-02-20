@@ -67,22 +67,66 @@ describe("Core: Tasks", () => {
       }
     }
 
+    class TaskWithInputs extends Task {
+      constructor() {
+        super();
+        this.name = "taskWithInputs";
+        this.description = "task: taskWithInputs";
+        this.queue = queue;
+        this.frequency = 0;
+        this.inputs = {
+          a: { required: true, default: 1 },
+          b: {
+            required: true,
+            default: () => {
+              return 2;
+            }
+          },
+          c: {
+            required: true,
+            validator: p => {
+              if (p !== 3) {
+                throw new Error("nope");
+              }
+            }
+          },
+          d: {
+            required: true,
+            validator: p => {
+              if (p !== 4) {
+                return false;
+              }
+            }
+          }
+        };
+      }
+
+      async run(params) {
+        taskOutput.push("taskWithInputs");
+        return "taskWithInputs";
+      }
+    }
+
     api.tasks.tasks.regularTask = new RegularTask();
     api.tasks.tasks.periodicTask = new PeriodicTask();
     api.tasks.tasks.slowTask = new SlowTask();
+    api.tasks.tasks.taskWithInputs = new TaskWithInputs();
 
     api.tasks.jobs.regularTask = api.tasks.jobWrapper("regularTask");
     api.tasks.jobs.periodicTask = api.tasks.jobWrapper("periodicTask");
     api.tasks.jobs.slowTask = api.tasks.jobWrapper("slowTask");
+    api.tasks.jobs.taskWithInputs = api.tasks.jobWrapper("taskWithInputs");
   });
 
   afterAll(async () => {
     delete api.tasks.tasks.regularTask;
     delete api.tasks.tasks.periodicTask;
     delete api.tasks.tasks.slowTask;
+    delete api.tasks.tasks.taskWithInputs;
     delete api.tasks.jobs.regularTask;
     delete api.tasks.jobs.periodicTask;
     delete api.tasks.jobs.slowTask;
+    delete api.tasks.jobs.taskWithInputs;
 
     config.tasks.queues = [];
 
@@ -129,10 +173,8 @@ describe("Core: Tasks", () => {
     }
   });
 
-  // test('will clear crashed workers when booting') // TODO
-
   test("setup worked", () => {
-    expect(Object.keys(api.tasks.tasks)).toHaveLength(3 + 1);
+    expect(Object.keys(api.tasks.tasks)).toHaveLength(4 + 1);
   });
 
   test("all queues should start empty", async () => {
@@ -309,6 +351,56 @@ describe("Core: Tasks", () => {
 
     const count = await task.stopRecurrentTask("periodicTask");
     expect(count).toEqual(2);
+  });
+
+  describe("input validation", () => {
+    test("tasks which provide input can be enqueued", async () => {
+      await expect(task.enqueue("taskWithInputs", {})).rejects.toThrow(
+        /input for task/
+      );
+
+      await task.enqueue("taskWithInputs", { a: 1, b: 2, c: 3, d: 4 }); // does not throw
+    });
+
+    test("tasks which provide input can be enqueuedAt", async () => {
+      await expect(task.enqueueIn(1, "taskWithInputs", {})).rejects.toThrow(
+        /input for task/
+      );
+
+      await task.enqueueIn(1, "taskWithInputs", { a: 1, b: 2, c: 3, d: 4 }); // does not throw
+    });
+
+    test("tasks which provide input can be enqueuedIn", async () => {
+      await expect(task.enqueueAt(1, "taskWithInputs", {})).rejects.toThrow(
+        /input for task/
+      );
+
+      await task.enqueueAt(1, "taskWithInputs", { a: 1, b: 2, c: 3, d: 4 }); // does not throw
+    });
+
+    test("defaults can be provided (via literal)", async () => {
+      await task.enqueue("taskWithInputs", { b: 2, c: 3, d: 4 });
+      const enqueuedTask = await specHelper.findEnqueuedTasks("taskWithInputs");
+      expect(enqueuedTask[0].args[0]).toEqual({ a: 1, b: 2, c: 3, d: 4 });
+    });
+
+    test("defaults can be provided (via function)", async () => {
+      await task.enqueue("taskWithInputs", { a: 1, c: 3, d: 4 });
+      const enqueuedTask = await specHelper.findEnqueuedTasks("taskWithInputs");
+      expect(enqueuedTask[0].args[0]).toEqual({ a: 1, b: 2, c: 3, d: 4 });
+    });
+
+    test("validation will fail with input that does not match the validation method (via throw)", async () => {
+      await expect(
+        task.enqueue("taskWithInputs", { a: 1, b: 2, c: -1, d: 4 })
+      ).rejects.toThrow(/nope/);
+    });
+
+    test("validation will fail with input that does not match the validation method (via false)", async () => {
+      await expect(
+        task.enqueue("taskWithInputs", { a: 1, b: 2, c: 3, d: -1 })
+      ).rejects.toThrow(/-1 is not a valid value for d in task taskWithInputs/);
+    });
   });
 
   describe("middleware", () => {
