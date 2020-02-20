@@ -1,5 +1,4 @@
 |
-|- boot.js
 |- src
 |  - config
 |    - (project settings)

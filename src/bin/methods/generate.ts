@@ -29,6 +29,7 @@ export class Generate extends CLI {
 
     const oldFileMap = {
       tsconfig: "tsconfig.json",
+      serverJs: "/templates/projectServer.ts.template",
       configApiJs: "/src/config/api.ts",
       configLoggerJs: "/src/config/logger.ts",
       configRedisJs: "/src/config/redis.ts",
@@ -85,12 +86,6 @@ export class Generate extends CLI {
       )
     );
 
-    documents.bootJS = String(
-      fs.readFileSync(
-        path.join(__dirname, "/../../../templates/boot.js.template")
-      )
-    );
-
     console.log("Generating a new actionhero project...");
 
     [
@@ -123,6 +118,7 @@ export class Generate extends CLI {
 
     const newFileMap = {
       "/tsconfig.json": "tsconfig",
+      "/src/server.ts": "serverJs",
       "/src/config/api.ts": "configApiJs",
       "/src/config/logger.ts": "configLoggerJs",
       "/src/config/redis.ts": "configRedisJs",
@@ -144,8 +140,7 @@ export class Generate extends CLI {
       "/README.md": "readmeMd",
       "/__tests__/actions/status.ts": "exampleTest",
       "/locales/en.json": "enLocale",
-      "/.gitignore": "gitignore",
-      "/boot.js": "bootJS"
+      "/.gitignore": "gitignore"
     };
 
     for (const file in newFileMap) {
