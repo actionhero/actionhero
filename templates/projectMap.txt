@@ -1,5 +1,7 @@
 |
 |- src
+|  - server.ts
+|
 |  - config
 |    - (project settings)
 |
