@@ -309,7 +309,7 @@ describe("Core: CLI", () => {
       let serverPid;
 
       beforeAll(async function() {
-        doCommand(`${binary} start`, true, { PORT: port });
+        doCommand(`node dist/server.js`, true, { PORT: port });
         await sleep(5000);
         serverPid = pid;
       }, 20000);
