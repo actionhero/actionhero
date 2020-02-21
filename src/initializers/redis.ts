@@ -1,4 +1,4 @@
-/// <reference path="./../../node_modules/@types/ioredis/index.d.ts" />
+/// <reference types="ioredis" />
 
 import * as IORedis from "ioredis";
 import * as dotProp from "dot-prop";
