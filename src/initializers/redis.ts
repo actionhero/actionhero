@@ -1,5 +1,3 @@
-/// <reference types="ioredis" />
-
 import * as IORedis from "ioredis";
 import * as dotProp from "dot-prop";
 import { api, id, log, Initializer, redis } from "../index";
