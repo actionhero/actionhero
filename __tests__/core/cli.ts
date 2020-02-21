@@ -113,7 +113,7 @@ describe("Core: CLI", () => {
 
     test("can call npm install in the new project", async () => {
       try {
-        await doCommand("npm install");
+        await doCommand("npm install --ignore-scripts");
       } catch (error) {
         // we might get warnings about package.json locks, etc.  we want to ignore them
         if (error.toString().indexOf("npm") < 0) {
