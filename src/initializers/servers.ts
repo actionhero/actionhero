@@ -43,7 +43,7 @@ export class Servers extends Initializer {
           const pluginPath = config.plugins[pluginName].path;
           // old style at the root of the project
           files = files.concat(
-            glob.sync(path.join(pluginPath, "servers", "**", "*.js|"))
+            glob.sync(path.join(pluginPath, "servers", "**", "*.js"))
           );
 
           files = files.concat(
