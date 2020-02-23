@@ -72,7 +72,7 @@ export class Servers extends Initializer {
           if (api.servers.servers[server.type]) {
             log(
               `an existing server with the same type \`${server.type}\` will be overridden by the file ${filename}`,
-              "warning"
+              "crit"
             );
           }
 
