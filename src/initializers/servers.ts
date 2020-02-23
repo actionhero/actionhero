@@ -43,7 +43,7 @@ export class Servers extends Initializer {
           const pluginPath = config.plugins[pluginName].path;
           // old style at the root of the project
           files = files.concat(
-            glob.sync(path.join(pluginPath, "servers", "**", "*.js|"))
+            glob.sync(path.join(pluginPath, "servers", "**", "*.js"))
           );
 
           files = files.concat(
@@ -72,7 +72,7 @@ export class Servers extends Initializer {
           if (api.servers.servers[server.type]) {
             log(
               `an existing server with the same type \`${server.type}\` will be overridden by the file ${filename}`,
-              "warning"
+              "crit"
             );
           }
 

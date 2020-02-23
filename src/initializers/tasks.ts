@@ -46,7 +46,7 @@ export class Tasks extends Initializer {
         if (api.tasks.tasks[task.name] && !reload) {
           log(
             `an existing task with the same name \`${task.name}\` will be overridden by the file ${fullFilePath}`,
-            "warning"
+            "crit"
           );
         }
 

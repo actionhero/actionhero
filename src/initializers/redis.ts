@@ -73,7 +73,7 @@ export class Redis extends Initializer {
           const response = await method.apply(null, args);
           await redis.respondCluster(message.messageId, response);
         } else {
-          log("RPC method `" + cmdParts.join(".") + "` not found", "warning");
+          log("RPC method `" + cmdParts.join(".") + "` not found", "crit");
         }
       }
     };

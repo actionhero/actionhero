@@ -1,4 +1,4 @@
-const winston = require("winston");
+import * as winston from "winston";
 
 // learn more about winston v3 loggers @
 // - https://github.com/winstonjs/winston
@@ -25,6 +25,7 @@ export const test = {
   logger: config => {
     const loggers = [];
 
+    loggers.push(buildConsoleLogger("crit"));
     config.general.paths.log.forEach(p => {
       loggers.push(buildFileLogger(p, "debug", 1));
     });
@@ -34,6 +35,8 @@ export const test = {
     };
   }
 };
+
+// helpers for building the winston loggers
 
 function buildConsoleLogger(level = "info") {
   return function(config) {
@@ -72,15 +75,9 @@ function stringifyExtraMessagePropertiesForConsole(info) {
   return response;
 }
 
-function buildFileLogger(
-  path,
-  level = "info",
-  maxFiles = undefined,
-  maxSize = 20480
-) {
+function buildFileLogger(path, level = "info", maxFiles = undefined) {
   return function(config) {
     const filename = `${path}/${config.process.id}-${config.process.env}.log`;
-
     return winston.createLogger({
       format: winston.format.combine(
         winston.format.timestamp(),
@@ -91,7 +88,6 @@ function buildFileLogger(
       transports: [
         new winston.transports.File({
           filename,
-          maxSize,
           maxFiles
         })
       ]

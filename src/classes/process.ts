@@ -228,13 +228,13 @@ export class Process {
     });
 
     // flatten all the ordered initializer methods
-    this.loadInitializers = this.flattenOrderedInitialzer(
+    this.loadInitializers = this.flattenOrderedInitializer(
       loadInitializerRankings
     );
-    this.startInitializers = this.flattenOrderedInitialzer(
+    this.startInitializers = this.flattenOrderedInitializer(
       startInitializerRankings
     );
-    this.stopInitializers = this.flattenOrderedInitialzer(
+    this.stopInitializers = this.flattenOrderedInitializer(
       stopInitializerRankings
     );
 
@@ -307,7 +307,7 @@ export class Process {
       // double sigterm; ignore it
     } else {
       const message = "Cannot shut down actionhero, not running";
-      log(message, "error");
+      log(message, "crit");
     }
   }
 
@@ -391,7 +391,7 @@ export class Process {
     }
   }
 
-  flattenOrderedInitialzer(collection: any) {
+  flattenOrderedInitializer(collection: any) {
     const output = [];
     const keys = [];
     for (const key in collection) {

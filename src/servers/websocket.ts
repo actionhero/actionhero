@@ -221,7 +221,7 @@ export class WebSocketServer extends Server {
         );
         log(`wrote ${clientJSFullPath}.min.js`, "debug");
       } catch (e) {
-        log("Cannot write client-side JS for websocket server:", "warning", e);
+        log("Cannot write client-side JS for websocket server:", "alert", e);
         throw e;
       }
     }
