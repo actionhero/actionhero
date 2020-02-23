@@ -307,7 +307,7 @@ export class Process {
       // double sigterm; ignore it
     } else {
       const message = "Cannot shut down actionhero, not running";
-      log(message, "error");
+      log(message, "crit");
     }
   }
 
