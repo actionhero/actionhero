@@ -75,15 +75,9 @@ function stringifyExtraMessagePropertiesForConsole(info) {
   return response;
 }
 
-function buildFileLogger(
-  path,
-  level = "info",
-  maxFiles = undefined,
-  maxsize = 20480
-) {
+function buildFileLogger(path, level = "info", maxFiles = undefined) {
   return function(config) {
     const filename = `${path}/${config.process.id}-${config.process.env}.log`;
-
     return winston.createLogger({
       format: winston.format.combine(
         winston.format.timestamp(),
@@ -94,7 +88,6 @@ function buildFileLogger(
       transports: [
         new winston.transports.File({
           filename,
-          maxsize,
           maxFiles
         })
       ]
