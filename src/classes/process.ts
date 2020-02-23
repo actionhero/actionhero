@@ -228,13 +228,13 @@ export class Process {
     });
 
     // flatten all the ordered initializer methods
-    this.loadInitializers = this.flattenOrderedInitialzer(
+    this.loadInitializers = this.flattenOrderedInitializer(
       loadInitializerRankings
     );
-    this.startInitializers = this.flattenOrderedInitialzer(
+    this.startInitializers = this.flattenOrderedInitializer(
       startInitializerRankings
     );
-    this.stopInitializers = this.flattenOrderedInitialzer(
+    this.stopInitializers = this.flattenOrderedInitializer(
       stopInitializerRankings
     );
 
@@ -391,7 +391,7 @@ export class Process {
     }
   }
 
-  flattenOrderedInitialzer(collection: any) {
+  flattenOrderedInitializer(collection: any) {
     const output = [];
     const keys = [];
     for (const key in collection) {
