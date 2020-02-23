@@ -1,4 +1,4 @@
-const winston = require("winston");
+import * as winston from "winston";
 
 // learn more about winston v3 loggers @
 // - https://github.com/winstonjs/winston
@@ -79,7 +79,7 @@ function buildFileLogger(
   path,
   level = "info",
   maxFiles = undefined,
-  maxSize = 20480
+  maxsize = 20480
 ) {
   return function(config) {
     const filename = `${path}/${config.process.id}-${config.process.env}.log`;
@@ -94,7 +94,7 @@ function buildFileLogger(
       transports: [
         new winston.transports.File({
           filename,
-          maxSize,
+          maxsize,
           maxFiles
         })
       ]
