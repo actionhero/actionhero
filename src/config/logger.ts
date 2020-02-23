@@ -25,6 +25,7 @@ export const test = {
   logger: config => {
     const loggers = [];
 
+    loggers.push(buildConsoleLogger("crit"));
     config.general.paths.log.forEach(p => {
       loggers.push(buildFileLogger(p, "debug", 1));
     });
@@ -34,6 +35,8 @@ export const test = {
     };
   }
 };
+
+// helpers for building the winston loggers
 
 function buildConsoleLogger(level = "info") {
   return function(config) {
