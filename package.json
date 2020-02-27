@@ -34,7 +34,7 @@
     "@types/glob": "^7.1.1",
     "@types/ioredis": "^4.14.7",
     "@types/node": "^13.7.4",
-    "@types/uuid": "^3.4.7",
+    "@types/uuid": "^7.0.0",
     "browser_fingerprint": "^2.0.1",
     "dot-prop": "^5.2.0",
     "etag": "^1.8.1",
