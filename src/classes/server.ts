@@ -37,8 +37,6 @@ export abstract class Server extends EventEmitter {
   connectionCustomMethods: {
     [key: string]: Function;
   };
-  /**An optional message to send to clients when they disconnect */
-  goodbye?: Function;
   /**A place to store the actually server object you create */
   server?: any;
 
@@ -108,6 +106,9 @@ export abstract class Server extends EventEmitter {
     length: number,
     lastModified: Date
   ): Promise<void>;
+
+  /**An optional message to send to clients when they disconnect */
+  async goodbye?(connection: Connection): Promise<void>;
 
   defaultAttributes() {
     return {
