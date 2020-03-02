@@ -34,51 +34,51 @@ export class Servers extends Initializer {
       }
     });
 
+    let files = [];
+
     for (const i in serverFolders) {
       const p = serverFolders[i];
-      let files = glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"));
+      files = files.concat(glob.sync(path.join(p, "**", "**/*(*.js|*.ts)")));
+    }
 
-      for (const pluginName in config.plugins) {
-        if (config.plugins[pluginName].servers !== false) {
-          const pluginPath = config.plugins[pluginName].path;
-          // old style at the root of the project
-          files = files.concat(
-            glob.sync(path.join(pluginPath, "servers", "**", "*.js"))
-          );
+    for (const pluginName in config.plugins) {
+      if (config.plugins[pluginName].servers !== false) {
+        const pluginPath = config.plugins[pluginName].path;
+        // old style at the root of the project
+        files = files.concat(
+          glob.sync(path.join(pluginPath, "servers", "**", "*.js"))
+        );
 
-          files = files.concat(
-            glob.sync(path.join(pluginPath, "dist", "servers", "**", "*.js"))
-          );
-        }
+        files = files.concat(
+          glob.sync(path.join(pluginPath, "dist", "servers", "**", "*.js"))
+        );
+      }
+    }
+
+    files = utils.ensureNoTsHeaderFiles(files);
+
+    for (const j in files) {
+      const filename = files[j];
+      const ExportedClasses = require(filename);
+
+      if (Object.keys(ExportedClasses).length > 1) {
+        throw new Error(`server file ${filename} exports more than one server`);
       }
 
-      files = utils.ensureNoTsHeaderFiles(files);
+      const server = new ExportedClasses[Object.keys(ExportedClasses)[0]]();
+      server.config = config.servers[server.type]; // shorthand access
+      if (server.config && server.config.enabled === true) {
+        await server.initialize();
 
-      for (const j in files) {
-        const filename = files[j];
-        const ExportedClasses = require(filename);
-
-        if (Object.keys(ExportedClasses).length > 1) {
-          throw new Error(
-            `server file ${filename} exports more than one server`
+        if (api.servers.servers[server.type]) {
+          log(
+            `an existing server with the same type \`${server.type}\` will be overridden by the file ${filename}`,
+            "crit"
           );
         }
 
-        const server = new ExportedClasses[Object.keys(ExportedClasses)[0]]();
-        server.config = config.servers[server.type]; // shorthand access
-        if (server.config && server.config.enabled === true) {
-          await server.initialize();
-
-          if (api.servers.servers[server.type]) {
-            log(
-              `an existing server with the same type \`${server.type}\` will be overridden by the file ${filename}`,
-              "crit"
-            );
-          }
-
-          api.servers.servers[server.type] = server;
-          log(`Initialized server: ${server.type}`, "debug");
-        }
+        api.servers.servers[server.type] = server;
+        log(`Initialized server: ${server.type}`, "debug");
       }
     }
   }
