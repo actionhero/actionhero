@@ -57,16 +57,28 @@ export class Servers extends Initializer {
 
     files = utils.ensureNoTsHeaderFiles(files);
 
+    let server: Server;
+
     for (const j in files) {
       const filename = files[j];
       const ExportedClasses = require(filename);
 
-      if (Object.keys(ExportedClasses).length > 1) {
-        throw new Error(`server file ${filename} exports more than one server`);
+      const exportLen = Object.keys(ExportedClasses).length;
+      // we have named exports
+      if (exportLen) {
+        if (exportLen > 1) {
+          throw new Error(
+            `server file ${filename} exports more than one server`
+          );
+        }
+
+        server = new ExportedClasses[Object.keys(ExportedClasses)[0]]();
+      } else {
+        // there is one default export
+        server = new ExportedClasses();
       }
 
-      const server = new ExportedClasses[Object.keys(ExportedClasses)[0]]();
-      server.config = config.servers[server.type]; // shorthand access
+      server.config = config.servers[server.type]; // for shorthand access
       if (server.config && server.config.enabled === true) {
         await server.initialize();
 
