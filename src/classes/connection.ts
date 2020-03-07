@@ -1,4 +1,4 @@
-import * as uuidv4 from "uuid/v4";
+import * as uuid from "uuid";
 import { api, chatRoom } from "./../index";
 import { config } from "./../modules/config";
 import { i18n } from "../modules/i18n";
@@ -158,7 +158,7 @@ export class Connection {
   }
 
   private generateID() {
-    return uuidv4();
+    return uuid.v4();
   }
 
   /**
