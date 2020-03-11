@@ -407,7 +407,7 @@ export namespace task {
         api.tasks.middleware
       );
     }
-    api.tasks.loadTasks(true);
+    api.tasks.loadTasks(false);
   }
 
   async function validateInput(taskName: string, inputs: Inputs) {
