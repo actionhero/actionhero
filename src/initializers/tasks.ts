@@ -54,7 +54,7 @@ export class Tasks extends Initializer {
         api.tasks.jobs[task.name] = api.tasks.jobWrapper(task.name);
         log(
           `task ${reload ? "(re)" : ""} loaded: ${task.name}, ${fullFilePath}`,
-          reload ? "info" : "debug"
+          "debug"
         );
       }
     };
