@@ -325,11 +325,12 @@ export class Process {
    * Register listeners for process signals and uncaught exceptions & rejections.
    * Try to gracefully shut down when signaled to do so
    */
-  registerProcessSignals() {
+  registerProcessSignals(stopCallback: (exitCode?: number) => {}) {
+    const timeout = process.env.ACTIONHERO_SHUTDOWN_TIMEOUT
+      ? parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT)
+      : 1000 * 30;
+
     function awaitHardStop() {
-      const timeout = process.env.ACTIONHERO_SHUTDOWN_TIMEOUT
-        ? parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT)
-        : 1000 * 30;
       return setTimeout(() => {
         console.error(
           `Process did not terminate within ${timeout}ms. Stopping now!`
@@ -339,14 +340,20 @@ export class Process {
     }
 
     // handle errors & rejections
-    process.on("uncaughtException", (error: Error) => {
+    process.once("uncaughtException", async (error: Error) => {
       log(error.stack, "fatal");
-      process.nextTick(process.exit(1));
+      let timer = awaitHardStop();
+      await this.stop();
+      clearTimeout(timer);
+      stopCallback(1);
     });
 
-    process.on("unhandledRejection", (rejection: Error) => {
+    process.once("unhandledRejection", async (rejection: Error) => {
       log(rejection.stack, "fatal");
-      process.nextTick(process.exit(1));
+      let timer = awaitHardStop();
+      await this.stop();
+      clearTimeout(timer);
+      stopCallback(1);
     });
 
     // handle signals
@@ -355,6 +362,7 @@ export class Process {
       let timer = awaitHardStop();
       await this.stop();
       clearTimeout(timer);
+      stopCallback(0);
     });
 
     process.on("SIGTERM", async () => {
@@ -362,6 +370,7 @@ export class Process {
       let timer = awaitHardStop();
       await this.stop();
       clearTimeout(timer);
+      stopCallback(0);
     });
 
     process.on("SIGUSR2", async () => {
