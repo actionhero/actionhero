@@ -325,7 +325,7 @@ export class Process {
    * Register listeners for process signals and uncaught exceptions & rejections.
    * Try to gracefully shut down when signaled to do so
    */
-  registerProcessSignals(stopCallback: (exitCode?: number) => {}) {
+  registerProcessSignals(stopCallback?: (exitCode?: number) => {}) {
     const timeout = process.env.ACTIONHERO_SHUTDOWN_TIMEOUT
       ? parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT)
       : 1000 * 30;

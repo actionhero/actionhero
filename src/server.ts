@@ -8,9 +8,10 @@ async function main() {
   const app = new Process();
 
   // handle unix signals and uncaught exceptions & rejections
-  app.registerProcessSignals(exitCode => {
-    process.exit(exitCode);
-  });
+  // app.registerProcessSignals(exitCode => {
+  //   process.exit(exitCode);
+  // });
+  app.registerProcessSignals();
 
   // start the app!
   // you can pass custom configuration to the process as needed
