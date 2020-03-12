@@ -341,19 +341,23 @@ export class Process {
 
     // handle errors & rejections
     process.once("uncaughtException", async (error: Error) => {
-      log(error.stack, "fatal");
-      let timer = awaitHardStop();
-      await this.stop();
-      clearTimeout(timer);
-      stopCallback(1);
+      log(`UNCAUGHT EXCEPTION: ` + error.stack, "fatal");
+      if (!this.shuttingDown === true) {
+        let timer = awaitHardStop();
+        await this.stop();
+        clearTimeout(timer);
+        stopCallback(1);
+      }
     });
 
     process.once("unhandledRejection", async (rejection: Error) => {
-      log(rejection.stack, "fatal");
-      let timer = awaitHardStop();
-      await this.stop();
-      clearTimeout(timer);
-      stopCallback(1);
+      log(`UNHANDLED REJECTION: ` + rejection.stack, "fatal");
+      if (!this.shuttingDown === true) {
+        let timer = awaitHardStop();
+        await this.stop();
+        clearTimeout(timer);
+        stopCallback(1);
+      }
     });
 
     // handle signals
