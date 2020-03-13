@@ -32,8 +32,8 @@
   },
   "dependencies": {
     "@types/glob": "^7.1.1",
-    "@types/ioredis": "^4.14.8",
-    "@types/node": "^13.9.0",
+    "@types/ioredis": "^4.14.9",
+    "@types/node": "^13.9.1",
     "@types/uuid": "^7.0.0",
     "browser_fingerprint": "^2.0.1",
     "dot-prop": "^5.2.0",
@@ -51,7 +51,7 @@
     "uglify-js": "^3.8.0",
     "uuid": "^7.0.2",
     "winston": "^3.2.1",
-    "ws": "^7.2.1"
+    "ws": "^7.2.3"
   },
   "devDependencies": {
     "@types/jest": "^25.1.4",
