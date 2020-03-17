@@ -284,7 +284,7 @@ describe("Core", () => {
           chatRoom.addMiddleware({
             name: "add chat middleware",
             join: async (connection, room) => {
-              await api.chatRoom.broadcast(
+              await chatRoom.broadcast(
                 {},
                 room,
                 `I have entered the room: ${connection.id}`
@@ -295,7 +295,7 @@ describe("Core", () => {
           chatRoom.addMiddleware({
             name: "leave chat middleware",
             leave: async (connection, room) => {
-              await api.chatRoom.broadcast(
+              await chatRoom.broadcast(
                 {},
                 room,
                 `I have left the room: ${connection.id}`
