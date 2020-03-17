@@ -297,4 +297,18 @@ export namespace chatRoom {
 
     return true;
   }
+
+  /**
+   * Send a message to all clients connected to this room
+   * - connection should either be a real client you are emulating (found in api.connections) or just `{}` for a mock
+   * - room is the string name of an already-existing room
+   * - message can be anything: string, json, object, etc
+   */
+  export async function broadcast(
+    connection: Connection | { [key: string]: any },
+    room: string,
+    message: any
+  ) {
+    return api.chatRoom.broadcast(connection, room, message);
+  }
 }
