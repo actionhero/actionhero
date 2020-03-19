@@ -23,7 +23,8 @@
   },
   "scripts": {
     "postinstall": "npm run build",
-    "dev": "ts-node-dev --no-deps --transpile-only ./src/server.ts",
+    "dev": "ts-node-dev --no-deps --transpile-only ./src/server",
+    "debug": "ts-node-dev --transpile-only --no-deps --inspect -- ./src/server ",
     "start": "node ./dist/server.js",
     "actionhero": "actionhero",
     "test": "jest",
