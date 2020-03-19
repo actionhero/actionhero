@@ -29,7 +29,7 @@
     "actionhero": "actionhero",
     "test": "jest",
     "pretest": "npm run build && npm run lint",
-    "build": "tsc --declaration",
+    "build": "tsc --sourceMap false --declaration",
     "lint": "prettier --check src/*/** __test__/*/**",
     "pretty": "prettier --write src/*/** __test__/*/**"
   },
