@@ -295,6 +295,15 @@ describe("Core: CLI", () => {
     });
 
     test("can call npm test in the new project and not fail", async () => {
+      // since prettier no longer works with node < 10, we need to skip this test
+      const nodeVersion = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
+      if (nodeVersion < 10) {
+        console.log(
+          `skpping 'npm test' because this node version ${nodeVersion} < 10.0.0`
+        );
+        return;
+      }
+
       // jest writes to stderr for some reason, so we need to test for the exit code here
       try {
         await doCommand("npm test", true, { NODE_ENV: "test" });
