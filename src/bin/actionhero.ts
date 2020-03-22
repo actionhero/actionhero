@@ -38,7 +38,7 @@ const projectRoot = determineProjectRoot();
       runner.inputs = {};
     }
 
-    Object.keys(runner.inputs).forEach(inputName => {
+    Object.keys(runner.inputs).forEach((inputName) => {
       const collection = runner.inputs[inputName];
       let value = optimist.argv[inputName];
 
@@ -181,7 +181,7 @@ const projectRoot = determineProjectRoot();
   if (!optimist.argv._ || optimist.argv._.length === 0) {
     commands.push("start");
   }
-  optimist.argv._.forEach(function(arg: string) {
+  optimist.argv._.forEach(function (arg: string) {
     commands.push(arg);
   });
 

@@ -31,14 +31,14 @@ export class Actions extends Initializer {
       actions: {},
       versions: {},
       middleware: {},
-      globalMiddleware: []
+      globalMiddleware: [],
     };
 
     api.actions.loadFile = async (
       fullFilePath: string,
       reload: boolean = false
     ) => {
-      const loadMessage = action => {
+      const loadMessage = (action) => {
         if (reload) {
           log(
             `action reloaded: ${action.name} @ v${action.version}, ${fullFilePath}`,
@@ -113,7 +113,7 @@ export class Actions extends Initializer {
 
         utils
           .ensureNoTsHeaderFiles(files)
-          .forEach(f => api.actions.loadFile(f));
+          .forEach((f) => api.actions.loadFile(f));
       }
     }
   }

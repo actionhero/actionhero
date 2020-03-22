@@ -1,5 +1,5 @@
 export const DEFAULT = {
-  tasks: config => {
+  tasks: (config) => {
     return {
       // Should this node run a scheduler to promote delayed tasks?
       scheduler: false,
@@ -16,7 +16,7 @@ export const DEFAULT = {
         job: "debug",
         pause: "debug",
         internalError: "error",
-        multiWorkerAction: "debug"
+        multiWorkerAction: "debug",
       },
       // Logging levels of the task scheduler
       schedulerLogging: {
@@ -26,7 +26,7 @@ export const DEFAULT = {
         enqueue: "debug",
         reEnqueue: "debug",
         working_timestamp: "debug",
-        transferred_job: "debug"
+        transferred_job: "debug",
       },
       // how long to sleep between jobs / scheduler checks
       timeout: 5000,
@@ -45,20 +45,20 @@ export const DEFAULT = {
       resque_overrides: {
         queue: null,
         multiWorker: null,
-        scheduler: null
+        scheduler: null,
       },
       connectionOptions: {
-        tasks: {}
-      }
+        tasks: {},
+      },
     };
-  }
+  },
 };
 
 export const test = {
-  tasks: config => {
+  tasks: (config) => {
     return {
       timeout: 100,
-      checkTimeout: 50
+      checkTimeout: 50,
     };
-  }
+  },
 };

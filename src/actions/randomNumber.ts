@@ -12,7 +12,7 @@ export class RandomNumber extends Action {
     response.randomNumber = Math.random();
     response.stringRandomNumber = connection.localize([
       "Your random number is {{randomNumber}}",
-      response
+      response,
     ]);
   }
 }

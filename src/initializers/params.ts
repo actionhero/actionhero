@@ -18,7 +18,7 @@ export class Params extends Initializer {
 
   async initialize() {
     api.params = {
-      postVariables: []
+      postVariables: [],
     };
 
     // special params we will always accept
@@ -27,7 +27,7 @@ export class Params extends Initializer {
       "apiVersion",
       "callback",
       "action",
-      "messageId"
+      "messageId",
     ];
 
     api.params.buildPostVariables = () => {
@@ -35,7 +35,7 @@ export class Params extends Initializer {
       let i;
       let j;
 
-      api.params.globalSafeParams.forEach(p => {
+      api.params.globalSafeParams.forEach((p) => {
         postVariables.push(p);
       });
 

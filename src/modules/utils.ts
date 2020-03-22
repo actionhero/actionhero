@@ -22,7 +22,7 @@ import {
   createFileSafely,
   createLinkfileSafely,
   removeLinkfileSafely,
-  createSymlinkSafely
+  createSymlinkSafely,
 } from "./utils/fileUtils";
 
 /**
@@ -53,6 +53,6 @@ export const utils = {
     createFileSafely,
     createLinkfileSafely,
     removeLinkfileSafely,
-    createSymlinkSafely
-  }
+    createSymlinkSafely,
+  },
 };

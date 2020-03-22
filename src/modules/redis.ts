@@ -40,7 +40,7 @@ export namespace redis {
       messageId: messageId,
       method: method,
       connectionId: connectionId,
-      args: args // [1,2,3]
+      args: args, // [1,2,3]
     };
 
     // we need to be sure that we build the response-handling promise before sending the request to Redis
@@ -75,7 +75,7 @@ export namespace redis {
       serverId: id,
       serverToken: config.general.serverToken,
       messageId: messageId,
-      response: response // args to pass back, including error
+      response: response, // args to pass back, including error
     };
 
     await redis.publish(payload);

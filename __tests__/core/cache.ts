@@ -117,7 +117,7 @@ describe("Core", () => {
       await utils.sleep(timeout);
 
       let loadResp = await cache.load("testKey_slow", {
-        expireTimeMS: expireTime
+        expireTimeMS: expireTime,
       });
       expect(loadResp.value).toEqual("abc123");
 

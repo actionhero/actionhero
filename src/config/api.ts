@@ -1,7 +1,7 @@
 const path = require("path");
 
 export const DEFAULT = {
-  general: config => {
+  general: (config) => {
     const packageJSON = require("./../../package.json");
 
     return {
@@ -52,38 +52,38 @@ export const DEFAULT = {
         test: [path.join(process.cwd(), "__tests__")],
         // for the src and dist paths, assume we are running in compiled mode from `dist`
         src: path.join(process.cwd(), "src"),
-        dist: path.join(process.cwd(), "dist")
+        dist: path.join(process.cwd(), "dist"),
       },
 
       // hash containing chat rooms you wish to be created at server boot
       startingChatRooms: {
         // format is {roomName: {authKey, authValue}}
         // 'secureRoom': {authorized: true},
-      }
+      },
     };
-  }
+  },
 };
 
 export const test = {
-  general: config => {
+  general: (config) => {
     return {
       serverToken: `serverToken-${process.env.JEST_WORKER_ID || 0}`,
       startingChatRooms: {
         defaultRoom: {},
-        otherRoom: {}
+        otherRoom: {},
       },
       paths: {
-        locale: [path.join(process.cwd(), "locales")]
+        locale: [path.join(process.cwd(), "locales")],
       },
-      rpcTimeout: 3000
+      rpcTimeout: 3000,
     };
-  }
+  },
 };
 
 export const production = {
-  general: config => {
+  general: (config) => {
     return {
-      fileRequestLogLevel: "debug"
+      fileRequestLogLevel: "debug",
     };
-  }
+  },
 };

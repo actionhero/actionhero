@@ -42,7 +42,7 @@ describe("Core", () => {
 
     test("can have async error handlers", async () => {
       config.errors.unknownAction = async () => {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
           setTimeout(() => {
             resolve({ sleepy: true });
           }, 100);
@@ -66,10 +66,10 @@ describe("Core", () => {
           description: "this action throws errors",
           version: 1,
           inputs: {},
-          run: async data => {
+          run: async (data) => {
             throw new Error(errorMsg);
-          }
-        }
+          },
+        },
       };
     });
 

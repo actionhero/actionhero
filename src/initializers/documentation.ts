@@ -35,12 +35,12 @@ export class Documentation extends Initializer {
                 version: action.version,
                 description: action.description,
                 inputs: action.inputs,
-                outputExample: action.outputExample
+                outputExample: action.outputExample,
               };
             }
           }
         }
-      }
+      },
     };
 
     api.documentation.build();

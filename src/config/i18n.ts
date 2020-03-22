@@ -1,5 +1,5 @@
 export const DEFAULT = {
-  i18n: config => {
+  i18n: (config) => {
     return {
       // visit https://github.com/mashpie/i18n-node to see all configuration options
       // locale path can be configured from within ./config/api.js
@@ -23,7 +23,7 @@ export const DEFAULT = {
       // by default, every request will be in the 'en' locale
       // this method will be called within the localization middleware on all requests
       // this method should be set on the `i18n` object exported by actionhero.
-      determineConnectionLocale: "determineConnectionLocale"
+      determineConnectionLocale: "determineConnectionLocale",
     };
-  }
+  },
 };

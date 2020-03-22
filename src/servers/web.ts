@@ -25,7 +25,7 @@ export class WebServer extends Server {
       logConnections: false,
       logExits: false,
       sendWelcomeMessage: false,
-      verbs: [] // no verbs for connections of this type, as they are to be very short-lived
+      verbs: [], // no verbs for connections of this type, as they are to be very short-lived
     };
 
     this.connectionCustomMethods = {
@@ -46,7 +46,7 @@ export class WebServer extends Server {
           buffer = Buffer.from(buffer);
         }
         connection.rawConnection.res.end(buffer);
-      }
+      },
     };
   }
 
@@ -82,7 +82,7 @@ export class WebServer extends Server {
       );
     }
 
-    this.server.on("error", error => {
+    this.server.on("error", (error) => {
       bootAttempts++;
       if (bootAttempts < this.config.bootAttempts) {
         this.log(`cannot boot web server; trying again [${error}]`, "error");
@@ -100,7 +100,7 @@ export class WebServer extends Server {
       }
     });
 
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       this.server.listen(this.config.port, this.config.bindIP, () => {
         this.chmodSocket(this.config.bindIP, this.config.port);
         resolve();
@@ -160,7 +160,7 @@ export class WebServer extends Server {
     let foundCacheControl = false;
     let ifModifiedSince;
 
-    connection.rawConnection.responseHeaders.forEach(pair => {
+    connection.rawConnection.responseHeaders.forEach((pair) => {
       if (pair[0].toLowerCase() === "cache-control") {
         foundCacheControl = true;
       }
@@ -174,7 +174,7 @@ export class WebServer extends Server {
           "Cache-Control",
           "max-age=" +
             this.config.flatFileCacheDuration +
-            ", must-revalidate, public"
+            ", must-revalidate, public",
         ]);
       }
     }
@@ -183,7 +183,7 @@ export class WebServer extends Server {
       if (lastModified) {
         connection.rawConnection.responseHeaders.push([
           "Last-Modified",
-          new Date(lastModified).toUTCString()
+          new Date(lastModified).toUTCString(),
         ]);
       }
     }
@@ -239,7 +239,7 @@ export class WebServer extends Server {
     }
 
     if (this.config.enableEtag && fileStream && fileStream.path) {
-      const filestats = await new Promise(resolve => {
+      const filestats = await new Promise((resolve) => {
         fs.stat(fileStream.path, (error, filestats) => {
           if (error || !filestats) {
             this.log(
@@ -271,7 +271,7 @@ export class WebServer extends Server {
       }
       // if-none-match
       if (noneMatchHeader) {
-        etagMatches = noneMatchHeader.some(match => {
+        etagMatches = noneMatchHeader.some((match) => {
           return (
             match === "*" || match === fileEtag || match === "W/" + fileEtag
           );
@@ -432,13 +432,13 @@ export class WebServer extends Server {
         cookies: cookies,
         responseHeaders: responseHeaders,
         responseHttpCode: responseHttpCode,
-        parsedURL: parsedURL
+        parsedURL: parsedURL,
       },
       id: `${fingerprint}-${messageId}`,
       messageId: messageId,
       fingerprint: fingerprint,
       remoteAddress: ip || req.connection.remoteAddress || "0.0.0.0",
-      remotePort: port || req.connection.remotePort || "0"
+      remotePort: port || req.connection.remotePort || "0",
     });
   }
 
@@ -467,7 +467,7 @@ export class WebServer extends Server {
         serverName: config.general.serverName,
         apiVersion: config.general.apiVersion,
         requestDuration: stopTime - data.connection.connectedAt,
-        currentTime: stopTime
+        currentTime: stopTime,
       };
     }
 
@@ -514,7 +514,7 @@ export class WebServer extends Server {
       if (mime) {
         data.connection.rawConnection.responseHeaders.push([
           "Content-Type",
-          mime
+          mime,
         ]);
       }
     }
@@ -532,7 +532,7 @@ export class WebServer extends Server {
       if (data.params.callback) {
         data.connection.rawConnection.responseHeaders.push([
           "Content-Type",
-          "application/javascript"
+          "application/javascript",
         ]);
         stringResponse =
           this.callbackHtmlEscape(data.connection.params.callback) +
@@ -569,7 +569,7 @@ export class WebServer extends Server {
       const methods = "HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE";
       connection.rawConnection.responseHeaders.push([
         "Access-Control-Allow-Methods",
-        methods
+        methods,
       ]);
     }
 
@@ -580,7 +580,7 @@ export class WebServer extends Server {
       const origin = "*";
       connection.rawConnection.responseHeaders.push([
         "Access-Control-Allow-Origin",
-        origin
+        origin,
       ]);
     }
 
@@ -687,7 +687,7 @@ export class WebServer extends Server {
           rawBody = new Promise((resolve, reject) => {
             let fullBody = Buffer.alloc(0);
             connection.rawConnection.req
-              .on("data", chunk => {
+              .on("data", (chunk) => {
                 fullBody = Buffer.concat([fullBody, chunk]);
               })
               .on("end", () => {
@@ -696,7 +696,7 @@ export class WebServer extends Server {
           });
         }
 
-        const { fields, files } = await new Promise(resolve => {
+        const { fields, files } = await new Promise((resolve) => {
           connection.rawConnection.form.parse(
             connection.rawConnection.req,
             (error, fields, files) => {
@@ -789,7 +789,7 @@ export class WebServer extends Server {
       fingerprint: connection.fingerprint,
       messageId: connection.messageId,
       remoteIP: connection.remoteIP,
-      receivedParams: {}
+      receivedParams: {},
     };
 
     for (const p in connection.params) {
@@ -831,7 +831,7 @@ export class WebServer extends Server {
 
   cleanSocket(bindIP, port) {
     if (!bindIP && typeof port === "string" && port.indexOf("/") >= 0) {
-      fs.unlink(port, error => {
+      fs.unlink(port, (error) => {
         if (error) {
           this.log(`cannot remove stale socket @ ${port}: ${error}`, "error");
         } else {

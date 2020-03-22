@@ -94,7 +94,7 @@ export namespace cache {
       jobs.push(
         client()
           .get(key)
-          .then(content => {
+          .then((content) => {
             data[key] = content;
           })
       );
@@ -128,7 +128,7 @@ export namespace cache {
       }
     };
 
-    Object.keys(data).forEach(key => {
+    Object.keys(data).forEach((key) => {
       const content = data[key];
       jobs.push(saveDumpedElement(key, content));
     });
@@ -196,7 +196,7 @@ export namespace cache {
         value: cacheObj.value,
         expireTimestamp: cacheObj.expireTimestamp,
         createdAt: cacheObj.createdAt,
-        lastReadAt
+        lastReadAt,
       };
     } else {
       return {
@@ -204,7 +204,7 @@ export namespace cache {
         value: cacheObj.value,
         expireTimestamp: cacheObj.expireTimestamp,
         createdAt: cacheObj.createdAt,
-        lastReadAt
+        lastReadAt,
       };
     }
   }
@@ -246,7 +246,7 @@ export namespace cache {
       value: value,
       expireTimestamp: expireTimestamp,
       createdAt: new Date().getTime(),
-      readAt: null
+      readAt: null,
     };
 
     const lockOk = await cache.checkLock(key, null);

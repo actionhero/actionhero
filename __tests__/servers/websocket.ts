@@ -51,24 +51,24 @@ const awaitMethod = async (
 };
 
 const awaitAction = async (client, action, params = {}): Promise<any> => {
-  return new Promise(resolve => {
-    client.action(action, params, response => {
+  return new Promise((resolve) => {
+    client.action(action, params, (response) => {
       return resolve(response);
     });
   });
 };
 
 const awaitFile = async (client, file): Promise<any> => {
-  return new Promise(resolve => {
-    client.file(file, response => {
+  return new Promise((resolve) => {
+    client.file(file, (response) => {
       return resolve(response);
     });
   });
 };
 
 const awaitRoom = async (client, method, room): Promise<any> => {
-  return new Promise(resolve => {
-    client[method](room, response => {
+  return new Promise((resolve) => {
+    client[method](room, (response) => {
       return resolve(response);
     });
   });
@@ -156,12 +156,12 @@ describe("Server: Web Socket", () => {
       awaitRoom(clientA, "roomAdd", "defaultRoom"); // fast
       let responseB = awaitAction(clientA, "randomNumber"); // fast
 
-      responseA.then(data => {
+      responseA.then((data) => {
         responseA = data;
         aTime = new Date();
       });
 
-      responseB.then(data => {
+      responseB.then((data) => {
         responseB = data;
         bTime = new Date();
       });
@@ -177,7 +177,7 @@ describe("Server: Web Socket", () => {
 
     test("messageId can be configurable", async () => {
       const response = await awaitAction(clientA, "randomNumber", {
-        messageId: "aaa"
+        messageId: "aaa",
       });
       expect(response.messageId).toBe("aaa");
     });
@@ -191,7 +191,7 @@ describe("Server: Web Socket", () => {
     test("can run actions properly with params", async () => {
       const response = await awaitAction(clientA, "cacheTest", {
         key: "test key",
-        value: "test value"
+        value: "test value",
       });
       expect(response.error).toBeUndefined();
       expect(response.cacheTestResults).toBeTruthy();
@@ -200,7 +200,7 @@ describe("Server: Web Socket", () => {
     test("does not have sticky params", async () => {
       const response = await awaitAction(clientA, "cacheTest", {
         key: "test key",
-        value: "test value"
+        value: "test value",
       });
       expect(response.cacheTestResults.loadResp.key).toEqual(
         "cacheTest_test key"
@@ -214,22 +214,22 @@ describe("Server: Web Socket", () => {
 
     test("will limit how many simultaneous connections I can have", async () => {
       const responses = [];
-      clientA.action("sleepTest", { sleepDuration: 100 }, response => {
+      clientA.action("sleepTest", { sleepDuration: 100 }, (response) => {
         responses.push(response);
       });
-      clientA.action("sleepTest", { sleepDuration: 200 }, response => {
+      clientA.action("sleepTest", { sleepDuration: 200 }, (response) => {
         responses.push(response);
       });
-      clientA.action("sleepTest", { sleepDuration: 300 }, response => {
+      clientA.action("sleepTest", { sleepDuration: 300 }, (response) => {
         responses.push(response);
       });
-      clientA.action("sleepTest", { sleepDuration: 400 }, response => {
+      clientA.action("sleepTest", { sleepDuration: 400 }, (response) => {
         responses.push(response);
       });
-      clientA.action("sleepTest", { sleepDuration: 500 }, response => {
+      clientA.action("sleepTest", { sleepDuration: 500 }, (response) => {
         responses.push(response);
       });
-      clientA.action("sleepTest", { sleepDuration: 600 }, response => {
+      clientA.action("sleepTest", { sleepDuration: 600 }, (response) => {
         responses.push(response);
       });
 
@@ -273,7 +273,7 @@ describe("Server: Web Socket", () => {
               room,
               `I have entered the room: ${connection.id}`
             );
-          }
+          },
         });
 
         chatRoom.addMiddleware({
@@ -284,7 +284,7 @@ describe("Server: Web Socket", () => {
               room,
               `I have left the room: ${connection.id}`
             );
-          }
+          },
         });
       });
 
@@ -340,8 +340,8 @@ describe("Server: Web Socket", () => {
       });
 
       test("clients can talk to each other", async () => {
-        await new Promise(resolve => {
-          const listener = response => {
+        await new Promise((resolve) => {
+          const listener = (response) => {
             clientA.removeListener("say", listener);
             expect(response.context).toEqual("user");
             expect(response.message).toEqual("hello from client 2");
@@ -354,8 +354,8 @@ describe("Server: Web Socket", () => {
       });
 
       test("The client say method does not rely on argument order", async () => {
-        await new Promise(resolve => {
-          const listener = response => {
+        await new Promise((resolve) => {
+          const listener = (response) => {
             clientA.removeListener("say", listener);
             expect(response.context).toEqual("user");
             expect(response.message).toEqual("hello from client 2");
@@ -372,8 +372,8 @@ describe("Server: Web Socket", () => {
       });
 
       test("connections are notified when I join a room", async () => {
-        await new Promise(resolve => {
-          const listener = response => {
+        await new Promise((resolve) => {
+          const listener = (response) => {
             clientA.removeListener("say", listener);
             expect(response.context).toEqual("user");
             expect(response.message).toEqual(
@@ -390,8 +390,8 @@ describe("Server: Web Socket", () => {
       });
 
       test("connections are notified when I leave a room", async () => {
-        await new Promise(resolve => {
-          const listener = response => {
+        await new Promise((resolve) => {
+          const listener = (response) => {
             clientA.removeListener("say", listener);
             expect(response.context).toEqual("user");
             expect(response.message).toEqual(
@@ -405,13 +405,13 @@ describe("Server: Web Socket", () => {
         });
       });
 
-      test("will not get messages for rooms I am not in", async done => {
+      test("will not get messages for rooms I am not in", async (done) => {
         const response = await awaitRoom(clientB, "roomAdd", "otherRoom");
         expect(response.error).toBeUndefined();
         expect(clientB.rooms.length).toEqual(2);
         expect(clientC.rooms.length).toEqual(1);
 
-        const listener = response => {
+        const listener = (response) => {
           clientC.removeListener("say", listener);
           throw new Error("should not get here");
         };
@@ -449,10 +449,10 @@ describe("Server: Web Socket", () => {
             say: async (connection, room, messagePayload) => {
               messagePayload.message += " - To: " + connection.id;
               return messagePayload;
-            }
+            },
           });
 
-          const listenerA = response => {
+          const listenerA = (response) => {
             messagesReceived++;
             clientA.removeListener("say", listenerA);
             expect(response.message).toEqual(
@@ -460,7 +460,7 @@ describe("Server: Web Socket", () => {
             ); // clientA.id (Receiver)
           };
 
-          const listenerB = response => {
+          const listenerB = (response) => {
             messagesReceived++;
             clientB.removeListener("say", listenerB);
             expect(response.message).toEqual(
@@ -468,7 +468,7 @@ describe("Server: Web Socket", () => {
             ); // clientB.id (Receiver)
           };
 
-          const listenerC = response => {
+          const listenerC = (response) => {
             messagesReceived++;
             clientC.removeListener("say", listenerC);
             expect(response.message).toEqual(
@@ -495,7 +495,7 @@ describe("Server: Web Socket", () => {
                 firstSayCall = false;
                 await utils.sleep(200);
               }
-            }
+            },
           });
 
           let messagesReceived = 0;
@@ -531,10 +531,10 @@ describe("Server: Web Socket", () => {
             onSayReceive: (connection, room, messagePayload) => {
               messagePayload.message += " - To: " + connection.id;
               return messagePayload;
-            }
+            },
           });
 
-          const listenerA = response => {
+          const listenerA = (response) => {
             messagesReceived++;
             clientA.removeListener("say", listenerA);
             expect(response.message).toEqual(
@@ -542,7 +542,7 @@ describe("Server: Web Socket", () => {
             ); // clientB.id (Sender)
           };
 
-          const listenerB = response => {
+          const listenerB = (response) => {
             messagesReceived++;
             clientB.removeListener("say", listenerB);
             expect(response.message).toEqual(
@@ -550,7 +550,7 @@ describe("Server: Web Socket", () => {
             ); // clientB.id (Sender)
           };
 
-          const listenerC = response => {
+          const listenerC = (response) => {
             messagesReceived++;
             clientC.removeListener("say", listenerC);
             expect(response.message).toEqual(
@@ -573,7 +573,7 @@ describe("Server: Web Socket", () => {
             name: "blocking chat middleware",
             join: (connection, room) => {
               throw new Error("joining rooms blocked");
-            }
+            },
           });
 
           const joinResponse = await awaitRoom(clientA, "roomAdd", "otherRoom");
@@ -600,7 +600,7 @@ describe("Server: Web Socket", () => {
         let started = 0;
         const sleeps = [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110];
 
-        await new Promise(resolve => {
+        await new Promise((resolve) => {
           const toComplete = (sleep, response) => {
             expect(sleep).toEqual(response.sleepDuration);
             completed++;
@@ -609,11 +609,15 @@ describe("Server: Web Socket", () => {
             }
           };
 
-          sleeps.forEach(sleep => {
+          sleeps.forEach((sleep) => {
             started++;
-            clientA.action("sleepTest", { sleepDuration: sleep }, response => {
-              toComplete(sleep, response);
-            });
+            clientA.action(
+              "sleepTest",
+              { sleepDuration: sleep },
+              (response) => {
+                toComplete(sleep, response);
+              }
+            );
           });
         });
       });

@@ -108,7 +108,7 @@ export class Process {
     initializerFiles = utils.arrayUnique(initializerFiles);
     initializerFiles = utils.ensureNoTsHeaderFiles(initializerFiles);
 
-    initializerFiles.forEach(f => {
+    initializerFiles.forEach((f) => {
       const file = path.normalize(f);
       delete require.cache[require.resolve(file)];
 
@@ -393,7 +393,7 @@ export class Process {
     if (errors) {
       log(`Error with initializer step: ${JSON.stringify(type)}`, "emerg");
 
-      errors.forEach(error => {
+      errors.forEach((error) => {
         log(error.stack, "emerg");
       });
 
@@ -411,8 +411,8 @@ export class Process {
       keys.push(parseInt(key));
     }
     keys.sort(sortNumber);
-    keys.forEach(key => {
-      collection[key].forEach(d => {
+    keys.forEach((key) => {
+      collection[key].forEach((d) => {
         output.push(d);
       });
     });

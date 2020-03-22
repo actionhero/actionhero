@@ -117,7 +117,7 @@ export abstract class Server extends EventEmitter {
       logConnections: true,
       logExits: true,
       sendWelcomeMessage: true,
-      verbs: []
+      verbs: [],
     };
   }
 
@@ -131,8 +131,8 @@ export abstract class Server extends EventEmitter {
       "stop",
       "sendFile", // connection, error, fileStream, mime, length, lastModified
       "sendMessage", // connection, message
-      "goodbye"
-    ].forEach(method => {
+      "goodbye",
+    ].forEach((method) => {
       if (!this[method] || typeof this[method] !== "function") {
         throw new Error(
           `${method} is a required method for the server \`${this.type}\``
@@ -171,7 +171,7 @@ export abstract class Server extends EventEmitter {
       rawConnection: data.rawConnection,
       messageId: data.messageId,
       canChat: null,
-      fingerprint: null
+      fingerprint: null,
     };
 
     if (this.attributes.canChat === true) {
@@ -184,11 +184,11 @@ export abstract class Server extends EventEmitter {
 
     const connection = await Connection.createAsync(details);
 
-    connection.sendMessage = async message => {
+    connection.sendMessage = async (message) => {
       this.sendMessage(connection, message);
     };
 
-    connection.sendFile = async path => {
+    connection.sendFile = async (path) => {
       connection.params.file = path;
       this.processFile(connection);
     };
@@ -202,7 +202,7 @@ export abstract class Server extends EventEmitter {
     if (this.attributes.sendWelcomeMessage === true) {
       connection.sendMessage({
         welcome: connection.localize("actionhero.welcomeMessage"),
-        context: "api"
+        context: "api",
       });
     }
 
@@ -211,7 +211,7 @@ export abstract class Server extends EventEmitter {
         try {
           connection.sendMessage({
             welcome: connection.localize("actionhero.welcomeMessage"),
-            context: "api"
+            context: "api",
           });
         } catch (e) {
           this.log(e, "error");

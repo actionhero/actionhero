@@ -120,7 +120,7 @@ export class ActionProcessor {
       action: this.action,
       params: JSON.stringify(filteredParams),
       duration: this.duration,
-      error: ""
+      error: "",
     };
 
     if (error) {
@@ -137,7 +137,7 @@ export class ActionProcessor {
 
     log(`[ action @ ${this.connection.type} ]`, logLevel, logLine);
     if (error?.stack) {
-      error.stack.split(EOL).map(l => log(` ! ${l}`, "error"));
+      error.stack.split(EOL).map((l) => log(` ! ${l}`, "error"));
     }
   }
 
@@ -145,7 +145,7 @@ export class ActionProcessor {
     const processorNames = api.actions.globalMiddleware.slice(0);
 
     if (this.actionTemplate.middleware) {
-      this.actionTemplate.middleware.forEach(function(m) {
+      this.actionTemplate.middleware.forEach(function (m) {
         processorNames.push(m);
       });
     }
@@ -162,7 +162,7 @@ export class ActionProcessor {
     const processorNames = api.actions.globalMiddleware.slice(0);
 
     if (this.actionTemplate.middleware) {
-      this.actionTemplate.middleware.forEach(m => {
+      this.actionTemplate.middleware.forEach((m) => {
         processorNames.push(m);
       });
     }

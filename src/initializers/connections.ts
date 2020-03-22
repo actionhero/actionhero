@@ -63,7 +63,7 @@ export class Connections extends Initializer {
         "roomLeave",
         "roomView",
         "detailsView",
-        "say"
+        "say",
       ],
 
       /**
@@ -137,7 +137,7 @@ export class Connections extends Initializer {
         }
 
         return clean;
-      }
+      },
     };
   }
 }

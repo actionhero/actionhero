@@ -4,7 +4,7 @@ import {
   utils,
   specHelper,
   chatRoom,
-  redis
+  redis,
 } from "./../../src/index";
 
 const actionhero = new Process();
@@ -77,7 +77,7 @@ describe("Core: Action Cluster", () => {
 
       const connection = await api.connections.apply(client.id, "set", [
         "auth",
-        true
+        true,
       ]);
       expect(connection.id).toEqual(client.id);
       expect(client.auth).toEqual(true);
@@ -88,7 +88,7 @@ describe("Core: Action Cluster", () => {
       const client = await specHelper.buildConnection();
 
       const connection = await api.connections.apply(client.id, "sendMessage", {
-        message: "hi"
+        message: "hi",
       });
       const message = connection.messages[connection.messages.length - 1];
       expect(message.message).toEqual("hi");

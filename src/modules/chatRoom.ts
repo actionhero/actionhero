@@ -152,7 +152,7 @@ export namespace chatRoom {
   export async function sanitizeMemberDetails(memberData) {
     return {
       id: memberData.id,
-      joinedAt: memberData.joinedAt
+      joinedAt: memberData.joinedAt,
     };
   }
 
@@ -182,7 +182,7 @@ export namespace chatRoom {
         return {
           room: room,
           members: cleanedMembers,
-          membersCount: count
+          membersCount: count,
         };
       } else {
         throw new Error(await config.errors.connectionRoomNotExist(room));
@@ -199,7 +199,7 @@ export namespace chatRoom {
     return {
       id: connection.id,
       joinedAt: new Date().getTime(),
-      host: id
+      host: id,
     };
   }
 
