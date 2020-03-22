@@ -40,7 +40,7 @@ export abstract class Initializer {
       throw new Error("name is required for this initializer");
     }
 
-    ["loadPriority", "startPriority", "stopPriority"].forEach(priority => {
+    ["loadPriority", "startPriority", "stopPriority"].forEach((priority) => {
       if (
         !this[priority] ||
         typeof this[priority] !== "number" ||

@@ -23,7 +23,7 @@ if (process.env.REDIS_URL) {
 }
 
 export const DEFAULT = {
-  redis: config => {
+  redis: (config) => {
     // konstructor: The redis client constructor method.  All redis methods must be promises
     // args: The arguments to pass to the constructor
     // buildNew: is it `new konstructor()` or just `konstructor()`?
@@ -34,7 +34,7 @@ export const DEFAULT = {
       password,
       db: parseInt(db),
       // you can learn more about retryStrategy @ https://github.com/luin/ioredis#auto-reconnect
-      retryStrategy: times => {
+      retryStrategy: (times) => {
         if (times === 1) {
           console.error(
             "Unable to connect to Redis - please check your Redis config!"
@@ -42,7 +42,7 @@ export const DEFAULT = {
           return 5000;
         }
         return Math.min(times * 50, maxBackoff);
-      }
+      },
     };
 
     return {
@@ -52,18 +52,18 @@ export const DEFAULT = {
       client: {
         konstructor: require("ioredis"),
         args: [commonArgs],
-        buildNew: true
+        buildNew: true,
       },
       subscriber: {
         konstructor: require("ioredis"),
         args: [commonArgs],
-        buildNew: true
+        buildNew: true,
       },
       tasks: {
         konstructor: require("ioredis"),
         args: [commonArgs],
-        buildNew: true
-      }
+        buildNew: true,
+      },
     };
-  }
+  },
 };

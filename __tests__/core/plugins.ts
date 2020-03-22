@@ -29,8 +29,8 @@ describe("Core: Plugins", () => {
     beforeAll(async () => {
       configChanges = {
         plugins: {
-          testPlugin: { path: path.join(__dirname, "..", "testPlugin") }
-        }
+          testPlugin: { path: path.join(__dirname, "..", "testPlugin") },
+        },
       };
 
       api = await actionhero.start({ configChanges });
@@ -71,7 +71,7 @@ describe("Core: Plugins", () => {
 
         const {
           stdout: helpResponse,
-          stderr: error1
+          stderr: error1,
         } = await exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts help",
           { env }
@@ -81,7 +81,7 @@ describe("Core: Plugins", () => {
 
         const {
           stdout: helloResponse,
-          stderr: error2
+          stderr: error2,
         } = await exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts hello",
           { env }
@@ -104,9 +104,9 @@ describe("Core: Plugins", () => {
             servers: false,
             initializers: false,
             public: false,
-            cli: false
-          }
-        }
+            cli: false,
+          },
+        },
       };
 
       api = await actionhero.start();
@@ -145,7 +145,7 @@ describe("Core: Plugins", () => {
 
         const {
           stdout: helpResponse,
-          stderr: error1
+          stderr: error1,
         } = await exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts help",
           { env }
@@ -204,7 +204,7 @@ describe("Core: Plugins", () => {
         const env = Object.assign({}, process.env);
         const {
           stdout: helpResponse,
-          stderr: error1
+          stderr: error1,
         } = await exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts help",
           { env }

@@ -18,23 +18,23 @@ describe("Core", () => {
         api.actions.versions,
         api.actions.actions.cacheTest["1"],
         api.actions.actions.randomNumber["1"],
-        api.actions.actions.status["1"]
-      ].forEach(item => {
+        api.actions.actions.status["1"],
+      ].forEach((item) => {
         expect(item).toBeInstanceOf(Object);
       });
 
       [
         api.actions.actions.cacheTest["1"].run,
         api.actions.actions.randomNumber["1"].run,
-        api.actions.actions.status["1"].run
-      ].forEach(item => {
+        api.actions.actions.status["1"].run,
+      ].forEach((item) => {
         expect(item).toBeInstanceOf(Function);
       });
 
       [
         api.actions.actions.randomNumber["1"].name,
-        api.actions.actions.randomNumber["1"].description
-      ].forEach(item => {
+        api.actions.actions.randomNumber["1"].description,
+      ].forEach((item) => {
         expect(typeof item).toEqual("string");
       });
 
@@ -48,8 +48,8 @@ describe("Core", () => {
         "action",
         "apiVersion",
         "key", // from cacheTest action
-        "value" // from cacheTest action
-      ].forEach(item => {
+        "value", // from cacheTest action
+      ].forEach((item) => {
         expect(api.params.postVariables.indexOf(item) >= 0).toEqual(true);
       });
     });
@@ -63,31 +63,31 @@ describe("Core", () => {
             description: "I am a test",
             version: 1,
             outputExample: {},
-            run: async data => {
+            run: async (data) => {
               data.response.version = 1;
-            }
+            },
           },
           2: {
             name: "versionedAction",
             description: "I am a test",
             version: 2,
             outputExample: {},
-            run: async data => {
+            run: async (data) => {
               data.response.version = 2;
-            }
+            },
           },
           3: {
             name: "versionedAction",
             description: "I am a test",
             version: 3,
             outputExample: {},
-            run: async data => {
+            run: async (data) => {
               data.response.version = 3;
               data.response.error = {
-                a: { complex: "error" }
+                a: { complex: "error" },
               };
-            }
-          }
+            },
+          },
         };
       });
 
@@ -106,13 +106,13 @@ describe("Core", () => {
       test("can specify an apiVersion", async () => {
         let response;
         response = await specHelper.runAction("versionedAction", {
-          apiVersion: 1
+          apiVersion: 1,
         });
         expect(response.requesterInformation.receivedParams.apiVersion).toEqual(
           1
         );
         response = await specHelper.runAction("versionedAction", {
-          apiVersion: 2
+          apiVersion: 2,
         });
         expect(response.requesterInformation.receivedParams.apiVersion).toEqual(
           2
@@ -128,7 +128,7 @@ describe("Core", () => {
 
       test("will fail on a missing action + version", async () => {
         const response = await specHelper.runAction("versionedAction", {
-          apiVersion: 10
+          apiVersion: 10,
         });
         expect(response.error).toEqual(
           "Error: unknown action or invalid apiVersion"
@@ -137,7 +137,7 @@ describe("Core", () => {
 
       test("can return complex error responses", async () => {
         const response = await specHelper.runAction("versionedAction", {
-          apiVersion: 3
+          apiVersion: 3,
         });
         expect(response.error.a.complex).toEqual("error");
       });
@@ -197,20 +197,20 @@ describe("Core", () => {
                 default: () => {
                   return "abc123";
                 },
-                validator: function(s) {
+                validator: function (s) {
                   if (s !== "abc123") {
                     return 'fancyParam should be "abc123".  so says ' + this.id;
                   }
                 },
-                formatter: function(s) {
+                formatter: function (s) {
                   return String(s);
-                }
-              }
+                },
+              },
             },
-            run: async data => {
+            run: async (data) => {
               data.response.params = data.params;
-            }
-          }
+            },
+          },
         };
       });
 
@@ -223,18 +223,18 @@ describe("Core", () => {
       test("correct params that are falsey (false, []) should be allowed", async () => {
         let response;
         response = await specHelper.runAction("testAction", {
-          requiredParam: false
+          requiredParam: false,
         });
         expect(response.params.requiredParam).toEqual(false);
         response = await specHelper.runAction("testAction", {
-          requiredParam: []
+          requiredParam: [],
         });
         expect(response.params.requiredParam).toHaveLength(0);
       });
 
       test("will fail for missing or empty string params", async () => {
         let response = await specHelper.runAction("testAction", {
-          requiredParam: ""
+          requiredParam: "",
         });
         expect(response.error).toContain("required parameter for this action");
         response = await specHelper.runAction("testAction", {});
@@ -247,18 +247,18 @@ describe("Core", () => {
         let response;
         config.general.missingParamChecks = [undefined];
         response = await specHelper.runAction("testAction", {
-          requiredParam: ""
+          requiredParam: "",
         });
         expect(response.params.requiredParam).toEqual("");
         response = await specHelper.runAction("testAction", {
-          requiredParam: null
+          requiredParam: null,
         });
         expect(response.params.requiredParam).toBeNull();
       });
 
       test("will set a default when params are not provided", async () => {
         const response = await specHelper.runAction("testAction", {
-          requiredParam: true
+          requiredParam: true,
         });
         expect(response.params.fancyParam).toEqual("abc123");
       });
@@ -266,7 +266,7 @@ describe("Core", () => {
       test("will use validator if provided", async () => {
         const response = await specHelper.runAction("testAction", {
           requiredParam: true,
-          fancyParam: 123
+          fancyParam: 123,
         });
         expect(response.error).toMatch(/Error: fancyParam should be "abc123"/);
       });
@@ -274,7 +274,7 @@ describe("Core", () => {
       test("validator will have the API object in scope as this", async () => {
         const response = await specHelper.runAction("testAction", {
           requiredParam: true,
-          fancyParam: 123
+          fancyParam: 123,
         });
         expect(response.error).toMatch(new RegExp(api.id));
       });
@@ -282,7 +282,7 @@ describe("Core", () => {
       test("will use formatter if provided (and still use validator)", async () => {
         const response = await specHelper.runAction("testAction", {
           requiredParam: true,
-          fancyParam: 123
+          fancyParam: 123,
         });
         expect(response.requesterInformation.receivedParams.fancyParam).toEqual(
           "123"
@@ -292,7 +292,7 @@ describe("Core", () => {
       test("succeeds a validator which returns no response", async () => {
         const response = await specHelper.runAction("testAction", {
           requiredParam: true,
-          fancyParam: "abc123"
+          fancyParam: "abc123",
         });
         expect(response.error).toBeUndefined();
       });
@@ -300,7 +300,7 @@ describe("Core", () => {
       test("will filter params not set in the target action or global safelist", async () => {
         const response = await specHelper.runAction("testAction", {
           requiredParam: true,
-          sleepDuration: true
+          sleepDuration: true,
         });
         expect(
           response.requesterInformation.receivedParams.requiredParam
@@ -329,7 +329,7 @@ describe("Core", () => {
                     default: () => {
                       return "abc123";
                     },
-                    validator: function(s) {
+                    validator: function (s) {
                       if (s === "abc123") {
                         return true;
                       } else {
@@ -338,17 +338,17 @@ describe("Core", () => {
                         );
                       }
                     },
-                    formatter: s => {
+                    formatter: (s) => {
                       return String(s);
-                    }
-                  }
-                }
-              }
+                    },
+                  },
+                },
+              },
             },
             run: function async(data) {
               data.response.params = data.params;
-            }
-          }
+            },
+          },
         };
       });
 
@@ -361,11 +361,11 @@ describe("Core", () => {
       test("correct params that are falsey (false, []) should be allowed", async () => {
         let response;
         response = await specHelper.runAction("testAction", {
-          schemaParam: { requiredParam: false }
+          schemaParam: { requiredParam: false },
         });
         expect(response.params.schemaParam.requiredParam).toEqual(false);
         response = await specHelper.runAction("testAction", {
-          schemaParam: { requiredParam: [] }
+          schemaParam: { requiredParam: [] },
         });
         expect(response.params.schemaParam.requiredParam).toHaveLength(0);
       });
@@ -373,13 +373,13 @@ describe("Core", () => {
       test("will fail for missing or empty string params", async () => {
         let response;
         response = await specHelper.runAction("testAction", {
-          schemaParam: { requiredParam: "" }
+          schemaParam: { requiredParam: "" },
         });
         expect(response.error).toContain(
           "schemaParam.requiredParam is a required parameter for this action"
         );
         response = await specHelper.runAction("testAction", {
-          schemaParam: {}
+          schemaParam: {},
         });
         expect(response.error).toContain(
           "schemaParam.requiredParam is a required parameter for this action"
@@ -390,39 +390,39 @@ describe("Core", () => {
         let response;
         config.general.missingParamChecks = [undefined];
         response = await specHelper.runAction("testAction", {
-          schemaParam: { requiredParam: "" }
+          schemaParam: { requiredParam: "" },
         });
         expect(response.params.schemaParam.requiredParam).toEqual("");
         response = await specHelper.runAction("testAction", {
-          schemaParam: { requiredParam: null }
+          schemaParam: { requiredParam: null },
         });
         expect(response.params.schemaParam.requiredParam).toBeNull();
       });
 
       test("will set a default when params are not provided", async () => {
         const response = await specHelper.runAction("testAction", {
-          schemaParam: { requiredParam: true }
+          schemaParam: { requiredParam: true },
         });
         expect(response.params.schemaParam.fancyParam).toEqual("abc123");
       });
 
       test("will use validator if provided", async () => {
         const response = await specHelper.runAction("testAction", {
-          schemaParam: { requiredParam: true, fancyParam: 123 }
+          schemaParam: { requiredParam: true, fancyParam: 123 },
         });
         expect(response.error).toMatch(/Error: fancyParam should be "abc123"/);
       });
 
       test("validator will have the API object in scope as this", async () => {
         const response = await specHelper.runAction("testAction", {
-          schemaParam: { requiredParam: true, fancyParam: 123 }
+          schemaParam: { requiredParam: true, fancyParam: 123 },
         });
         expect(response.error).toMatch(new RegExp(api.id));
       });
 
       test("will use formatter if provided (and still use validator)", async () => {
         const response = await specHelper.runAction("testAction", {
-          schemaParam: { requiredParam: true, fancyParam: 123 }
+          schemaParam: { requiredParam: true, fancyParam: 123 },
         });
         expect(
           response.requesterInformation.receivedParams.schemaParam.fancyParam
@@ -431,7 +431,7 @@ describe("Core", () => {
 
       test("will filter params not set in the target action or global safelist", async () => {
         const response = await specHelper.runAction("testAction", {
-          schemaParam: { requiredParam: true, sleepDuration: true }
+          schemaParam: { requiredParam: true, sleepDuration: true },
         });
         expect(
           response.requesterInformation.receivedParams.schemaParam.requiredParam
@@ -445,18 +445,18 @@ describe("Core", () => {
     describe("named action validations", () => {
       beforeAll(() => {
         api.validators = {
-          validator1: param => {
+          validator1: (param) => {
             if (typeof param !== "string") {
               throw new Error("only strings");
             }
             return true;
           },
-          validator2: param => {
+          validator2: (param) => {
             if (param !== "correct") {
               throw new Error("that is not correct");
             }
             return true;
-          }
+          },
         };
 
         api.actions.versions.testAction = [1];
@@ -468,12 +468,12 @@ describe("Core", () => {
               a: {
                 validator: [
                   "api.validators.validator1",
-                  "api.validators.validator2"
-                ]
-              }
+                  "api.validators.validator2",
+                ],
+              },
             },
-            run: data => {}
-          }
+            run: (data) => {},
+          },
         };
       });
 
@@ -490,14 +490,14 @@ describe("Core", () => {
 
       test("runs more than 1 validator", async () => {
         const response = await specHelper.runAction("testAction", {
-          a: "hello"
+          a: "hello",
         });
         expect(response.error).toEqual("Error: that is not correct");
       });
 
       test("succeeds multiple validators", async () => {
         const response = await specHelper.runAction("testAction", {
-          a: "correct"
+          a: "correct",
         });
         expect(response.error).toBeUndefined();
       });
@@ -506,12 +506,12 @@ describe("Core", () => {
     describe("named action formatters", () => {
       beforeAll(() => {
         api._formatters = {
-          formatter1: param => {
+          formatter1: (param) => {
             return "*" + param + "*";
           },
-          formatter2: param => {
+          formatter2: (param) => {
             return "~" + param + "~";
-          }
+          },
         };
 
         api.actions.versions.testAction = [1];
@@ -523,14 +523,14 @@ describe("Core", () => {
               a: {
                 formatter: [
                   "api._formatters.formatter1",
-                  "api._formatters.formatter2"
-                ]
-              }
+                  "api._formatters.formatter2",
+                ],
+              },
             },
-            run: async data => {
+            run: async (data) => {
               data.response.a = data.params.a;
-            }
-          }
+            },
+          },
         };
       });
 
@@ -554,13 +554,13 @@ describe("Core", () => {
             name: "testAction",
             description: "I am a test",
             inputs: {
-              a: { required: true }
+              a: { required: true },
             },
             run: async ({ params, response }) => {
               params.a = "changed!";
               response.a = params.a;
-            }
-          }
+            },
+          },
         };
       });
 
@@ -571,7 +571,7 @@ describe("Core", () => {
 
       test("prevents data.params from being modified", async () => {
         const response = await specHelper.runAction("testAction", {
-          a: "original"
+          a: "original",
         });
         expect(response.a).toBeUndefined();
         expect(response.error).toMatch(

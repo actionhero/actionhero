@@ -19,7 +19,7 @@ describe("Action", () => {
 
     test("can change sleepDuration", async () => {
       const { sleepDuration } = await specHelper.runAction("sleepTest", {
-        sleepDuration: 100
+        sleepDuration: 100,
       });
       expect(sleepDuration).toEqual(100);
     });

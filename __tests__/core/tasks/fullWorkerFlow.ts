@@ -21,11 +21,11 @@ jest.mock("./../../../src/config/tasks.ts", () => ({
         maxEventLoopDelay: 5,
         stuckWorkerTimeout: 1000 * 60 * 60,
         connectionOptions: {
-          tasks: {}
-        }
+          tasks: {},
+        },
       };
-    }
-  }
+    },
+  },
 }));
 
 describe("Core: Tasks", () => {
@@ -157,7 +157,7 @@ describe("Core: Tasks", () => {
       await api.resque.stopScheduler();
     });
 
-    test("trying to run an unknown job will return a failure, but not crash the server", async done => {
+    test("trying to run an unknown job will return a failure, but not crash the server", async (done) => {
       config.tasks.queues = ["*"];
 
       const listener = async (workerId, queue, job, f) => {

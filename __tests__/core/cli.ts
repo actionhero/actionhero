@@ -51,19 +51,19 @@ const doCommand = async (
 
     const cmd = spawn(bin, args, {
       cwd: useCwd ? testDir : __dirname,
-      env: env
+      env: env,
     });
 
-    cmd.stdout.on("data", data => {
+    cmd.stdout.on("data", (data) => {
       stdout += data.toString();
     });
-    cmd.stderr.on("data", data => {
+    cmd.stderr.on("data", (data) => {
       stderr += data.toString();
     });
 
     pid = cmd.pid;
 
-    cmd.on("close", exitCode => {
+    cmd.on("close", (exitCode) => {
       if (stderr.length > 0 || exitCode !== 0) {
         const error = new ErrorWithStd(stderr);
         error.stderr = stderr;
@@ -78,7 +78,7 @@ const doCommand = async (
 };
 
 async function sleep(time) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(resolve, time);
   });
 }
@@ -165,8 +165,8 @@ describe("Core: CLI", () => {
         "locales/en.json",
         "__tests__",
         "__tests__/actions/status.ts",
-        ".gitignore"
-      ].forEach(f => {
+        ".gitignore",
+      ].forEach((f) => {
         expect(fs.existsSync(testDir + "/" + f)).toEqual(true);
       });
     }, 20000);
@@ -213,10 +213,10 @@ describe("Core: CLI", () => {
           `${testDir}/__tests__/tasks/myTask.ts`,
           `${testDir}/src/bin/myCommand.ts`,
           `${testDir}/src/servers/myServer.ts`,
-          `${testDir}/src/initializers/myInitializer.ts`
+          `${testDir}/src/initializers/myInitializer.ts`,
         ];
 
-        files.forEach(f => {
+        files.forEach((f) => {
           if (fs.existsSync(f)) {
             fs.unlinkSync(f);
           }
@@ -295,6 +295,15 @@ describe("Core: CLI", () => {
     });
 
     test("can call npm test in the new project and not fail", async () => {
+      // since prettier no longer works with node < 10, we need to skip this test
+      const nodeVersion = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
+      if (nodeVersion < 10) {
+        console.log(
+          `skpping 'npm test' because this node version ${nodeVersion} < 10.0.0`
+        );
+        return;
+      }
+
       // jest writes to stderr for some reason, so we need to test for the exit code here
       try {
         await doCommand("npm test", true, { NODE_ENV: "test" });
@@ -308,7 +317,7 @@ describe("Core: CLI", () => {
     describe("can run the server", () => {
       let serverPid;
 
-      beforeAll(async function() {
+      beforeAll(async function () {
         doCommand(`node dist/server.js`, true, { PORT: port });
         await sleep(5000);
         serverPid = pid;

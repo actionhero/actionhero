@@ -9,7 +9,7 @@ export async function eventLoopDelay(
   const jobs = [];
 
   const sleepyFunc = async () => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const start = process.hrtime();
       process.nextTick(() => {
         const delta = process.hrtime(start);
@@ -27,7 +27,7 @@ export async function eventLoopDelay(
 
   const results = await asyncWaterfall(jobs);
   let sum = 0;
-  results.forEach(t => {
+  results.forEach((t) => {
     sum += t;
   });
   const avg = Math.round((sum / results.length) * 10000) / 1000;

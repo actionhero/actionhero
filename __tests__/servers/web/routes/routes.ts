@@ -8,7 +8,7 @@ const actionhero = new Process();
 let api;
 let url;
 
-const toJson = async string => {
+const toJson = async (string) => {
   try {
     return JSON.parse(string);
   } catch (error) {
@@ -38,13 +38,13 @@ describe("Server: Web", () => {
           matchExtensionMimeType: true,
           inputs: {
             key: { required: true },
-            path: { required: false }
+            path: { required: false },
           },
           outputExample: {},
-          run: data => {
+          run: (data) => {
             data.response.matchedRoute = data.connection.matchedRoute;
-          }
-        }
+          },
+        },
       };
 
       api.actions.versions.login = [1, 2];
@@ -55,13 +55,13 @@ describe("Server: Web", () => {
           version: 1,
           matchExtensionMimeType: true,
           inputs: {
-            user_id: { required: true }
+            user_id: { required: true },
           },
           outputExample: {},
-          run: data => {
+          run: (data) => {
             data.response.user_id = data.params.user_id;
             data.response.version = 1;
-          }
+          },
         },
 
         2: {
@@ -70,13 +70,13 @@ describe("Server: Web", () => {
           version: 2,
           matchExtensionMimeType: true,
           inputs: {
-            userID: { required: true }
+            userID: { required: true },
           },
           outputExample: {},
-          run: data => {
+          run: (data) => {
             data.response.userID = data.params.userID;
             data.response.version = 2;
-          }
+          },
         },
 
         three: {
@@ -85,14 +85,14 @@ describe("Server: Web", () => {
           version: "three",
           matchExtensionMimeType: true,
           inputs: {
-            userID: { required: true }
+            userID: { required: true },
           },
           outputExample: {},
-          run: data => {
+          run: (data) => {
             data.response.userID = data.params.userID;
             data.response.version = "three";
-          }
-        }
+          },
+        },
       };
 
       api.params.buildPostVariables();
@@ -111,10 +111,10 @@ describe("Server: Web", () => {
             path: "/a/wild/:key/:path(^.*$)",
             action: "mimeTestAction",
             apiVersion: "1",
-            matchTrailingPathParts: true
-          }
+            matchTrailingPathParts: true,
+          },
         ],
-        post: [{ path: "/login/:userID(^(\\d{3}|admin)$)", action: "login" }]
+        post: [{ path: "/login/:userID(^(\\d{3}|admin)$)", action: "login" }],
       });
     });
 
@@ -134,8 +134,8 @@ describe("Server: Web", () => {
       route.registerRoute("all", "/other-login", "login", null);
       const loaded = {};
       const registered = {};
-      api.routes.verbs.forEach(verb => {
-        api.routes.routes[verb].forEach(route => {
+      api.routes.verbs.forEach((verb) => {
+        api.routes.routes[verb].forEach((route) => {
           if (!loaded[verb])
             loaded[verb] =
               route.action === "user" && route.path === "/user/:userID";
@@ -398,7 +398,7 @@ describe("Server: Web", () => {
         const readStream = fs.createReadStream(source);
         api.staticFile.searchLocations.push(tmpDir);
 
-        await new Promise(resolve => {
+        await new Promise((resolve) => {
           readStream.pipe(
             fs.createWriteStream(
               tmpDir + path.sep + "actionhero with space.png"
@@ -475,14 +475,14 @@ describe("Server: Web", () => {
     test("it remembers manually loaded routes", async () => {
       route.registerRoute("get", "/a-custom-route", "randomNumber", null);
       const response = await request.get(url + "/api/a-custom-route", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.statusCode).toEqual(200);
 
       api.routes.loadRoutes();
 
       const responseAgain = await request.get(url + "/api/a-custom-route", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(responseAgain.statusCode).toEqual(200);
     });

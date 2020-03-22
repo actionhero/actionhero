@@ -22,12 +22,12 @@ export class Servers extends Initializer {
 
   async initialize(config) {
     api.servers = {
-      servers: {}
+      servers: {},
     };
 
     const serverFolders = [path.resolve(path.join(__dirname, "..", "servers"))];
 
-    config.general.paths.server.forEach(p => {
+    config.general.paths.server.forEach((p) => {
       p = path.resolve(p);
       if (serverFolders.indexOf(p) < 0) {
         serverFolders.push(p);

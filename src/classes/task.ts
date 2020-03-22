@@ -66,7 +66,7 @@ export abstract class Task {
       middleware: [],
       plugins: [],
       pluginOptions: {},
-      reEnqueuePeriodicTaskIfException: true
+      reEnqueuePeriodicTaskIfException: true,
     };
   }
 

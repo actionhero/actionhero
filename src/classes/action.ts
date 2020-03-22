@@ -70,7 +70,7 @@ export abstract class Action {
       blockedConnectionTypes: [],
       logLevel: "info",
       matchExtensionMimeType: true,
-      toDocument: true
+      toDocument: true,
     };
   }
 

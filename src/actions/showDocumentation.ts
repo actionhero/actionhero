@@ -14,11 +14,11 @@ export class ShowDocumentation extends Action {
             description: "I will test the internal cache functions of the API",
             inputs: {
               key: {
-                required: true
+                required: true,
               },
               value: {
-                required: true
-              }
+                required: true,
+              },
             },
             outputExample: {
               cacheTestResults: {
@@ -29,12 +29,12 @@ export class ShowDocumentation extends Action {
                   value: "value",
                   expireTimestamp: 1420953274716,
                   createdAt: 1420953269716,
-                  readAt: null
+                  readAt: null,
                 },
-                deleteResp: true
-              }
-            }
-          }
+                deleteResp: true,
+              },
+            },
+          },
         },
         randomNumber: {
           1: {
@@ -44,17 +44,17 @@ export class ShowDocumentation extends Action {
               "I am an API method which will generate a random number",
             inputs: {},
             outputExample: {
-              randomNumber: 0.123
-            }
-          }
+              randomNumber: 0.123,
+            },
+          },
         },
         showDocumentation: {
           1: {
             name: "showDocumentation",
             version: 1,
             description: "return API documentation",
-            inputs: {}
-          }
+            inputs: {},
+          },
         },
         sleepTest: {
           1: {
@@ -63,20 +63,20 @@ export class ShowDocumentation extends Action {
             description: "I will sleep and then return",
             inputs: {
               sleepDuration: {
-                required: true
-              }
-            }
-          }
+                required: true,
+              },
+            },
+          },
         },
         status: {
           1: {
             name: "status",
             version: 1,
             description: "I will return some basic information about the API",
-            inputs: {}
-          }
-        }
-      }
+            inputs: {},
+          },
+        },
+      },
     };
   }
 

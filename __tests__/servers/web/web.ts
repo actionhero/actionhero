@@ -8,7 +8,7 @@ const actionhero = new Process();
 let api;
 let url;
 
-const toJson = async string => {
+const toJson = async (string) => {
   try {
     return JSON.parse(string);
   } catch (error) {
@@ -82,14 +82,14 @@ describe("Server: Web", () => {
           description: "I am a test",
           version: 1,
           outputExample: {},
-          run: data => {
+          run: (data) => {
             data.toRender = false;
             data.connection.rawConnection.res.writeHead(200, {
-              "Content-Type": "text/plain"
+              "Content-Type": "text/plain",
             });
             data.connection.rawConnection.res.end(`${Math.random()}`);
-          }
-        }
+          },
+        },
       };
 
       api.routes.loadRoutes();
@@ -135,10 +135,10 @@ describe("Server: Web", () => {
           name: "stringErrorTestAction",
           description: "stringErrorTestAction",
           version: 1,
-          run: data => {
+          run: (data) => {
             data.response.error = "broken";
-          }
-        }
+          },
+        },
       };
 
       api.actions.versions.errorErrorTestAction = [1];
@@ -147,10 +147,10 @@ describe("Server: Web", () => {
           name: "errorErrorTestAction",
           description: "errorErrorTestAction",
           version: 1,
-          run: data => {
+          run: (data) => {
             throw new Error("broken");
-          }
-        }
+          },
+        },
       };
 
       api.actions.versions.complexErrorTestAction = [1];
@@ -159,10 +159,10 @@ describe("Server: Web", () => {
           name: "complexErrorTestAction",
           description: "complexErrorTestAction",
           version: 1,
-          run: data => {
+          run: (data) => {
             data.response.error = { error: "broken", reason: "stuff" };
-          }
-        }
+          },
+        },
       };
 
       api.routes.loadRoutes();
@@ -298,7 +298,7 @@ describe("Server: Web", () => {
     try {
       await request.post(url + "/api/cacheTest", {
         body: bodyPayload,
-        headers: { "Content-type": "application/json" }
+        headers: { "Content-type": "application/json" },
       });
       throw new Error("should not get here");
     } catch (error) {
@@ -312,7 +312,7 @@ describe("Server: Web", () => {
     const successBody = await request
       .post(url + "/api/cacheTest", {
         body: bodyPayload,
-        headers: { "Content-type": "application/json" }
+        headers: { "Content-type": "application/json" },
       })
       .then(toJson);
     expect(successBody.cacheTestResults.saveResp).toEqual(true);
@@ -356,13 +356,13 @@ describe("Server: Web", () => {
           name: "paramTestAction",
           description: "I return connection.rawConnection.params",
           version: 1,
-          run: async data => {
+          run: async (data) => {
             data.response = data.connection.rawConnection.params;
             if (data.connection.rawConnection.params.rawBody) {
               data.response.rawBody = data.connection.rawConnection.params.rawBody.toString();
             }
-          }
-        }
+          },
+        },
       };
 
       api.routes.loadRoutes();
@@ -385,7 +385,7 @@ describe("Server: Web", () => {
       const body = await request
         .post(url + "/api/paramTestAction", {
           body: requestBody,
-          headers: { "Content-type": "application/json" }
+          headers: { "Content-type": "application/json" },
         })
         .then(toJson);
       expect(body.body.key).toEqual("value");
@@ -397,7 +397,7 @@ describe("Server: Web", () => {
       const body = await request
         .post(url + "/api/paramTestAction", {
           body: requestBody,
-          headers: { "Content-type": "application/json" }
+          headers: { "Content-type": "application/json" },
         })
         .then(toJson);
       expect(body.body.key).toEqual("value");
@@ -422,20 +422,20 @@ describe("Server: Web", () => {
           description: "I am a test",
           version: 1,
           outputExample: {},
-          run: data => {
+          run: (data) => {
             data.connection.rawConnection.responseHeaders.push(["thing", "A"]);
             data.connection.rawConnection.responseHeaders.push(["thing", "B"]);
             data.connection.rawConnection.responseHeaders.push(["thing", "C"]);
             data.connection.rawConnection.responseHeaders.push([
               "Set-Cookie",
-              "value_1=1"
+              "value_1=1",
             ]);
             data.connection.rawConnection.responseHeaders.push([
               "Set-Cookie",
-              "value_2=2"
+              "value_2=2",
             ]);
-          }
-        }
+          },
+        },
       };
 
       api.routes.loadRoutes();
@@ -448,7 +448,7 @@ describe("Server: Web", () => {
 
     test("duplicate headers should be removed (in favor of the last set)", async () => {
       const response = await request.get(url + "/api/headerTestAction", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.statusCode).toEqual(200);
       expect(response.headers.thing).toEqual("C");
@@ -456,7 +456,7 @@ describe("Server: Web", () => {
 
     test("but duplicate set-cookie requests should be allowed", async () => {
       const response = await request.get(url + "/api/headerTestAction", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.statusCode).toEqual(200);
       // this will convert node >= 10 header array to look like node <= 9 combined strings
@@ -470,7 +470,7 @@ describe("Server: Web", () => {
       const response = await request({
         method: "options",
         url: url + "/api/cacheTest",
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.statusCode).toEqual(200);
       expect(response.headers["access-control-allow-methods"]).toEqual(
@@ -486,7 +486,7 @@ describe("Server: Web", () => {
         method: "trace",
         url: url + "/api/x",
         form: { key: "someKey", value: "someValue" },
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.statusCode).toEqual(200);
       const body = await toJson(response.body);
@@ -498,7 +498,7 @@ describe("Server: Web", () => {
       const response = await request({
         method: "head",
         url: url + "/api/headerTestAction",
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.statusCode).toEqual(200);
       expect(response.body).toEqual("");
@@ -509,22 +509,22 @@ describe("Server: Web", () => {
       const response1 = await request.post({
         url: url + "/api/randomNumber",
         jar: j,
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       const response2 = await request.get({
         url: url + "/api/randomNumber",
         jar: j,
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       const response3 = await request.put({
         url: url + "/api/randomNumber",
         jar: j,
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       const response4 = await request.del({
         url: url + "/api/randomNumber",
         jar: j,
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
 
       expect(response1.headers["set-cookie"]).toBeTruthy();
@@ -567,9 +567,9 @@ describe("Server: Web", () => {
           inputs: {
             key: { required: true },
             query: { required: false },
-            randomKey: { required: false }
+            randomKey: { required: false },
           },
-          run: data => {
+          run: (data) => {
             if (data.params.key !== "value") {
               data.connection.rawConnection.responseHttpCode = 402;
               throw new ErrorWithCode("key != value");
@@ -608,8 +608,8 @@ describe("Server: Web", () => {
               }
             }
             data.response.good = true;
-          }
-        }
+          },
+        },
       };
 
       api.routes.loadRoutes();
@@ -641,7 +641,7 @@ describe("Server: Web", () => {
     test("status codes can be set for errors", async () => {
       try {
         await request.post(url + "/api/statusTestAction", {
-          form: { key: "bannana" }
+          form: { key: "bannana" },
         });
         throw new Error("should not get here");
       } catch (error) {
@@ -654,7 +654,7 @@ describe("Server: Web", () => {
     test("status code should still be 200 if everything is OK", async () => {
       const response = await request.post(url + "/api/statusTestAction", {
         form: { key: "value" },
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.statusCode).toEqual(200);
       const body = await toJson(response.body);
@@ -664,7 +664,7 @@ describe("Server: Web", () => {
       test("should work for 404 status code, set using custom error for invalid params", async () => {
         try {
           await request.post(url + "/api/statusTestAction", {
-            form: { key: "value", query: "guess" }
+            form: { key: "value", query: "guess" },
           });
           throw new Error("should not get here");
         } catch (error) {
@@ -677,7 +677,7 @@ describe("Server: Web", () => {
       test("should work for 402 status code set using custom error for invalid params", async () => {
         try {
           await request.post(url + "/api/statusTestAction", {
-            form: { key: "value", randomKey: "guessKey" }
+            form: { key: "value", randomKey: "guessKey" },
           });
           throw new Error("should not get here");
         } catch (error) {
@@ -694,7 +694,7 @@ describe("Server: Web", () => {
           url + "/api/statusTestAction",
           {
             form: { key: "value", query: "test" },
-            resolveWithFullResponse: true
+            resolveWithFullResponse: true,
           }
         );
         expect(responseWithQuery.statusCode).toEqual(200);
@@ -705,7 +705,7 @@ describe("Server: Web", () => {
           url + "/api/statusTestAction",
           {
             form: { key: "value", randomKey: "key1" },
-            resolveWithFullResponse: true
+            resolveWithFullResponse: true,
           }
         );
         expect(responseWithRandomKey.statusCode).toEqual(200);
@@ -716,7 +716,7 @@ describe("Server: Web", () => {
           url + "/api/statusTestAction",
           {
             form: { key: "value", query: "search", randomKey: "key2" },
-            resolveWithFullResponse: true
+            resolveWithFullResponse: true,
           }
         );
         expect(responseWithKeyAndQuery.statusCode).toEqual(200);
@@ -727,7 +727,7 @@ describe("Server: Web", () => {
       test("should not work for 999 status code set using custom error and default error code, 400 is thrown", async () => {
         try {
           await request.post(url + "/api/statusTestAction", {
-            form: { key: "value", randomKey: "expired-key" }
+            form: { key: "value", randomKey: "expired-key" },
           });
           throw new Error("should not get here");
         } catch (error) {
@@ -766,7 +766,7 @@ describe("Server: Web", () => {
   describe("files", () => {
     test("an HTML file", async () => {
       const response = await request.get(url + "/public/simple.html", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.statusCode).toEqual(200);
       expect(response.body).toContain("<h1>Actionhero</h1>");
@@ -786,8 +786,8 @@ describe("Server: Web", () => {
       const options = {
         url: url + "/" + file,
         headers: {
-          "if-modified-since": "Thu, 19 Apr 2012 09:51:20 GMT"
-        }
+          "if-modified-since": "Thu, 19 Apr 2012 09:51:20 GMT",
+        },
       };
 
       try {
@@ -811,7 +811,7 @@ describe("Server: Web", () => {
 
     test("index page should be served when requesting a path (trailing slash)", async () => {
       const response = await request.get(url + "/public/", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.statusCode).toEqual(200);
       expect(response.body).toMatch(
@@ -821,7 +821,7 @@ describe("Server: Web", () => {
 
     test("index page should be served when requesting a path (no trailing slash)", async () => {
       const response = await request.get(url + "/public", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.statusCode).toEqual(200);
       expect(response.body).toMatch(
@@ -907,7 +907,7 @@ describe("Server: Web", () => {
 
       test("works for secondary paths", async () => {
         const response = await request.get(url + "/public/tmpTestFile.html", {
-          resolveWithFullResponse: true
+          resolveWithFullResponse: true,
         });
         expect(response.statusCode).toEqual(200);
         expect(response.body).toContain("<h1>Actionhero</h1>");
@@ -927,10 +927,10 @@ describe("Server: Web", () => {
           description: "proxy header test",
           inputs: {},
           outputExample: {},
-          run: data => {
+          run: (data) => {
             data.connection.setHeader("X-Foo", "bar");
-          }
-        }
+          },
+        },
       };
 
       api.actions.versions.proxyStatusCode = [1];
@@ -942,16 +942,16 @@ describe("Server: Web", () => {
             code: {
               required: true,
               default: 200,
-              formatter: p => {
+              formatter: (p) => {
                 return parseInt(p);
-              }
-            }
+              },
+            },
           },
           outputExample: {},
-          run: data => {
+          run: (data) => {
             data.connection.setStatusCode(data.params.code);
-          }
-        }
+          },
+        },
       };
 
       api.actions.versions.pipe = [1];
@@ -960,35 +960,35 @@ describe("Server: Web", () => {
           name: "pipe",
           description: "pipe response test",
           inputs: {
-            mode: { required: true }
+            mode: { required: true },
           },
           outputExample: {},
-          run: data => {
+          run: (data) => {
             data.toRender = false;
             if (data.params.mode === "string") {
               data.connection.pipe("a string", { "custom-header": "cool" });
             } else if (data.params.mode === "buffer") {
               data.connection.pipe(Buffer.from("a buffer"), {
-                "custom-header": "still-cool"
+                "custom-header": "still-cool",
               });
             } else if (data.params.mode === "contentType") {
               data.connection.pipe("just some good, old-fashioned words", {
                 "Content-Type": "text/plain",
-                "custom-header": "words"
+                "custom-header": "words",
               });
             } else {
               throw new Error("I Do not know this mode");
             }
-          }
-        }
+          },
+        },
       };
 
       api.routes.loadRoutes({
         get: [
           { path: "/proxy", action: "proxyHeaders", apiVersion: 1 },
           { path: "/code", action: "proxyStatusCode", apiVersion: 1 },
-          { path: "/pipe", action: "pipe", apiVersion: 1 }
-        ]
+          { path: "/pipe", action: "pipe", apiVersion: 1 },
+        ],
       });
     });
 
@@ -1004,20 +1004,20 @@ describe("Server: Web", () => {
 
     test("actions handled by the web server support proxy for setHeaders", async () => {
       const response = await request.get(url + "/api/proxy", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.headers["x-foo"]).toEqual("bar");
     });
 
     test("actions handled by the web server support proxy for setting status code", async () => {
       const responseDefault = await request.get(url + "/api/proxyStatusCode", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(responseDefault.statusCode).toEqual(200);
 
       try {
         await request.get(url + "/api/proxyStatusCode?code=404", {
-          resolveWithFullResponse: true
+          resolveWithFullResponse: true,
         });
         throw new Error("should not get here");
       } catch (error) {
@@ -1027,7 +1027,7 @@ describe("Server: Web", () => {
 
     test("can pipe string responses with custom headers to clients", async () => {
       const response = await request.get(url + "/api/pipe?mode=string", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.headers["custom-header"]).toEqual("cool");
       expect(response.headers["content-length"]).toEqual("8");
@@ -1036,7 +1036,7 @@ describe("Server: Web", () => {
 
     test("can pipe buffer responses with custom headers to clients", async () => {
       const response = await request.get(url + "/api/pipe?mode=buffer", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.headers["custom-header"]).toEqual("still-cool");
       expect(response.headers["content-length"]).toEqual("8");

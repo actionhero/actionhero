@@ -29,7 +29,7 @@ loggers = config.logger.loggers.map((loggerBuilder: Function) => {
  * custom severity with a metadata object: `log('OH NO, something went wrong', 'warning', { error: new Error('things are busted') })`
  */
 export function log(message: string, severity: string = "info", data?: any) {
-  loggers.map(logger => {
+  loggers.map((logger) => {
     if (logger.levels[severity] === undefined) {
       severity = "info";
     }

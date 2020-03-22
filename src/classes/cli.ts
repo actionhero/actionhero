@@ -38,7 +38,7 @@ export abstract class CLI {
       name: null,
       description: this.name,
       example: "",
-      inputs: {}
+      inputs: {},
     };
   }
 

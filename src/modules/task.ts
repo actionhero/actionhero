@@ -330,7 +330,7 @@ export namespace task {
     const jobs = [];
     const loadedTasks = [];
 
-    Object.keys(api.tasks.tasks).forEach(taskName => {
+    Object.keys(api.tasks.tasks).forEach((taskName) => {
       const thisTask = api.tasks.tasks[taskName];
       if (thisTask.frequency > 0) {
         jobs.push(async () => {

@@ -21,15 +21,15 @@ jest.mock("./../../../../src/config/servers/web.ts", () => ({
           queryRouting: true,
           metadataOptions: {
             serverInformation: true,
-            requesterInformation: false
+            requesterInformation: false,
           },
           fingerprintOptions: {
-            cookieKey: "sessionID"
-          }
+            cookieKey: "sessionID",
+          },
         };
-      }
-    }
-  }
+      },
+    },
+  },
 }));
 
 describe("Server: Web", () => {
@@ -90,7 +90,7 @@ describe("Server: Web", () => {
 
         test("root route files still work", async () => {
           const response = await request.get(url + "/simple.html", {
-            resolveWithFullResponse: true
+            resolveWithFullResponse: true,
           });
           expect(response.statusCode).toEqual(200);
           expect(response.body).toContain("<h1>Actionhero</h1>");

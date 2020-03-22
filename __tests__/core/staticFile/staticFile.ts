@@ -59,7 +59,7 @@ describe("Core", () => {
 
     test("should send back the cache-control header", async () => {
       const response = await request.get(url + "/simple.html", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.statusCode).toEqual(200);
       expect(response.headers["cache-control"]).toBeTruthy();
@@ -67,7 +67,7 @@ describe("Core", () => {
 
     test("should send back the etag header", async () => {
       const response = await request.get(url + "/simple.html", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.statusCode).toEqual(200);
       expect(response.headers.etag).toBeTruthy();
@@ -75,14 +75,14 @@ describe("Core", () => {
 
     test('should send back a 304 if the header "if-modified-since" is present and condition matches', async () => {
       const response = await request.get(url + "/simple.html", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.statusCode).toEqual(200);
 
       try {
         await request(url + "/simple.html", {
           headers: { "If-Modified-Since": new Date().toUTCString() },
-          resolveWithFullResponse: true
+          resolveWithFullResponse: true,
         });
         throw new Error("should not get here");
       } catch (error) {
@@ -92,7 +92,7 @@ describe("Core", () => {
 
     test("should send back a 304 if the ETAG header is present", async () => {
       const response = await request.get(url + "/simple.html", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.statusCode).toEqual(200);
       expect(response.body).toContain("<h1>Actionhero</h1>");
@@ -101,7 +101,7 @@ describe("Core", () => {
       const etag = response.headers.etag;
       const options = {
         headers: { "If-None-Match": etag },
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       };
 
       try {
@@ -114,14 +114,14 @@ describe("Core", () => {
 
     test("should send a different etag for other files", async () => {
       const response = await request.get(url + "/simple.html", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.statusCode).toEqual(200);
       expect(response.headers.etag).toBeTruthy();
       const etag = response.headers.etag;
 
       const secondResponse = await request.get(url + "/index.html", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(secondResponse.statusCode).toEqual(200);
       expect(secondResponse.headers.etag).toBeTruthy();
@@ -131,7 +131,7 @@ describe("Core", () => {
 
     test('should send back the file if the header "if-modified-since" is present but condition does not match', async () => {
       const response = await request.get(url + "/simple.html", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.statusCode).toEqual(200);
       const lastModified = new Date(response.headers["last-modified"]);
@@ -141,9 +141,9 @@ describe("Core", () => {
         headers: {
           "If-Modified-Since": new Date(
             lastModified.getTime() - delay
-          ).toUTCString()
+          ).toUTCString(),
         },
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
 
       expect(secondResponse.statusCode).toEqual(200);
@@ -164,7 +164,7 @@ describe("Core", () => {
 
         test("closes all descriptors on statusCode 200 responses", async () => {
           const response = await request.get(url + "/simple.html", {
-            resolveWithFullResponse: true
+            resolveWithFullResponse: true,
           });
           expect(response.statusCode).toEqual(200);
           await utils.sleep(100);
@@ -175,7 +175,7 @@ describe("Core", () => {
           try {
             await request.get(url + "/simple.html", {
               headers: { "if-none-match": "*" },
-              resolveWithFullResponse: true
+              resolveWithFullResponse: true,
             });
             throw new Error("should return 304");
           } catch (error) {

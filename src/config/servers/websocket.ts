@@ -2,7 +2,7 @@
 
 export const DEFAULT = {
   servers: {
-    websocket: config => {
+    websocket: (config) => {
       return {
         enabled: true,
         // you can pass a FQDN (string) here or 'window.location.origin'
@@ -36,7 +36,7 @@ export const DEFAULT = {
         client: {
           apiPath: "/api", // the api base endpoint on your actionhero server
           // the cookie name we should use for shared authentication between WS and web connections
-          cookieKey: config.servers.web.fingerprintOptions.cookieKey
+          cookieKey: config.servers.web.fingerprintOptions.cookieKey,
           // reconnect:        {},
           // timeout:          10000,
           // ping:             25000,
@@ -47,8 +47,8 @@ export const DEFAULT = {
           // network:          true,
           // transport:        {},
           // queueSize:        Infinity,
-        }
+        },
       };
-    }
-  }
+    },
+  },
 };

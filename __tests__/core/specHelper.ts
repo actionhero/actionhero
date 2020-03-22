@@ -39,10 +39,10 @@ describe("Core: specHelper", () => {
           name: "stringResponseTestAction",
           description: "stringResponseTestAction",
           version: 1,
-          run: data => {
+          run: (data) => {
             data.response = "something response";
-          }
-        }
+          },
+        },
       };
 
       api.actions.versions.stringErrorTestAction = [1];
@@ -51,11 +51,11 @@ describe("Core: specHelper", () => {
           name: "stringErrorTestAction",
           description: "stringErrorTestAction",
           version: 1,
-          run: data => {
+          run: (data) => {
             data.response = "something response";
             throw new Error("some error");
-          }
-        }
+          },
+        },
       };
 
       api.actions.versions.arrayResponseTestAction = [1];
@@ -64,10 +64,10 @@ describe("Core: specHelper", () => {
           name: "arrayResponseTestAction",
           description: "arrayResponseTestAction",
           version: 1,
-          run: data => {
+          run: (data) => {
             data.response = [1, 2, 3];
-          }
-        }
+          },
+        },
       };
 
       api.actions.versions.arrayErrorTestAction = [1];
@@ -76,11 +76,11 @@ describe("Core: specHelper", () => {
           name: "arrayErrorTestAction",
           description: "arrayErrorTestAction",
           version: 1,
-          run: data => {
+          run: (data) => {
             data.response = [1, 2, 3];
             throw new Error("some error");
-          }
-        }
+          },
+        },
       };
     });
 
@@ -198,7 +198,7 @@ describe("Core: specHelper", () => {
 
     test("messageId can be configurable", async () => {
       const response = await specHelper.runAction("randomNumber", {
-        messageId: "aaa"
+        messageId: "aaa",
       });
       expect(response.messageId).toEqual("aaa");
     });
@@ -230,7 +230,7 @@ describe("Core: specHelper", () => {
       connection = await specHelper.buildConnection();
       connection.params = {
         key: "someKey",
-        value: "someValue"
+        value: "someValue",
       };
 
       connId = connection.id;
@@ -277,7 +277,7 @@ describe("Core: specHelper", () => {
         run: (api, params) => {
           taskRan = true;
           return "OK";
-        }
+        },
       };
 
       api.tasks.jobs.testTask = api.tasks.jobWrapper("testTask");

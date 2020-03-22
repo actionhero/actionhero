@@ -8,13 +8,13 @@ export class ValidationTest extends Action {
     this.inputs = {
       string: {
         required: true,
-        validator: param => {
+        validator: (param) => {
           return typeof param === "string";
-        }
-      }
+        },
+      },
     };
     this.outputExample = {
-      string: "imAString!"
+      string: "imAString!",
     };
   }
 

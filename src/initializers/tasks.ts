@@ -32,7 +32,7 @@ export class Tasks extends Initializer {
       tasks: {},
       jobs: {},
       middleware: {},
-      globalMiddleware: []
+      globalMiddleware: [],
     };
 
     api.tasks.loadFile = (fullFilePath: string, reload: boolean = false) => {
@@ -79,7 +79,7 @@ export class Tasks extends Initializer {
       }
 
       // load middleware into plugins
-      const processMiddleware = m => {
+      const processMiddleware = (m) => {
         if (api.tasks.middleware[m]) {
           //@ts-ignore
           class NodeResquePlugin extends Plugin {
@@ -115,7 +115,7 @@ export class Tasks extends Initializer {
       return {
         plugins,
         pluginOptions,
-        perform: async function() {
+        perform: async function () {
           const combinedArgs = [].concat(Array.prototype.slice.call(arguments));
           combinedArgs.push(this);
           let response = null;
@@ -129,17 +129,17 @@ export class Tasks extends Initializer {
             throw error;
           }
           return response;
-        }
+        },
       };
     };
 
-    api.tasks.loadTasks = reload => {
-      config.general.paths.task.forEach(p => {
+    api.tasks.loadTasks = (reload) => {
+      config.general.paths.task.forEach((p) => {
         utils
           .ensureNoTsHeaderFiles(
             glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"))
           )
-          .forEach(f => {
+          .forEach((f) => {
             api.tasks.loadFile(f, reload);
           });
       });
@@ -155,7 +155,7 @@ export class Tasks extends Initializer {
             glob.sync(path.join(pluginPath, "dist", "tasks", "**", "*.js"))
           );
 
-          utils.ensureNoTsHeaderFiles(files).forEach(f => {
+          utils.ensureNoTsHeaderFiles(files).forEach((f) => {
             api.tasks.loadFile(f, reload);
           });
         }

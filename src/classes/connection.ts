@@ -79,14 +79,14 @@ export class Connection {
     }
     this.connectedAt = new Date().getTime();
 
-    ["type", "rawConnection"].forEach(req => {
+    ["type", "rawConnection"].forEach((req) => {
       if (data[req] === null || data[req] === undefined) {
         throw new Error(`${req} is required to create a new connection object`);
       }
       this[req] = data[req];
     });
 
-    ["remotePort", "remoteIP"].forEach(req => {
+    ["remotePort", "remoteIP"].forEach((req) => {
       if (data[req] === null || data[req] === undefined) {
         if (config.general.enforceConnectionProperties === true) {
           throw new Error(
@@ -108,7 +108,7 @@ export class Connection {
       totalActions: 0,
       messageId: 0,
       canChat: false,
-      destroyed: false
+      destroyed: false,
     };
 
     for (const i in connectionDefaults) {
@@ -221,7 +221,7 @@ export class Connection {
       server.log("verb", "debug", {
         verb: verb,
         to: this.remoteIP,
-        params: JSON.stringify(words)
+        params: JSON.stringify(words),
       });
 
       // TODO: investigate allowedVerbs being an array of Constants or Symbols
@@ -282,7 +282,7 @@ export class Connection {
             connectedAt: this.connectedAt,
             rooms: this.rooms,
             totalActions: this.totalActions,
-            pendingActions: this.pendingActions
+            pendingActions: this.pendingActions,
           };
         case "documentation":
           return api.documentation.documentation;
