@@ -21,15 +21,15 @@ jest.mock("./../../../src/config/servers/web.ts", () => ({
           queryRouting: true,
           metadataOptions: {
             serverInformation: true,
-            requesterInformation: false
+            requesterInformation: false,
           },
           fingerprintOptions: {
-            cookieKey: "sessionID"
-          }
+            cookieKey: "sessionID",
+          },
         };
-      }
-    }
-  }
+      },
+    },
+  },
 }));
 
 describe("Server: Web", () => {

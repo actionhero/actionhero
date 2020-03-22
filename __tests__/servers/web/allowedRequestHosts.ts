@@ -22,15 +22,15 @@ jest.mock("./../../../src/config/servers/web.ts", () => ({
           queryRouting: true,
           metadataOptions: {
             serverInformation: true,
-            requesterInformation: false
+            requesterInformation: false,
           },
           fingerprintOptions: {
-            cookieKey: "sessionID"
-          }
+            cookieKey: "sessionID",
+          },
         };
-      }
-    }
-  }
+      },
+    },
+  },
 }));
 
 describe("Server: Web", () => {
@@ -49,7 +49,7 @@ describe("Server: Web", () => {
         await request.get({
           followRedirect: false,
           url: url + "/api/randomNumber",
-          headers: { Host: "lalala.site.com" }
+          headers: { Host: "lalala.site.com" },
         });
         throw new Error("should not get here");
       } catch (error) {
@@ -66,8 +66,8 @@ describe("Server: Web", () => {
         url: url + "/api/randomNumber",
         headers: {
           Host: "www.site.com",
-          "x-forwarded-proto": "https"
-        }
+          "x-forwarded-proto": "https",
+        },
       });
 
       expect(response).toMatch(/randomNumber/);

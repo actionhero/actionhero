@@ -11,7 +11,7 @@ export function sourceRelativeLinkPath(
   const pathsToTry = pluginPaths.slice(0);
   let pluginRoot;
 
-  pathsToTry.forEach(pluginPath => {
+  pathsToTry.forEach((pluginPath) => {
     const pluginPathAttempt = path.normalize(pluginPath + path.sep + name);
     try {
       const stats = fs.lstatSync(pluginPathAttempt);

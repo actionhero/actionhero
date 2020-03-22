@@ -87,7 +87,7 @@
     "start": "node ./dist/server.js",
     "build": "rm -rf dist && ./node_modules/.bin/tsc --sourceMap false --declaration",
     "docs": "typedoc --out docs --theme default --mode file",
-    "lint": "prettier --check src/**/*.ts __tests__/**/*.ts",
-    "pretty": "prettier --write src/**/*.ts __tests__/**/*.ts"
+    "lint": "prettier --check src/*/** __tests__/*/**",
+    "pretty": "prettier --write src/*/** __tests__/*/**"
   }
 }

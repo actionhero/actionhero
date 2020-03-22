@@ -7,7 +7,7 @@ import { CLI } from "./../../classes/cli";
 import { projectRoot } from "./../../classes/process/projectRoot";
 import {
   createDirSafely,
-  createFileSafely
+  createFileSafely,
 } from "../../modules/utils/fileUtils";
 
 export class Generate extends CLI {
@@ -50,7 +50,7 @@ export class Generate extends CLI {
       publicCss: "/public/css/cosmo.css",
       exampleTest: "/__tests__/template.ts.example",
       enLocale: "/locales/en.json",
-      gitignore: "/templates/gitignore.template"
+      gitignore: "/templates/gitignore.template",
     };
 
     for (const name in oldFileMap) {
@@ -106,8 +106,8 @@ export class Generate extends CLI {
       "/public/logo",
       "/__tests__",
       "/__tests__/actions",
-      "/__tests__/tasks"
-    ].forEach(dir => {
+      "/__tests__/tasks",
+    ].forEach((dir) => {
       try {
         const message = createDirSafely(projectRoot + dir);
         console.log(message);
@@ -140,7 +140,7 @@ export class Generate extends CLI {
       "/README.md": "readmeMd",
       "/__tests__/actions/status.ts": "exampleTest",
       "/locales/en.json": "enLocale",
-      "/.gitignore": "gitignore"
+      "/.gitignore": "gitignore",
     };
 
     for (const file in newFileMap) {
@@ -164,7 +164,7 @@ export class Generate extends CLI {
     documents.projectMap
       .toString()
       .split("\n")
-      .forEach(function(line) {
+      .forEach(function (line) {
         console.log(line);
       });
 

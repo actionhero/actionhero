@@ -4,7 +4,7 @@ import {
   utils,
   config,
   task,
-  specHelper
+  specHelper,
 } from "../../../src/index";
 
 const actionhero = new Process();
@@ -80,24 +80,24 @@ describe("Core: Tasks", () => {
             required: true,
             default: () => {
               return 2;
-            }
+            },
           },
           c: {
             required: true,
-            validator: p => {
+            validator: (p) => {
               if (p !== 3) {
                 throw new Error("nope");
               }
-            }
+            },
           },
           d: {
             required: true,
-            validator: p => {
+            validator: (p) => {
               if (p !== 4) {
                 return false;
               }
-            }
-          }
+            },
+          },
         };
       }
 
@@ -184,7 +184,7 @@ describe("Core: Tasks", () => {
 
   test("can run a task manually", async () => {
     const response = await specHelper.runTask("regularTask", {
-      word: "theWord"
+      word: "theWord",
     });
     expect(response).toEqual("theWord");
     expect(taskOutput[0]).toEqual("theWord");
@@ -192,7 +192,7 @@ describe("Core: Tasks", () => {
 
   test("can run a task fully", async () => {
     const response = await specHelper.runFullTask("regularTask", {
-      word: "theWord"
+      word: "theWord",
     });
     expect(response).toEqual("theWord");
     expect(taskOutput[0]).toEqual("theWord");
@@ -333,13 +333,13 @@ describe("Core: Tasks", () => {
     expect(timestamps).toHaveLength(1);
 
     const timestampsDeleted = await task.delDelayed(queue, "regularTask", {
-      word: "first"
+      word: "first",
     });
     expect(timestampsDeleted).toHaveLength(1);
     expect(timestampsDeleted).toEqual(timestamps);
 
     const timestampsDeletedAgain = await task.delDelayed(queue, "regularTask", {
-      word: "first"
+      word: "first",
     });
     expect(timestampsDeletedAgain).toHaveLength(0);
   });
@@ -412,7 +412,7 @@ describe("Core: Tasks", () => {
           global: false,
           preEnqueue: () => {
             throw new Error("You cannot enqueue me!");
-          }
+          },
         };
 
         task.addMiddleware(middleware);
@@ -425,7 +425,7 @@ describe("Core: Tasks", () => {
           middleware: ["test-middleware"],
           run: (params, worker) => {
             throw new Error("Should never get here");
-          }
+          },
         };
 
         api.tasks.jobs.middlewareTask = api.tasks.jobWrapper("middlewareTask");
@@ -451,7 +451,7 @@ describe("Core: Tasks", () => {
           name: "test-middleware",
           priority: 1000,
           global: false,
-          preProcessor: function() {
+          preProcessor: function () {
             const params = this.args[0];
 
             if (params.stop === true) {
@@ -468,10 +468,10 @@ describe("Core: Tasks", () => {
             this.worker.result.pre = true;
             return true;
           },
-          postProcessor: function() {
+          postProcessor: function () {
             this.worker.result.post = true;
             return true;
-          }
+          },
         };
 
         task.addMiddleware(middleware);
@@ -482,12 +482,12 @@ describe("Core: Tasks", () => {
           queue: "default",
           frequency: 0,
           middleware: ["test-middleware"],
-          run: function(params, worker) {
+          run: function (params, worker) {
             expect(params.test).toEqual(true);
             const result = worker.result;
             result.run = true;
             return result;
-          }
+          },
         };
 
         api.tasks.jobs.middlewareTask = api.tasks.jobWrapper("middlewareTask");
@@ -500,7 +500,7 @@ describe("Core: Tasks", () => {
 
       test("can modify parameters before a task and modify result after task completion", async () => {
         const result = await specHelper.runFullTask("middlewareTask", {
-          foo: "bar"
+          foo: "bar",
         });
         expect(result.run).toEqual(true);
         expect(result.pre).toEqual(true);
@@ -517,7 +517,7 @@ describe("Core: Tasks", () => {
 
       test("can prevent the running of a task with return value", async () => {
         const result = await specHelper.runFullTask("middlewareTask", {
-          stop: true
+          stop: true,
         });
         expect(result).toBeUndefined();
       });

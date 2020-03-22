@@ -13,7 +13,7 @@ export class GenerateInitializer extends CLI {
       name: { required: true },
       loadPriority: { required: true, default: 1000 },
       startPriority: { required: true, default: 1000 },
-      stopPriority: { required: true, default: 1000 }
+      stopPriority: { required: true, default: 1000 },
     };
   }
 
@@ -23,7 +23,7 @@ export class GenerateInitializer extends CLI {
     );
     let template = String(templateBuffer);
 
-    ["name", "loadPriority", "startPriority", "stopPriority"].forEach(v => {
+    ["name", "loadPriority", "startPriority", "stopPriority"].forEach((v) => {
       const regex = new RegExp("%%" + v + "%%", "g");
       template = template.replace(regex, params[v]);
     });

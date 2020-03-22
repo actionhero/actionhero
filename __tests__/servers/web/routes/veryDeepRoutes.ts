@@ -21,15 +21,15 @@ jest.mock("./../../../../src/config/servers/web.ts", () => ({
           queryRouting: true,
           metadataOptions: {
             serverInformation: true,
-            requesterInformation: false
+            requesterInformation: false,
           },
           fingerprintOptions: {
-            cookieKey: "sessionID"
-          }
+            cookieKey: "sessionID",
+          },
         };
-      }
-    }
-  }
+      },
+    },
+  },
 }));
 
 describe("Server: Web", () => {
@@ -73,7 +73,7 @@ describe("Server: Web", () => {
 
         test("can ask for nested URL files", async () => {
           const response = await request.get(url + "/a/b/c/simple.html", {
-            resolveWithFullResponse: true
+            resolveWithFullResponse: true,
           });
           expect(response.statusCode).toEqual(200);
           expect(response.body).toContain("<h1>Actionhero</h1>");
@@ -81,14 +81,14 @@ describe("Server: Web", () => {
 
         test("can ask for nested URL files with depth", async () => {
           const response = await request.get(url + "/a/b/c/css/cosmo.css", {
-            resolveWithFullResponse: true
+            resolveWithFullResponse: true,
           });
           expect(response.statusCode).toEqual(200);
         });
 
         test("root route files still work", async () => {
           const response = await request.get(url + "/simple.html", {
-            resolveWithFullResponse: true
+            resolveWithFullResponse: true,
           });
           expect(response.statusCode).toEqual(200);
           expect(response.body).toContain("<h1>Actionhero</h1>");

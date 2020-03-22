@@ -11,7 +11,7 @@ export class GenerateAction extends CLI {
       "actionhero generate action --name=[name] --description=[description]";
     this.inputs = {
       name: { required: true },
-      description: { required: true, default: "an actionhero action" }
+      description: { required: true, default: "an actionhero action" },
     };
   }
 
@@ -26,7 +26,7 @@ export class GenerateAction extends CLI {
     );
     let testTemplate = testTemplateBuffer.toString();
 
-    ["name", "description"].forEach(v => {
+    ["name", "description"].forEach((v) => {
       const regex = new RegExp("%%" + v + "%%", "g");
       actionTemplate = actionTemplate.replace(regex, params[v]);
       testTemplate = testTemplate.replace(regex, params[v]);
