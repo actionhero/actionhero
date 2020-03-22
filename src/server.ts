@@ -8,7 +8,7 @@ async function main() {
   const app = new Process();
 
   // handle unix signals and uncaught exceptions & rejections
-  app.registerProcessSignals(exitCode => {
+  app.registerProcessSignals((exitCode) => {
     process.exit(exitCode);
   });
 
