@@ -21,7 +21,7 @@ describe("Action", () => {
 
     test("fails with a number", async () => {
       const { error } = await specHelper.runAction("validationTest", {
-        string: 87
+        string: 87,
       });
       expect(error).toEqual(
         'Error: Input for parameter "string" failed validation!'

@@ -7,7 +7,6 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-
     "actionhero": "%%versionNumber%%",
     "ws": "latest",
     "ioredis": "latest",
@@ -24,14 +23,15 @@
   },
   "scripts": {
     "postinstall": "npm run build",
-    "dev": "ts-node-dev --no-deps --transpile-only ./node_modules/.bin/actionhero start",
-    "start": "actionhero start",
+    "dev": "ts-node-dev --no-deps --transpile-only ./src/server",
+    "debug": "ts-node-dev --transpile-only --no-deps --inspect -- ./src/server ",
+    "start": "node ./dist/server.js",
     "actionhero": "actionhero",
     "test": "jest",
     "pretest": "npm run build && npm run lint",
-    "build": "tsc --declaration",
-    "lint": "prettier --check src/*/** __test__/*/**",
-    "pretty": "prettier --write src/*/** __test__/*/**"
+    "build": "tsc --sourceMap false --declaration",
+    "lint": "prettier --check src/*/** __tests__/*/**",
+    "pretty": "prettier --write src/*/** __tests__/*/**"
   },
   "jest": {
     "testEnvironment": "node",

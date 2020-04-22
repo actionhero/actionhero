@@ -3,7 +3,7 @@ import {
   config,
   utils,
   specHelper,
-  chatRoom
+  chatRoom,
 } from "./../../src/index";
 
 const actionhero = new Process();
@@ -88,7 +88,7 @@ describe("Core", () => {
           "Hi",
           "from",
           "client",
-          "1"
+          "1",
         ]);
         await utils.sleep(100);
 
@@ -143,7 +143,7 @@ describe("Core", () => {
         await chatRoom.add("newRoom");
         const rooms = await chatRoom.list();
         expect(rooms).toHaveLength(3);
-        ["defaultRoom", "newRoom", "otherRoom"].forEach(r => {
+        ["defaultRoom", "newRoom", "otherRoom"].forEach((r) => {
           expect(rooms.indexOf(r)).toBeGreaterThan(-1);
         });
       });
@@ -263,11 +263,11 @@ describe("Core", () => {
         });
 
         test("generateMessagePayload can be overloaded", async () => {
-          api.chatRoom.generateMessagePayload = message => {
+          api.chatRoom.generateMessagePayload = (message) => {
             return {
               thing: "stuff",
               room: message.connection.room,
-              from: message.connection.id
+              from: message.connection.id,
             };
           };
 
@@ -284,23 +284,23 @@ describe("Core", () => {
           chatRoom.addMiddleware({
             name: "add chat middleware",
             join: async (connection, room) => {
-              await api.chatRoom.broadcast(
+              await chatRoom.broadcast(
                 {},
                 room,
                 `I have entered the room: ${connection.id}`
               );
-            }
+            },
           });
 
           chatRoom.addMiddleware({
             name: "leave chat middleware",
             leave: async (connection, room) => {
-              await api.chatRoom.broadcast(
+              await chatRoom.broadcast(
                 {},
                 room,
                 `I have left the room: ${connection.id}`
               );
-            }
+            },
           });
 
           await clientA.verbs("roomAdd", "defaultRoom");
@@ -324,7 +324,7 @@ describe("Core", () => {
                 messagePayload.message = "something else";
               }
               return messagePayload;
-            }
+            },
           });
 
           await clientA.verbs("roomAdd", "defaultRoom");
@@ -343,7 +343,7 @@ describe("Core", () => {
             say: (connection, room, messagePayload, callback) => {
               messagePayload.message = "MIDDLEWARE 1";
               return messagePayload;
-            }
+            },
           });
 
           chatRoom.addMiddleware({
@@ -352,7 +352,7 @@ describe("Core", () => {
             say: (connection, room, messagePayload) => {
               messagePayload.message = messagePayload.message + " MIDDLEWARE 2";
               return messagePayload;
-            }
+            },
           });
 
           await clientA.verbs("roomAdd", "defaultRoom");
@@ -369,7 +369,7 @@ describe("Core", () => {
             name: "chat middleware",
             say: (connection, room, messagePayload) => {
               throw new Error("messages blocked");
-            }
+            },
           });
 
           await clientA.verbs("roomAdd", "defaultRoom");
@@ -387,7 +387,7 @@ describe("Core", () => {
             name: "chat middleware",
             join: (connection, room) => {
               throw new Error("joining rooms blocked");
-            }
+            },
           });
 
           try {
@@ -404,7 +404,7 @@ describe("Core", () => {
             name: "chat middleware",
             leave: (connection, room) => {
               throw new Error("Hotel California");
-            }
+            },
           });
 
           const didJoin = await clientA.verbs("roomAdd", "defaultRoom");
@@ -429,7 +429,7 @@ describe("Core", () => {
                 messagePayload.message = "something else";
               }
               return messagePayload;
-            }
+            },
           });
           await clientA.verbs("roomAdd", "defaultRoom");
           await clientB.verbs("roomAdd", "defaultRoom");
@@ -446,7 +446,7 @@ describe("Core", () => {
             say: async (connection, room, messagePayload, callback) => {
               messagePayload.message = "MIDDLEWARE 1";
               return messagePayload;
-            }
+            },
           });
 
           chatRoom.addMiddleware({
@@ -455,7 +455,7 @@ describe("Core", () => {
             say: async (connection, room, messagePayload) => {
               messagePayload.message = messagePayload.message + " MIDDLEWARE 2";
               return messagePayload;
-            }
+            },
           });
 
           await clientA.verbs("roomAdd", "defaultRoom");
@@ -472,7 +472,7 @@ describe("Core", () => {
             name: "chat middleware",
             say: async (connection, room, messagePayload) => {
               throw new Error("messages blocked");
-            }
+            },
           });
 
           await clientA.verbs("roomAdd", "defaultRoom");
@@ -490,7 +490,7 @@ describe("Core", () => {
             name: "chat middleware",
             join: async (connection, room) => {
               throw new Error("joining rooms blocked");
-            }
+            },
           });
 
           try {
@@ -507,7 +507,7 @@ describe("Core", () => {
             name: "chat middleware",
             leave: async (connection, room) => {
               throw new Error("Hotel California");
-            }
+            },
           });
 
           const didJoin = await clientA.verbs("roomAdd", "defaultRoom");

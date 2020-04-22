@@ -13,7 +13,7 @@ describe("Test: RunAction", () => {
 
   test("can run the task manually", async () => {
     const { randomNumber } = await specHelper.runTask("runAction", {
-      action: "randomNumber"
+      action: "randomNumber",
     });
     expect(randomNumber).toBeGreaterThanOrEqual(0);
     expect(randomNumber).toBeLessThan(1);

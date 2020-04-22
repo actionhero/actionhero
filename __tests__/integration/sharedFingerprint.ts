@@ -47,7 +47,7 @@ describe("Integration: Web Server + Websocket Socket shared fingerprint", () => 
   test("should exist when web server been called", async () => {
     const body = await request.get({
       uri: url + "/api/randomNumber",
-      json: true
+      json: true,
     });
     fingerprint = body.requesterInformation.fingerprint;
     const query = `${config.servers.web.fingerprintOptions.cookieKey}=${fingerprint}`;

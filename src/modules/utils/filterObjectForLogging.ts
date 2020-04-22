@@ -21,7 +21,7 @@ export function filterObjectForLogging(params: object): { [key: string]: any } {
       filteredParams[i] = params[i];
     }
   }
-  config.general.filteredParams.forEach(configParam => {
+  config.general.filteredParams.forEach((configParam) => {
     if (dotProp.get(params, configParam) !== undefined) {
       dotProp.set(filteredParams, configParam, "[FILTERED]");
     }

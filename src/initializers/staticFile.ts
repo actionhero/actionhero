@@ -49,7 +49,7 @@ export class StaticFile extends Initializer {
 
   async initialize(config) {
     api.staticFile = {
-      searchLocations: []
+      searchLocations: [],
     };
 
     /**
@@ -116,7 +116,7 @@ export class StaticFile extends Initializer {
         const fileStream = fs.createReadStream(file);
         api.staticFile.fileLogger(fileStream, connection, start, file, length);
 
-        await new Promise(resolve => {
+        await new Promise((resolve) => {
           fileStream.on("open", () => {
             resolve();
           });
@@ -143,7 +143,7 @@ export class StaticFile extends Initializer {
         api.staticFile.logRequest(file, connection, length, duration, true);
       });
 
-      fileStream.on("error", error => {
+      fileStream.on("error", (error) => {
         throw error;
       });
     };
@@ -155,11 +155,11 @@ export class StaticFile extends Initializer {
         connection,
         error: await config.errors.fileNotFound(connection),
         mime: "text/html",
-        length: await config.errors.fileNotFound(connection).length
+        length: await config.errors.fileNotFound(connection).length,
       };
     };
 
-    api.staticFile.checkExistence = async file => {
+    api.staticFile.checkExistence = async (file) => {
       try {
         const stats = await asyncStats(file);
 
@@ -197,13 +197,13 @@ export class StaticFile extends Initializer {
         requestedFile: connection.params.file,
         size: length,
         duration: duration,
-        success: success
+        success: success,
       });
     };
 
     // load in the explicit public paths first
     if (config.general.paths !== undefined) {
-      config.general.paths.public.forEach(function(p) {
+      config.general.paths.public.forEach(function (p) {
         api.staticFile.searchLocations.push(path.normalize(p));
       });
     }

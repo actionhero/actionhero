@@ -4,7 +4,7 @@ import {
   utils,
   config,
   task,
-  specHelper
+  specHelper,
 } from "../../../src/index";
 
 const actionhero = new Process();
@@ -67,22 +67,66 @@ describe("Core: Tasks", () => {
       }
     }
 
+    class TaskWithInputs extends Task {
+      constructor() {
+        super();
+        this.name = "taskWithInputs";
+        this.description = "task: taskWithInputs";
+        this.queue = queue;
+        this.frequency = 0;
+        this.inputs = {
+          a: { required: true, default: 1 },
+          b: {
+            required: true,
+            default: () => {
+              return 2;
+            },
+          },
+          c: {
+            required: true,
+            validator: (p) => {
+              if (p !== 3) {
+                throw new Error("nope");
+              }
+            },
+          },
+          d: {
+            required: true,
+            validator: (p) => {
+              if (p !== 4) {
+                return false;
+              }
+            },
+          },
+        };
+      }
+
+      async run(params) {
+        taskOutput.push("taskWithInputs");
+        return "taskWithInputs";
+      }
+    }
+
     api.tasks.tasks.regularTask = new RegularTask();
     api.tasks.tasks.periodicTask = new PeriodicTask();
     api.tasks.tasks.slowTask = new SlowTask();
+    api.tasks.tasks.taskWithInputs = new TaskWithInputs();
 
     api.tasks.jobs.regularTask = api.tasks.jobWrapper("regularTask");
     api.tasks.jobs.periodicTask = api.tasks.jobWrapper("periodicTask");
     api.tasks.jobs.slowTask = api.tasks.jobWrapper("slowTask");
+    api.tasks.jobs.taskWithInputs = api.tasks.jobWrapper("taskWithInputs");
   });
 
   afterAll(async () => {
     delete api.tasks.tasks.regularTask;
     delete api.tasks.tasks.periodicTask;
     delete api.tasks.tasks.slowTask;
+    delete api.tasks.tasks.taskWithInputs;
     delete api.tasks.jobs.regularTask;
     delete api.tasks.jobs.periodicTask;
     delete api.tasks.jobs.slowTask;
+    delete api.tasks.jobs.taskWithInputs;
 
     config.tasks.queues = [];
 
@@ -129,10 +173,8 @@ describe("Core: Tasks", () => {
     }
   });
 
-  // test('will clear crashed workers when booting') // TODO
-
   test("setup worked", () => {
-    expect(Object.keys(api.tasks.tasks)).toHaveLength(3 + 1);
+    expect(Object.keys(api.tasks.tasks)).toHaveLength(4 + 1);
   });
 
   test("all queues should start empty", async () => {
@@ -142,7 +184,7 @@ describe("Core: Tasks", () => {
 
   test("can run a task manually", async () => {
     const response = await specHelper.runTask("regularTask", {
-      word: "theWord"
+      word: "theWord",
     });
     expect(response).toEqual("theWord");
     expect(taskOutput[0]).toEqual("theWord");
@@ -150,7 +192,7 @@ describe("Core: Tasks", () => {
 
   test("can run a task fully", async () => {
     const response = await specHelper.runFullTask("regularTask", {
-      word: "theWord"
+      word: "theWord",
     });
     expect(response).toEqual("theWord");
     expect(taskOutput[0]).toEqual("theWord");
@@ -291,13 +333,13 @@ describe("Core: Tasks", () => {
     expect(timestamps).toHaveLength(1);
 
     const timestampsDeleted = await task.delDelayed(queue, "regularTask", {
-      word: "first"
+      word: "first",
     });
     expect(timestampsDeleted).toHaveLength(1);
     expect(timestampsDeleted).toEqual(timestamps);
 
     const timestampsDeletedAgain = await task.delDelayed(queue, "regularTask", {
-      word: "first"
+      word: "first",
     });
     expect(timestampsDeletedAgain).toHaveLength(0);
   });
@@ -311,6 +353,56 @@ describe("Core: Tasks", () => {
     expect(count).toEqual(2);
   });
 
+  describe("input validation", () => {
+    test("tasks which provide input can be enqueued", async () => {
+      await expect(task.enqueue("taskWithInputs", {})).rejects.toThrow(
+        /input for task/
+      );
+
+      await task.enqueue("taskWithInputs", { a: 1, b: 2, c: 3, d: 4 }); // does not throw
+    });
+
+    test("tasks which provide input can be enqueuedAt", async () => {
+      await expect(task.enqueueIn(1, "taskWithInputs", {})).rejects.toThrow(
+        /input for task/
+      );
+
+      await task.enqueueIn(1, "taskWithInputs", { a: 1, b: 2, c: 3, d: 4 }); // does not throw
+    });
+
+    test("tasks which provide input can be enqueuedIn", async () => {
+      await expect(task.enqueueAt(1, "taskWithInputs", {})).rejects.toThrow(
+        /input for task/
+      );
+
+      await task.enqueueAt(1, "taskWithInputs", { a: 1, b: 2, c: 3, d: 4 }); // does not throw
+    });
+
+    test("defaults can be provided (via literal)", async () => {
+      await task.enqueue("taskWithInputs", { b: 2, c: 3, d: 4 });
+      const enqueuedTask = await specHelper.findEnqueuedTasks("taskWithInputs");
+      expect(enqueuedTask[0].args[0]).toEqual({ a: 1, b: 2, c: 3, d: 4 });
+    });
+
+    test("defaults can be provided (via function)", async () => {
+      await task.enqueue("taskWithInputs", { a: 1, c: 3, d: 4 });
+      const enqueuedTask = await specHelper.findEnqueuedTasks("taskWithInputs");
+      expect(enqueuedTask[0].args[0]).toEqual({ a: 1, b: 2, c: 3, d: 4 });
+    });
+
+    test("validation will fail with input that does not match the validation method (via throw)", async () => {
+      await expect(
+        task.enqueue("taskWithInputs", { a: 1, b: 2, c: -1, d: 4 })
+      ).rejects.toThrow(/nope/);
+    });
+
+    test("validation will fail with input that does not match the validation method (via false)", async () => {
+      await expect(
+        task.enqueue("taskWithInputs", { a: 1, b: 2, c: 3, d: -1 })
+      ).rejects.toThrow(/-1 is not a valid value for d in task taskWithInputs/);
+    });
+  });
+
   describe("middleware", () => {
     describe("enqueue modification", () => {
       beforeAll(async () => {
@@ -320,7 +412,7 @@ describe("Core: Tasks", () => {
           global: false,
           preEnqueue: () => {
             throw new Error("You cannot enqueue me!");
-          }
+          },
         };
 
         task.addMiddleware(middleware);
@@ -333,7 +425,7 @@ describe("Core: Tasks", () => {
           middleware: ["test-middleware"],
           run: (params, worker) => {
             throw new Error("Should never get here");
-          }
+          },
         };
 
         api.tasks.jobs.middlewareTask = api.tasks.jobWrapper("middlewareTask");
@@ -359,7 +451,7 @@ describe("Core: Tasks", () => {
           name: "test-middleware",
           priority: 1000,
           global: false,
-          preProcessor: function() {
+          preProcessor: function () {
             const params = this.args[0];
 
             if (params.stop === true) {
@@ -376,10 +468,10 @@ describe("Core: Tasks", () => {
             this.worker.result.pre = true;
             return true;
           },
-          postProcessor: function() {
+          postProcessor: function () {
             this.worker.result.post = true;
             return true;
-          }
+          },
         };
 
         task.addMiddleware(middleware);
@@ -390,12 +482,12 @@ describe("Core: Tasks", () => {
           queue: "default",
           frequency: 0,
           middleware: ["test-middleware"],
-          run: function(params, worker) {
+          run: function (params, worker) {
             expect(params.test).toEqual(true);
             const result = worker.result;
             result.run = true;
             return result;
-          }
+          },
         };
 
         api.tasks.jobs.middlewareTask = api.tasks.jobWrapper("middlewareTask");
@@ -408,7 +500,7 @@ describe("Core: Tasks", () => {
 
       test("can modify parameters before a task and modify result after task completion", async () => {
         const result = await specHelper.runFullTask("middlewareTask", {
-          foo: "bar"
+          foo: "bar",
         });
         expect(result.run).toEqual(true);
         expect(result.pre).toEqual(true);
@@ -425,7 +517,7 @@ describe("Core: Tasks", () => {
 
       test("can prevent the running of a task with return value", async () => {
         const result = await specHelper.runFullTask("middlewareTask", {
-          stop: true
+          stop: true,
         });
         expect(result).toBeUndefined();
       });

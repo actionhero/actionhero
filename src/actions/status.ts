@@ -17,7 +17,7 @@ module.exports = class Status extends Action {
     this.outputExample = {
       id: "192.168.2.11",
       actionheroVersion: "9.4.1",
-      uptime: 10469
+      uptime: 10469,
     };
   }
 
@@ -30,7 +30,7 @@ module.exports = class Status extends Action {
       data.response.problems.push(
         data.connection.localize([
           "Using more than {{maxMemoryAlloted}} MB of RAM/HEAP",
-          { maxMemoryAlloted: maxMemoryAlloted }
+          { maxMemoryAlloted: maxMemoryAlloted },
         ])
       );
     }
@@ -39,7 +39,7 @@ module.exports = class Status extends Action {
   async checkResqueQueues(data) {
     const details = await task.details();
     let length = 0;
-    Object.keys(details.queues).forEach(q => {
+    Object.keys(details.queues).forEach((q) => {
       length += details.queues[q].length;
     });
 
@@ -50,7 +50,7 @@ module.exports = class Status extends Action {
       data.response.problems.push(
         data.connection.localize([
           "Resque Queues over {{maxResqueQueueLength}} jobs",
-          { maxResqueQueueLength: maxResqueQueueLength }
+          { maxResqueQueueLength: maxResqueQueueLength },
         ])
       );
     }

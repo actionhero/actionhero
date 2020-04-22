@@ -23,8 +23,8 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
       id,
       typescript,
       projectRoot,
-      actionheroVersion
-    }
+      actionheroVersion,
+    },
   };
 
   utils.hashMerge(config, _startingParams);
@@ -55,13 +55,13 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
         }
       }
     } else if (Array.isArray(pathToCheck)) {
-      pathToCheck.map(entry => {
+      pathToCheck.map((entry) => {
         addConfigPath(entry, alreadySplit);
       });
     }
   }
 
-  [argv.config, process.env.ACTIONHERO_CONFIG].map(entry => {
+  [argv.config, process.env.ACTIONHERO_CONFIG].map((entry) => {
     addConfigPath(entry, false);
   });
 
@@ -93,7 +93,7 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
         localRoutes = utils.hashMerge(localRoutes, localConfig[env], config);
       }
 
-      Object.keys(localRoutes.routes).forEach(v => {
+      Object.keys(localRoutes.routes).forEach((v) => {
         if (config.routes && config.routes[v]) {
           config.routes[v].push(...localRoutes.routes[v]);
         } else {
@@ -138,7 +138,7 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
         // indicating inability to progress
         loadErrors[f] = { error: error, msg: error.toString() };
         if (++loadRetries === limit - i) {
-          Object.keys(loadErrors).forEach(e => {
+          Object.keys(loadErrors).forEach((e) => {
             console.log(loadErrors[e].error.stack);
             console.log("");
             delete loadErrors[e].error;
@@ -164,12 +164,12 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
     // Remove duplicate routes since we might be loading from multiple config directories, also we load every
     // config directory twice.
     if (config.routes) {
-      Object.keys(config.routes).forEach(v => {
+      Object.keys(config.routes).forEach((v) => {
         config.routes[v] = config.routes[v].filter(
           (route, index, self) =>
             index ===
             self.findIndex(
-              r =>
+              (r) =>
                 r.path === route.path &&
                 r.action === route.action &&
                 r.apiVersion === route.apiVersion &&
@@ -185,7 +185,7 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
   loadConfigDirectory(path.join(__dirname, "/../config"), false);
 
   // load the project specific config
-  configPaths.map(p => loadConfigDirectory(p, false));
+  configPaths.map((p) => loadConfigDirectory(p, false));
 
   // apply any configChanges
   if (_startingParams && _startingParams.configChanges) {

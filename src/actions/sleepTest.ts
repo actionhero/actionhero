@@ -1,7 +1,7 @@
 import { api, Action } from "./../index";
 
 function sleep(time: number): Promise<void> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(resolve, time);
   });
 }
@@ -14,19 +14,19 @@ export class SleepTest extends Action {
     this.inputs = {
       sleepDuration: {
         required: true,
-        formatter: n => {
+        formatter: (n) => {
           return parseInt(n);
         },
         default: () => {
           return 1000;
-        }
-      }
+        },
+      },
     };
     this.outputExample = {
       sleepStarted: 1420953571322,
       sleepEnded: 1420953572327,
       sleepDelta: 1005,
-      sleepDuration: 1000
+      sleepDuration: 1000,
     };
   }
 

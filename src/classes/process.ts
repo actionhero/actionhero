@@ -108,7 +108,7 @@ export class Process {
     initializerFiles = utils.arrayUnique(initializerFiles);
     initializerFiles = utils.ensureNoTsHeaderFiles(initializerFiles);
 
-    initializerFiles.forEach(f => {
+    initializerFiles.forEach((f) => {
       const file = path.normalize(f);
       delete require.cache[require.resolve(file)];
 
@@ -228,13 +228,13 @@ export class Process {
     });
 
     // flatten all the ordered initializer methods
-    this.loadInitializers = this.flattenOrderedInitialzer(
+    this.loadInitializers = this.flattenOrderedInitializer(
       loadInitializerRankings
     );
-    this.startInitializers = this.flattenOrderedInitialzer(
+    this.startInitializers = this.flattenOrderedInitializer(
       startInitializerRankings
     );
-    this.stopInitializers = this.flattenOrderedInitialzer(
+    this.stopInitializers = this.flattenOrderedInitializer(
       stopInitializerRankings
     );
 
@@ -257,16 +257,16 @@ export class Process {
     this.running = true;
     api.running = true;
     log(`environment: ${env}`, "notice");
-    log("*** Starting ActionHero ***", "info");
+    log("*** Starting Actionhero ***", "info");
 
     this.startInitializers.push(() => {
       this.bootTime = new Date().getTime();
       if (this.startCount === 0) {
         log(`server ID: ${id}`, "notice");
-        log("*** ActionHero Started ***", "notice");
+        log("*** Actionhero Started ***", "notice");
         this.startCount++;
       } else {
-        log("*** ActionHero Restarted ***", "notice");
+        log("*** Actionhero Restarted ***", "notice");
       }
     });
 
@@ -290,7 +290,7 @@ export class Process {
 
       this.stopInitializers.push(async () => {
         clearPidFile();
-        log("*** ActionHero Stopped ***", "notice");
+        log("*** Actionhero Stopped ***", "notice");
         delete this.shuttingDown;
         // reset initializers to prevent duplicate check on restart
         this.initializers = {};
@@ -307,7 +307,7 @@ export class Process {
       // double sigterm; ignore it
     } else {
       const message = "Cannot shut down actionhero, not running";
-      log(message, "error");
+      log(message, "crit");
     }
   }
 
@@ -321,6 +321,70 @@ export class Process {
     return api;
   }
 
+  /**
+   * Register listeners for process signals and uncaught exceptions & rejections.
+   * Try to gracefully shut down when signaled to do so
+   */
+  registerProcessSignals(stopCallback = (exitCode?: number) => {}) {
+    const timeout = process.env.ACTIONHERO_SHUTDOWN_TIMEOUT
+      ? parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT)
+      : 1000 * 30;
+
+    function awaitHardStop() {
+      return setTimeout(() => {
+        console.error(
+          `Process did not terminate within ${timeout}ms. Stopping now!`
+        );
+        process.nextTick(process.exit(1));
+      }, timeout);
+    }
+
+    // handle errors & rejections
+    process.once("uncaughtException", async (error: Error) => {
+      log(`UNCAUGHT EXCEPTION: ` + error.stack, "fatal");
+      if (!this.shuttingDown === true) {
+        let timer = awaitHardStop();
+        await this.stop();
+        clearTimeout(timer);
+        stopCallback(1);
+      }
+    });
+
+    process.once("unhandledRejection", async (rejection: Error) => {
+      log(`UNHANDLED REJECTION: ` + rejection.stack, "fatal");
+      if (!this.shuttingDown === true) {
+        let timer = awaitHardStop();
+        await this.stop();
+        clearTimeout(timer);
+        stopCallback(1);
+      }
+    });
+
+    // handle signals
+    process.on("SIGINT", async () => {
+      log(`[ SIGNAL ] - SIGINT`, "notice");
+      let timer = awaitHardStop();
+      await this.stop();
+      clearTimeout(timer);
+      stopCallback(0);
+    });
+
+    process.on("SIGTERM", async () => {
+      log(`[ SIGNAL ] - SIGTERM`, "notice");
+      let timer = awaitHardStop();
+      await this.stop();
+      clearTimeout(timer);
+      stopCallback(0);
+    });
+
+    process.on("SIGUSR2", async () => {
+      log(`[ SIGNAL ] - SIGUSR2`, "notice");
+      let timer = awaitHardStop();
+      await this.restart();
+      clearTimeout(timer);
+    });
+  }
+
   // HELPERS
   async fatalError(errors, type) {
     if (errors && !(errors instanceof Array)) {
@@ -329,7 +393,7 @@ export class Process {
     if (errors) {
       log(`Error with initializer step: ${JSON.stringify(type)}`, "emerg");
 
-      errors.forEach(error => {
+      errors.forEach((error) => {
         log(error.stack, "emerg");
       });
 
@@ -340,15 +404,15 @@ export class Process {
     }
   }
 
-  flattenOrderedInitialzer(collection: any) {
+  flattenOrderedInitializer(collection: any) {
     const output = [];
     const keys = [];
     for (const key in collection) {
       keys.push(parseInt(key));
     }
     keys.sort(sortNumber);
-    keys.forEach(key => {
-      collection[key].forEach(d => {
+    keys.forEach((key) => {
+      collection[key].forEach((d) => {
         output.push(d);
       });
     });

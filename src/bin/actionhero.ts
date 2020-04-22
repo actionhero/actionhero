@@ -31,21 +31,6 @@ function determineProjectRoot() {
 const projectRoot = determineProjectRoot();
 
 (async () => {
-  const bootFilePaths = [
-    `${projectRoot}/boot.js`,
-    `${projectRoot}/dist/boot.js`
-  ];
-
-  for (const i in bootFilePaths) {
-    const bootFile = bootFilePaths[i];
-    if (fs.existsSync(bootFile)) {
-      const Exports = require(bootFile);
-      await Exports[Object.keys(Exports)[0]]();
-    }
-  }
-
-  const actionheroRoot = path.normalize(path.join(__dirname, ".."));
-
   const formatParams = (runner: Runner) => {
     const params: any = {};
 
@@ -53,7 +38,7 @@ const projectRoot = determineProjectRoot();
       runner.inputs = {};
     }
 
-    Object.keys(runner.inputs).forEach(inputName => {
+    Object.keys(runner.inputs).forEach((inputName) => {
       const collection = runner.inputs[inputName];
       let value = optimist.argv[inputName];
 
@@ -196,7 +181,7 @@ const projectRoot = determineProjectRoot();
   if (!optimist.argv._ || optimist.argv._.length === 0) {
     commands.push("start");
   }
-  optimist.argv._.forEach(function(arg: string) {
+  optimist.argv._.forEach(function (arg: string) {
     commands.push(arg);
   });
 

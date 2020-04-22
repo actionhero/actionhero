@@ -19,7 +19,7 @@ export class RunAction extends Task {
       type: "task",
       remotePort: "0",
       remoteIP: "0",
-      rawConnection: {}
+      rawConnection: {},
     });
 
     connection.params = params;
@@ -29,7 +29,7 @@ export class RunAction extends Task {
 
     if (response.error) {
       log("task error: " + response.error, "error", {
-        params: JSON.stringify(params)
+        params: JSON.stringify(params),
       });
     } else {
       log("[ action @ task ]", "debug", { params: JSON.stringify(params) });

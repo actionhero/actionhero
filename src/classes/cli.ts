@@ -1,5 +1,5 @@
 /**
- * Create a new ActionHero CLI Command. The required properties of an CLI command. These can be defined statically (this.name) or as methods which return a value.
+ * Create a new Actionhero CLI Command. The required properties of an CLI command. These can be defined statically (this.name) or as methods which return a value.
  */
 
 export abstract class CLI {
@@ -38,7 +38,7 @@ export abstract class CLI {
       name: null,
       description: this.name,
       example: "",
-      inputs: {}
+      inputs: {},
     };
   }
 

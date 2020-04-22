@@ -9,7 +9,7 @@ export class Version extends CLI {
   constructor() {
     super();
     this.name = "version";
-    this.description = "return the ActionHero version within this project";
+    this.description = "return the Actionhero version within this project";
   }
 
   async run() {

@@ -39,7 +39,7 @@ export class Exceptions extends Initializer {
             severity
           );
         }
-      }
+      },
     };
 
     const consoleReporter = (error, type, name, objects, severity) => {

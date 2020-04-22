@@ -35,7 +35,7 @@ describe("Utils", () => {
     });
 
     test("works with args", async () => {
-      const sleepyFunc = async response => {
+      const sleepyFunc = async (response) => {
         await utils.sleep(100);
         return response;
       };
@@ -43,7 +43,7 @@ describe("Utils", () => {
       const jobs = [
         { method: sleepyFunc, args: ["a"] },
         { method: sleepyFunc, args: ["b"] },
-        { method: sleepyFunc, args: ["c"] }
+        { method: sleepyFunc, args: ["c"] },
       ];
 
       const start = new Date().getTime();
@@ -150,7 +150,7 @@ describe("Utils", () => {
   describe("#parseHeadersForClientAddress", () => {
     test("only x-real-ip, port is null", () => {
       const headers = {
-        "x-real-ip": "10.11.12.13"
+        "x-real-ip": "10.11.12.13",
       };
       const { ip, port } = utils.parseHeadersForClientAddress(headers);
       expect(ip).toEqual("10.11.12.13");
@@ -159,7 +159,7 @@ describe("Utils", () => {
     test("load balancer, x-forwarded-for format", () => {
       const headers = {
         "x-forwarded-for": "35.36.37.38",
-        "x-forwarded-port": "80"
+        "x-forwarded-port": "80",
       };
       const { ip, port } = utils.parseHeadersForClientAddress(headers);
       expect(ip).toEqual("35.36.37.38");
@@ -280,13 +280,13 @@ describe("Utils", () => {
         o1p2: "also-s3cr3t",
         o2: {
           o2p1: "this is ok",
-          o2p2: "extremely-s3cr3t"
-        }
+          o2p2: "extremely-s3cr3t",
+        },
       },
       o2: {
         name: "same as o1`s inner object!",
-        o2p1: "nothing secret"
-      }
+        o2p1: "nothing secret",
+      },
     };
 
     test("can filter top level params, no matter the type", () => {

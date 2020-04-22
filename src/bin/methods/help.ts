@@ -14,32 +14,32 @@ export class Help extends CLI {
     let files = [];
     const methods = {};
 
-    // CLI commands included with ActionHero
+    // CLI commands included with Actionhero
     console.log();
     if (config.general.cliIncludeInternal !== false) {
-      glob.sync(path.join(__dirname, "**", "**/*(*.js|*.ts)")).forEach(f => {
+      glob.sync(path.join(__dirname, "**", "**/*(*.js|*.ts)")).forEach((f) => {
         files.push(f);
       });
     }
 
     // CLI commands included in this project
-    config.general.paths.cli.forEach(cliPath => {
-      glob.sync(path.join(cliPath, "**", "*(*.js|*.ts)")).forEach(f => {
+    config.general.paths.cli.forEach((cliPath) => {
+      glob.sync(path.join(cliPath, "**", "*(*.js|*.ts)")).forEach((f) => {
         files.push(f);
       });
     });
 
     // CLI commands from plugins
-    Object.keys(config.plugins).forEach(pluginName => {
+    Object.keys(config.plugins).forEach((pluginName) => {
       const plugin = config.plugins[pluginName];
       if (plugin.cli !== false) {
-        glob.sync(path.join(plugin.path, "bin", "**", "*.js")).forEach(f => {
+        glob.sync(path.join(plugin.path, "bin", "**", "*.js")).forEach((f) => {
           files.push(f);
         });
 
         glob
           .sync(path.join(plugin.path, "dist", "bin", "**", "*.js"))
-          .forEach(f => {
+          .forEach((f) => {
             files.push(f);
           });
       }
@@ -47,7 +47,7 @@ export class Help extends CLI {
 
     files = utils.arrayUnique(files);
 
-    files.forEach(f => {
+    files.forEach((f) => {
       try {
         const ExportedClasses = require(f);
         const req = new ExportedClasses[Object.keys(ExportedClasses)[0]]();
@@ -68,16 +68,16 @@ export class Help extends CLI {
     const methodNames = Object.keys(methods).sort();
 
     console.log(
-      "ActionHero - The reusable, scalable, and quick node.js API server for stateless and stateful applications"
+      "Actionhero - The reusable, scalable, and quick node.js API server for stateless and stateful applications"
     );
     console.log("Learn more @ www.actionherojs.com");
     console.log("");
     console.log("CLI Commands:\r\n");
-    methodNames.forEach(methodName => {
+    methodNames.forEach((methodName) => {
       console.log(`* ${methodName}`);
     });
 
-    methodNames.forEach(methodName => {
+    methodNames.forEach((methodName) => {
       const m = methods[methodName];
       this.highlightWord(`actionhero ${m.name}`);
       console.log(`description: ${m.description}`);
@@ -91,7 +91,7 @@ export class Help extends CLI {
       }
       if (Object.keys(m.inputs).length > 0) {
         console.log("inputs:");
-        Object.keys(m.inputs).forEach(inputName => {
+        Object.keys(m.inputs).forEach((inputName) => {
           const i = m.inputs[inputName];
           console.log(`  [${inputName}] ${i.required ? "" : "(optional)"}`);
           if (i.note) {

@@ -4,6 +4,7 @@ import { config } from "./../modules/config";
 import { log } from "../modules/log";
 import { utils } from "../modules/utils";
 import * as dotProp from "dot-prop";
+import { EOL } from "os";
 import { api } from "../index";
 
 export class ActionProcessor {
@@ -119,12 +120,12 @@ export class ActionProcessor {
       action: this.action,
       params: JSON.stringify(filteredParams),
       duration: this.duration,
-      error: ""
+      error: "",
     };
 
     if (error) {
       if (error instanceof Error) {
-        logLine.error = String(error);
+        logLine.error = error.toString();
       } else {
         try {
           logLine.error = JSON.stringify(error);
@@ -135,13 +136,16 @@ export class ActionProcessor {
     }
 
     log(`[ action @ ${this.connection.type} ]`, logLevel, logLine);
+    if (error?.stack) {
+      error.stack.split(EOL).map((l) => log(` ! ${l}`, "error"));
+    }
   }
 
   private async preProcessAction() {
     const processorNames = api.actions.globalMiddleware.slice(0);
 
     if (this.actionTemplate.middleware) {
-      this.actionTemplate.middleware.forEach(function(m) {
+      this.actionTemplate.middleware.forEach(function (m) {
         processorNames.push(m);
       });
     }
@@ -158,7 +162,7 @@ export class ActionProcessor {
     const processorNames = api.actions.globalMiddleware.slice(0);
 
     if (this.actionTemplate.middleware) {
-      this.actionTemplate.middleware.forEach(m => {
+      this.actionTemplate.middleware.forEach((m) => {
         processorNames.push(m);
       });
     }
@@ -322,10 +326,9 @@ export class ActionProcessor {
         api.actions.actions[this.action][this.params.apiVersion];
     }
 
-    // TODO
-    // if (api.running !== true) {
-    //   return this.completeAction("server_shutting_down");
-    // }
+    if (api.running !== true) {
+      return this.completeAction("server_shutting_down");
+    }
 
     if (this.getPendingActionCount() > config.general.simultaneousActions) {
       return this.completeAction("too_many_requests");

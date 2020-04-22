@@ -7,7 +7,7 @@ const actionhero = new Process();
 let api;
 let originalDetermineConnectionLocale;
 
-const readLocaleFile = locale => {
+const readLocaleFile = (locale) => {
   const file = config.general.paths.locale[0] + "/" + locale + ".json";
   const contents = String(fs.readFileSync(file));
   const json = JSON.parse(contents);
@@ -20,9 +20,9 @@ const spanish = {
   actionhero: {
     errors: {
       missingParams: "{{param}} es un parámetro requerido para esta acción",
-      fileNotFound: "Ese archivo no se encuentra"
-    }
-  }
+      fileNotFound: "Ese archivo no se encuentra",
+    },
+  },
 };
 
 fs.writeFileSync(
@@ -57,7 +57,7 @@ describe("Core", () => {
 
       const content = readLocaleFile("test-env-en");
 
-      ["Your random number is {{randomNumber}}"].forEach(s => {
+      ["Your random number is {{randomNumber}}"].forEach((s) => {
         expect(content[s]).toEqual(s);
       });
     });

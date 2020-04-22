@@ -7,8 +7,8 @@ export class CreateChatRoom extends Action {
     this.description = "I will create a chatroom with the given name";
     this.inputs = {
       name: {
-        required: true
-      }
+        required: true,
+      },
     };
   }
 

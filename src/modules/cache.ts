@@ -42,21 +42,21 @@ export namespace cache {
   }
 
   /**
-   * Returns all the keys in redis which are under this ActionHero namespace.  Potentially very slow.
+   * Returns all the keys in redis which are under this Actionhero namespace.  Potentially very slow.
    */
   export async function keys(): Promise<Array<string>> {
     return client().keys(redisPrefix + "*");
   }
 
   /**
-   * Returns all the locks in redis which are under this ActionHero namespace.  Potentially slow.
+   * Returns all the locks in redis which are under this Actionhero namespace.  Potentially slow.
    */
   export async function locks(): Promise<Array<string>> {
     return client().keys(lockPrefix + "*");
   }
 
   /**
-   * Returns the number of keys in redis which are under this ActionHero namespace.  Potentially very slow.
+   * Returns the number of keys in redis which are under this Actionhero namespace.  Potentially very slow.
    */
   export async function size(): Promise<number> {
     const keys = await cache.keys();
@@ -69,7 +69,7 @@ export namespace cache {
   }
 
   /**
-   * Removes all keys in redis which are under this ActionHero namespace.  Potentially very slow.
+   * Removes all keys in redis which are under this Actionhero namespace.  Potentially very slow.
    */
   export async function clear(): Promise<boolean> {
     const keys = await cache.keys();
@@ -83,7 +83,7 @@ export namespace cache {
   }
 
   /**
-   * Write the current concents of redis (only the keys in ActionHero's namespace) to a file.
+   * Write the current concents of redis (only the keys in Actionhero's namespace) to a file.
    */
   export async function dumpWrite(file: string): Promise<number> {
     const data = {};
@@ -94,7 +94,7 @@ export namespace cache {
       jobs.push(
         client()
           .get(key)
-          .then(content => {
+          .then((content) => {
             data[key] = content;
           })
       );
@@ -108,7 +108,7 @@ export namespace cache {
 
   /**
    * Load in contents for redis (and api.cache) saved to a file
-   * Warning! Any existing keys in redis (under this ActionHero namespace) will be removed.
+   * Warning! Any existing keys in redis (under this Actionhero namespace) will be removed.
    */
   export async function dumpRead(file: string): Promise<number> {
     const jobs = [];
@@ -128,7 +128,7 @@ export namespace cache {
       }
     };
 
-    Object.keys(data).forEach(key => {
+    Object.keys(data).forEach((key) => {
       const content = data[key];
       jobs.push(saveDumpedElement(key, content));
     });
@@ -146,6 +146,12 @@ export namespace cache {
     options: CacheOptions = {}
   ): Promise<CacheObject> {
     let cacheObj: CacheObject;
+
+    let lockOk = await cache.checkLock(key, options.retry);
+    if (lockOk !== true) {
+      throw new Error(i18n.localize("actionhero.cache.objectLocked"));
+    }
+
     let cachedStringifiedObjet = await client().get(`${redisPrefix}${key}`);
     try {
       cacheObj = JSON.parse(cachedStringifiedObjet);
@@ -177,7 +183,7 @@ export namespace cache {
       }
     }
 
-    const lockOk = await cache.checkLock(key, options.retry);
+    lockOk = await cache.checkLock(key, options.retry);
     if (lockOk !== true) {
       throw new Error(i18n.localize("actionhero.cache.objectLocked"));
     }
@@ -190,7 +196,7 @@ export namespace cache {
         value: cacheObj.value,
         expireTimestamp: cacheObj.expireTimestamp,
         createdAt: cacheObj.createdAt,
-        lastReadAt
+        lastReadAt,
       };
     } else {
       return {
@@ -198,7 +204,7 @@ export namespace cache {
         value: cacheObj.value,
         expireTimestamp: cacheObj.expireTimestamp,
         createdAt: cacheObj.createdAt,
-        lastReadAt
+        lastReadAt,
       };
     }
   }
@@ -240,7 +246,7 @@ export namespace cache {
       value: value,
       expireTimestamp: expireTimestamp,
       createdAt: new Date().getTime(),
-      readAt: null
+      readAt: null,
     };
 
     const lockOk = await cache.checkLock(key, null);
@@ -285,7 +291,7 @@ export namespace cache {
   }
 
   /**
-   * Lock an item in redis (can be a list or a saved item) to this ActionHero process.
+   * Lock an item in redis (can be a list or a saved item) to this Actionhero process.
    */
   export async function lock(
     key: string,
@@ -307,7 +313,7 @@ export namespace cache {
   }
 
   /**
-   * Unlock an item in redis (can be a list or a saved item) which was previously locked by this ActionHero process.
+   * Unlock an item in redis (can be a list or a saved item) which was previously locked by this Actionhero process.
    */
   export async function unlock(key: string): Promise<boolean> {
     const lockOk = await cache.checkLock(key, null);

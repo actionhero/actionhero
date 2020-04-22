@@ -69,7 +69,7 @@ describe("browser integration tests", () => {
         "showDocumentation v1",
         "sleepTest v1",
         "status v1",
-        "validationTest v1"
+        "validationTest v1",
       ];
 
       expect(actionNames).toEqual(expect.arrayContaining(expextedActions));

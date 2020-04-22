@@ -11,7 +11,7 @@ export class GenerateCLI extends CLI {
     this.inputs = {
       name: { required: true },
       description: { required: false, default: "an actionhero cli command" },
-      example: { required: false, default: "actionhero command --option=yes" }
+      example: { required: false, default: "actionhero command --option=yes" },
     };
   }
 
@@ -22,7 +22,7 @@ export class GenerateCLI extends CLI {
 
     let template = templateBuffer.toString();
 
-    ["name", "description", "example"].forEach(v => {
+    ["name", "description", "example"].forEach((v) => {
       const regex = new RegExp("%%" + v + "%%", "g");
       template = template.replace(regex, params[v]);
     });

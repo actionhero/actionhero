@@ -57,7 +57,7 @@ export class Resque extends Initializer {
         {},
         config.tasks.connectionOptions.tasks,
         {
-          redis: api.redis.clients.tasks
+          redis: api.redis.clients.tasks,
         }
       ),
 
@@ -71,7 +71,7 @@ export class Resque extends Initializer {
           api.tasks.jobs
         );
 
-        api.resque.queue.on("error", error => {
+        api.resque.queue.on("error", (error) => {
           log(error.toString(), "error", "[api.resque.queue]");
         });
 
@@ -94,10 +94,10 @@ export class Resque extends Initializer {
           api.resque.scheduler = new ActionheroScheduler({
             connection: api.resque.connectionDetails,
             timeout: config.tasks.timeout,
-            stuckWorkerTimeout: config.tasks.stuckWorkerTimeout
+            stuckWorkerTimeout: config.tasks.stuckWorkerTimeout,
           });
 
-          api.resque.scheduler.on("error", error => {
+          api.resque.scheduler.on("error", (error) => {
             log(error.toString(), "error", "[api.resque.scheduler]");
           });
 
@@ -111,8 +111,8 @@ export class Resque extends Initializer {
           api.resque.scheduler.on("poll", () => {
             log("resque scheduler polling", api.resque.schedulerLogging.poll);
           });
-          api.resque.scheduler.on("master", () => {
-            log("This node is now the Resque scheduler master", "notice");
+          api.resque.scheduler.on("leader", () => {
+            log("This node is now the Resque scheduler leader", "notice");
           });
           api.resque.scheduler.on(
             "cleanStuckWorker",
@@ -120,7 +120,7 @@ export class Resque extends Initializer {
               log("cleaned stuck worker", "warning", {
                 workerName,
                 errorPayload,
-                delta
+                delta,
               });
             }
           );
@@ -151,20 +151,20 @@ export class Resque extends Initializer {
             checkTimeout: config.tasks.checkTimeout,
             minTaskProcessors: config.tasks.minTaskProcessors,
             maxTaskProcessors: config.tasks.maxTaskProcessors,
-            maxEventLoopDelay: config.tasks.maxEventLoopDelay
+            maxEventLoopDelay: config.tasks.maxEventLoopDelay,
           },
           api.tasks.jobs
         );
 
         // normal worker emitters
-        api.resque.multiWorker.on("start", workerId => {
+        api.resque.multiWorker.on("start", (workerId) => {
           log("[ worker ] started", api.resque.workerLogging.start, {
-            workerId
+            workerId,
           });
         });
-        api.resque.multiWorker.on("end", workerId => {
+        api.resque.multiWorker.on("end", (workerId) => {
           log("[ worker ] ended", api.resque.workerLogging.end, {
-            workerId
+            workerId,
           });
         });
         api.resque.multiWorker.on(
@@ -178,7 +178,7 @@ export class Resque extends Initializer {
         );
         api.resque.multiWorker.on("poll", (workerId, queue) => {
           log(`[ worker ] polling ${queue}`, api.resque.workerLogging.poll, {
-            workerId
+            workerId,
           });
         });
         api.resque.multiWorker.on("job", (workerId, queue, job: JobEmit) => {
@@ -186,27 +186,27 @@ export class Resque extends Initializer {
             workerId,
             class: job.class,
             queue: job.queue,
-            args: JSON.stringify(this.filterTaskParams(job.args[0]))
+            args: JSON.stringify(this.filterTaskParams(job.args[0])),
           });
         });
         api.resque.multiWorker.on(
           "reEnqueue",
           (workerId, queue, job: JobEmit, plugin) => {
             log(
-              "[ worker ] reEnqueue job",
+              "[ worker ] reEnqueue task",
               api.resque.workerLogging.reEnqueue,
               {
                 workerId,
-                plugin: plugin,
+                plugin: JSON.stringify(plugin),
                 class: job.class,
-                queue: job.queue
+                queue: job.queue,
               }
             );
           }
         );
-        api.resque.multiWorker.on("pause", workerId => {
+        api.resque.multiWorker.on("pause", (workerId) => {
           log("[ worker ] paused", api.resque.workerLogging.pause, {
-            workerId
+            workerId,
           });
         });
 
@@ -222,17 +222,18 @@ export class Resque extends Initializer {
 
         api.resque.multiWorker.on(
           "success",
-          (workerId, queue, job: JobEmit, result) => {
+          (workerId, queue, job: JobEmit, result, duration) => {
             const payload = {
               workerId,
               class: job.class,
               queue: job.queue,
               args: JSON.stringify(this.filterTaskParams(job.args[0])),
-              result
+              result,
+              duration,
             };
 
             log(
-              "[ worker ] job success",
+              "[ worker ] task success",
               api.resque.workerLogging.success,
               payload
             );
@@ -256,7 +257,7 @@ export class Resque extends Initializer {
         if (api.resque.multiWorker && config.tasks.minTaskProcessors > 0) {
           return api.resque.multiWorker.stop();
         }
-      }
+      },
     };
   }
 

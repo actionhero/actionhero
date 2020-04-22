@@ -1,10 +1,10 @@
-import * as uuidv4 from "uuid/v4";
+import * as uuid from "uuid";
 import { api, chatRoom } from "./../index";
 import { config } from "./../modules/config";
 import { i18n } from "../modules/i18n";
 
 /**
- * The generic representation of a connection for all server types is an ActionHero.Connection.  You will never be creating these yourself via an action or task, but you will find them in your Actions and Action Middleware.
+ * The generic representation of a connection for all server types is an Actionhero.Connection.  You will never be creating these yourself via an action or task, but you will find them in your Actions and Action Middleware.
  */
 export class Connection {
   /**A unique string identifer for this connection. */
@@ -41,7 +41,7 @@ export class Connection {
 
   /**
    * @param data The specifics of this connection
-   * @param callCreateMethods The specifics of this connection will calls create methods in the constructor. This property will exist for backward compatibility. If you want to construct connection and call create methods within async, you can use `await ActionHero.Connection.createAsync(details)` for construction.
+   * @param callCreateMethods The specifics of this connection will calls create methods in the constructor. This property will exist for backward compatibility. If you want to construct connection and call create methods within async, you can use `await Actionhero.Connection.createAsync(details)` for construction.
    */
   constructor(data, callCreateMethods = true) {
     this.setup(data);
@@ -79,14 +79,14 @@ export class Connection {
     }
     this.connectedAt = new Date().getTime();
 
-    ["type", "rawConnection"].forEach(req => {
+    ["type", "rawConnection"].forEach((req) => {
       if (data[req] === null || data[req] === undefined) {
         throw new Error(`${req} is required to create a new connection object`);
       }
       this[req] = data[req];
     });
 
-    ["remotePort", "remoteIP"].forEach(req => {
+    ["remotePort", "remoteIP"].forEach((req) => {
       if (data[req] === null || data[req] === undefined) {
         if (config.general.enforceConnectionProperties === true) {
           throw new Error(
@@ -108,7 +108,7 @@ export class Connection {
       totalActions: 0,
       messageId: 0,
       canChat: false,
-      destroyed: false
+      destroyed: false,
     };
 
     for (const i in connectionDefaults) {
@@ -158,7 +158,7 @@ export class Connection {
   }
 
   private generateID() {
-    return uuidv4();
+    return uuid.v4();
   }
 
   /**
@@ -221,7 +221,7 @@ export class Connection {
       server.log("verb", "debug", {
         verb: verb,
         to: this.remoteIP,
-        params: JSON.stringify(words)
+        params: JSON.stringify(words),
       });
 
       // TODO: investigate allowedVerbs being an array of Constants or Symbols
@@ -282,7 +282,7 @@ export class Connection {
             connectedAt: this.connectedAt,
             rooms: this.rooms,
             totalActions: this.totalActions,
-            pendingActions: this.pendingActions
+            pendingActions: this.pendingActions,
           };
         case "documentation":
           return api.documentation.documentation;

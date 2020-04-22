@@ -1,5 +1,5 @@
 export const DEFAULT = {
-  routes: config => {
+  routes: (config) => {
     return {
       /* ---------------------
       routes.js
@@ -26,5 +26,5 @@ export const DEFAULT = {
 
       ---------------------- */
     };
-  }
+  },
 };

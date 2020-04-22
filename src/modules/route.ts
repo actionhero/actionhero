@@ -28,7 +28,7 @@ export namespace route {
         matchTrailingPathParts: matchTrailingPathParts,
         action: action,
         dir: dir,
-        apiVersion: apiVersion
+        apiVersion: apiVersion,
       });
     }
   }

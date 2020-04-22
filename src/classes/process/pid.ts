@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import * as cluster from "cluster";
 import { log } from "../../modules/log";
 import { config } from "./../../modules/config";
 import { id } from "./id";
@@ -14,11 +13,7 @@ function sanitizeId() {
 
 export const pid = process.pid;
 const path = config.general.paths.pid[0]; // it would be silly to have more than one pi
-let title = sanitizeId();
-
-if (cluster.isMaster) {
-  title = "actionhero-" + title;
-}
+let title = `actionhero-${sanitizeId()}`;
 
 try {
   fs.mkdirSync(path);

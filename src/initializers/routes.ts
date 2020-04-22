@@ -22,7 +22,7 @@ export class Routes extends Initializer {
   async initialize(config) {
     api.routes = {
       routes: {},
-      verbs: ["head", "get", "post", "put", "patch", "delete"]
+      verbs: ["head", "get", "post", "put", "patch", "delete"],
     };
 
     api.routes.processRoute = (connection, pathParts) => {
@@ -147,10 +147,10 @@ export class Routes extends Initializer {
     };
 
     // load in the routes file
-    api.routes.loadRoutes = rawRoutes => {
+    api.routes.loadRoutes = (rawRoutes) => {
       let counter = 0;
 
-      api.routes.verbs.forEach(verb => {
+      api.routes.verbs.forEach((verb) => {
         api.routes.routes[verb] = api.routes.routes[verb] || [];
       });
 

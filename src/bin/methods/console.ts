@@ -27,7 +27,7 @@ export class Console extends CLI {
         prompt: "[ AH::" + env + " ] >> ",
         input: process.stdin,
         output: process.stdout,
-        useGlobal: false
+        useGlobal: false,
       });
 
       repl.context.api = api;

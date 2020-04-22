@@ -152,7 +152,7 @@ export namespace chatRoom {
   export async function sanitizeMemberDetails(memberData) {
     return {
       id: memberData.id,
-      joinedAt: memberData.joinedAt
+      joinedAt: memberData.joinedAt,
     };
   }
 
@@ -182,7 +182,7 @@ export namespace chatRoom {
         return {
           room: room,
           members: cleanedMembers,
-          membersCount: count
+          membersCount: count,
         };
       } else {
         throw new Error(await config.errors.connectionRoomNotExist(room));
@@ -199,7 +199,7 @@ export namespace chatRoom {
     return {
       id: connection.id,
       joinedAt: new Date().getTime(),
-      host: id
+      host: id,
     };
   }
 
@@ -252,7 +252,7 @@ export namespace chatRoom {
 
   /**
    * Remote a connection (via id) from a room.  Throws errors if the room does not exist, or the connection is not in the room.  Middleware errors also throw.
-   * toWaitRemote: Should this method wait until the remote ActionHero server (the one the connection is connected too) responds?
+   * toWaitRemote: Should this method wait until the remote Actionhero server (the one the connection is connected too) responds?
    */
   export async function removeMember(
     connectionId: string,
@@ -296,5 +296,19 @@ export namespace chatRoom {
     }
 
     return true;
+  }
+
+  /**
+   * Send a message to all clients connected to this room
+   * - connection should either be a real client you are emulating (found in api.connections) or just `{}` for a mock
+   * - room is the string name of an already-existing room
+   * - message can be anything: string, json, object, etc
+   */
+  export async function broadcast(
+    connection: Connection | { [key: string]: any },
+    room: string,
+    message: any
+  ) {
+    return api.chatRoom.broadcast(connection, room, message);
   }
 }

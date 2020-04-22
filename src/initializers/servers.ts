@@ -9,7 +9,7 @@ export interface ServersApi {
 }
 
 /**
- * Manages the servers in this ActionHero instance.
+ * Manages the servers in this Actionhero instance.
  */
 export class Servers extends Initializer {
   constructor() {
@@ -22,63 +22,75 @@ export class Servers extends Initializer {
 
   async initialize(config) {
     api.servers = {
-      servers: {}
+      servers: {},
     };
 
     const serverFolders = [path.resolve(path.join(__dirname, "..", "servers"))];
 
-    config.general.paths.server.forEach(p => {
+    config.general.paths.server.forEach((p) => {
       p = path.resolve(p);
       if (serverFolders.indexOf(p) < 0) {
         serverFolders.push(p);
       }
     });
 
+    let files = [];
+
     for (const i in serverFolders) {
       const p = serverFolders[i];
-      let files = glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"));
+      files = files.concat(glob.sync(path.join(p, "**", "**/*(*.js|*.ts)")));
+    }
 
-      for (const pluginName in config.plugins) {
-        if (config.plugins[pluginName].servers !== false) {
-          const pluginPath = config.plugins[pluginName].path;
-          // old style at the root of the project
-          files = files.concat(
-            glob.sync(path.join(pluginPath, "servers", "**", "*.js|"))
-          );
+    for (const pluginName in config.plugins) {
+      if (config.plugins[pluginName].servers !== false) {
+        const pluginPath = config.plugins[pluginName].path;
+        // old style at the root of the project
+        files = files.concat(
+          glob.sync(path.join(pluginPath, "servers", "**", "*.js"))
+        );
 
-          files = files.concat(
-            glob.sync(path.join(pluginPath, "dist", "servers", "**", "*.js"))
-          );
-        }
+        files = files.concat(
+          glob.sync(path.join(pluginPath, "dist", "servers", "**", "*.js"))
+        );
       }
+    }
 
-      files = utils.ensureNoTsHeaderFiles(files);
+    files = utils.ensureNoTsHeaderFiles(files);
 
-      for (const j in files) {
-        const filename = files[j];
-        const ExportedClasses = require(filename);
+    let server: Server;
 
-        if (Object.keys(ExportedClasses).length > 1) {
+    for (const j in files) {
+      const filename = files[j];
+      const ExportedClasses = require(filename);
+
+      const exportLen = Object.keys(ExportedClasses).length;
+      // we have named exports
+      if (exportLen) {
+        if (exportLen > 1) {
           throw new Error(
             `server file ${filename} exports more than one server`
           );
         }
 
-        const server = new ExportedClasses[Object.keys(ExportedClasses)[0]]();
-        server.config = config.servers[server.type]; // shorthand access
-        if (server.config && server.config.enabled === true) {
-          await server.initialize();
+        server = new ExportedClasses[Object.keys(ExportedClasses)[0]]();
+      } else {
+        // there is one default export
+        server = new ExportedClasses();
+      }
 
-          if (api.servers.servers[server.type]) {
-            log(
-              `an existing server with the same type \`${server.type}\` will be overridden by the file ${filename}`,
-              "warning"
-            );
-          }
+      server.config = config.servers[server.type]; // for shorthand access
+      if (server.config && server.config.enabled === true) {
+        await server.initialize();
 
-          api.servers.servers[server.type] = server;
-          log(`Initialized server: ${server.type}`, "debug");
+        if (api.servers.servers[server.type]) {
+          log(
+            `an existing server with the same type \`${server.type}\` will be overridden by the file ${filename}`,
+            "crit"
+          );
         }
+
+        api.servers.servers[server.type] = server;
+        log(`Initialized server: ${server.type}`, "debug");
       }
     }
   }

@@ -6,7 +6,7 @@ const actionhero = new Process();
 let api;
 let url;
 
-const toJson = async string => {
+const toJson = async (string) => {
   try {
     return JSON.parse(string);
   } catch (error) {
@@ -32,15 +32,15 @@ jest.mock("./../../../src/config/servers/web.ts", () => ({
           queryRouting: true,
           metadataOptions: {
             serverInformation: true,
-            requesterInformation: false
+            requesterInformation: false,
           },
           fingerprintOptions: {
-            cookieKey: "sessionID"
-          }
+            cookieKey: "sessionID",
+          },
         };
-      }
-    }
-  }
+      },
+    },
+  },
 }));
 
 describe("Server: Web", () => {
@@ -61,13 +61,13 @@ describe("Server: Web", () => {
           name: "paramTestAction",
           description: "I return connection.rawConnection.params",
           version: 1,
-          run: async data => {
+          run: async (data) => {
             data.response = data.connection.rawConnection.params;
             if (data.connection.rawConnection.params.rawBody) {
               data.response.rawBody = data.connection.rawConnection.params.rawBody.toString();
             }
-          }
-        }
+          },
+        },
       };
 
       api.routes.loadRoutes();
@@ -83,7 +83,7 @@ describe("Server: Web", () => {
       const body = await request
         .post(url + "/api/paramTestAction", {
           body: requestBody,
-          headers: { "Content-type": "application/json" }
+          headers: { "Content-type": "application/json" },
         })
         .then(toJson);
       expect(body.body.key).toEqual("value");
@@ -96,7 +96,7 @@ describe("Server: Web", () => {
         const body = await request
           .post(url + "/api/paramTestAction", {
             body: requestBody,
-            headers: { "Content-type": "text/xml" }
+            headers: { "Content-type": "text/xml" },
           })
           .then(toJson);
         expect(body.body).toEqual({});
@@ -108,7 +108,7 @@ describe("Server: Web", () => {
         const body = await request
           .post(url + "/api/paramTestAction", {
             body: requestBody,
-            headers: { "Content-type": "application/json" }
+            headers: { "Content-type": "application/json" },
           })
           .then(toJson);
         expect(body.body).toEqual({});
@@ -120,7 +120,7 @@ describe("Server: Web", () => {
         const body = await request
           .post(url + "/api/paramTestAction", {
             body: requestBody,
-            headers: { "Content-type": "text/plain" }
+            headers: { "Content-type": "text/plain" },
           })
           .then(toJson);
         expect(body.body).toEqual({});
@@ -133,7 +133,7 @@ describe("Server: Web", () => {
 
         const bufferStream = new PassThrough();
         const req = request.post(url + "/api/paramTestAction", {
-          headers: { "Content-type": "text/xml" }
+          headers: { "Content-type": "text/xml" },
         });
         bufferStream.write(Buffer.from(requestPart1)); // write the first part
         bufferStream.pipe(req);
@@ -162,7 +162,7 @@ describe("Server: Web", () => {
 
         const bufferStream = new PassThrough();
         const req = request.post(url + "/api/paramTestAction", {
-          headers: { "Content-type": "application/json" }
+          headers: { "Content-type": "application/json" },
         });
         bufferStream.write(Buffer.from(requestPart1)); // write the first part
         bufferStream.pipe(req);
@@ -187,7 +187,7 @@ describe("Server: Web", () => {
 
         const bufferStream = new PassThrough();
         const req = request.post(url + "/api/paramTestAction", {
-          headers: { "Content-type": "text/xml" }
+          headers: { "Content-type": "text/xml" },
         });
         bufferStream.write(Buffer.from(requestPart1)); // write the first part
         bufferStream.pipe(req);
