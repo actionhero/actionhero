@@ -83,7 +83,7 @@
     "prepare": "npm run build && npm run docs",
     "pretest": "npm run lint && npm run build",
     "dev": "ts-node-dev --transpile-only --no-deps ./src/server",
-    "debug": "ts-node-dev --transpile-only --no-deps --inspect -- ./src/server ",
+    "debug": "tsc && ts-node-dev --transpile-only --no-deps --inspect -- ./src/server ",
     "start": "node ./dist/server.js",
     "build": "rm -rf dist && ./node_modules/.bin/tsc --sourceMap false --declaration",
     "docs": "typedoc --out docs --theme default --mode file",
