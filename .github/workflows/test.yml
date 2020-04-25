@@ -35,8 +35,11 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+      - run: node --version
+      - run: npm --version
       - run: npm install
-      - run: npm test
+      - run: npm run lint
+      - run: ./node_modules/.bin/jest --ci
         env:
           CI: true
           REDIS_HOST: redis
