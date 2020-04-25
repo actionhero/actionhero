@@ -14,7 +14,7 @@ const pacakgeJSON = require(path.join(__dirname, "/../../package.json"));
 console.log(`testDir: ${testDir}`);
 
 const port = 18080 + parseInt(process.env.JEST_WORKER_ID || "0");
-const host = process.env.SELENIUM_TEST_HOST || "localhost";
+const host = "localhost";
 let pid;
 let AHPath;
 
