@@ -28,15 +28,15 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - run: node --version
+      - run: npm --version
       - name: Cache node modules
         uses: actions/cache@v1
         env:
           cache-name: cache-node-modules
         with:
           path: node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-      - run: node --version
-      - run: npm --version
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-node${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
       - run: npm install
       - run: npm run lint
       - run: ./node_modules/.bin/jest --ci

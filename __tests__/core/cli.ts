@@ -2,13 +2,12 @@
 // You can use SKIP_CLI_TEST_SETUP=true to skip the setup portion of these tests if you are testing this file repeatedly
 
 import * as fs from "fs";
-import * as os from "os";
 import * as path from "path";
 import { spawn } from "child_process";
 import * as request from "request-promise-native";
 import * as isrunning from "is-running";
 
-const testDir = os.tmpdir() + path.sep + "actionheroTestProject";
+const testDir = path.join(process.cwd(), "tmp", "actionheroTestProject");
 const binary = "./node_modules/.bin/actionhero";
 const pacakgeJSON = require(path.join(__dirname, "/../../package.json"));
 
