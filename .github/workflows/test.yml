@@ -1,11 +1,11 @@
-name: Test Actionhero
+name: Test
 on: [push]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     container:
-      image: node
+      image: ubuntu
       options: --network-alias main
 
     services:
