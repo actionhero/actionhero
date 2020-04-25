@@ -4,22 +4,16 @@ on: [push]
 jobs:
   test:
     runs-on: ubuntu-latest
+    container:
+      image: node
+      options: --network-alias main
 
     services:
       redis:
         image: redis
-        ports:
-          - 6379:6379
 
       selenium:
         image: selenium/standalone-chrome
-        ports:
-          - 4444:4444
-          - 18080:18080
-          - 18081:18081
-          - 18082:18082
-          - 18083:18083
-          - 18084:18084
 
     strategy:
       matrix:
@@ -42,8 +36,10 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-node${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
       - run: npm install
       - run: npm run lint
-      - run: ./node_modules/.bin/jest --ci --maxWorkers 4
+      - run: ./node_modules/.bin/jest --ci
         env:
           CI: true
-          SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
+          REDIS_HOST: redis
+          SELENIUM_TEST_HOST: main
+          SELENIUM_REMOTE_URL: http://selenium:4444/wd/hub
           maxMemoryAlloted: 1000

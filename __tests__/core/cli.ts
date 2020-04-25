@@ -14,6 +14,7 @@ const pacakgeJSON = require(path.join(__dirname, "/../../package.json"));
 console.log(`testDir: ${testDir}`);
 
 const port = 18080 + parseInt(process.env.JEST_WORKER_ID || "0");
+const host = process.env.SELENIUM_TEST_HOST || "localhost";
 let pid;
 let AHPath;
 
@@ -330,7 +331,7 @@ describe("Core: CLI", () => {
 
       test("can boot the server", async () => {
         const response = await request(
-          `http://localhost:${port}/api/showDocumentation`,
+          `http://${host}:${port}/api/showDocumentation`,
           { json: true }
         );
         expect(response.serverInformation.serverName).toEqual(
@@ -342,7 +343,7 @@ describe("Core: CLI", () => {
         await doCommand(`kill -s USR2 ${serverPid}`);
         await sleep(3000);
         const response = await request(
-          `http://localhost:${port}/api/showDocumentation`,
+          `http://${host}:${port}/api/showDocumentation`,
           { json: true }
         );
         expect(response.serverInformation.serverName).toEqual(
@@ -354,7 +355,7 @@ describe("Core: CLI", () => {
         await doCommand(`kill ${serverPid}`);
         await sleep(1000);
         try {
-          await request(`http://localhost:${port}/api/showDocumentation`);
+          await request(`http://${host}:${port}/api/showDocumentation`);
           throw new Error("should not get here");
         } catch (error) {
           expect(error.toString()).toMatch(
