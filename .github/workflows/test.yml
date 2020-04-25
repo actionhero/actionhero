@@ -1,14 +1,22 @@
 name: Test Actionhero
-
 on: [push]
 
 jobs:
+  services:
+    redis:
+      image: redis
+      options: >-
+        --health-cmd "redis-cli ping"
+        --health-interval 10s
+        --health-timeout 5s
+        --health-retries 5
+
   build:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [8.x, 10.x, 12.x, 14.x]
+        node-version: [10.x, 12.x, 14.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -20,3 +28,4 @@ jobs:
       - run: npm test
         env:
           CI: true
+          REDIS_HOST: redis
