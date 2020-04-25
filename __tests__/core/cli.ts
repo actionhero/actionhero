@@ -119,6 +119,7 @@ describe("Core: CLI", () => {
         if (error.toString().indexOf("npm") < 0) {
           throw error;
         }
+        console.log(error);
         expect(error.exitCode).toEqual(0);
       }
     }, 120000);
