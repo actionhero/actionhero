@@ -41,7 +41,7 @@ jobs:
       - run: ./node_modules/.bin/jest --ci
         env:
           CI: true
-          REDIS_HOST: redis
-          REDIS_PORT: 6379
-          SELENIUM_REMOTE_URL: http://selenium:4444/wd/hub
+          # REDIS_HOST: redis
+          # REDIS_PORT: 6379
+          SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
           maxMemoryAlloted: 1000
