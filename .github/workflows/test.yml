@@ -36,6 +36,7 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-node${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
       - run: npm install
       - run: npm run lint
+      - run: mkdir -p /tmp/actionheroTestProject
       - run: ./node_modules/.bin/jest --ci
         env:
           CI: true
