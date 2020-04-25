@@ -15,6 +15,11 @@ jobs:
         image: selenium/standalone-chrome
         ports:
           - 4444:4444
+          - 18080:18080
+          - 18081:18081
+          - 18082:18082
+          - 18083:18083
+          - 18084:18084
 
     strategy:
       matrix:
@@ -37,10 +42,8 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-node${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
       - run: npm install
       - run: npm run lint
-      - run: ./node_modules/.bin/jest --ci
+      - run: ./node_modules/.bin/jest --ci --maxWorkers 4
         env:
           CI: true
-          # REDIS_HOST: redis
-          # REDIS_PORT: 6379
           SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
           maxMemoryAlloted: 1000
