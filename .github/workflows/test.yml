@@ -34,12 +34,8 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-node${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
-      - run: npm ci # use `npm ci` vs `npm install` to avoid wd permission errors
+      - run: npm ci
       - run: npm run lint
-      # - name: Install sudo
-      #   run: apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v2
       - run: ./node_modules/.bin/jest --ci
         env:
           REDIS_HOST: redis
