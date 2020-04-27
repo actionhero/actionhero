@@ -112,7 +112,7 @@ describe("Core: CLI", () => {
     });
 
     test("can call npm install in the new project", async () => {
-      await doCommand("npm ci --ignore-scripts"); // normally you would run "npm install", but `npm ci` prevents directory and permission issues from failing the test
+      await doCommand("npm test --ignore-scripts");
     }, 120000);
 
     test("can call the version command (before generate)", async () => {
