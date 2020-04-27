@@ -34,7 +34,7 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-node${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
-      - run: npm install
+      - run: npm ci # use `npm ci` vs `npm install` to avoid wd permission errors
       - run: npm run lint
       # - name: Install sudo
       #   run: apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*
