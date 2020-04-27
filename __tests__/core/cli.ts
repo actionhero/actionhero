@@ -112,16 +112,7 @@ describe("Core: CLI", () => {
     });
 
     test("can call npm install in the new project", async () => {
-      try {
-        await doCommand("npm install --ignore-scripts");
-      } catch (error) {
-        // we might get warnings about package.json locks, etc.  we want to ignore them
-        if (error.toString().indexOf("npm") < 0) {
-          throw error;
-        }
-        console.log(error);
-        expect(error.exitCode).toEqual(0);
-      }
+      await doCommand("npm ci --ignore-scripts"); // normally you would run "npm install", but `npm ci` prevents directory and permission issues from failing the test
     }, 120000);
 
     test("can call the version command (before generate)", async () => {
