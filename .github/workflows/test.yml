@@ -36,6 +36,8 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-node${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
       - run: npm install
       - run: npm run lint
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v2
       - run: ./node_modules/.bin/jest --ci
         env:
           REDIS_HOST: redis
