@@ -5,7 +5,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-      image: ubuntu
+      image: node
       options: --network-alias main
 
     services:
@@ -36,10 +36,10 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-node${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
       - run: npm install
       - run: npm run lint
-      - name: Install sudo
-        run: apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v2
+      # - name: Install sudo
+      #   run: apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v2
       - run: ./node_modules/.bin/jest --ci
         env:
           REDIS_HOST: redis
