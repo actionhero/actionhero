@@ -110,7 +110,9 @@ export class Process {
 
     initializerFiles.forEach((f) => {
       const file = path.normalize(f);
-      delete require.cache[require.resolve(file)];
+      if (require.cache[require.resolve(file)]) {
+        delete require.cache[require.resolve(file)];
+      }
 
       let exportedClasses = require(file);
 
