@@ -51,7 +51,8 @@
     "uglify-js": "^3.9.1",
     "uuid": "^8.0.0",
     "winston": "^3.2.1",
-    "ws": "^7.2.5"
+    "ws": "^7.2.5",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "@types/jest": "^25.2.1",
@@ -81,7 +82,7 @@
   "scripts": {
     "postinstall": "echo 'To generate a new actionhero project, run \"npx actionhero generate\"'",
     "test": "jest",
-    "prepare": "npm run build && npm run docs",
+    "prepare": "npm run snyk-protect && npm run build && npm run docs",
     "pretest": "npm run lint && npm run build",
     "dev": "ts-node-dev --transpile-only --no-deps ./src/server",
     "debug": "tsc && ts-node-dev --transpile-only --no-deps --inspect -- ./src/server ",
@@ -89,6 +90,8 @@
     "build": "rm -rf dist && ./node_modules/.bin/tsc --sourceMap false --declaration",
     "docs": "typedoc --out docs --theme default --mode file",
     "lint": "prettier --check src __tests__",
-    "pretty": "prettier --write src __tests__"
-  }
+    "pretty": "prettier --write src __tests__",
+    "snyk-protect": "snyk protect"
+  },
+  "snyk": true
 }
