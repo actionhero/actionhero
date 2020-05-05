@@ -105,10 +105,17 @@ describe("Server: Web", () => {
           { path: "/mimeTestAction/:key", action: "mimeTestAction" },
           { path: "/thing", action: "thing" },
           { path: "/thing/stuff", action: "thingStuff" },
+          { path: "/v:apiVersion/login", action: "login" },
           { path: "/:apiVersion/login", action: "login" },
           { path: "/old_login", action: "login", apiVersion: "1" },
           {
             path: "/a/wild/:key/:path(^.*$)",
+            action: "mimeTestAction",
+            apiVersion: "1",
+            matchTrailingPathParts: true,
+          },
+          {
+            path: "/a/complex/:key/__:path(^.*$)",
             action: "mimeTestAction",
             apiVersion: "1",
             matchTrailingPathParts: true,
@@ -385,6 +392,20 @@ describe("Server: Web", () => {
         );
         expect(body.requesterInformation.receivedParams.key).toEqual("theKey");
       });
+
+      test("works with with matchTrailingPathParts and ignored variable prefixes", async () => {
+        const body = await request
+          .get(url + "/api/a/complex/theKey/__path-stuff")
+          .then(toJson);
+        console.log(body);
+        expect(body.requesterInformation.receivedParams.action).toEqual(
+          "mimeTestAction"
+        );
+        expect(body.requesterInformation.receivedParams.path).toEqual(
+          "path-stuff"
+        );
+        expect(body.requesterInformation.receivedParams.key).toEqual("theKey");
+      });
     });
 
     describe("spaces in URL with public files", () => {
@@ -450,6 +471,16 @@ describe("Server: Web", () => {
           .then(toJson);
         expect(body.version).toEqual("three");
         expect(body.userID).toEqual("123");
+      });
+
+      test("versions have an ignored prefix", async () => {
+        const body = await request
+          .get(url + "/api/v1/login?user_id=123")
+          .then(toJson);
+        expect(body.version).toEqual(1);
+        expect(body.user_id).toEqual("123");
+        expect(body.requesterInformation.receivedParams.apiVersion).toBe("1");
+        expect(body.requesterInformation.receivedParams.action).toBe("login");
       });
 
       test("routes with no version will default to the highest version number", async () => {
