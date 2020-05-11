@@ -17,7 +17,7 @@ describe("Task", () => {
     });
 
     test("can be enqueued", async () => {
-      await tasks.enqueue("%%name%%", {});
+      await task.enqueue("%%name%%", {});
       const found = await specHelper.findEnqueuedTasks("%%name%%");
       expect(found.length).toEqual(1);
       expect(found[0].timestamp).toBeNull();
