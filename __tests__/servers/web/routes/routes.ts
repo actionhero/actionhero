@@ -397,7 +397,6 @@ describe("Server: Web", () => {
         const body = await request
           .get(url + "/api/a/complex/theKey/__path-stuff")
           .then(toJson);
-        console.log(body);
         expect(body.requesterInformation.receivedParams.action).toEqual(
           "mimeTestAction"
         );
