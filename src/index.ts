@@ -33,12 +33,12 @@ export { id } from "./classes/process/id";
 import { Api } from "./classes/api";
 
 // backwards-compatibility for older versions of node.js
-if (!globalThis) {
-  // @ts-ignore
-  globalThis = global;
-}
+// we can't use globalThis for node v8, v10
 
-if (!globalThis.api) {
-  globalThis.api = new Api();
+// @ts-ignore
+if (!global.api) {
+  // @ts-ignore
+  global.api = new Api();
 }
-export const api = globalThis.api;
+// @ts-ignore
+export const api = global.api;
