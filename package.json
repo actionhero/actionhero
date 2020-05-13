@@ -33,7 +33,7 @@
   "dependencies": {
     "@types/glob": "^7.1.1",
     "@types/ioredis": "^4.16.0",
-    "@types/node": "^13.13.4",
+    "@types/node": "^14.0.1",
     "@types/uuid": "^7.0.3",
     "browser_fingerprint": "^2.0.2",
     "dot-prop": "^5.2.0",
