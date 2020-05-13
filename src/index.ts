@@ -32,6 +32,12 @@ export { id } from "./classes/process/id";
 // API object to hold connections, actions, tasks, initializers, and servers
 import { Api } from "./classes/api";
 
+// backwards-compatibility for older versions of node.js
+if (!globalThis) {
+  // @ts-ignore
+  globalThis = global;
+}
+
 if (!globalThis.api) {
   globalThis.api = new Api();
 }
