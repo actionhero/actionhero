@@ -31,4 +31,8 @@ export { id } from "./classes/process/id";
 
 // API object to hold connections, actions, tasks, initializers, and servers
 import { Api } from "./classes/api";
-export const api = new Api();
+
+if (!globalThis.api) {
+  globalThis.api = new Api();
+}
+export const api = globalThis.api;
