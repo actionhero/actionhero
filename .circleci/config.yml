@@ -102,9 +102,9 @@ jobs:
       - image: selenium/standalone-chrome:latest
     <<: *shared-test-steps
 
-  test-node-v13:
+  test-node-v14:
     docker:
-      - image: circleci/node:13
+      - image: circleci/node:14
       - image: redis:4
       - image: selenium/standalone-chrome:latest
     <<: *shared-test-steps
@@ -164,7 +164,7 @@ workflows:
           requires:
             - linter
 
-      - test-node-v13:
+      - test-node-v14:
           filters:
             <<: *ignored-branches
           requires:
@@ -177,7 +177,7 @@ workflows:
             - test-node-v8
             - test-node-v10
             - test-node-v12
-            - test-node-v13
+            - test-node-v14
 
       - deploy-docs-website:
           filters:
