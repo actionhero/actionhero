@@ -40,6 +40,7 @@ describe("Core: specHelper", () => {
           description: "stringResponseTestAction",
           version: 1,
           run: async (data) => {
+            //@ts-ignore
             data.response = "something response";
           },
         },
@@ -53,6 +54,7 @@ describe("Core: specHelper", () => {
           description: "stringErrorTestAction",
           version: 1,
           run: (data) => {
+            //@ts-ignore
             data.response = "something response";
             throw new Error("some error");
           },
