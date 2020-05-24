@@ -90,10 +90,11 @@ export class Swagger extends Action {
                     : false,
                 default:
                   action.inputs[inputName].default !== null &&
-                  action.inputs[inputName].default !== undefined &&
-                  inputName !== "order" // this is a bit too complex to serialize
+                  action.inputs[inputName].default !== undefined
                     ? typeof action.inputs[inputName].default === "object"
                       ? JSON.stringify(action.inputs[inputName].default)
+                      : typeof action.inputs[inputName].default === "function"
+                      ? action.inputs[inputName].default()
                       : `${action.inputs[inputName].default}`
                     : undefined,
               };
