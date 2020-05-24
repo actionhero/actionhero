@@ -10,7 +10,6 @@ import { ParamsApi } from "./../initializers/params";
 import { ResqueApi } from "./../initializers/resque";
 import { RedisApi } from "./../initializers/redis";
 import { StaticFileApi } from "./../initializers/staticFile";
-import { DocumentationApi } from "./../initializers/documentation";
 import { RoutesApi } from "./../initializers/routes";
 import { SpecHelperApi } from "./../initializers/specHelper";
 
@@ -33,7 +32,6 @@ export class Api {
   servers: ServersApi;
   chatRoom: ChatRoomApi;
   params: ParamsApi;
-  documentation: DocumentationApi;
   staticFile: StaticFileApi;
   redis: RedisApi;
   resque: ResqueApi;

@@ -140,7 +140,7 @@ describe("Core: CLI", () => {
         "src/initializers",
         "src/servers",
         "src/bin",
-        "src/actions/showDocumentation.ts",
+        "src/actions/swagger.ts",
         "src/actions/status.ts",
         "src/config",
         "src/config/api.ts",
@@ -330,10 +330,9 @@ describe("Core: CLI", () => {
       });
 
       test("can boot the server", async () => {
-        const response = await request(
-          `http://${host}:${port}/api/showDocumentation`,
-          { json: true }
-        );
+        const response = await request(`http://${host}:${port}/api/status`, {
+          json: true,
+        });
         expect(response.serverInformation.serverName).toEqual(
           "my_actionhero_project"
         );
@@ -342,10 +341,9 @@ describe("Core: CLI", () => {
       test("can handle signals to reboot", async () => {
         await doCommand(`kill -s USR2 ${serverPid}`);
         await sleep(3000);
-        const response = await request(
-          `http://${host}:${port}/api/showDocumentation`,
-          { json: true }
-        );
+        const response = await request(`http://${host}:${port}/api/status`, {
+          json: true,
+        });
         expect(response.serverInformation.serverName).toEqual(
           "my_actionhero_project"
         );
@@ -355,7 +353,7 @@ describe("Core: CLI", () => {
         await doCommand(`kill ${serverPid}`);
         await sleep(1000);
         try {
-          await request(`http://${host}:${port}/api/showDocumentation`);
+          await request(`http://${host}:${port}/api/status`);
           throw new Error("should not get here");
         } catch (error) {
           expect(error.toString()).toMatch(

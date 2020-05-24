@@ -747,25 +747,9 @@ describe("Server: Web", () => {
   });
 
   describe("documentation", () => {
-    test("documentation can be returned via a documentation action", async () => {
-      const body = await request
-        .get(url + "/api/showDocumentation")
-        .then(toJson);
-      expect(body.documentation).toBeInstanceOf(Object);
-    });
-
-    test("should have actions with all the right parts", async () => {
-      const body = await request
-        .get(url + "/api/showDocumentation")
-        .then(toJson);
-      for (const actionName in body.documentation) {
-        for (const version in body.documentation[actionName]) {
-          const action = body.documentation[actionName][version];
-          expect(typeof action.name).toEqual("string");
-          expect(typeof action.description).toEqual("string");
-          expect(action.inputs).toBeInstanceOf(Object);
-        }
-      }
+    test("documentation can be returned via a swagger action", async () => {
+      const body = await request.get(url + "/api/swagger").then(toJson);
+      expect(body.paths).toBeInstanceOf(Object);
     });
   });
 

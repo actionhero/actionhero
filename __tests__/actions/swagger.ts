@@ -3,7 +3,7 @@ import { Process, specHelper } from "./../../src/index";
 const actionhero = new Process();
 
 describe("Action", () => {
-  describe("showDocumentation", () => {
+  describe("swagger", () => {
     beforeAll(async () => {
       await actionhero.start();
     });
@@ -13,11 +13,10 @@ describe("Action", () => {
     });
 
     test("returns the correct parts", async () => {
-      const { documentation, serverInformation } = await specHelper.runAction(
-        "showDocumentation"
-      );
-      expect(Object.keys(documentation).length).toEqual(7); // 7 actions
-      expect(serverInformation.serverName).toEqual("actionhero");
+      const { paths, basePath, host } = await specHelper.runAction("swagger");
+      expect(basePath).toBe("/api/");
+      expect(host).toMatch(/localhost/);
+      expect(Object.keys(paths).length).toEqual(7); // 7 actions
     });
   });
 });
