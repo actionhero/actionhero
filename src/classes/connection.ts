@@ -39,6 +39,17 @@ export class Connection {
   extension?: string;
   destroyed: boolean;
 
+  // --- custom methods ---
+
+  /** for specHelper */
+  messages?: Array<{ message: string; [key: string]: any }>;
+
+  //** for web connections */
+  setHeader?: (key: string, value: string) => {};
+  setStatusCode?: (code: number) => {};
+  matchedRoute?: string;
+  pipe?: Function;
+
   /**
    * @param data The specifics of this connection
    * @param callCreateMethods The specifics of this connection will calls create methods in the constructor. This property will exist for backward compatibility. If you want to construct connection and call create methods within async, you can use `await Actionhero.Connection.createAsync(details)` for construction.

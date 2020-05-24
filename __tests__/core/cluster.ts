@@ -1,4 +1,5 @@
 import {
+  api,
   Process,
   config,
   utils,
@@ -8,11 +9,10 @@ import {
 } from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 
 describe("Core: Action Cluster", () => {
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
     for (var room in config.general.startingChatRooms) {
       try {
         await chatRoom.destroy(room);

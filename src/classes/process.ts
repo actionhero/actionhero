@@ -38,11 +38,11 @@ export class Process {
 
     this.startCount = 0;
 
-    api.commands.initialize = async (...args): Promise<Api | void> => {
+    api.commands.initialize = async (...args) => {
       return this.initialize(...args);
     };
 
-    api.commands.start = async (...args): Promise<Api | void> => {
+    api.commands.start = async (...args) => {
       return this.start(...args);
     };
 
@@ -50,7 +50,7 @@ export class Process {
       return this.stop();
     };
 
-    api.commands.restart = async (): Promise<Api | void> => {
+    api.commands.restart = async () => {
       return this.restart();
     };
 
@@ -247,7 +247,6 @@ export class Process {
     }
 
     this.initialized = true;
-    return api;
   }
 
   async start(params = {}) {
@@ -277,8 +276,6 @@ export class Process {
     } catch (error) {
       return this.fatalError(error, "start");
     }
-
-    return api;
   }
 
   async stop() {
@@ -320,7 +317,6 @@ export class Process {
     } else {
       await this.start(this._startingParams);
     }
-    return api;
   }
 
   /**

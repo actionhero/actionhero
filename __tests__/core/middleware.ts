@@ -1,11 +1,17 @@
-import { Process, config, action, utils, specHelper } from "./../../src/index";
+import {
+  api,
+  Process,
+  config,
+  action,
+  utils,
+  specHelper,
+} from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 
 describe("Core: Middleware", () => {
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
   });
   afterAll(async () => {
     await actionhero.stop();
@@ -78,8 +84,9 @@ describe("Core: Middleware", () => {
             name: "authAction",
             description: "I am a test",
             version: 1,
+            //@ts-ignore
             authenticated: true,
-            run: ({ response, session }) => {
+            run: async ({ response, session }) => {
               sessions.push(session);
               response.thing = "stuff";
             },

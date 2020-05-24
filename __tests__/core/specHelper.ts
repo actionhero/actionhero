@@ -1,11 +1,10 @@
-import { Process, specHelper, task } from "./../../src/index";
+import { api, Process, specHelper, task } from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 
 describe("Core: specHelper", () => {
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
   });
   afterAll(async () => {
     await actionhero.stop();
@@ -35,11 +34,12 @@ describe("Core: specHelper", () => {
     beforeAll(() => {
       api.actions.versions.stringResponseTestAction = [1];
       api.actions.actions.stringResponseTestAction = {
+        //@ts-ignore
         1: {
           name: "stringResponseTestAction",
           description: "stringResponseTestAction",
           version: 1,
-          run: (data) => {
+          run: async (data) => {
             data.response = "something response";
           },
         },
@@ -47,6 +47,7 @@ describe("Core: specHelper", () => {
 
       api.actions.versions.stringErrorTestAction = [1];
       api.actions.actions.stringErrorTestAction = {
+        //@ts-ignore
         1: {
           name: "stringErrorTestAction",
           description: "stringErrorTestAction",
@@ -60,11 +61,12 @@ describe("Core: specHelper", () => {
 
       api.actions.versions.arrayResponseTestAction = [1];
       api.actions.actions.arrayResponseTestAction = {
+        //@ts-ignore
         1: {
           name: "arrayResponseTestAction",
           description: "arrayResponseTestAction",
           version: 1,
-          run: (data) => {
+          run: async (data) => {
             data.response = [1, 2, 3];
           },
         },
@@ -72,6 +74,7 @@ describe("Core: specHelper", () => {
 
       api.actions.versions.arrayErrorTestAction = [1];
       api.actions.actions.arrayErrorTestAction = {
+        //@ts-ignore
         1: {
           name: "arrayErrorTestAction",
           description: "arrayErrorTestAction",

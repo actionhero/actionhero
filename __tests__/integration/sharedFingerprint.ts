@@ -3,10 +3,9 @@
 
 import * as _Primus from "primus";
 import * as request from "request-promise-native";
-import { Process, config } from "./../../src/index";
+import { api, Process, config } from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 let ActionheroWebsocketClient;
 let fingerprint;
 let url;
@@ -32,10 +31,11 @@ const connectClient = async (query = ""): Promise<any> => {
 
 describe("Integration: Web Server + Websocket Socket shared fingerprint", () => {
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
     await api.redis.clients.client.flushdb();
     url = "http://localhost:" + config.servers.web.port;
     ActionheroWebsocketClient = eval(
+      // @ts-ignore
       api.servers.servers.websocket.compileActionheroWebsocketClientJS()
     ); // eslint-disable-line
   });

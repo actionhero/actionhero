@@ -1,4 +1,5 @@
 import {
+  api,
   Process,
   Task,
   utils,
@@ -8,14 +9,13 @@ import {
 } from "../../../src/index";
 
 const actionhero = new Process();
-let api;
 
 let taskOutput = [];
 const queue = "testQueue";
 
 describe("Core: Tasks", () => {
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
 
     api.resque.multiWorker.options.minTaskProcessors = 1;
     api.resque.multiWorker.options.maxTaskProcessors = 1;
@@ -178,7 +178,7 @@ describe("Core: Tasks", () => {
   });
 
   test("all queues should start empty", async () => {
-    const length = await api.resque.queue.length();
+    const length = await api.resque.queue.length("default");
     expect(length).toEqual(0);
   });
 
@@ -250,8 +250,7 @@ describe("Core: Tasks", () => {
   test("no delayed tasks should be scheduled", async () => {
     const timestamps = await api.resque.queue.scheduledAt(
       queue,
-      "periodicTask",
-      {}
+      "periodicTask"
     );
     expect(timestamps).toHaveLength(0);
   });
@@ -283,7 +282,7 @@ describe("Core: Tasks", () => {
     const timestamps = await api.resque.queue.scheduledAt(
       queue,
       "regularTask",
-      { word: "first" }
+      [{ word: "first" }]
     );
     expect(timestamps).toHaveLength(1);
 
@@ -319,7 +318,7 @@ describe("Core: Tasks", () => {
     const count = await task.del(queue, "regularTask", { word: "first" });
     expect(count).toEqual(1);
 
-    const lengthAgain = await api.resque.queue.length();
+    const lengthAgain = await api.resque.queue.length(queue);
     expect(lengthAgain).toEqual(0);
   });
 
@@ -328,7 +327,7 @@ describe("Core: Tasks", () => {
     const timestamps = await api.resque.queue.scheduledAt(
       queue,
       "regularTask",
-      { word: "first" }
+      [{ word: "first" }]
     );
     expect(timestamps).toHaveLength(1);
 

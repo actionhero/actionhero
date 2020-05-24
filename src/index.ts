@@ -41,4 +41,4 @@ if (!global.api) {
   global.api = new Api();
 }
 // @ts-ignore
-export const api = global.api;
+export const api: Api = global.api;
