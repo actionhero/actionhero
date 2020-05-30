@@ -13,10 +13,12 @@ jobs:
         with:
           node-version: 14.x
       - run: npm ci
-      - name: cache node modules
+      - name: save cache
         uses: actions/cache@v1
         with:
-          path: node_modules
+          path: |
+            node_modules
+            dist
           key: cache-${{ hashFiles('**/package-lock.json') }}
 
   lint:
@@ -30,10 +32,12 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
-      - name: download node module cache
+      - name: download cache
         uses: actions/cache@v1
         with:
-          path: node_modules
+          path: |
+            node_modules
+            dist
           key: cache-${{ hashFiles('**/package-lock.json') }}
       - run: npm run lint
 
@@ -61,10 +65,12 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: download node module cache
+      - name: download cache
         uses: actions/cache@v1
         with:
-          path: node_modules
+          path: |
+            node_modules
+            dist
           key: cache-${{ hashFiles('**/package-lock.json') }}
       - run: npm rebuild
       - run: ./node_modules/.bin/jest --ci
