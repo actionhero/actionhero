@@ -62,10 +62,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: download node module cache
-      uses: actions/cache@v1
-      with:
-        path: node_modules
-        key: cache-${{ hashFiles('**/package-lock.json') }}
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: cache-${{ hashFiles('**/package-lock.json') }}
       - run: npm rebuild
       - run: ./node_modules/.bin/jest --ci
         env:
