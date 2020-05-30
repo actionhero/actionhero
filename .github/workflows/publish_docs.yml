@@ -1,6 +1,6 @@
 name: Publish Docs
 on: [push]
- branches: master
+  branches: master
 
 jobs:
   publish_docs:
