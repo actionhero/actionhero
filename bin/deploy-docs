@@ -36,13 +36,8 @@ mkdir gh-pages-branch/.circleci && cp .circleci/config.yml gh-pages-branch/.circ
 cp public/favicon.ico gh-pages-branch/favicon.ico
 echo 'docs.actionherojs.com' >> gh-pages-branch/CNAME
 
-## push it
+## make the commmit
 cd gh-pages-branch
 git add -A
 git -c user.name="$GIT_USER_NAME" -c user.email="$GIT_USER_EMAIL" commit --allow-empty -m "deploy static site @ $(date)"
-git push --force origin gh-pages
-cd ..
 
-## clean up
-rm -rf gh-pages-branch
-echo "Deployment Complete"
