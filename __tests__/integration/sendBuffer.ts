@@ -1,14 +1,13 @@
 import * as request from "request-promise-native";
 import * as stream from "stream";
-import { Process, config } from "./../../src/index";
+import { api, Process, config } from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 let url;
 
 describe("Server: sendBuffer", () => {
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
     url = "http://localhost:" + config.servers.web.port;
   });
 
@@ -19,6 +18,7 @@ describe("Server: sendBuffer", () => {
   beforeAll(() => {
     api.actions.versions.sendBufferTest = [1];
     api.actions.actions.sendBufferTest = {
+      // @ts-ignore
       1: {
         name: "sendBufferTest",
         description: "sendBufferTest",
@@ -46,11 +46,12 @@ describe("Server: sendBuffer", () => {
 
     api.actions.versions.sendUnknownLengthBufferTest = [1];
     api.actions.actions.sendUnknownLengthBufferTest = {
+      // @ts-ignore
       1: {
         name: "sendUnknownLengthBufferTest",
         description: "sendUnknownLengthBufferTest",
         version: 1,
-        run: (data) => {
+        run: async (data) => {
           const bufferStream = new stream.PassThrough();
           api.servers.servers.web.sendFile(
             data.connection,

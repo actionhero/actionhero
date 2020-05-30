@@ -439,11 +439,8 @@ export namespace task {
         let validatorResponse;
         if (typeof task.inputs[key].validator === "function") {
           // allowed to throw too
-          validatorResponse = await task.inputs[key].validator.call(
-            api,
-            inputs[key],
-            this
-          );
+          const method = task.inputs[key].validator as Function;
+          validatorResponse = await method.call(api, inputs[key], this);
         } else {
           const method = this.prepareStringMethod(task.inputs[key].validator);
           validatorResponse = await method.call(api, inputs[key], this);

@@ -1,8 +1,7 @@
 import * as request from "request-promise-native";
-import { Process, config } from "./../../../src/index";
+import { api, Process, config } from "./../../../src/index";
 
 const actionhero = new Process();
-let api;
 let url;
 
 const toJson = async (string) => {
@@ -44,7 +43,7 @@ jest.mock("./../../../src/config/servers/web.ts", () => ({
 
 describe("Server: Web", () => {
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
     url = "http://localhost:" + config.servers.web.port;
   });
 

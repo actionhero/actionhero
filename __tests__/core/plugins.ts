@@ -1,9 +1,8 @@
 import * as path from "path";
 import * as ChildProcess from "child_process";
-import { Process, specHelper } from "./../../src/index";
+import { api, Process, specHelper } from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 let configChanges;
 
 async function exec(
@@ -33,7 +32,7 @@ describe("Core: Plugins", () => {
         },
       };
 
-      api = await actionhero.start({ configChanges });
+      await actionhero.start({ configChanges });
     });
 
     afterAll(async () => {
@@ -109,7 +108,7 @@ describe("Core: Plugins", () => {
         },
       };
 
-      api = await actionhero.start();
+      await actionhero.start();
     });
 
     afterAll(async () => {
@@ -171,7 +170,7 @@ describe("Core: Plugins", () => {
 
   describe("without plugin", () => {
     beforeAll(async () => {
-      api = await actionhero.start();
+      await actionhero.start();
     });
     afterAll(async () => {
       await actionhero.stop();

@@ -3,11 +3,10 @@
  */
 
 import * as path from "path";
-import { Process, config } from "./../../src/index";
+import { api, Process, config } from "./../../src/index";
 const packageJSON = require(path.join(__dirname, "..", "..", "package.json"));
 
 const actionhero = new Process();
-let api;
 let url;
 
 // stub the selenium infected variables
@@ -23,7 +22,7 @@ const ensureNoErrors = async () => {
 
 describe("browser integration tests", () => {
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
     await api.redis.clients.client.flushdb();
     url = "http://localhost:" + config.servers.web.port;
   });

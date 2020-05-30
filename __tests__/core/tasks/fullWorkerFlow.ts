@@ -1,7 +1,6 @@
-import { Process, Task, utils, config, task } from "./../../../src/index";
+import { api, Process, Task, utils, config, task } from "./../../../src/index";
 
 const actionhero = new Process();
-let api;
 let taskOutput = [];
 const queue = "testQueue";
 
@@ -31,7 +30,7 @@ jest.mock("./../../../src/config/tasks.ts", () => ({
 describe("Core: Tasks", () => {
   describe("full worker flow", () => {
     beforeAll(async () => {
-      api = await actionhero.start();
+      await actionhero.start();
       api.resque.multiWorker.options.connection.redis.setMaxListeners(100);
 
       class RegularTask extends Task {
