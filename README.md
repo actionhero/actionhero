@@ -30,7 +30,7 @@ _The reusable, scalable, and quick node.js API server for stateless and stateful
 [![NPM](https://img.shields.io/npm/dm/actionhero.svg?style=flat-square)](https://npmjs.org/package/actionhero)
 [![Dependency Status](https://david-dm.org/actionhero/actionhero.svg?style=flat-square)](https://david-dm.org/actionhero/actionhero)
 
-[![Build Status](https://circleci.com/gh/actionhero/actionhero.png)](https://circleci.com/gh/actionhero/actionhero)
+![Test](https://github.com/actionhero/actionhero/workflows/Test/badge.svg)
 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/l0oky/awesome-actionhero)
 [![Follow new releases](https://app.releasly.co/assets/badges/badge-green-classic.svg)](https://app.releasly.co/sites/actionhero/actionhero?utm_source=github_badge)
 [![Chat](https://slack.actionherojs.com/badge.svg)](http://slack.actionherojs.com)

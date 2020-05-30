@@ -2,19 +2,19 @@
 // You can use SKIP_CLI_TEST_SETUP=true to skip the setup portion of these tests if you are testing this file repeatedly
 
 import * as fs from "fs";
-import * as os from "os";
 import * as path from "path";
 import { spawn } from "child_process";
 import * as request from "request-promise-native";
 import * as isrunning from "is-running";
 
-const testDir = os.tmpdir() + path.sep + "actionheroTestProject";
+const testDir = path.join(process.cwd(), "tmp", "actionheroTestProject");
 const binary = "./node_modules/.bin/actionhero";
 const pacakgeJSON = require(path.join(__dirname, "/../../package.json"));
 
 console.log(`testDir: ${testDir}`);
 
 const port = 18080 + parseInt(process.env.JEST_WORKER_ID || "0");
+const host = "localhost";
 let pid;
 let AHPath;
 
@@ -331,7 +331,7 @@ describe("Core: CLI", () => {
 
       test("can boot the server", async () => {
         const response = await request(
-          `http://localhost:${port}/api/showDocumentation`,
+          `http://${host}:${port}/api/showDocumentation`,
           { json: true }
         );
         expect(response.serverInformation.serverName).toEqual(
@@ -343,7 +343,7 @@ describe("Core: CLI", () => {
         await doCommand(`kill -s USR2 ${serverPid}`);
         await sleep(3000);
         const response = await request(
-          `http://localhost:${port}/api/showDocumentation`,
+          `http://${host}:${port}/api/showDocumentation`,
           { json: true }
         );
         expect(response.serverInformation.serverName).toEqual(
@@ -355,7 +355,7 @@ describe("Core: CLI", () => {
         await doCommand(`kill ${serverPid}`);
         await sleep(1000);
         try {
-          await request(`http://localhost:${port}/api/showDocumentation`);
+          await request(`http://${host}:${port}/api/showDocumentation`);
           throw new Error("should not get here");
         } catch (error) {
           expect(error.toString()).toMatch(

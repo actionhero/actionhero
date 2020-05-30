@@ -5,6 +5,7 @@
 import * as path from "path";
 import { api, Process, config } from "./../../src/index";
 const packageJSON = require(path.join(__dirname, "..", "..", "package.json"));
+const host = process.env.SELENIUM_TEST_HOST || "localhost";
 
 const actionhero = new Process();
 let url;
@@ -24,7 +25,7 @@ describe("browser integration tests", () => {
   beforeAll(async () => {
     await actionhero.start();
     await api.redis.clients.client.flushdb();
-    url = "http://localhost:" + config.servers.web.port;
+    url = `http://${host}:${config.servers.web.port}`;
   });
 
   afterAll(async () => {
