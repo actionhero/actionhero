@@ -21,7 +21,7 @@ then
 else
     git checkout --orphan gh-pages
 fi
-cd ..
+cd gh-pages
 
 ## build master's docs
 git checkout "master"
