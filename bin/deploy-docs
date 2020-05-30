@@ -21,10 +21,9 @@ then
 else
     git checkout --orphan gh-pages
 fi
-cd gh-pages
+cd ..
 
 ## build master's docs
-git checkout "master"
 rm -rf docs
 mkdir docs
 npm run docs
