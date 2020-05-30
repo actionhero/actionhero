@@ -14,10 +14,5 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
-      - name: cache node modules
-        uses: actions/cache@v1
-        with:
-          path: node_modules
-          key: cache-${{ hashFiles('**/package-lock.json') }}
       - run: npm ci
       - run: ./bin/deploy-docs
