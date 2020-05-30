@@ -73,3 +73,9 @@ jobs:
           SELENIUM_TEST_HOST: main
           SELENIUM_REMOTE_URL: http://selenium:4444/wd/hub
           maxMemoryAlloted: 1000
+
+  complete:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - run: echo "Done!"
