@@ -60,6 +60,22 @@ describe("Server: Web", () => {
       }
     });
 
+    test("will redirect clients if they do not request the proper protocol", async () => {
+      try {
+        await request.get({
+          followRedirect: false,
+          url: url + "/api/randomNumber",
+          headers: { Host: "www.site.com" },
+        });
+        throw new Error("should not get here");
+      } catch (error) {
+        expect(error.statusCode).toEqual(302);
+        expect(error.response.body).toMatch(
+          /You are being redirected to https:\/\/www.site.com\/api\/randomNumber/
+        );
+      }
+    });
+
     test("will allow API access from the proper hosts", async () => {
       const response = await request.get({
         followRedirect: false,
