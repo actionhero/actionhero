@@ -134,6 +134,7 @@ Or deploy a free API server now:
 ## Contributing
 
 - Contributing to Actionhero is easy! [You can learn more about contributing to Actionhero here](https://github.com/actionhero/actionhero/blob/master/.github/CONTRIBUTING.md)
+- By engaging the with Actionhero community or contributing to this or related projects, you agree to our [Code of Conduct](https://github.com/actionhero/actionhero/blob/master/CODE_OF_CONDUCT.md)
 
 ## License
 

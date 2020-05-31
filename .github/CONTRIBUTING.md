@@ -8,6 +8,8 @@ Actionhero would not be the success it is today without the contributions of [ma
 
 Before you begin your contribution, please let us know in the Actionhero Slack team, which is available at https://slack.actionherojs.com. There are community members who can help you, and you may want to team up with another community member. This also helps ensure that more than one person isn't working on the same thing.
 
+By engaging the with Actionhero community or contributing to this or related projects, you agree to our [Code of Conduct](https://github.com/actionhero/actionhero/blob/master/CODE_OF_CONDUCT.md).
+
 ## Pull Requests
 
 All changes to Actionhero should be sent in as [Pull Requests](https://help.github.com/articles/about-pull-requests) to our [Github Project](https://github.com/actionhero/actionhero). Changes by any other method will be instantly rejected. GitHub allows us to coordinate and communicate in a single place. Pull requests also allow us to run our test suite against all new code to ensure that things still work the way they are supposed to after your change.
@@ -37,11 +39,11 @@ If you are documenting code, inline JSdocs are preferred. The only exceptions ar
 
 ```js
 /**
-Sleep with a Promise.  
+Sleep with a Promise.
 `time` is the number of ms to sleep.
 */
 api.utils.sleep = (time: number) => {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(resolve, time);
   });
 };
