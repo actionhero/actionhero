@@ -400,19 +400,16 @@ export class WebServer extends Server {
       }
     }
 
+    // check if this request (http://other-host.com) is in allowedRequestHosts ([https://host.com])
     if (
       this.config.allowedRequestHosts &&
       this.config.allowedRequestHosts.length > 0
     ) {
-      let guess = "http://";
-      if (this.config.secure) {
-        guess = "https://";
-      }
-      const fullRequestHost =
-        (req.headers["x-forwarded-proto"]
-          ? req.headers["x-forwarded-proto"] + "://"
-          : guess) + req.headers.host;
-      if (this.config.allowedRequestHosts.indexOf(fullRequestHost) < 0) {
+      const requestHost = req.headers["x-forwarded-proto"]
+        ? req.headers["x-forwarded-proto"] + "://" + req.headers.host
+        : (this.config.secure ? "https://" : "http://") + req.headers.host;
+
+      if (!this.config.allowedRequestHosts.includes(requestHost)) {
         const newHost = this.config.allowedRequestHosts[0];
         res.statusCode = 302;
         res.setHeader("Location", newHost + req.url);
