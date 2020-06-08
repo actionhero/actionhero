@@ -125,10 +125,8 @@ export class ActionProcessor {
 
     let filteredResponse;
     if (config.general.enableResponseLogging) {
-      log(`logAction this.response:${JSON.stringify(this.response)}`);
       filteredResponse = utils.filterResponseForLogging(this.response);
       logLine.response = JSON.stringify(filteredResponse);
-      log(`logAction logLine.response:${logLine.response}`);
     }
 
     if (error) {
