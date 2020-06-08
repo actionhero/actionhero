@@ -114,14 +114,22 @@ export class ActionProcessor {
     }
 
     const filteredParams = utils.filterObjectForLogging(this.params);
-
     const logLine = {
       to: this.connection.remoteIP,
       action: this.action,
       params: JSON.stringify(filteredParams),
       duration: this.duration,
       error: "",
+      response: undefined,
     };
+
+    let filteredResponse;
+    if (config.general.enableResponseLogging) {
+      log(`logAction this.response:${JSON.stringify(this.response)}`);
+      filteredResponse = utils.filterResponseForLogging(this.response);
+      logLine.response = JSON.stringify(filteredResponse);
+      log(`logAction logLine.response:${logLine.response}`);
+    }
 
     if (error) {
       if (error instanceof Error) {
