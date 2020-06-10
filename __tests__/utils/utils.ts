@@ -335,4 +335,86 @@ describe("Utils", () => {
       expect(filteredParams.o1.o2.o2p2).toEqual(testInput.o1.o2.o2p2);
     });
   });
+
+  describe("utils.filterResponseForLogging", () => {
+    beforeEach(() => {
+      expect(config.general.filteredResponse.length).toEqual(0);
+    });
+
+    afterEach(() => {
+      // after each test, empty the array
+      config.general.filteredResponse.length = 0;
+    });
+
+    const testInput = {
+      p1: 1,
+      p2: "s3cr3t",
+      o1: {
+        o1p1: 1,
+        o1p2: "also-s3cr3t",
+        o2: {
+          o2p1: "this is ok",
+          o2p2: "extremely-s3cr3t",
+        },
+      },
+      o2: {
+        name: "same as o1`s inner object!",
+        o2p1: "nothing secret",
+      },
+    };
+
+    test("can filter top level params, no matter the type", () => {
+      const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
+      config.general.filteredResponse.push("p1", "p2", "o2");
+      const filteredRespnose = utils.filterResponseForLogging(inputs);
+      expect(filteredRespnose.p1).toEqual("[FILTERED]");
+      expect(filteredRespnose.p2).toEqual("[FILTERED]");
+      expect(filteredRespnose.o2).toEqual("[FILTERED]"); // entire object filtered
+      expect(filteredRespnose.o1).toEqual(testInput.o1); // unchanged
+    });
+
+    test("will not filter things that do not exist", () => {
+      // Identity
+      const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
+      const filteredRespnose = utils.filterResponseForLogging(inputs);
+      expect(filteredRespnose).toEqual(testInput);
+
+      config.general.filteredResponse.push("p3", "p4", "o1.o3", "o1.o2.p1");
+      const filteredRespnose2 = utils.filterResponseForLogging(inputs);
+      expect(filteredRespnose2).toEqual(testInput);
+    });
+
+    test("can filter a single level dot notation", () => {
+      const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
+      config.general.filteredResponse.push(
+        "p1",
+        "o1.o1p1",
+        "somethingNotExist"
+      );
+      const filteredRespnose = utils.filterResponseForLogging(inputs);
+      expect(filteredRespnose.p1).toEqual("[FILTERED]");
+      expect(filteredRespnose.o1.o1p1).toEqual("[FILTERED]");
+      // Unchanged things
+      expect(filteredRespnose.p2).toEqual(testInput.p2);
+      expect(filteredRespnose.o1.o1p2).toEqual(testInput.o1.o1p2);
+      expect(filteredRespnose.o1.o2).toEqual(testInput.o1.o2);
+      expect(filteredRespnose.o2).toEqual(testInput.o2);
+    });
+
+    test("can filter two levels deep", () => {
+      const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
+      config.general.filteredResponse.push(
+        "p2",
+        "o1.o2.o2p1",
+        "o1.o2.notThere"
+      );
+      const filteredRespnose = utils.filterResponseForLogging(inputs);
+      expect(filteredRespnose.p2).toEqual("[FILTERED]");
+      expect(filteredRespnose.o1.o2.o2p1).toEqual("[FILTERED]");
+      // Unchanged things
+      expect(filteredRespnose.p1).toEqual(testInput.p1);
+      expect(filteredRespnose.o1.o1p1).toEqual(testInput.o1.o1p1);
+      expect(filteredRespnose.o1.o2.o2p2).toEqual(testInput.o1.o2.o2p2);
+    });
+  });
 });
