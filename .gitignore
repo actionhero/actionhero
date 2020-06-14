@@ -13,6 +13,7 @@ dist
 #Docs
 /docs
 gh-pages-branch
+gh-pages
 
 # Node / NPM
 npm-debug.log
