@@ -25,7 +25,7 @@ jobs:
           path: |
             node_modules
             dist
-          key: ${{ runner.os }}-cache-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-cache-${{ github.sha }}
 
   lint:
     runs-on: ubuntu-latest
@@ -44,7 +44,7 @@ jobs:
           path: |
             node_modules
             dist
-          key: ${{ runner.os }}-cache-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-cache-${{ github.sha }}
       - run: npm run lint
 
   test:
@@ -77,7 +77,7 @@ jobs:
           path: |
             node_modules
             dist
-          key: ${{ runner.os }}-cache-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-cache-${{ github.sha }}
       - run: npm rebuild
       - run: ./node_modules/.bin/jest --ci
         env:
