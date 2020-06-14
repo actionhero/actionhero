@@ -805,7 +805,7 @@ describe("Server: Web", () => {
       });
       expect(response.statusCode).toEqual(200);
       expect(response.body).toMatch(
-        /Actionhero.js is a multi-transport API Server/
+        /Actionhero is a multi-transport API Server/
       );
     });
 
@@ -815,7 +815,7 @@ describe("Server: Web", () => {
       });
       expect(response.statusCode).toEqual(200);
       expect(response.body).toMatch(
-        /Actionhero.js is a multi-transport API Server/
+        /Actionhero is a multi-transport API Server/
       );
     });
 
