@@ -57,6 +57,10 @@ export class Exceptions extends Initializer {
           : undefined;
       } else {
         message = `Error: ${error?.message || error.toString()}`;
+        Object.getOwnPropertyNames(error)
+          .filter((prop) => prop !== "message")
+          .sort((a, b) => (a === "stack" || b === "stack" ? -1 : 1))
+          .forEach((prop) => (data[prop] = error[prop]));
         data["type"] = type;
         data["name"] = name;
         data["data"] = objects;

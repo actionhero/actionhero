@@ -135,14 +135,8 @@ export class ActionProcessor {
         logLine.error = error.toString();
         Object.getOwnPropertyNames(error)
           .filter((prop) => prop !== "message")
-          .sort((a, b) => {
-            if (a === "stack") return -1;
-            if (b === "stack") return -1;
-            return 1;
-          })
-          .map((prop) => {
-            logLine[prop] = error[prop];
-          });
+          .sort((a, b) => (a === "stack" || b === "stack" ? -1 : 1))
+          .forEach((prop) => (logLine[prop] = error[prop]));
       } else {
         try {
           logLine.error = JSON.stringify(error);
