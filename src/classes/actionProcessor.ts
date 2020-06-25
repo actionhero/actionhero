@@ -130,8 +130,10 @@ export class ActionProcessor {
     }
 
     if (error) {
+      logLevel = "error";
       if (error instanceof Error) {
         logLine.error = error.toString();
+        logLine["stacktrace"] = error.stack;
       } else {
         try {
           logLine.error = JSON.stringify(error);
@@ -142,9 +144,6 @@ export class ActionProcessor {
     }
 
     log(`[ action @ ${this.connection.type} ]`, logLevel, logLine);
-    if (error?.stack) {
-      error.stack.split(EOL).map((l) => log(` ! ${l}`, "error"));
-    }
   }
 
   private async preProcessAction() {
