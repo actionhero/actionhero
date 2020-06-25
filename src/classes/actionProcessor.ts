@@ -133,7 +133,16 @@ export class ActionProcessor {
       logLevel = "error";
       if (error instanceof Error) {
         logLine.error = error.toString();
-        logLine["stacktrace"] = error.stack;
+        Object.getOwnPropertyNames(error)
+          .filter((prop) => prop !== "message")
+          .sort((a, b) => {
+            if (a === "stack") return -1;
+            if (b === "stack") return -1;
+            return 1;
+          })
+          .map((prop) => {
+            logLine[prop] = error[prop];
+          });
       } else {
         try {
           logLine.error = JSON.stringify(error);

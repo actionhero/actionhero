@@ -10,25 +10,22 @@ export const DEFAULT = {
       serializers: {
         servers: {
           web: (error) => {
-            if (error.message) {
-              return String(error.message);
-            } else {
-              return error;
-            }
+            return {
+              message: error.message ? error.message : String(error),
+              code: error.code,
+            };
           },
           websocket: (error) => {
-            if (error.message) {
-              return String(error.message);
-            } else {
-              return error;
-            }
+            return {
+              message: error.message ? error.message : String(error),
+              code: error.code,
+            };
           },
           specHelper: (error) => {
-            if (error.message) {
-              return "Error: " + String(error.message);
-            } else {
-              return error;
-            }
+            return {
+              message: error.message ? error.message : String(error),
+              code: error.code,
+            };
           },
         },
       },
