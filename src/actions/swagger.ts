@@ -65,7 +65,7 @@ export class Swagger extends Action {
           .replace(/\/:(\w*)/, "/{$1}");
 
         // in simpleRouting is enabled, only show the "post" verb for this action, not all 5
-        if (config.servers.web.simpleRouting && method !== "post") {
+        if (config.servers.web.simpleRouting && method !== "get") {
           return;
         }
 
