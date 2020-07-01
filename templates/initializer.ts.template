@@ -1,4 +1,4 @@
-import { Initializer, api } from "actionhero";
+import { Initializer } from "actionhero";
 
 export class MyInitializer extends Initializer {
   constructor() {
@@ -9,9 +9,7 @@ export class MyInitializer extends Initializer {
     this.stopPriority = %%stopPriority%%;
   }
 
-  async initialize() {
-    api["%%name%%"] = {};
-  }
+  async initialize() {}
 
   async start() {}
 
