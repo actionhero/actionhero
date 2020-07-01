@@ -9,7 +9,7 @@ export class GenerateServer extends CLI {
     this.description = "generate a new server";
     this.example = "actionhero generate server --name=[name]";
     this.inputs = {
-      name: { required: true }
+      name: { required: true },
     };
   }
 
@@ -19,7 +19,7 @@ export class GenerateServer extends CLI {
     );
     let template = String(templateBuffer);
 
-    ["name"].forEach(v => {
+    ["name"].forEach((v) => {
       const regex = new RegExp("%%" + v + "%%", "g");
       template = template.replace(regex, params[v]);
     });

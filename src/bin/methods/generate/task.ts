@@ -13,7 +13,7 @@ export class GenerateTask extends CLI {
       name: { required: true },
       queue: { required: true },
       description: { required: true, default: "an actionhero task" },
-      frequency: { required: true, default: 0 }
+      frequency: { required: true, default: 0 },
     };
   }
 
@@ -28,7 +28,7 @@ export class GenerateTask extends CLI {
     );
     let testTemplate = String(testTemplateBuffer);
 
-    ["name", "description", "queue", "frequency"].forEach(v => {
+    ["name", "description", "queue", "frequency"].forEach((v) => {
       const regex = new RegExp("%%" + v + "%%", "g");
       taskTemplate = taskTemplate.replace(regex, params[v]);
       testTemplate = testTemplate.replace(regex, params[v]);

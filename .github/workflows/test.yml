@@ -1,0 +1,93 @@
+name: Test
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: node
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - run: npm ci
+      - name: save cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            dist
+          key: ${{ runner.os }}-cache-${{ github.sha }}
+
+  lint:
+    runs-on: ubuntu-latest
+    needs: build
+    container:
+      image: node
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: download cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            dist
+          key: ${{ runner.os }}-cache-${{ github.sha }}
+      - run: npm run lint
+
+  test:
+    runs-on: ubuntu-latest
+    needs: lint
+    container:
+      image: node
+      options: --network-alias main
+
+    services:
+      redis:
+        image: redis
+
+      selenium:
+        image: selenium/standalone-chrome
+
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x, 14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: download cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            node_modules
+            dist
+          key: ${{ runner.os }}-cache-${{ github.sha }}
+      - run: npm rebuild
+      - run: ./node_modules/.bin/jest --ci
+        env:
+          REDIS_HOST: redis
+          SELENIUM_TEST_HOST: main
+          SELENIUM_REMOTE_URL: http://selenium:4444/wd/hub
+          maxMemoryAlloted: 1000
+
+  complete:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - run: echo "Done!"

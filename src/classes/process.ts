@@ -1,5 +1,6 @@
 import * as path from "path";
 import * as glob from "glob";
+import * as fs from "fs";
 import { Api } from "./api";
 import { buildConfig, ConfigInterface } from "./../modules/config";
 import { log } from "../modules/log";
@@ -10,9 +11,9 @@ import { utils } from "../modules/utils";
 import { id } from "./process/id";
 import { env } from "./process/env";
 import { writePidFile, clearPidFile } from "./process/pid";
-import { typescript } from "./process/typescript";
 
-let api: Api;
+import { api } from "../index";
+
 let config: ConfigInterface = {};
 
 export class Process {
@@ -30,10 +31,6 @@ export class Process {
   };
 
   constructor() {
-    // Only in files required by `index.js` do we need to delay the loading of the API object
-    // This is due to cyclical require issues
-    api = require("../index").api;
-
     this.initializers = {};
     this.loadInitializers = [];
     this.startInitializers = [];
@@ -41,11 +38,11 @@ export class Process {
 
     this.startCount = 0;
 
-    api.commands.initialize = async (...args): Promise<Api | void> => {
+    api.commands.initialize = async (...args) => {
       return this.initialize(...args);
     };
 
-    api.commands.start = async (...args): Promise<Api | void> => {
+    api.commands.start = async (...args) => {
       return this.start(...args);
     };
 
@@ -53,7 +50,7 @@ export class Process {
       return this.stop();
     };
 
-    api.commands.restart = async (): Promise<Api | void> => {
+    api.commands.restart = async () => {
       return this.restart();
     };
 
@@ -88,41 +85,34 @@ export class Process {
     // load initializers from plugins
     for (const pluginName in config.plugins) {
       if (config.plugins[pluginName] !== false) {
-        const pluginPath: string = config.plugins[pluginName].path;
+        const pluginPath: string = path.normalize(
+          config.plugins[pluginName].path
+        );
+
+        if (!fs.existsSync(pluginPath)) {
+          throw new Error(`plugin path does not exist: ${pluginPath}`);
+        }
 
         // old style at the root of the project
         initializerFiles = initializerFiles.concat(
-          glob.sync(
-            path.join(pluginPath, "initializers", "**", "**/*(*.js|*.ts)")
-          )
+          glob.sync(path.join(pluginPath, "initializers", "**", "*.js"))
         );
 
-        // dist files if running in JS mode
-        if (!typescript) {
-          initializerFiles = initializerFiles.concat(
-            glob.sync(
-              path.join(pluginPath, "dist", "initializers", "**", "*.js")
-            )
-          );
-        }
-
-        // src files if running in TS mode
-        if (typescript) {
-          initializerFiles = initializerFiles.concat(
-            glob.sync(
-              path.join(pluginPath, "src", "initializers", "**", "*.ts")
-            )
-          );
-        }
+        // new TS dist files
+        initializerFiles = initializerFiles.concat(
+          glob.sync(path.join(pluginPath, "dist", "initializers", "**", "*.js"))
+        );
       }
     }
 
-    initializerFiles = utils.arrayUniqueify(initializerFiles);
+    initializerFiles = utils.arrayUnique(initializerFiles);
     initializerFiles = utils.ensureNoTsHeaderFiles(initializerFiles);
 
-    initializerFiles.forEach(f => {
+    initializerFiles.forEach((f) => {
       const file = path.normalize(f);
-      delete require.cache[require.resolve(file)];
+      if (require.cache[require.resolve(file)]) {
+        delete require.cache[require.resolve(file)];
+      }
 
       let exportedClasses = require(file);
 
@@ -133,7 +123,7 @@ export class Process {
 
       if (Object.keys(exportedClasses).length === 0) {
         this.fatalError(
-          new Error(`no exported intializers found in ${file}`),
+          new Error(`no exported initializers found in ${file}`),
           file
         );
       }
@@ -146,7 +136,7 @@ export class Process {
 
           // check if initializer already exists (exclude utils and config)
           if (this.initializers[initializer.name]) {
-            const warningMessage = `an existing intializer with the same name \`${initializer.name}\` will be overridden by the file ${file}`;
+            const warningMessage = `an existing initializer with the same name \`${initializer.name}\` will be overridden by the file ${file}`;
             log(warningMessage, "warning");
           } else {
             initializer.validate();
@@ -166,7 +156,7 @@ export class Process {
                 log(`Loaded initializer: ${initializer.name}`, "debug", file);
               } catch (e) {}
             } catch (error) {
-              const message = `Exception occured in initializer \`${initializer.name}\` during load`;
+              const message = `Exception occurred in initializer \`${initializer.name}\` during load`;
               try {
                 log(message, "emerg", error.toString());
               } catch (_error) {
@@ -186,7 +176,7 @@ export class Process {
               log(`Started initializer: ${initializer.name}`, "debug", file);
             } catch (error) {
               log(
-                `Exception occured in initializer \`${initializer.name}\` during start`,
+                `Exception occurred in initializer \`${initializer.name}\` during start`,
                 "emerg",
                 error.toString()
               );
@@ -204,7 +194,7 @@ export class Process {
               log(`Stopped initializer: ${initializer.name}`, "debug", file);
             } catch (error) {
               log(
-                `Exception occured in initializer \`${initializer.name}\` during stop`,
+                `Exception occurred in initializer \`${initializer.name}\` during stop`,
                 "emerg",
                 error.toString()
               );
@@ -240,13 +230,13 @@ export class Process {
     });
 
     // flatten all the ordered initializer methods
-    this.loadInitializers = this.flattenOrderedInitialzer(
+    this.loadInitializers = this.flattenOrderedInitializer(
       loadInitializerRankings
     );
-    this.startInitializers = this.flattenOrderedInitialzer(
+    this.startInitializers = this.flattenOrderedInitializer(
       startInitializerRankings
     );
-    this.stopInitializers = this.flattenOrderedInitialzer(
+    this.stopInitializers = this.flattenOrderedInitializer(
       stopInitializerRankings
     );
 
@@ -257,7 +247,6 @@ export class Process {
     }
 
     this.initialized = true;
-    return api;
   }
 
   async start(params = {}) {
@@ -269,16 +258,16 @@ export class Process {
     this.running = true;
     api.running = true;
     log(`environment: ${env}`, "notice");
-    log("*** Starting ActionHero ***", "info");
+    log("*** Starting Actionhero ***", "info");
 
     this.startInitializers.push(() => {
       this.bootTime = new Date().getTime();
       if (this.startCount === 0) {
         log(`server ID: ${id}`, "notice");
-        log("*** ActionHero Started ***", "notice");
+        log("*** Actionhero Started ***", "notice");
         this.startCount++;
       } else {
-        log("*** ActionHero Restarted ***", "notice");
+        log("*** Actionhero Restarted ***", "notice");
       }
     });
 
@@ -287,8 +276,6 @@ export class Process {
     } catch (error) {
       return this.fatalError(error, "start");
     }
-
-    return api;
   }
 
   async stop() {
@@ -302,7 +289,7 @@ export class Process {
 
       this.stopInitializers.push(async () => {
         clearPidFile();
-        log("*** ActionHero Stopped ***", "notice");
+        log("*** Actionhero Stopped ***", "notice");
         delete this.shuttingDown;
         // reset initializers to prevent duplicate check on restart
         this.initializers = {};
@@ -319,7 +306,7 @@ export class Process {
       // double sigterm; ignore it
     } else {
       const message = "Cannot shut down actionhero, not running";
-      log(message, "error");
+      log(message, "crit");
     }
   }
 
@@ -330,7 +317,70 @@ export class Process {
     } else {
       await this.start(this._startingParams);
     }
-    return api;
+  }
+
+  /**
+   * Register listeners for process signals and uncaught exceptions & rejections.
+   * Try to gracefully shut down when signaled to do so
+   */
+  registerProcessSignals(stopCallback = (exitCode?: number) => {}) {
+    const timeout = process.env.ACTIONHERO_SHUTDOWN_TIMEOUT
+      ? parseInt(process.env.ACTIONHERO_SHUTDOWN_TIMEOUT)
+      : 1000 * 30;
+
+    function awaitHardStop() {
+      return setTimeout(() => {
+        console.error(
+          `Process did not terminate within ${timeout}ms. Stopping now!`
+        );
+        process.nextTick(process.exit(1));
+      }, timeout);
+    }
+
+    // handle errors & rejections
+    process.once("uncaughtException", async (error: Error) => {
+      log(`UNCAUGHT EXCEPTION: ` + error.stack, "fatal");
+      if (!this.shuttingDown === true) {
+        let timer = awaitHardStop();
+        await this.stop();
+        clearTimeout(timer);
+        stopCallback(1);
+      }
+    });
+
+    process.once("unhandledRejection", async (rejection: Error) => {
+      log(`UNHANDLED REJECTION: ` + rejection.stack, "fatal");
+      if (!this.shuttingDown === true) {
+        let timer = awaitHardStop();
+        await this.stop();
+        clearTimeout(timer);
+        stopCallback(1);
+      }
+    });
+
+    // handle signals
+    process.on("SIGINT", async () => {
+      log(`[ SIGNAL ] - SIGINT`, "notice");
+      let timer = awaitHardStop();
+      await this.stop();
+      clearTimeout(timer);
+      stopCallback(0);
+    });
+
+    process.on("SIGTERM", async () => {
+      log(`[ SIGNAL ] - SIGTERM`, "notice");
+      let timer = awaitHardStop();
+      await this.stop();
+      clearTimeout(timer);
+      stopCallback(0);
+    });
+
+    process.on("SIGUSR2", async () => {
+      log(`[ SIGNAL ] - SIGUSR2`, "notice");
+      let timer = awaitHardStop();
+      await this.restart();
+      clearTimeout(timer);
+    });
   }
 
   // HELPERS
@@ -341,7 +391,7 @@ export class Process {
     if (errors) {
       log(`Error with initializer step: ${JSON.stringify(type)}`, "emerg");
 
-      errors.forEach(error => {
+      errors.forEach((error) => {
         log(error.stack, "emerg");
       });
 
@@ -352,15 +402,15 @@ export class Process {
     }
   }
 
-  flattenOrderedInitialzer(collection: any) {
+  flattenOrderedInitializer(collection: any) {
     const output = [];
     const keys = [];
     for (const key in collection) {
       keys.push(parseInt(key));
     }
     keys.sort(sortNumber);
-    keys.forEach(key => {
-      collection[key].forEach(d => {
+    keys.forEach((key) => {
+      collection[key].forEach((d) => {
         output.push(d);
       });
     });

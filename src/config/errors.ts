@@ -1,5 +1,5 @@
 export const DEFAULT = {
-  errors: config => {
+  errors: (config) => {
     return {
       _toExpand: false,
 
@@ -9,35 +9,28 @@ export const DEFAULT = {
 
       serializers: {
         servers: {
-          web: error => {
+          web: (error) => {
             if (error.message) {
               return String(error.message);
             } else {
               return error;
             }
           },
-          websocket: error => {
+          websocket: (error) => {
             if (error.message) {
               return String(error.message);
             } else {
               return error;
             }
           },
-          socket: error => {
-            if (error.message) {
-              return String(error.message);
-            } else {
-              return error;
-            }
-          },
-          specHelper: error => {
+          specHelper: (error) => {
             if (error.message) {
               return "Error: " + String(error.message);
             } else {
               return error;
             }
-          }
-        }
+          },
+        },
       },
 
       // ///////////
@@ -56,31 +49,31 @@ export const DEFAULT = {
       missingParams: (data, missingParams) => {
         return data.connection.localize([
           "actionhero.errors.missingParams",
-          { param: missingParams[0] }
+          { param: missingParams[0] },
         ]);
       },
 
       // user requested an unknown action
-      unknownAction: data => {
+      unknownAction: (data) => {
         return data.connection.localize("actionhero.errors.unknownAction");
       },
 
       // action not useable by this client/server type
-      unsupportedServerType: data => {
+      unsupportedServerType: (data) => {
         return data.connection.localize([
           "actionhero.errors.unsupportedServerType",
-          { type: data.connection.type }
+          { type: data.connection.type },
         ]);
       },
 
       // action failed because server is mid-shutdown
-      serverShuttingDown: data => {
+      serverShuttingDown: (data) => {
         return data.connection.localize("actionhero.errors.serverShuttingDown");
       },
 
-      // action failed because this client already has too many pending acitons
+      // action failed because this client already has too many pending actions
       // limit defined in api.config.general.simultaneousActions
-      tooManyPendingActions: data => {
+      tooManyPendingActions: (data) => {
         return data.connection.localize(
           "actionhero.errors.tooManyPendingActions"
         );
@@ -88,7 +81,7 @@ export const DEFAULT = {
 
       // Decorate your response based on Error here.
       // Any action that throws an Error will pass through this method before returning
-      //   an error to the client. Reponse can be edited here, status codes changed, etc.
+      //   an error to the client. Response can be edited here, status codes changed, etc.
       async genericError(data, error) {
         return error;
       },
@@ -98,13 +91,13 @@ export const DEFAULT = {
       // ///////////////
 
       // The body message to accompany 404 (file not found) errors regarding flat files
-      // You may want to load in the contnet of 404.html or similar
-      fileNotFound: connection => {
+      // You may want to load in the content of 404.html or similar
+      fileNotFound: (connection) => {
         return connection.localize(["actionhero.errors.fileNotFound"]);
       },
 
       // user didn't request a file
-      fileNotProvided: connection => {
+      fileNotProvided: (connection) => {
         return connection.localize("actionhero.errors.fileNotProvided");
       },
 
@@ -112,7 +105,7 @@ export const DEFAULT = {
       fileReadError: (connection, error) => {
         return connection.localize([
           "actionhero.errors.fileReadError",
-          { error: String(error) }
+          { error: String(error) },
         ]);
       },
 
@@ -123,18 +116,18 @@ export const DEFAULT = {
       verbNotFound: (connection, verb) => {
         return connection.localize([
           "actionhero.errors.verbNotFound",
-          { verb: verb }
+          { verb: verb },
         ]);
       },
 
       verbNotAllowed: (connection, verb) => {
         return connection.localize([
           "actionhero.errors.verbNotAllowed",
-          { verb: verb }
+          { verb: verb },
         ]);
       },
 
-      connectionRoomAndMessage: connection => {
+      connectionRoomAndMessage: (connection) => {
         return connection.localize(
           "actionhero.errors.connectionRoomAndMessage"
         );
@@ -143,32 +136,32 @@ export const DEFAULT = {
       connectionNotInRoom: (connection, room) => {
         return connection.localize([
           "actionhero.errors.connectionNotInRoom",
-          { room: room }
+          { room: room },
         ]);
       },
 
       connectionAlreadyInRoom: (connection, room) => {
         return connection.localize([
           "actionhero.errors.connectionAlreadyInRoom",
-          { room: room }
+          { room: room },
         ]);
       },
 
-      connectionRoomHasBeenDeleted: room => {
+      connectionRoomHasBeenDeleted: (room) => {
         return "this room has been deleted";
       },
 
-      connectionRoomNotExist: room => {
+      connectionRoomNotExist: (room) => {
         return "room does not exist";
       },
 
-      connectionRoomExists: room => {
+      connectionRoomExists: (room) => {
         return "room exists";
       },
 
-      connectionRoomRequired: room => {
+      connectionRoomRequired: (room) => {
         return "a room is required";
-      }
+      },
     };
-  }
+  },
 };

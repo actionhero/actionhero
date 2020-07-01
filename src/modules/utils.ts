@@ -1,10 +1,11 @@
 import { arrayStartingMatch } from "./utils/arrayStartingMatch";
-import { arrayUniqueify } from "./utils/arrayUniqueify";
+import { arrayUnique } from "./utils/arrayUnique";
 import { asyncWaterfall } from "./utils/asyncWaterfall";
 import { collapseObjectToArray } from "./utils/collapseObjectToArray";
 import { ensureNoTsHeaderFiles } from "./utils/ensureNoTsHeaderFiles";
 import { eventLoopDelay } from "./utils/eventLoopDelay";
 import { filterObjectForLogging } from "./utils/filterObjectForLogging";
+import { filterResponseForLogging } from "./utils/filterResponseForLogging";
 import { getExternalIPAddress } from "./utils/getExternalIPAddress";
 import { hashMerge } from "./utils/hashMerge";
 import { isPlainObject } from "./utils/isPlainObject";
@@ -22,7 +23,7 @@ import {
   createFileSafely,
   createLinkfileSafely,
   removeLinkfileSafely,
-  createSymlinkSafely
+  createSymlinkSafely,
 } from "./utils/fileUtils";
 
 /**
@@ -30,12 +31,13 @@ import {
  */
 export const utils = {
   arrayStartingMatch,
-  arrayUniqueify,
+  arrayUnique,
   asyncWaterfall,
   collapseObjectToArray,
   ensureNoTsHeaderFiles,
   eventLoopDelay,
   filterObjectForLogging,
+  filterResponseForLogging,
   getExternalIPAddress,
   hashMerge,
   isPlainObject,
@@ -53,6 +55,6 @@ export const utils = {
     createFileSafely,
     createLinkfileSafely,
     removeLinkfileSafely,
-    createSymlinkSafely
-  }
+    createSymlinkSafely,
+  },
 };

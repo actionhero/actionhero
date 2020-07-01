@@ -5,27 +5,15 @@ set -ex
 cd "$(dirname "$0")"
 cd ..
 
-function build_branch() {
-  # $1 = name of git branch
-  # $2 = name of path on site
-  git checkout -f "$1"
-  rm -rf docs
-  mkdir docs
-  npm run docs
-  mv docs "./gh-pages-branch/$2"
-}
-
 ## git config
-GIT_REMOTE=$(git config remote.origin.url)
-GIT_USER_NAME='CircleCI for ActionHero'
+GIT_USER_NAME='Github Actions for Actionhero'
 GIT_USER_EMAIL='admin@actionherojs.com'
 
 ## Configure a new direcotry to hold the site
-rm -rf gh-pages-branch
-mkdir gh-pages-branch
-cd gh-pages-branch
+rm -rf gh-pages
+mkdir gh-pages
+cd gh-pages
 git init
-git remote add --fetch origin "$GIT_REMOTE"
 if git rev-parse --verify origin/gh-pages > /dev/null 2>&1
 then
     git checkout gh-pages
@@ -36,36 +24,16 @@ fi
 cd ..
 
 ## build master's docs
-git checkout "master"
 rm -rf docs
 mkdir docs
 npm run docs
-cp -a docs/. gh-pages-branch/
-touch gh-pages-branch/.nojekyll
-mkdir gh-pages-branch/.circleci && cp .circleci/config.yml gh-pages-branch/.circleci/config.yml
-cp public/favicon.ico gh-pages-branch/favicon.ico
-echo 'docs.actionherojs.com' >> gh-pages-branch/CNAME
+cp -a docs/. gh-pages/
+touch gh-pages/.nojekyll
+cp public/favicon.ico gh-pages/favicon.ico
+echo 'docs.actionherojs.com' >> gh-pages/CNAME
 
-## Build other versions
-# VERSION_V17=$(git tag --sort=refname | grep v17 | tail -n1)
-# build_branch $VERSION_V17 $VERSION_V17
-#
-# VERSION_V18=$(git tag --sort=refname | grep v18 | tail -n1)
-# build_branch $VERSION_V18 $VERSION_V18
-#
-# VERSION_V19=$(git tag --sort=refname | grep v19 | tail -n1)
-# build_branch $VERSION_V19 $VERSION_V19
-#
-# ## Build a version referance file for the site
-# echo "var DOCUMENTATION_VERSIONS = ['master', '$VERSION_V18', '$VERSION_V17', '$VERSION_V19']" >> gh-pages-branch/scripts/VERSIONS.js
-
-## push it
-cd gh-pages-branch
+## make the commmit
+cd gh-pages
 git add -A
 git -c user.name="$GIT_USER_NAME" -c user.email="$GIT_USER_EMAIL" commit --allow-empty -m "deploy static site @ $(date)"
-git push --force origin gh-pages
-cd ..
 
-## clean up
-rm -rf gh-pages-branch
-echo "Deployment Complete"

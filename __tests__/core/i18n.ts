@@ -1,13 +1,19 @@
 import * as I18n from "i18n";
 import * as fs from "fs";
 import * as path from "path";
-import { Process, config, i18n, utils, specHelper } from "./../../src/index";
+import {
+  api,
+  Process,
+  config,
+  i18n,
+  utils,
+  specHelper,
+} from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 let originalDetermineConnectionLocale;
 
-const readLocaleFile = locale => {
+const readLocaleFile = (locale) => {
   const file = config.general.paths.locale[0] + "/" + locale + ".json";
   const contents = String(fs.readFileSync(file));
   const json = JSON.parse(contents);
@@ -20,9 +26,9 @@ const spanish = {
   actionhero: {
     errors: {
       missingParams: "{{param}} es un parámetro requerido para esta acción",
-      fileNotFound: "Ese archivo no se encuentra"
-    }
-  }
+      fileNotFound: "Ese archivo no se encuentra",
+    },
+  },
 };
 
 fs.writeFileSync(
@@ -33,7 +39,7 @@ fs.writeFileSync(
 describe("Core", () => {
   describe("i18n", () => {
     beforeAll(async () => {
-      api = await actionhero.start();
+      await actionhero.start();
       originalDetermineConnectionLocale = i18n.determineConnectionLocale;
 
       const options = config.i18n;
@@ -57,7 +63,7 @@ describe("Core", () => {
 
       const content = readLocaleFile("test-env-en");
 
-      ["Your random number is {{randomNumber}}"].forEach(s => {
+      ["Your random number is {{randomNumber}}"].forEach((s) => {
         expect(content[s]).toEqual(s);
       });
     });

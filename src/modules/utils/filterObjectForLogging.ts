@@ -4,7 +4,7 @@ import * as dotProp from "dot-prop";
 
 /**
  * Prepares acton params for logging.
- * Hides any sensitieve data as defined by `api.config.general.filteredParams`
+ * Hides any sensitive data as defined by `api.config.general.filteredParams`
  * Truncates long strings via `api.config.logger.maxLogStringLength`
  */
 export function filterObjectForLogging(params: object): { [key: string]: any } {
@@ -21,7 +21,7 @@ export function filterObjectForLogging(params: object): { [key: string]: any } {
       filteredParams[i] = params[i];
     }
   }
-  config.general.filteredParams.forEach(configParam => {
+  config.general.filteredParams.forEach((configParam) => {
     if (dotProp.get(params, configParam) !== undefined) {
       dotProp.set(filteredParams, configParam, "[FILTERED]");
     }

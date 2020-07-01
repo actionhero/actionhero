@@ -3,16 +3,15 @@
 
 import * as _Primus from "primus";
 import * as request from "request-promise-native";
-import { Process, config } from "./../../src/index";
+import { api, Process, config } from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 let ActionheroWebsocketClient;
 let fingerprint;
 let url;
 
 const connectClient = async (query = ""): Promise<any> => {
-  const S = _Primus.createSocket();
+  const S = _Primus.createSocket(undefined);
   const clientSocket = new S(
     `http://localhost:${config.servers.web.port}?${query}`
   );
@@ -32,10 +31,11 @@ const connectClient = async (query = ""): Promise<any> => {
 
 describe("Integration: Web Server + Websocket Socket shared fingerprint", () => {
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
     await api.redis.clients.client.flushdb();
     url = "http://localhost:" + config.servers.web.port;
     ActionheroWebsocketClient = eval(
+      // @ts-ignore
       api.servers.servers.websocket.compileActionheroWebsocketClientJS()
     ); // eslint-disable-line
   });
@@ -47,7 +47,7 @@ describe("Integration: Web Server + Websocket Socket shared fingerprint", () => 
   test("should exist when web server been called", async () => {
     const body = await request.get({
       uri: url + "/api/randomNumber",
-      json: true
+      json: true,
     });
     fingerprint = body.requesterInformation.fingerprint;
     const query = `${config.servers.web.fingerprintOptions.cookieKey}=${fingerprint}`;

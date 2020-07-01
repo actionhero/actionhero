@@ -19,9 +19,9 @@ export interface ConnectionMiddleware {
   name: string;
   /**Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`. */
   priority?: number;
-  /**Called for each new connection when it is created. Connection is passed to the event handeler*/
+  /**Called for each new connection when it is created. Connection is passed to the event handler*/
   create?: Function;
-  /**Called for each connection before it is destroyed. Connection is passed to the event handeler*/
+  /**Called for each connection before it is destroyed. Connection is passed to the event handler*/
   destroy?: Function;
 }
 
@@ -35,6 +35,12 @@ export interface ConnectionsApi {
   globalMiddleware: Array<string>;
   allowedVerbs: Array<string>;
   cleanConnection: Function;
+  apply: (
+    connectionId: string,
+    method?: string,
+    args?: any
+  ) => Promise<Connection>;
+  addMiddleware: (ConnectionMiddleware) => void;
 }
 
 export class Connections extends Initializer {
@@ -63,17 +69,13 @@ export class Connections extends Initializer {
         "roomLeave",
         "roomView",
         "detailsView",
-        "say"
+        "say",
       ],
 
       /**
        * Find a connection on any server in the cluster and call a method on it.
        */
-      apply: async (
-        connectionId: string,
-        method: string,
-        args: Array<any> = []
-      ) => {
+      apply: async (connectionId: string, method: string, args: any) => {
         return redis.doCluster(
           "api.connections.applyResponder",
           [connectionId, method, args],
@@ -137,7 +139,7 @@ export class Connections extends Initializer {
         }
 
         return clean;
-      }
+      },
     };
   }
 }

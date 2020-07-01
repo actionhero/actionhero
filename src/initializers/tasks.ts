@@ -2,7 +2,7 @@ import * as glob from "glob";
 import * as path from "path";
 import { Plugin } from "node-resque";
 import * as TaskModule from "./../modules/task";
-import { api, log, utils, task, Initializer, typescript } from "../index";
+import { api, log, utils, task, Initializer } from "../index";
 
 const taskModule = task;
 
@@ -17,7 +17,7 @@ export interface TaskApi {
 }
 
 /**
- * Tools for enquing and inspecting the task sytem (delayed jobs).
+ * Tools for enqueuing and inspecting the task system (delayed jobs).
  */
 export class Tasks extends Initializer {
   constructor() {
@@ -32,7 +32,7 @@ export class Tasks extends Initializer {
       tasks: {},
       jobs: {},
       middleware: {},
-      globalMiddleware: []
+      globalMiddleware: [],
     };
 
     api.tasks.loadFile = (fullFilePath: string, reload: boolean = false) => {
@@ -46,7 +46,7 @@ export class Tasks extends Initializer {
         if (api.tasks.tasks[task.name] && !reload) {
           log(
             `an existing task with the same name \`${task.name}\` will be overridden by the file ${fullFilePath}`,
-            "warning"
+            "crit"
           );
         }
 
@@ -54,7 +54,7 @@ export class Tasks extends Initializer {
         api.tasks.jobs[task.name] = api.tasks.jobWrapper(task.name);
         log(
           `task ${reload ? "(re)" : ""} loaded: ${task.name}, ${fullFilePath}`,
-          reload ? "info" : "debug"
+          "debug"
         );
       }
     };
@@ -64,7 +64,7 @@ export class Tasks extends Initializer {
 
       const middleware = task.middleware || [];
       const plugins = task.plugins || [];
-      const pluginOptions = task.pluginOptions || [];
+      const pluginOptions = task.pluginOptions || {};
 
       if (task.frequency > 0) {
         if (plugins.indexOf("JobLock") < 0) {
@@ -79,7 +79,7 @@ export class Tasks extends Initializer {
       }
 
       // load middleware into plugins
-      const processMiddleware = m => {
+      const processMiddleware = (m) => {
         if (api.tasks.middleware[m]) {
           //@ts-ignore
           class NodeResquePlugin extends Plugin {
@@ -113,9 +113,9 @@ export class Tasks extends Initializer {
       middleware.forEach(processMiddleware);
 
       return {
-        plugins: plugins,
-        pluginOptions: pluginOptions,
-        perform: async function() {
+        plugins,
+        pluginOptions,
+        perform: async function () {
           const combinedArgs = [].concat(Array.prototype.slice.call(arguments));
           combinedArgs.push(this);
           let response = null;
@@ -129,17 +129,17 @@ export class Tasks extends Initializer {
             throw error;
           }
           return response;
-        }
+        },
       };
     };
 
-    api.tasks.loadTasks = reload => {
-      config.general.paths.task.forEach(p => {
+    api.tasks.loadTasks = (reload) => {
+      config.general.paths.task.forEach((p) => {
         utils
           .ensureNoTsHeaderFiles(
             glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"))
           )
-          .forEach(f => {
+          .forEach((f) => {
             api.tasks.loadFile(f, reload);
           });
       });
@@ -149,25 +149,13 @@ export class Tasks extends Initializer {
           const pluginPath = config.plugins[pluginName].path;
 
           // old style at the root of the project
-          let files = glob.sync(
-            path.join(pluginPath, "tasks", "**", "**/*(*.js|*.ts)")
+          let files = glob.sync(path.join(pluginPath, "tasks", "**", "*.js"));
+
+          files = files.concat(
+            glob.sync(path.join(pluginPath, "dist", "tasks", "**", "*.js"))
           );
 
-          // dist files if running in JS mode
-          if (!typescript) {
-            files = files.concat(
-              glob.sync(path.join(pluginPath, "dist", "tasks", "**", "**/*.js"))
-            );
-          }
-
-          // src files if running in TS mode
-          if (typescript) {
-            files = files.concat(
-              glob.sync(path.join(pluginPath, "src", "tasks", "**", "**/*.ts"))
-            );
-          }
-
-          utils.ensureNoTsHeaderFiles(files).forEach(f => {
+          utils.ensureNoTsHeaderFiles(files).forEach((f) => {
             api.tasks.loadFile(f, reload);
           });
         }

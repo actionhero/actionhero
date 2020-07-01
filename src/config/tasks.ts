@@ -1,5 +1,5 @@
 export const DEFAULT = {
-  tasks: config => {
+  tasks: (config) => {
     return {
       // Should this node run a scheduler to promote delayed tasks?
       scheduler: false,
@@ -16,7 +16,7 @@ export const DEFAULT = {
         job: "debug",
         pause: "debug",
         internalError: "error",
-        multiWorkerAction: "debug"
+        multiWorkerAction: "debug",
       },
       // Logging levels of the task scheduler
       schedulerLogging: {
@@ -26,7 +26,7 @@ export const DEFAULT = {
         enqueue: "debug",
         reEnqueue: "debug",
         working_timestamp: "debug",
-        transferred_job: "debug"
+        transferred_job: "debug",
       },
       // how long to sleep between jobs / scheduler checks
       timeout: 5000,
@@ -37,7 +37,7 @@ export const DEFAULT = {
       maxTaskProcessors: 0,
       // how often should we check the event loop to spawn more taskProcessors?
       checkTimeout: 500,
-      // how many ms would constitue an event loop delay to halt taskProcessors spawning?
+      // how many ms would constitute an event loop delay to halt taskProcessors spawning?
       maxEventLoopDelay: 5,
       // how long before we mark a resque worker / task processor as stuck/dead?
       stuckWorkerTimeout: 1000 * 60 * 60,
@@ -45,20 +45,20 @@ export const DEFAULT = {
       resque_overrides: {
         queue: null,
         multiWorker: null,
-        scheduler: null
+        scheduler: null,
       },
       connectionOptions: {
-        tasks: {}
-      }
+        tasks: {},
+      },
     };
-  }
+  },
 };
 
 export const test = {
-  tasks: config => {
+  tasks: (config) => {
     return {
       timeout: 100,
-      checkTimeout: 50
+      checkTimeout: 50,
     };
-  }
+  },
 };

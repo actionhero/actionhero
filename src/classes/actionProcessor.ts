@@ -1,12 +1,11 @@
-import { Api } from "./api";
 import { Connection } from "./connection";
 import { Action } from "./action";
 import { config } from "./../modules/config";
 import { log } from "../modules/log";
 import { utils } from "../modules/utils";
 import * as dotProp from "dot-prop";
-
-let api: Api;
+import { EOL } from "os";
+import { api } from "../index";
 
 export class ActionProcessor {
   connection: Connection;
@@ -32,10 +31,6 @@ export class ActionProcessor {
   session: any;
 
   constructor(connection: Connection) {
-    /// Only in files required by `index.js` do we need to delay the loading of the API object
-    // This is due to cyclical require issues
-    api = require("../index").api;
-
     this.connection = connection;
     this.action = null;
     this.toProcess = true;
@@ -97,7 +92,7 @@ export class ActionProcessor {
       error = new Error(error);
     }
 
-    if (error && !this.response.error) {
+    if (error && (typeof this.response === "string" || !this.response.error)) {
       if (typeof this.response === "string" || Array.isArray(this.response)) {
         this.response = error.toString();
       } else {
@@ -119,18 +114,29 @@ export class ActionProcessor {
     }
 
     const filteredParams = utils.filterObjectForLogging(this.params);
-
     const logLine = {
       to: this.connection.remoteIP,
       action: this.action,
       params: JSON.stringify(filteredParams),
       duration: this.duration,
-      error: ""
+      error: "",
+      response: undefined,
     };
 
+    let filteredResponse;
+    if (config.general.enableResponseLogging) {
+      filteredResponse = utils.filterResponseForLogging(this.response);
+      logLine.response = JSON.stringify(filteredResponse);
+    }
+
     if (error) {
+      logLevel = "error";
       if (error instanceof Error) {
-        logLine.error = String(error);
+        logLine.error = error.toString();
+        Object.getOwnPropertyNames(error)
+          .filter((prop) => prop !== "message")
+          .sort((a, b) => (a === "stack" || b === "stack" ? -1 : 1))
+          .forEach((prop) => (logLine[prop] = error[prop]));
       } else {
         try {
           logLine.error = JSON.stringify(error);
@@ -147,7 +153,7 @@ export class ActionProcessor {
     const processorNames = api.actions.globalMiddleware.slice(0);
 
     if (this.actionTemplate.middleware) {
-      this.actionTemplate.middleware.forEach(function(m) {
+      this.actionTemplate.middleware.forEach(function (m) {
         processorNames.push(m);
       });
     }
@@ -164,7 +170,7 @@ export class ActionProcessor {
     const processorNames = api.actions.globalMiddleware.slice(0);
 
     if (this.actionTemplate.middleware) {
-      this.actionTemplate.middleware.forEach(m => {
+      this.actionTemplate.middleware.forEach((m) => {
         processorNames.push(m);
       });
     }
@@ -328,10 +334,9 @@ export class ActionProcessor {
         api.actions.actions[this.action][this.params.apiVersion];
     }
 
-    // TODO
-    // if (api.running !== true) {
-    //   return this.completeAction("server_shutting_down");
-    // }
+    if (api.running !== true) {
+      return this.completeAction("server_shutting_down");
+    }
 
     if (this.getPendingActionCount() > config.general.simultaneousActions) {
       return this.completeAction("too_many_requests");

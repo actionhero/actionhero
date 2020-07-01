@@ -1,8 +1,8 @@
 export interface Input {
   default?: any;
   required?: boolean;
-  formatter?: Function | null;
-  validator?: Function | null;
+  formatter?: Function | string[];
+  validator?: Function | string[];
   schema?: {
     [key: string]: any;
   };

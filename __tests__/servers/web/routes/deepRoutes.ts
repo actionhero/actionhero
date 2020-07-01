@@ -21,15 +21,15 @@ jest.mock("./../../../../src/config/servers/web.ts", () => ({
           queryRouting: true,
           metadataOptions: {
             serverInformation: true,
-            requesterInformation: false
+            requesterInformation: false,
           },
           fingerprintOptions: {
-            cookieKey: "sessionID"
-          }
+            cookieKey: "sessionID",
+          },
         };
-      }
-    }
-  }
+      },
+    },
+  },
 }));
 
 describe("Server: Web", () => {
@@ -77,9 +77,7 @@ describe("Server: Web", () => {
             { resolveWithFullResponse: true }
           );
           expect(response.statusCode).toEqual(200);
-          expect(response.body).toEqual(
-            "<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />"
-          );
+          expect(response.body).toContain("<h1>Actionhero</h1>");
         });
 
         test("can ask for nested URL files with depth", async () => {
@@ -92,12 +90,10 @@ describe("Server: Web", () => {
 
         test("root route files still work", async () => {
           const response = await request.get(url + "/simple.html", {
-            resolveWithFullResponse: true
+            resolveWithFullResponse: true,
           });
           expect(response.statusCode).toEqual(200);
-          expect(response.body).toEqual(
-            "<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />"
-          );
+          expect(response.body).toContain("<h1>Actionhero</h1>");
         });
       });
     });

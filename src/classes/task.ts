@@ -1,5 +1,7 @@
+import { Inputs } from "./inputs";
+
 /**
- * Create a new ActionHero Task. The required properties of an task. These can be defined statically (this.name) or as methods which return a value.
+ * Create a new Actionhero Task. The required properties of an task. These can be defined statically (this.name) or as methods which return a value.
  * ```js
  * const { Task, api, log } = require('actionhero')
  * module.exports = class SayHello extends Task {
@@ -15,7 +17,6 @@
  * }
  * ```
  */
-
 export abstract class Task {
   /**The name of the Task */
   name: string;
@@ -23,8 +24,14 @@ export abstract class Task {
   description: string;
   /**How often to run this Task, in ms.  0 is non-recurring. (default: 0) */
   frequency: number;
-  /**The Middleware specific to this Task (default: []).  Middleware is descibed by the string names of the middleware */
+  /**The inputs of the Task (default: {}) */
+  inputs: Inputs;
+  /**The Middleware specific to this Task (default: []).  Middleware is described by the string names of the middleware */
   middleware: Array<string>;
+  /**Plugins from node-resque to use on this task (default: []).  Plugins like `QueueLock can be applied` */
+  plugins: Array<string>;
+  /**Options for the node-resque plugins. */
+  pluginOptions: { [key: string]: any };
   /**The default queue to run this Task on (default: 'default') */
   queue: string;
   /**Re-enqueuing a periodic task in the case of an exception.  (default: false) */
@@ -40,7 +47,7 @@ export abstract class Task {
   }
 
   /**
-   * The main "do something" method for this task.  It can be `async`.  Anything returned from this metod will be logged.
+   * The main "do something" method for this task.  It can be `async`.  Anything returned from this method will be logged.
    * If error is thrown in this method, it will be logged & caught.  Using middleware, you can decide to re-run the task on failure.
    * `this` is a Task instance itself now.
    *
@@ -57,7 +64,9 @@ export abstract class Task {
       frequency: 0,
       queue: "default",
       middleware: [],
-      reEnqueuePeriodicTaskIfException: true
+      plugins: [],
+      pluginOptions: {},
+      reEnqueuePeriodicTaskIfException: true,
     };
   }
 

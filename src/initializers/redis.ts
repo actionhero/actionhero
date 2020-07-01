@@ -1,9 +1,7 @@
-/// <reference path="./../../node_modules/@types/ioredis/index.d.ts" />
-
 import * as IORedis from "ioredis";
 import * as dotProp from "dot-prop";
 import { api, id, log, Initializer, redis } from "../index";
-import * as RedisModile from "./../modules/redis";
+import * as RedisModule from "./../modules/redis";
 
 export interface RedisApi {
   clients: {
@@ -42,12 +40,12 @@ export class Redis extends Initializer {
       subscriptionHandlers: {},
       rpcCallbacks: {},
       status: {
-        subscribed: false
-      }
+        subscribed: false,
+      },
     };
 
     api.redis.subscriptionHandlers.do = async (
-      message: RedisModile.redis.PubSubMessage
+      message: RedisModule.redis.PubSubMessage
     ) => {
       if (
         !message.connectionId ||
@@ -61,9 +59,9 @@ export class Redis extends Initializer {
           );
         }
 
-        const callabaleApi = Object.assign(api, { log });
+        const callableApi = Object.assign(api, { log });
 
-        const method: Function = dotProp.get(callabaleApi, cmdParts.join("."));
+        const method: Function = dotProp.get(callableApi, cmdParts.join("."));
         let args = message.args;
         if (args === null) {
           args = [];
@@ -75,13 +73,13 @@ export class Redis extends Initializer {
           const response = await method.apply(null, args);
           await redis.respondCluster(message.messageId, response);
         } else {
-          log("RPC method `" + cmdParts.join(".") + "` not found", "warning");
+          log("RPC method `" + cmdParts.join(".") + "` not found", "crit");
         }
       }
     };
 
-    api.redis.subscriptionHandlers.doResponse = function(
-      message: RedisModile.redis.PubSubMessage
+    api.redis.subscriptionHandlers.doResponse = function (
+      message: RedisModule.redis.PubSubMessage
     ) {
       if (api.redis.rpcCallbacks[message.messageId]) {
         const { resolve, timer } = api.redis.rpcCallbacks[message.messageId];
@@ -102,7 +100,7 @@ export class Redis extends Initializer {
           args[2]
         );
 
-        api.redis.clients[r].on("error", error => {
+        api.redis.clients[r].on("error", (error) => {
           log(`Redis connection \`${r}\` error`, "alert", error);
         });
 
@@ -130,7 +128,7 @@ export class Redis extends Initializer {
           null,
           config.redis[r].args
         );
-        api.redis.clients[r].on("error", error => {
+        api.redis.clients[r].on("error", (error) => {
           log(`Redis connection \`${r}\` error`, "alert", error);
         });
         log(`Redis connection \`${r}\` connected`, "debug");
@@ -147,7 +145,7 @@ export class Redis extends Initializer {
         messageChannel: string,
         stringifiedMessage: string
       ) => {
-        let message: RedisModile.redis.PubSubMessage;
+        let message: RedisModule.redis.PubSubMessage;
         try {
           message = JSON.parse(stringifiedMessage);
         } catch (e) {
@@ -173,7 +171,7 @@ export class Redis extends Initializer {
       log("redis is disabled", "notice");
     } else {
       await redis.doCluster("api.log", [
-        `actionhero member ${id} has joined the cluster`
+        `actionhero member ${id} has joined the cluster`,
       ]);
     }
   }
@@ -186,7 +184,7 @@ export class Redis extends Initializer {
     await api.redis.clients.subscriber.unsubscribe();
     api.redis.status.subscribed = false;
     await redis.doCluster("api.log", [
-      `actionhero member ${id} has left the cluster`
+      `actionhero member ${id} has left the cluster`,
     ]);
 
     const keys = Object.keys(api.redis.clients);

@@ -10,7 +10,6 @@ import { ParamsApi } from "./../initializers/params";
 import { ResqueApi } from "./../initializers/resque";
 import { RedisApi } from "./../initializers/redis";
 import { StaticFileApi } from "./../initializers/staticFile";
-import { DocumentationApi } from "./../initializers/documentation";
 import { RoutesApi } from "./../initializers/routes";
 import { SpecHelperApi } from "./../initializers/specHelper";
 
@@ -33,7 +32,6 @@ export class Api {
   servers: ServersApi;
   chatRoom: ChatRoomApi;
   params: ParamsApi;
-  documentation: DocumentationApi;
   staticFile: StaticFileApi;
   redis: RedisApi;
   resque: ResqueApi;
@@ -42,7 +40,7 @@ export class Api {
   specHelper: SpecHelperApi;
 
   // this is left in as way for older methods to still extend the api object
-  // going forward, all interfacaes should be exposed via export to be consumed directly
+  // going forward, all interfaces should be exposed via export to be consumed directly
   [key: string]: any;
 
   constructor() {

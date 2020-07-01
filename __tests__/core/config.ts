@@ -10,12 +10,12 @@ let configFolders;
 
 const newConfigFolderPaths = [
   path.join(__dirname, "first_config"),
-  path.join(__dirname, "second_config")
+  path.join(__dirname, "second_config"),
 ];
 
 const routeFilesContent = [
   "export const DEFAULT = {\n  routes: (api) => {\n    return {\n\n      get: [\n        { path: '/api-status', action: 'status' }\n      ]\n\n    }\n  }\n}\n",
-  "export const DEFAULT= {\n  routes: (api) => {\n    return {\n\n      get: [\n        { path: '/random-number', action: 'randomNumber' }\n      ]\n\n    }\n  }\n}\n"
+  "export const DEFAULT= {\n  routes: (api) => {\n    return {\n\n      get: [\n        { path: '/random-number', action: 'randomNumber' }\n      ]\n\n    }\n  }\n}\n",
 ];
 
 const createRouteFile = async (newConfigFolderPath, routeFileContent) => {
@@ -27,12 +27,12 @@ const createRouteFile = async (newConfigFolderPath, routeFileContent) => {
     const newRoutesFilePath = path.join(newConfigFolderPath, "routes.ts");
 
     await promisify(fs.writeFile)(newRoutesFilePath, routeFileContent, {
-      encoding: "utf-8"
+      encoding: "utf-8",
     });
   } catch (ex) {}
 };
 
-const removeRouteFile = async newConfigFolderPath => {
+const removeRouteFile = async (newConfigFolderPath) => {
   try {
     const newRoutesFilePath = path.join(newConfigFolderPath, "routes.ts");
 
@@ -70,8 +70,8 @@ describe("Core: config folders", () => {
     expect(config.routes).toEqual({
       get: [
         { path: "/api-status", action: "status" },
-        { path: "/random-number", action: "randomNumber" }
-      ]
+        { path: "/random-number", action: "randomNumber" },
+      ],
     });
   });
 });

@@ -1,16 +1,16 @@
 import { ConfigInterface } from "./../modules/config";
 
 /**
- * Create a new ActionHero Initializer. The required properties of an initializer. These can be defined statically (this.name) or as methods which return a value.
+ * Create a new Actionhero Initializer. The required properties of an initializer. These can be defined statically (this.name) or as methods which return a value.
  */
 export abstract class Initializer {
   /**The name of the Initializer. */
   name: string;
-  /**What order should this Initializer load at (Default: 1000, ActionHero core methods are < 1000) */
+  /**What order should this Initializer load at (Default: 1000, Actionhero core methods are < 1000) */
   loadPriority?: number;
-  /**What order should this Initializer start at (Default: 1000, ActionHero core methods are < 1000) */
+  /**What order should this Initializer start at (Default: 1000, Actionhero core methods are < 1000) */
   startPriority?: number;
-  /**What order should this Initializer stop at (Default: 1000, ActionHero core methods are < 1000) */
+  /**What order should this Initializer stop at (Default: 1000, Actionhero core methods are < 1000) */
   stopPriority?: number;
 
   constructor() {
@@ -21,17 +21,17 @@ export abstract class Initializer {
   }
 
   /**
-   * Method run as part of the `initialize` lifecycle of your server.  Ususally sets api['YourNamespace']
+   * Method run as part of the `initialize` lifecycle of your server.  Usually sets api['YourNamespace']
    */
   async initialize?(config: ConfigInterface): Promise<void>;
 
   /**
-   * Method run as part of the `start` lifecycle of your server.  Ususally connects to remote servers or processes..
+   * Method run as part of the `start` lifecycle of your server.  Usually connects to remote servers or processes..
    */
   async start?(config: ConfigInterface): Promise<void>;
 
   /**
-   * Method run as part of the `initialize` lifecycle of your server.  Ususally disconnects from remote servers or processes.
+   * Method run as part of the `initialize` lifecycle of your server.  Usually disconnects from remote servers or processes.
    */
   async stop?(config: ConfigInterface): Promise<void>;
 
@@ -40,7 +40,7 @@ export abstract class Initializer {
       throw new Error("name is required for this initializer");
     }
 
-    ["loadPriority", "startPriority", "stopPriority"].forEach(priority => {
+    ["loadPriority", "startPriority", "stopPriority"].forEach((priority) => {
       if (
         !this[priority] ||
         typeof this[priority] !== "number" ||

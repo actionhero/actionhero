@@ -9,7 +9,7 @@ export interface SpecHelperApi {
 }
 
 /**
- * A speical "mock" server which enables you to test actions and tasks in a simple way.  Only availalbe in the TEST environment.
+ * A special "mock" server which enables you to test actions and tasks in a simple way.  Only available in the TEST environment.
  */
 export class SpecHelper extends Initializer {
   enabled: boolean;
@@ -41,7 +41,7 @@ export class SpecHelper extends Initializer {
           logConnections: false,
           logExits: false,
           sendWelcomeMessage: true,
-          verbs: api.connections.allowedVerbs
+          verbs: api.connections.allowedVerbs,
         };
       }
 
@@ -49,10 +49,10 @@ export class SpecHelper extends Initializer {
 
       async start() {
         log("loading the testServer", "info");
-        this.on("connection", connection => {
+        this.on("connection", (connection) => {
           this.handleConnection(connection);
         });
-        this.on("actionComplete", data => {
+        this.on("actionComplete", (data) => {
           this.actionComplete(data);
         });
       }
@@ -76,7 +76,7 @@ export class SpecHelper extends Initializer {
           content: null,
           mime: mime,
           length: length,
-          error: undefined
+          error: undefined,
         };
 
         if (error) {
@@ -85,7 +85,7 @@ export class SpecHelper extends Initializer {
 
         try {
           if (!error) {
-            fileStream.on("data", d => {
+            fileStream.on("data", (d) => {
               content += d;
             });
             fileStream.on("end", () => {
@@ -125,13 +125,13 @@ export class SpecHelper extends Initializer {
 
             data.response.serverInformation = {
               serverName: config.general.serverName,
-              apiVersion: config.general.apiVersion
+              apiVersion: config.general.apiVersion,
             };
 
             data.response.requesterInformation = {
               id: data.connection.id,
               remoteIP: data.connection.remoteIP,
-              receivedParams: {}
+              receivedParams: {},
             };
 
             for (const k in data.params) {
@@ -149,7 +149,7 @@ export class SpecHelper extends Initializer {
 
     api.specHelper = {
       returnMetadata: true,
-      Server: TestServer
+      Server: TestServer,
     };
 
     /**
@@ -164,7 +164,7 @@ export class SpecHelper extends Initializer {
           fingerprint: id,
           rawConnection: {},
           remoteAddress: "testServer",
-          remotePort: 0
+          remotePort: 0,
         });
         return api.connections.connections[id];
       }

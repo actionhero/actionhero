@@ -2,7 +2,7 @@ const os = require("os");
 
 export const DEFAULT = {
   servers: {
-    web: config => {
+    web: (config) => {
       return {
         enabled: true,
         // HTTP or HTTPS?  This setting is to enable SSL termination directly in the actionhero app, not set redirection host headers
@@ -26,7 +26,7 @@ export const DEFAULT = {
           "Access-Control-Allow-Methods":
             "HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE",
           "Access-Control-Allow-Headers": "Content-Type",
-          "Strict-Transport-Security": "max-age=31536000; includeSubDomains"
+          "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
         },
         // Route that actions will be served from; secondary route against this route will be treated as actions,
         //  IE: /api/?action=test == /api/test/
@@ -45,13 +45,13 @@ export const DEFAULT = {
         // The cache or (if etags are enabled) next-revalidation time to be returned for all flat files served from /public; defined in seconds
         flatFileCacheDuration: 60,
         // Add an etag header to requested flat files which acts as fingerprint that changes when the file is updated;
-        // Client will revalidate the fingerprint at latest after flatFileCacheDuration and reload it if the etag (and therfore the file) changed
+        // Client will revalidate the fingerprint at latest after flatFileCacheDuration and reload it if the etag (and therefore the file) changed
         // or continue to use the cached file if it's still valid
         enableEtag: true,
         // should we save the un-parsed HTTP POST/PUT payload to connection.rawConnection.params.rawBody?
         saveRawBody: false,
         // How many times should we try to boot the server?
-        // This might happen if the port is in use by another process or the socketfile is claimed
+        // This might happen if the port is in use by another process or the socket file is claimed
         bootAttempts: 1,
         // Settings for determining the id of an http(s) request (browser-fingerprint)
         fingerprintOptions: {
@@ -60,8 +60,8 @@ export const DEFAULT = {
           onlyStaticElements: false,
           settings: {
             path: "/",
-            expires: 3600000
-          }
+            expires: 3600000,
+          },
         },
         // Options to be applied to incoming file uploads.
         //  More options and details at https://github.com/felixge/node-formidable
@@ -69,7 +69,7 @@ export const DEFAULT = {
           uploadDir: os.tmpdir(),
           keepExtensions: false,
           maxFieldsSize: 1024 * 1024 * 20,
-          maxFileSize: 1024 * 1024 * 200
+          maxFileSize: 1024 * 1024 * 200,
         },
         // Should we pad JSON responses with whitespace to make them more human-readable?
         // set to null to disable
@@ -77,48 +77,50 @@ export const DEFAULT = {
         // Options to configure metadata in responses
         metadataOptions: {
           serverInformation: true,
-          requesterInformation: true
+          requesterInformation: true,
         },
         // When true, returnErrorCodes will modify the response header for http(s) clients if connection.error is not null.
         // You can also set connection.rawConnection.responseHttpCode to specify a code per request.
         returnErrorCodes: true,
         // should this node server attempt to gzip responses if the client can accept them?
-        // this will slow down the performance of actionhero, and if you need this funcionality, it is recommended that you do this upstream with nginx or your load balancer
+        // this will slow down the performance of actionhero, and if you need this functionality, it is recommended that you do this upstream with nginx or your load balancer
         compress: false,
         // options to pass to the query parser
         // learn more about the options @ https://github.com/hapijs/qs
-        queryParseOptions: {}
+        queryParseOptions: {},
       };
-    }
-  }
+    },
+  },
 };
 
 export const production = {
   servers: {
-    web: config => {
+    web: (config) => {
       return {
         padding: null,
         metadataOptions: {
           serverInformation: false,
-          requesterInformation: false
-        }
+          requesterInformation: false,
+        },
       };
-    }
-  }
+    },
+  },
 };
 
 export const test = {
   servers: {
-    web: config => {
+    web: (config) => {
       return {
         secure: false,
-        port: 18080 + parseInt(process.env.JEST_WORKER_ID || "0"),
+        port: process.env.PORT
+          ? process.env.PORT
+          : 18080 + parseInt(process.env.JEST_WORKER_ID || "0"),
         matchExtensionMime: true,
         metadataOptions: {
           serverInformation: true,
-          requesterInformation: true
-        }
+          requesterInformation: true,
+        },
       };
-    }
-  }
+    },
+  },
 };

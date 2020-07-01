@@ -2,12 +2,12 @@ import * as fs from "fs";
 import * as path from "path";
 
 // import { api, projectRoot, CLI } from "./../../index";
-// we need to load each component directly so we don't accidentalyy source `config... which doesn't exist`
+// we need to load each component directly so we don't accidentally source `config... which doesn't exist`
 import { CLI } from "./../../classes/cli";
 import { projectRoot } from "./../../classes/process/projectRoot";
 import {
   createDirSafely,
-  createFileSafely
+  createFileSafely,
 } from "../../modules/utils/fileUtils";
 
 export class Generate extends CLI {
@@ -15,7 +15,7 @@ export class Generate extends CLI {
     super();
     this.name = "generate";
     this.description =
-      "will prepare an empty directory with a template ActionHero project";
+      "will prepare an empty directory with a template Actionhero project";
   }
 
   async run() {
@@ -29,6 +29,7 @@ export class Generate extends CLI {
 
     const oldFileMap = {
       tsconfig: "tsconfig.json",
+      serverJs: "/templates/projectServer.ts.template",
       configApiJs: "/src/config/api.ts",
       configLoggerJs: "/src/config/logger.ts",
       configRedisJs: "/src/config/redis.ts",
@@ -42,14 +43,14 @@ export class Generate extends CLI {
       packageJson: "/package.json",
       actionStatus: "/src/actions/status.ts",
       actionChatRoom: "/src/actions/createChatRoom.ts",
-      actionDocumentation: "/src/actions/showDocumentation.ts",
+      actionSwagger: "/src/actions/swagger.ts",
       publicIndex: "/public/index.html",
       publicChat: "/public/chat.html",
       publicLogo: "/public/logo/actionhero.png",
       publicCss: "/public/css/cosmo.css",
       exampleTest: "/__tests__/template.ts.example",
       enLocale: "/locales/en.json",
-      gitignore: "/templates/gitignore.template"
+      gitignore: "/templates/gitignore.template",
     };
 
     for (const name in oldFileMap) {
@@ -85,12 +86,6 @@ export class Generate extends CLI {
       )
     );
 
-    documents.bootJS = String(
-      fs.readFileSync(
-        path.join(__dirname, "/../../../templates/boot.js.template")
-      )
-    );
-
     console.log("Generating a new actionhero project...");
 
     [
@@ -111,8 +106,8 @@ export class Generate extends CLI {
       "/public/logo",
       "/__tests__",
       "/__tests__/actions",
-      "/__tests__/tasks"
-    ].forEach(dir => {
+      "/__tests__/tasks",
+    ].forEach((dir) => {
       try {
         const message = createDirSafely(projectRoot + dir);
         console.log(message);
@@ -123,6 +118,7 @@ export class Generate extends CLI {
 
     const newFileMap = {
       "/tsconfig.json": "tsconfig",
+      "/src/server.ts": "serverJs",
       "/src/config/api.ts": "configApiJs",
       "/src/config/logger.ts": "configLoggerJs",
       "/src/config/redis.ts": "configRedisJs",
@@ -136,7 +132,7 @@ export class Generate extends CLI {
       "/package.json": "packageJson",
       "/src/actions/status.ts": "actionStatus",
       "/src/actions/createChatRoom.ts": "actionChatRoom",
-      "/src/actions/showDocumentation.ts": "actionDocumentation",
+      "/src/actions/swagger.ts": "actionSwagger",
       "/public/index.html": "publicIndex",
       "/public/chat.html": "publicChat",
       "/public/css/cosmo.css": "publicCss",
@@ -145,7 +141,6 @@ export class Generate extends CLI {
       "/__tests__/actions/status.ts": "exampleTest",
       "/locales/en.json": "enLocale",
       "/.gitignore": "gitignore",
-      "/boot.js": "bootJS"
     };
 
     for (const file in newFileMap) {
@@ -169,14 +164,14 @@ export class Generate extends CLI {
     documents.projectMap
       .toString()
       .split("\n")
-      .forEach(function(line) {
+      .forEach(function (line) {
         console.log(line);
       });
 
     console.log(
       `
 -------------------------------------------------------------------------------------------------------------------
-You need to run \`npm install\` to install dependancies, and then \`npm run build\` to build the .js from this .ts project.
+You need to run \`npm install\` to install dependencies, and then \`npm run build\` to build the .js from this .ts project.
 Then, run 'npm run dev' to start your server
 
 <3, the Actionhero Team

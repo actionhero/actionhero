@@ -1,8 +1,8 @@
 {
   "author": "Evan Tahler <evantahler@gmail.com>",
   "name": "actionhero",
-  "description": "actionhero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks",
-  "version": "21.0.4",
+  "description": "The reusable, scalable, and quick node.js API server for stateless and stateful applications",
+  "version": "23.0.0",
   "homepage": "http://www.actionherojs.com",
   "license": "Apache-2.0",
   "repository": {
@@ -31,41 +31,39 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "browser_fingerprint": "^1.0.5",
+    "@types/glob": "^7.1.1",
+    "@types/ioredis": "^4.16.0",
+    "@types/node": "^14.0.1",
+    "@types/uuid": "^8.0.0",
+    "browser_fingerprint": "^2.0.2",
     "dot-prop": "^5.2.0",
     "etag": "^1.8.1",
-    "formidable": "^1.2.1",
+    "formidable": "^1.2.2",
     "glob": "^7.1.6",
-    "i18n": "^0.8.4",
-    "ioredis": "^4.14.1",
+    "i18n": "^0.10.0",
+    "ioredis": "^4.16.3",
     "is-running": "^2.1.0",
     "mime": "^2.4.4",
-    "node-resque": "^6.0.3",
+    "node-resque": "^7.0.4",
     "optimist": "^0.6.1",
     "primus": "^7.3.4",
-    "qs": "^6.9.1",
-    "uglify-js": "^3.6.9",
-    "uuid": "^3.3.3",
+    "qs": "^6.9.3",
+    "uglify-js": "^3.9.1",
+    "uuid": "^8.0.0",
     "winston": "^3.2.1",
-    "ws": "^7.2.0"
+    "ws": "^7.2.5"
   },
   "devDependencies": {
-    "@types/glob": "^7.1.1",
-    "@types/ioredis": "^4.0.19",
-    "@types/jest": "^24.0.22",
-    "@types/node": "^12.12.7",
-    "@types/uuid": "^3.4.6",
-    "docdash": "1.1.1",
-    "jest": "^24.9.0",
+    "@types/jest": "^26.0.0",
+    "jest": "^25.5.1",
     "jest-environment-webdriver": "^0.2.0",
-    "prettier": "^1.19.1",
-    "request": "^2.88.0",
+    "prettier": "^2.0.5",
+    "request": "^2.88.2",
     "request-promise-native": "^1.0.8",
-    "ts-jest": "^24.1.0",
+    "ts-jest": "^25.4.0",
     "ts-node-dev": "^1.0.0-pre.44",
-    "typedoc": "^0.15.1",
-    "typedoc-plugin-tutorials": "0.0.1-alpha.1",
-    "typescript": "^3.7.2"
+    "typedoc": "^0.17.6",
+    "typescript": "^3.8.3"
   },
   "optionalDependencies": {},
   "bin": {
@@ -73,7 +71,8 @@
   },
   "jest": {
     "testPathIgnorePatterns": [
-      "<rootDir>/__tests__/testPlugin"
+      "<rootDir>/__tests__/testPlugin",
+      "<rootDir>/tmp"
     ],
     "transform": {
       "^.+\\.ts?$": "ts-jest"
@@ -84,11 +83,12 @@
     "test": "jest",
     "prepare": "npm run build && npm run docs",
     "pretest": "npm run lint && npm run build",
-    "dev": "ts-node-dev --transpile-only ./src/bin/actionhero",
-    "start": "node ./dist/bin/actionhero",
-    "build": "rm -rf dist && ./node_modules/.bin/tsc --declaration",
-    "docs": "typedoc --out docs --theme default --mode file --media tutorials",
-    "lint": "prettier --check src/*/**.ts __test__/*/**.ts examples/*/**.ts config",
-    "pretty": "prettier --write src/*/**.ts __test__/*/**.ts examples/*/**.ts config"
+    "dev": "ts-node-dev --transpile-only --no-deps ./src/server",
+    "debug": "tsc && ts-node-dev --transpile-only --no-deps --inspect -- ./src/server ",
+    "start": "node ./dist/server.js",
+    "build": "rm -rf dist && ./node_modules/.bin/tsc --sourceMap false --declaration",
+    "docs": "typedoc --out docs --theme default --mode file",
+    "lint": "prettier --check src __tests__",
+    "pretty": "prettier --write src __tests__"
   }
 }

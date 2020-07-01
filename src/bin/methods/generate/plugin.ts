@@ -39,8 +39,8 @@ export class GeneratePlugin extends CLI {
       "servers",
       "config",
       "bin",
-      "public"
-    ].forEach(type => {
+      "public",
+    ].forEach((type) => {
       try {
         const message = utils.fileUtils.createDirSafely(
           path.join(process.cwd(), type)

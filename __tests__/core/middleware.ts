@@ -1,11 +1,17 @@
-import { Process, config, action, utils, specHelper } from "./../../src/index";
+import {
+  api,
+  Process,
+  config,
+  action,
+  utils,
+  specHelper,
+} from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 
 describe("Core: Middleware", () => {
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
   });
   afterAll(async () => {
     await actionhero.stop();
@@ -21,9 +27,9 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "test middleware",
         global: true,
-        preProcessor: data => {
+        preProcessor: (data) => {
           data.response._preProcessorNote = "note";
-        }
+        },
       });
 
       const { _preProcessorNote, error } = await specHelper.runAction(
@@ -37,12 +43,12 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "test middleware",
         global: true,
-        preProcessor: async data => {
-          await new Promise(resolve => {
+        preProcessor: async (data) => {
+          await new Promise((resolve) => {
             setTimeout(resolve, 100);
           });
           data.response._preProcessorNote = "slept";
-        }
+        },
       });
 
       const { _preProcessorNote, error } = await specHelper.runAction(
@@ -56,9 +62,9 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "test middleware",
         global: false,
-        preProcessor: data => {
+        preProcessor: (data) => {
           data.response._preProcessorNote = "note";
-        }
+        },
       });
 
       const { _preProcessorNote, error } = await specHelper.runAction(
@@ -68,7 +74,7 @@ describe("Core: Middleware", () => {
       expect(_preProcessorNote).toBeUndefined();
     });
 
-    describe("midleware can read properties of the action template", () => {
+    describe("middleware can read properties of the action template", () => {
       const sessions = [];
 
       beforeAll(() => {
@@ -78,12 +84,13 @@ describe("Core: Middleware", () => {
             name: "authAction",
             description: "I am a test",
             version: 1,
+            //@ts-ignore
             authenticated: true,
-            run: ({ response, session }) => {
+            run: async ({ response, session }) => {
               sessions.push(session);
               response.thing = "stuff";
-            }
-          }
+            },
+          },
         };
       });
 
@@ -96,13 +103,13 @@ describe("Core: Middleware", () => {
         action.addMiddleware({
           name: "auth middleware",
           global: true,
-          preProcessor: data => {
+          preProcessor: (data) => {
             if (data.actionTemplate.authenticated === true) {
               data.response.authenticatedAction = true;
             } else {
               data.response.authenticatedAction = false;
             }
-          }
+          },
         });
 
         const randomResponse = await specHelper.runAction("randomNumber");
@@ -116,9 +123,9 @@ describe("Core: Middleware", () => {
         action.addMiddleware({
           name: "session middleware",
           global: true,
-          preProcessor: async data => {
+          preProcessor: async (data) => {
             data.session = { id: "abc123" };
-          }
+          },
         });
 
         await specHelper.runAction("authAction");
@@ -133,12 +140,12 @@ describe("Core: Middleware", () => {
         name: "first test middleware",
         global: true,
         priority: 1,
-        preProcessor: data => {
+        preProcessor: (data) => {
           data.response._processorNoteFirst = "first";
           data.response._processorNoteEarly = "first";
           data.response._processorNoteLate = "first";
           data.response._processorNoteDefault = "first";
-        }
+        },
       });
 
       // lower number priority (runs sooner)
@@ -146,21 +153,21 @@ describe("Core: Middleware", () => {
         name: "early test middleware",
         global: true,
         priority: config.general.defaultMiddlewarePriority - 1,
-        preProcessor: data => {
+        preProcessor: (data) => {
           data.response._processorNoteEarly = "early";
           data.response._processorNoteLate = "early";
           data.response._processorNoteDefault = "early";
-        }
+        },
       });
 
       // old style "default" priority
       action.addMiddleware({
         name: "default test middleware",
         global: true,
-        preProcessor: data => {
+        preProcessor: (data) => {
           data.response._processorNoteLate = "default";
           data.response._processorNoteDefault = "default";
-        }
+        },
       });
 
       // higher number priority (runs later)
@@ -168,9 +175,9 @@ describe("Core: Middleware", () => {
         name: "late test middleware",
         global: true,
         priority: config.general.defaultMiddlewarePriority + 1,
-        preProcessor: data => {
+        preProcessor: (data) => {
           data.response._processorNoteLate = "late";
-        }
+        },
       });
 
       const response = await specHelper.runAction("randomNumber");
@@ -185,18 +192,18 @@ describe("Core: Middleware", () => {
         name: "first test middleware",
         global: true,
         priority: config.general.defaultMiddlewarePriority - 1,
-        preProcessor: data => {
+        preProcessor: (data) => {
           data.response._processorNoteFirst = "first";
-        }
+        },
       });
 
       action.addMiddleware({
         name: "late test middleware",
         global: true,
         priority: config.general.defaultMiddlewarePriority - 1,
-        preProcessor: data => {
+        preProcessor: (data) => {
           data.response._processorNoteSecond = "second";
-        }
+        },
       });
 
       const response = await specHelper.runAction("randomNumber");
@@ -208,9 +215,9 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "test middleware",
         global: true,
-        postProcessor: data => {
+        postProcessor: (data) => {
           data.response._postProcessorNote = "note";
-        }
+        },
       });
 
       const response = await specHelper.runAction("randomNumber");
@@ -223,12 +230,12 @@ describe("Core: Middleware", () => {
         name: "first test middleware",
         global: true,
         priority: 1,
-        postProcessor: data => {
+        postProcessor: (data) => {
           data.response._processorNoteFirst = "first";
           data.response._processorNoteEarly = "first";
           data.response._processorNoteLate = "first";
           data.response._processorNoteDefault = "first";
-        }
+        },
       });
 
       // lower number priority (runs sooner)
@@ -236,21 +243,21 @@ describe("Core: Middleware", () => {
         name: "early test middleware",
         global: true,
         priority: config.general.defaultMiddlewarePriority - 1,
-        postProcessor: data => {
+        postProcessor: (data) => {
           data.response._processorNoteEarly = "early";
           data.response._processorNoteLate = "early";
           data.response._processorNoteDefault = "early";
-        }
+        },
       });
 
       // old style "default" priority
       action.addMiddleware({
         name: "default test middleware",
         global: true,
-        postProcessor: data => {
+        postProcessor: (data) => {
           data.response._processorNoteLate = "default";
           data.response._processorNoteDefault = "default";
-        }
+        },
       });
 
       // higher number priority (runs later)
@@ -258,9 +265,9 @@ describe("Core: Middleware", () => {
         name: "late test middleware",
         global: true,
         priority: config.general.defaultMiddlewarePriority + 1,
-        postProcessor: data => {
+        postProcessor: (data) => {
           data.response._processorNoteLate = "late";
-        }
+        },
       });
 
       const response = await specHelper.runAction("randomNumber");
@@ -275,18 +282,18 @@ describe("Core: Middleware", () => {
         name: "first middleware",
         global: true,
         priority: config.general.defaultMiddlewarePriority - 1,
-        postProcessor: data => {
+        postProcessor: (data) => {
           data.response._processorNoteFirst = "first";
-        }
+        },
       });
 
       action.addMiddleware({
         name: "second middleware",
         global: true,
         priority: config.general.defaultMiddlewarePriority - 1,
-        postProcessor: data => {
+        postProcessor: (data) => {
           data.response._processorNoteSecond = "second";
-        }
+        },
       });
 
       const response = await specHelper.runAction("randomNumber");
@@ -298,9 +305,9 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "test middleware",
         global: true,
-        preProcessor: function(data) {
+        preProcessor: function (data) {
           throw new Error("BLOCKED");
-        }
+        },
       });
 
       const { randomNumber, error } = await specHelper.runAction(
@@ -314,9 +321,9 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "test middleware",
         global: true,
-        postProcessor: data => {
+        postProcessor: (data) => {
           data.toRender = false;
-        }
+        },
       });
 
       await new Promise((resolve, reject) => {
@@ -324,7 +331,7 @@ describe("Core: Middleware", () => {
           resolve();
         }, 1000);
         specHelper.runAction("randomNumber").then(() => {
-          throw new Error("shold.not.get.here");
+          throw new Error("should.not.get.here");
         });
       });
     });
@@ -346,10 +353,10 @@ describe("Core: Middleware", () => {
       let middlewareRan = false;
       api.connections.addMiddleware({
         name: "connection middleware",
-        create: _connection => {
+        create: (_connection) => {
           middlewareRan = true;
           _connection.touched = "connect";
-        }
+        },
       });
 
       connection = await specHelper.buildConnection();
@@ -362,10 +369,10 @@ describe("Core: Middleware", () => {
       let middlewareRan = false;
       api.connections.addMiddleware({
         name: "connection middleware",
-        destroy: _connection => {
+        destroy: (_connection) => {
           middlewareRan = true;
           expect(_connection.touched).toEqual("connect");
-        }
+        },
       });
 
       connection.destroy();
@@ -390,15 +397,15 @@ describe("Core: Middleware", () => {
 
       api.connections.addMiddleware({
         name: "connection middleware",
-        create: async _connection => {
+        create: async (_connection) => {
           middlewareRan = true;
           await utils.sleep(1);
           _connection.longProcessResult = true;
         },
-        destroy: async _connection => {
+        destroy: async (_connection) => {
           await utils.sleep(1);
           middlewareDestoryRan = true;
-        }
+        },
       });
 
       const connection = await specHelper.buildConnection();

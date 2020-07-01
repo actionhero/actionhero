@@ -1,14 +1,13 @@
 import * as request from "request-promise-native";
 import * as stream from "stream";
-import { Process, config } from "./../../src/index";
+import { api, Process, config } from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 let url;
 
 describe("Server: sendBuffer", () => {
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
     url = "http://localhost:" + config.servers.web.port;
   });
 
@@ -19,16 +18,17 @@ describe("Server: sendBuffer", () => {
   beforeAll(() => {
     api.actions.versions.sendBufferTest = [1];
     api.actions.actions.sendBufferTest = {
+      // @ts-ignore
       1: {
         name: "sendBufferTest",
         description: "sendBufferTest",
         version: 1,
-        run: async data => {
+        run: async (data) => {
           const buffer = "Example of data buffer";
           const bufferStream = new stream.PassThrough();
           data.connection.rawConnection.responseHeaders.push([
             "Content-Disposition",
-            "attachment; filename=test.csv"
+            "attachment; filename=test.csv",
           ]);
           api.servers.servers.web.sendFile(
             data.connection,
@@ -40,17 +40,18 @@ describe("Server: sendBuffer", () => {
           );
           data.toRender = false;
           bufferStream.end(buffer);
-        }
-      }
+        },
+      },
     };
 
     api.actions.versions.sendUnknownLengthBufferTest = [1];
     api.actions.actions.sendUnknownLengthBufferTest = {
+      // @ts-ignore
       1: {
         name: "sendUnknownLengthBufferTest",
         description: "sendUnknownLengthBufferTest",
         version: 1,
-        run: data => {
+        run: async (data) => {
           const bufferStream = new stream.PassThrough();
           api.servers.servers.web.sendFile(
             data.connection,
@@ -63,8 +64,8 @@ describe("Server: sendBuffer", () => {
           const buffer = "Example of unknown length data buffer";
           data.toRender = false;
           bufferStream.end(buffer);
-        }
-      }
+        },
+      },
     };
 
     api.routes.loadRoutes();
@@ -86,7 +87,7 @@ describe("Server: sendBuffer", () => {
   test("Server should send a stream with no specified length", async () => {
     const { body, headers } = await request.get({
       uri: url + "/api/sendUnknownLengthBufferTest",
-      resolveWithFullResponse: true
+      resolveWithFullResponse: true,
     });
 
     expect(headers).not.toHaveProperty("content-length");

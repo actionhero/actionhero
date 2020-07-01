@@ -26,8 +26,8 @@ export class WebSocketServer extends Server {
         "roomLeave",
         "roomView",
         "detailsView",
-        "say"
-      ]
+        "say",
+      ],
     };
   }
 
@@ -41,11 +41,11 @@ export class WebSocketServer extends Server {
 
     this.writeClientJS();
 
-    this.server.on("connection", rawConnection => {
+    this.server.on("connection", (rawConnection) => {
       this.handleConnection(rawConnection);
     });
 
-    this.server.on("disconnection", rawConnection => {
+    this.server.on("disconnection", (rawConnection) => {
       this.handleDisconnection(rawConnection);
     });
 
@@ -55,12 +55,12 @@ export class WebSocketServer extends Server {
     );
 
     this.on("connection", (connection: Connection) => {
-      connection.rawConnection.on("data", data => {
+      connection.rawConnection.on("data", (data) => {
         this.handleData(connection, data);
       });
     });
 
-    this.on("actionComplete", data => {
+    this.on("actionComplete", (data) => {
       if (data.toRender !== false) {
         data.connection.response.messageId = data.messageId;
         this.sendMessage(data.connection, data.response, data.messageId);
@@ -114,12 +114,12 @@ export class WebSocketServer extends Server {
       content: null,
       mime: mime,
       length: length,
-      lastModified: lastModified
+      lastModified: lastModified,
     };
 
     try {
       if (!error) {
-        fileStream.on("data", d => {
+        fileStream.on("data", (d) => {
           content += d;
         });
         fileStream.on("end", () => {
@@ -221,7 +221,7 @@ export class WebSocketServer extends Server {
         );
         log(`wrote ${clientJSFullPath}.min.js`, "debug");
       } catch (e) {
-        log("Cannot write client-side JS for websocket server:", "warning", e);
+        log("Cannot write client-side JS for websocket server:", "alert", e);
         throw e;
       }
     }
@@ -238,7 +238,7 @@ export class WebSocketServer extends Server {
       rawConnection: rawConnection,
       remoteAddress: ip || rawConnection.address.ip,
       remotePort: port || rawConnection.address.port,
-      fingerprint: fingerprint
+      fingerprint: fingerprint,
     });
   }
 
@@ -274,7 +274,7 @@ export class WebSocketServer extends Server {
 
     if (verb === "file") {
       connection.params = {
-        file: data.file
+        file: data.file,
       };
       return this.processFile(connection);
     }
@@ -299,7 +299,7 @@ export class WebSocketServer extends Server {
         status: formattedError,
         error: formattedError,
         context: "response",
-        data: data
+        data: data,
       };
       return this.sendMessage(connection, message, messageId);
     }

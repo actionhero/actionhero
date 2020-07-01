@@ -5,7 +5,6 @@ export interface ExceptionHandlerAPI {
   reporters: Array<any>;
   report: Function;
   loader?: Function;
-  action?: Function;
   task?: Function;
 }
 
@@ -39,69 +38,37 @@ export class Exceptions extends Initializer {
             severity
           );
         }
-      }
+      },
     };
 
     const consoleReporter = (error, type, name, objects, severity) => {
-      const extraMessages = [];
+      let message = "";
+      const data = {};
 
       if (type === "loader") {
-        extraMessages.push("! Failed to load " + objects.fullFilePath);
-      } else if (type === "action") {
-        extraMessages.push("! uncaught error from action: " + name);
-        extraMessages.push("! connection details:");
-        const relevantDetails = this.relevantDetails();
-        for (const i in relevantDetails) {
-          const relevantDetail = relevantDetails[i];
-          if (
-            objects.connection[relevantDetail] !== null &&
-            objects.connection[relevantDetail] !== undefined &&
-            typeof objects.connection[relevantDetail] !== "function"
-          ) {
-            extraMessages.push(
-              "!     " +
-                relevantDetail +
-                ": " +
-                JSON.stringify(objects.connection[relevantDetail])
-            );
-          }
-        }
+        message = `Failed to load ${objects.fullFilePath}`;
       } else if (type === "task") {
-        extraMessages.push(
-          "! error from task: " +
-            name +
-            " on queue " +
-            objects.queue +
-            " (worker #" +
-            objects.workerId +
-            ")"
-        );
-        try {
-          extraMessages.push(
-            "!     arguments: " + JSON.stringify(objects.task.args)
-          );
-        } catch (e) {}
+        message = `error from task`;
+        data["name"] = name;
+        data["queue"] = objects.queue;
+        data["worker"] = objects.workerId;
+        data["arguments"] = objects?.task?.args
+          ? JSON.stringify(objects.task.args[0])
+          : undefined;
       } else {
-        extraMessages.push("! Error: " + error.message);
-        extraMessages.push("!     Type: " + type);
-        extraMessages.push("!     Name: " + name);
-        extraMessages.push("!     Data: " + JSON.stringify(objects));
+        message = `Error: ${error?.message || error.toString()}`;
+        Object.getOwnPropertyNames(error)
+          .filter((prop) => prop !== "message")
+          .sort((a, b) => (a === "stack" || b === "stack" ? -1 : 1))
+          .forEach((prop) => (data[prop] = error[prop]));
+        data["type"] = type;
+        data["name"] = name;
+        data["data"] = objects;
       }
 
-      for (const m in extraMessages) {
-        log(extraMessages[m], severity);
-      }
-      let lines;
-      try {
-        lines = error.stack.split(os.EOL);
-      } catch (e) {
-        lines = new Error(error).stack.split(os.EOL);
-      }
-      for (const l in lines) {
-        const line = lines[l];
-        log("! " + line, severity);
-      }
-      log("*", severity);
+      data["stacktrace"] = error?.stack;
+
+      log(message, severity, data);
     };
 
     api.exceptionHandlers.reporters.push(consoleReporter);
@@ -115,27 +82,6 @@ export class Exceptions extends Initializer {
         { fullFilePath: fullFilePath },
         "alert"
       );
-    };
-
-    api.exceptionHandlers.action = (error, data, next) => {
-      let simpleName;
-      try {
-        simpleName = data.action;
-      } catch (e) {
-        simpleName = error.message;
-      }
-      const name = "action:" + simpleName;
-      api.exceptionHandlers.report(
-        error,
-        "action",
-        name,
-        { connection: data.connection },
-        "error"
-      );
-      data.connection.response = {}; // no partial responses
-      if (typeof next === "function") {
-        next();
-      }
     };
 
     api.exceptionHandlers.task = (error, queue, task, workerId) => {

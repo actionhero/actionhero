@@ -1,6 +1,7 @@
 |
-|- boot.js
 |- src
+|  - server.ts
+|
 |  - config
 |    - (project settings)
 |

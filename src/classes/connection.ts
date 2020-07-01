@@ -1,10 +1,10 @@
-import * as uuidv4 from "uuid/v4";
+import * as uuid from "uuid";
 import { api, chatRoom } from "./../index";
 import { config } from "./../modules/config";
 import { i18n } from "../modules/i18n";
 
 /**
- * The generic represenation of a connection for all server types is an ActionHero.Connection.  You will never be creating these yourself via an action or task, but you will find them in your Actons and Action Middleware.
+ * The generic representation of a connection for all server types is an Actionhero.Connection.  You will never be creating these yourself via an action or task, but you will find them in your Actions and Action Middleware.
  */
 export class Connection {
   /**A unique string identifer for this connection. */
@@ -39,9 +39,20 @@ export class Connection {
   extension?: string;
   destroyed: boolean;
 
+  // --- custom methods ---
+
+  /** for specHelper */
+  messages?: Array<{ message: string; [key: string]: any }>;
+
+  //** for web connections */
+  setHeader?: (key: string, value: string) => {};
+  setStatusCode?: (code: number) => {};
+  matchedRoute?: string;
+  pipe?: Function;
+
   /**
    * @param data The specifics of this connection
-   * @param callCreateMethods The specifics of this connection will calls create methods in the constructor. This property will exist for backward compatibility. If you want to construct connection and call create methods within async, you can use `await ActionHero.Connection.createAsync(details)` for construction.
+   * @param callCreateMethods The specifics of this connection will calls create methods in the constructor. This property will exist for backward compatibility. If you want to construct connection and call create methods within async, you can use `await Actionhero.Connection.createAsync(details)` for construction.
    */
   constructor(data, callCreateMethods = true) {
     this.setup(data);
@@ -79,14 +90,14 @@ export class Connection {
     }
     this.connectedAt = new Date().getTime();
 
-    ["type", "rawConnection"].forEach(req => {
+    ["type", "rawConnection"].forEach((req) => {
       if (data[req] === null || data[req] === undefined) {
         throw new Error(`${req} is required to create a new connection object`);
       }
       this[req] = data[req];
     });
 
-    ["remotePort", "remoteIP"].forEach(req => {
+    ["remotePort", "remoteIP"].forEach((req) => {
       if (data[req] === null || data[req] === undefined) {
         if (config.general.enforceConnectionProperties === true) {
           throw new Error(
@@ -108,7 +119,7 @@ export class Connection {
       totalActions: 0,
       messageId: 0,
       canChat: false,
-      destroyed: false
+      destroyed: false,
     };
 
     for (const i in connectionDefaults) {
@@ -135,7 +146,7 @@ export class Connection {
   }
 
   /**
-   * Localize a key for this connection's locale.  Keys usually look like `messages.errors.notFound`, and are defined in your locales directory.  Strings can be interploated as well, connection.localize('the count was {{count}}', {count: 4})
+   * Localize a key for this connection's locale.  Keys usually look like `messages.errors.notFound`, and are defined in your locales directory.  Strings can be interpolated as well, connection.localize('the count was {{count}}', {count: 4})
    */
   localize(message: string) {
     // this.locale will be sourced automatically
@@ -147,18 +158,18 @@ export class Connection {
    * Uses Server#processFile and will set `connection.params.file = path`
    */
   async sendFile(path: string) {
-    throw new Error("not implamented");
+    throw new Error("not implemented");
   }
 
   /**
    * Send a message to a connection.  Uses Server#sendMessage.
    */
   async sendMessage(message: string | object | Array<any>, verb?: string) {
-    throw new Error("not implamented");
+    throw new Error("not implemented");
   }
 
   private generateID() {
-    return uuidv4();
+    return uuid.v4();
   }
 
   /**
@@ -221,10 +232,10 @@ export class Connection {
       server.log("verb", "debug", {
         verb: verb,
         to: this.remoteIP,
-        params: JSON.stringify(words)
+        params: JSON.stringify(words),
       });
 
-      // TODO: investigate allowedVerbs being an array of Constatnts or Symbols
+      // TODO: investigate allowedVerbs being an array of Constants or Symbols
 
       switch (verb) {
         case "quit":
@@ -282,7 +293,7 @@ export class Connection {
             connectedAt: this.connectedAt,
             rooms: this.rooms,
             totalActions: this.totalActions,
-            pendingActions: this.pendingActions
+            pendingActions: this.pendingActions,
           };
         case "documentation":
           return api.documentation.documentation;

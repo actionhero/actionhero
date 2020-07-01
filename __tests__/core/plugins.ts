@@ -1,9 +1,8 @@
 import * as path from "path";
 import * as ChildProcess from "child_process";
-import { Process, specHelper } from "./../../src/index";
+import { api, Process, specHelper } from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 let configChanges;
 
 async function exec(
@@ -29,11 +28,11 @@ describe("Core: Plugins", () => {
     beforeAll(async () => {
       configChanges = {
         plugins: {
-          testPlugin: { path: path.join(__dirname, "..", "testPlugin") }
-        }
+          testPlugin: { path: path.join(__dirname, "..", "testPlugin") },
+        },
       };
 
-      api = await actionhero.start({ configChanges });
+      await actionhero.start({ configChanges });
     });
 
     afterAll(async () => {
@@ -71,7 +70,7 @@ describe("Core: Plugins", () => {
 
         const {
           stdout: helpResponse,
-          stderr: error1
+          stderr: error1,
         } = await exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts help",
           { env }
@@ -81,7 +80,7 @@ describe("Core: Plugins", () => {
 
         const {
           stdout: helloResponse,
-          stderr: error2
+          stderr: error2,
         } = await exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts hello",
           { env }
@@ -104,12 +103,12 @@ describe("Core: Plugins", () => {
             servers: false,
             initializers: false,
             public: false,
-            cli: false
-          }
-        }
+            cli: false,
+          },
+        },
       };
 
-      api = await actionhero.start();
+      await actionhero.start();
     });
 
     afterAll(async () => {
@@ -145,7 +144,7 @@ describe("Core: Plugins", () => {
 
         const {
           stdout: helpResponse,
-          stderr: error1
+          stderr: error1,
         } = await exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts help",
           { env }
@@ -171,7 +170,7 @@ describe("Core: Plugins", () => {
 
   describe("without plugin", () => {
     beforeAll(async () => {
-      api = await actionhero.start();
+      await actionhero.start();
     });
     afterAll(async () => {
       await actionhero.stop();
@@ -204,7 +203,7 @@ describe("Core: Plugins", () => {
         const env = Object.assign({}, process.env);
         const {
           stdout: helpResponse,
-          stderr: error1
+          stderr: error1,
         } = await exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts help",
           { env }

@@ -1,23 +1,22 @@
-import { Process, specHelper } from "./../../src/index";
+import { api, Process, specHelper, task } from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 
 describe("Core: specHelper", () => {
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
   });
   afterAll(async () => {
     await actionhero.stop();
   });
 
-  test("can make a requset with just params", async () => {
+  test("can make a request with just params", async () => {
     const { randomNumber } = await specHelper.runAction("randomNumber");
     expect(randomNumber).toBeGreaterThanOrEqual(0);
     expect(randomNumber).toBeLessThan(1);
   });
 
-  test("will stack up messages recieved", async () => {
+  test("will stack up messages received", async () => {
     const connection = await specHelper.buildConnection();
     connection.params.thing = "stuff";
     const { error } = await specHelper.runAction("x", connection);
@@ -31,56 +30,62 @@ describe("Core: specHelper", () => {
     expect(error).toEqual("Error: unknown action or invalid apiVersion");
   });
 
-  describe("metadata, type-saftey, and errors", () => {
+  describe("metadata, type-safety, and errors", () => {
     beforeAll(() => {
       api.actions.versions.stringResponseTestAction = [1];
       api.actions.actions.stringResponseTestAction = {
+        //@ts-ignore
         1: {
           name: "stringResponseTestAction",
           description: "stringResponseTestAction",
           version: 1,
-          run: data => {
+          run: async (data) => {
+            //@ts-ignore
             data.response = "something response";
-          }
-        }
+          },
+        },
       };
 
       api.actions.versions.stringErrorTestAction = [1];
       api.actions.actions.stringErrorTestAction = {
+        //@ts-ignore
         1: {
           name: "stringErrorTestAction",
           description: "stringErrorTestAction",
           version: 1,
-          run: data => {
+          run: (data) => {
+            //@ts-ignore
             data.response = "something response";
             throw new Error("some error");
-          }
-        }
+          },
+        },
       };
 
       api.actions.versions.arrayResponseTestAction = [1];
       api.actions.actions.arrayResponseTestAction = {
+        //@ts-ignore
         1: {
           name: "arrayResponseTestAction",
           description: "arrayResponseTestAction",
           version: 1,
-          run: data => {
+          run: async (data) => {
             data.response = [1, 2, 3];
-          }
-        }
+          },
+        },
       };
 
       api.actions.versions.arrayErrorTestAction = [1];
       api.actions.actions.arrayErrorTestAction = {
+        //@ts-ignore
         1: {
           name: "arrayErrorTestAction",
           description: "arrayErrorTestAction",
           version: 1,
-          run: data => {
+          run: (data) => {
             data.response = [1, 2, 3];
             throw new Error("some error");
-          }
-        }
+          },
+        },
       };
     });
 
@@ -198,7 +203,7 @@ describe("Core: specHelper", () => {
 
     test("messageId can be configurable", async () => {
       const response = await specHelper.runAction("randomNumber", {
-        messageId: "aaa"
+        messageId: "aaa",
       });
       expect(response.messageId).toEqual("aaa");
     });
@@ -208,9 +213,7 @@ describe("Core: specHelper", () => {
     test("can request file data", async () => {
       const data = await specHelper.getStaticFile("simple.html");
       expect(data.error).toBeUndefined();
-      expect(data.content).toEqual(
-        "<h1>ActionHero</h1>\\nI am a flat file being served to you via the API from ./public/simple.html<br />"
-      );
+      expect(data.content).toContain("<h1>Actionhero</h1>");
       expect(data.mime).toEqual("text/html");
       expect(data.length).toEqual(101);
     });
@@ -228,11 +231,11 @@ describe("Core: specHelper", () => {
     let connId;
     const messageIds = [];
 
-    test("can make a requset with a spec'd connection", async () => {
+    test("can make a request with a specified connection", async () => {
       connection = await specHelper.buildConnection();
       connection.params = {
         key: "someKey",
-        value: "someValue"
+        value: "someValue",
       };
 
       connId = connection.id;
@@ -279,7 +282,7 @@ describe("Core: specHelper", () => {
         run: (api, params) => {
           taskRan = true;
           return "OK";
-        }
+        },
       };
 
       api.tasks.jobs.testTask = api.tasks.jobWrapper("testTask");
@@ -294,6 +297,34 @@ describe("Core: specHelper", () => {
       const response = await specHelper.runTask("testTask", {});
       expect(response).toEqual("OK");
       expect(taskRan).toEqual(true);
+    });
+
+    describe("flushed redis", () => {
+      beforeEach(async () => {
+        await api.redis.clients.client.flushdb();
+      });
+
+      test("findEnqueuedTasks (normal queues)", async () => {
+        await task.enqueue("testTask", { a: 1 });
+        const foundTasks = await specHelper.findEnqueuedTasks("testTask");
+        expect(foundTasks.length).toBe(1);
+        expect(foundTasks[0].args[0]).toEqual({ a: 1 });
+      });
+
+      test("findEnqueuedTasks (delayed queues)", async () => {
+        await task.enqueueIn(1, "testTask", { a: 1 });
+        const foundTasks = await specHelper.findEnqueuedTasks("testTask");
+        expect(foundTasks.length).toBe(1);
+        expect(foundTasks[0].args[0]).toEqual({ a: 1 });
+      });
+
+      test("deleteEnqueuedTasks", async () => {
+        await task.enqueue("testTask", { a: 1 });
+        await task.enqueueAt(10, "testTask", { a: 1 });
+        await specHelper.deleteEnqueuedTasks("testTask", { a: 1 });
+        const foundTasks = await specHelper.findEnqueuedTasks("testTask");
+        expect(foundTasks.length).toBe(0);
+      });
     });
   });
 });

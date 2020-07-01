@@ -1,17 +1,15 @@
 import { EventEmitter } from "events";
 import { Connection } from "./connection";
 import { ActionProcessor } from "./actionProcessor";
-import { Api } from "./api";
+import { api } from "../index";
 import { log } from "../modules/log";
-
-let api: Api;
 
 interface ServerConfig {
   [key: string]: any;
 }
 
 /**
- * Create a new ActionHero Server. The required properties of an server. These can be defined statically (this.name) or as methods which return a value.
+ * Create a new Actionhero Server. The required properties of an server. These can be defined statically (this.name) or as methods which return a value.
  */
 export abstract class Server extends EventEmitter {
   /**The name & type of the server. */
@@ -33,27 +31,21 @@ export abstract class Server extends EventEmitter {
   logConnections: boolean;
   /**Should we log when a connection disconnects/exits? */
   logExits: boolean;
-  /**Should every new connection of this server type recieve the wecome message (defiend in locales, `actionhero.welcomeMessage`) */
+  /**Should every new connection of this server type receive the welcome message (defined in locales, `actionhero.welcomeMessage`) */
   sendWelcomeMessage: boolean;
-  /**Methods descibed by the server to apply to each connection (like connection.setHeader for web connections) */
+  /**Methods described by the server to apply to each connection (like connection.setHeader for web connections) */
   connectionCustomMethods: {
     [key: string]: Function;
   };
-  /**An optional message to send to clients when they disconnect */
-  goodbye?: Function;
-  /**A place to store the actuall server object you create */
+  /**A place to store the actually server object you create */
   server?: any;
 
   constructor() {
-    // Only in files required by `index.js` do we need to delay the loading of the API object
-    // This is due to cyclical require issues
-    api = require("../index").api;
-
     super();
 
     this.options = {};
     this.attributes = {};
-    this.config = {}; // will be appllied by the initializer
+    this.config = {}; // will be applied by the initializer
     this.connectionCustomMethods = {};
     const defaultAttributes = this.defaultAttributes();
     for (const key in defaultAttributes) {
@@ -67,35 +59,35 @@ export abstract class Server extends EventEmitter {
   }
 
   /**
-   * Event called when a formal new connection is created for this server type.  This is a resposne to calling ActionHero.Server#buildConnection
+   * Event called when a formal new connection is created for this server type.  This is a response to calling Actionhero.Server#buildConnection
    *
-   * @event ActionHero.Server#connection
+   * @event Actionhero.Server#connection
    */
 
   /**
    * Event called when a an action is complete for a connection created by this server.  You may want to send a response to the client as a response to this event.
    *
-   * @event ActionHero.Server#actionComplete
+   * @event Actionhero.Server#actionComplete
    * @property {object} data - The same data from the Action.  Includes the connection, response, etc.
    */
 
   /**
-   * Method run as part of the `initialize` lifecycle of your server.  Ususally configures the server.
+   * Method run as part of the `initialize` lifecycle of your server.  Usually configures the server.
    */
   abstract async initialize(): Promise<void>;
 
   /**
-   * Method run as part of the `start` lifecycle of your server.  Ususally boots the server (listens on port, etc).
+   * Method run as part of the `start` lifecycle of your server.  Usually boots the server (listens on port, etc).
    */
   abstract async start(): Promise<void>;
 
   /**
-   * Method run as part of the `stop` lifecycle of your server.  Ususally configures the server (disconnects from port, etc).
+   * Method run as part of the `stop` lifecycle of your server.  Usually configures the server (disconnects from port, etc).
    */
   abstract async stop(): Promise<void>;
 
   /**
-   * Must be defined explaining how to send a message to an induvidual connection.
+   * Must be defined explaining how to send a message to an individual connection.
    */
   abstract async sendMessage(
     connection: Connection,
@@ -104,7 +96,7 @@ export abstract class Server extends EventEmitter {
   ): Promise<void>;
 
   /**
-   * Must be defined explaining how to send a file to an induvidual connection.  Might be a noop for some connection types.
+   * Must be defined explaining how to send a file to an individual connection.  Might be a noop for some connection types.
    */
   abstract async sendFile(
     connection: Connection,
@@ -115,6 +107,9 @@ export abstract class Server extends EventEmitter {
     lastModified: Date
   ): Promise<void>;
 
+  /**An optional message to send to clients when they disconnect */
+  async goodbye?(connection: Connection): Promise<void>;
+
   defaultAttributes() {
     return {
       type: null,
@@ -122,7 +117,7 @@ export abstract class Server extends EventEmitter {
       logConnections: true,
       logExits: true,
       sendWelcomeMessage: true,
-      verbs: []
+      verbs: [],
     };
   }
 
@@ -136,8 +131,8 @@ export abstract class Server extends EventEmitter {
       "stop",
       "sendFile", // connection, error, fileStream, mime, length, lastModified
       "sendMessage", // connection, message
-      "goodbye"
-    ].forEach(method => {
+      "goodbye",
+    ].forEach((method) => {
       if (!this[method] || typeof this[method] !== "function") {
         throw new Error(
           `${method} is a required method for the server \`${this.type}\``
@@ -147,7 +142,7 @@ export abstract class Server extends EventEmitter {
   }
 
   /**
-   *   * Build a the ActionHero.Connection from the raw parts provided by the server.
+   *   * Build a the Actionhero.Connection from the raw parts provided by the server.
    * ```js
    *this.buildConnection({
    *  rawConnection: {
@@ -176,7 +171,7 @@ export abstract class Server extends EventEmitter {
       rawConnection: data.rawConnection,
       messageId: data.messageId,
       canChat: null,
-      fingerprint: null
+      fingerprint: null,
     };
 
     if (this.attributes.canChat === true) {
@@ -189,11 +184,11 @@ export abstract class Server extends EventEmitter {
 
     const connection = await Connection.createAsync(details);
 
-    connection.sendMessage = async message => {
+    connection.sendMessage = async (message) => {
       this.sendMessage(connection, message);
     };
 
-    connection.sendFile = async path => {
+    connection.sendFile = async (path) => {
       connection.params.file = path;
       this.processFile(connection);
     };
@@ -207,7 +202,7 @@ export abstract class Server extends EventEmitter {
     if (this.attributes.sendWelcomeMessage === true) {
       connection.sendMessage({
         welcome: connection.localize("actionhero.welcomeMessage"),
-        context: "api"
+        context: "api",
       });
     }
 
@@ -216,7 +211,7 @@ export abstract class Server extends EventEmitter {
         try {
           connection.sendMessage({
             welcome: connection.localize("actionhero.welcomeMessage"),
-            context: "api"
+            context: "api",
           });
         } catch (e) {
           this.log(e, "error");
@@ -236,7 +231,7 @@ export abstract class Server extends EventEmitter {
   }
 
   /**
-   * When a connection has called an File command, and all properties are set.  Connection should have `params.file` set at least.  Will eventuall call ActionHero.Server#sendFile.
+   * When a connection has called an File command, and all properties are set.  Connection should have `params.file` set at least.  Will eventually call Actionhero.Server#sendFile.
    */
   async processFile(connection: Connection) {
     const results = await api.staticFile.get(connection);

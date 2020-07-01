@@ -10,7 +10,7 @@ export class TaskEnqueue extends CLI {
     this.inputs = {
       name: { required: true },
       args: { required: false },
-      params: { required: false }
+      params: { required: false },
     };
   }
 

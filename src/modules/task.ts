@@ -1,8 +1,10 @@
 import { api, config, utils, log } from "./../index";
+import { Inputs } from "./../classes/inputs";
+import { Task } from "./../classes/task";
 
 export namespace task {
   /**
- * An exmaple middleware
+ * An example middleware
  * ```js
  * const middleware = {
  *   name: 'timer',
@@ -21,7 +23,7 @@ export namespace task {
  *   },
  *   preEnqueue: async function () {
  *     const arg = this.args[0]
- *     return (arg === 'ok') // returing `false` will prevent the task from enqueing
+ *     return (arg === 'ok') // returning `false` will prevent the task from enqueueing
  *   },
  *   postEnqueue: async function () {
  *     log("Task successfully enqueued!")
@@ -37,13 +39,13 @@ export namespace task {
     global: boolean;
     /**Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`. */
     priority?: number;
-    /**Called berore the task runs.  Has access to all params, before sanitizartion.  Can modify the data object for use in tasks. */
+    /**Called berore the task runs.  Has access to all params, before sanitization.  Can modify the data object for use in tasks. */
     preProcessor?: Function;
     /**Called after the task runs.*/
     postProcessor?: Function;
-    /**Called before a task using this middleware is enqueud. */
+    /**Called before a task using this middleware is enqueued. */
     preEnqueue?: Function;
-    /**Called after a task using this middleware is enqueud. */
+    /**Called after a task using this middleware is enqueued. */
     postEnqueue?: Function;
   }
 
@@ -53,11 +55,11 @@ export namespace task {
    */
   export async function enqueue(
     taskName: string,
-    params: { [key: string]: any },
+    inputs: { [key: string]: any },
     queue: string = api.tasks.tasks[taskName].queue
   ) {
-    //@ts-ignore
-    return api.resque.queue.enqueue(queue, taskName, params);
+    await validateInput(taskName, inputs);
+    return api.resque.queue.enqueue(queue, taskName, [inputs]);
   }
 
   /**
@@ -66,17 +68,17 @@ export namespace task {
    *
    * Inputs:
    * * taskName: The name of the task.
-   * * params: Params to pass to the task.
+   * * inputs: inputs to pass to the task.
    * * queue: (Optional) Which queue/priority to run this instance of the task on.
    */
   export async function enqueueAt(
     timestamp: number,
     taskName: string,
-    params: { [key: string]: any },
+    inputs: { [key: string]: any },
     queue: string = api.tasks.tasks[taskName].queue
   ) {
-    //@ts-ignore
-    return api.resque.queue.enqueueAt(timestamp, queue, taskName, params);
+    await validateInput(taskName, inputs);
+    return api.resque.queue.enqueueAt(timestamp, queue, taskName, [inputs]);
   }
 
   /**
@@ -84,19 +86,19 @@ export namespace task {
    * Will throw an error if redis cannot be reached.
    *
    * Inputs:
-   * * timestamp: At what time the task is able to be run.  Does not gaurentee that the task will be run at this time. (in ms)
+   * * timestamp: At what time the task is able to be run.  Does not guarantee that the task will be run at this time. (in ms)
    * * taskName: The name of the task.
-   * * params: Params to pass to the task.
+   * * inputs: inputs to pass to the task.
    * * queue: (Optional) Which queue/priority to run this instance of the task on.
    */
   export async function enqueueIn(
     time: number,
     taskName: string,
-    params: { [key: string]: any },
+    inputs: { [key: string]: any },
     queue: string = api.tasks.tasks[taskName].queue
   ) {
-    //@ts-ignore
-    return api.resque.queue.enqueueIn(time, queue, taskName, params);
+    await validateInput(taskName, inputs);
+    return api.resque.queue.enqueueIn(time, queue, taskName, [inputs]);
   }
 
   /**
@@ -105,7 +107,7 @@ export namespace task {
    *
    * Inputs:
    * * q: Which queue/priority is the task stored on?
-   * * taskName: The name of the job, likley to be the same name as a tak.
+   * * taskName: The name of the job, likely to be the same name as a tak.
    * * args: The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing.  It is best to read job properties first via `api.tasks.queued` or similar method.
    * * count: Of the jobs that match q, taskName, and args, up to what position should we delete? (Default 0; this command is 0-indexed)
    */
@@ -115,8 +117,7 @@ export namespace task {
     args?: { [key: string]: any },
     count?: number
   ) {
-    //@ts-ignore
-    return api.resque.queue.del(q, taskName, args, count);
+    return api.resque.queue.del(q, taskName, [args], count);
   }
 
   /**
@@ -125,16 +126,15 @@ export namespace task {
    *
    * Inputs:
    * * q: Which queue/priority is to run on?
-   * * taskName: The name of the job, likley to be the same name as a tak.
-   * * args  The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing. It is best to read job properties first via `api.tasks.delayedAt` or similar method.
+   * * taskName: The name of the job, likely to be the same name as a tak.
+   * * inputs  The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing. It is best to read job properties first via `api.tasks.delayedAt` or similar method.
    */
   export async function delDelayed(
     q: string,
     taskName: string,
-    args?: { [key: string]: any }
+    inputs?: { [key: string]: any }
   ) {
-    // @ts-ignore
-    return api.resque.queue.delDelayed(q, taskName, args);
+    return api.resque.queue.delDelayed(q, taskName, [inputs]);
   }
 
   /**
@@ -143,20 +143,19 @@ export namespace task {
    *
    * Inputs:
    * * q: Which queue/priority is to run on?
-   * * taskName: The name of the job, likley to be the same name as a tak.
-   * * args: The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing.  It is best to read job properties first via `api.tasks.delayedAt` or similar method.
+   * * taskName: The name of the job, likely to be the same name as a tak.
+   * * inputs: The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing.  It is best to read job properties first via `api.tasks.delayedAt` or similar method.
    */
   export async function scheduledAt(
     q: string,
     taskName: string,
-    args: { [key: string]: any }
+    inputs: { [key: string]: any }
   ): Promise<Array<number>> {
-    //@ts-ignore
-    return api.resque.queue.scheduledAt(q, taskName, args);
+    return api.resque.queue.scheduledAt(q, taskName, [inputs]);
   }
 
   /**
-   * Return all resque stats for this namespace (how jobs failed, jobs succeded, etc)
+   * Return all resque stats for this namespace (how jobs failed, jobs succeeded, etc)
    * Will throw an error if redis cannot be reached.
    */
   export async function stats() {
@@ -222,7 +221,7 @@ export namespace task {
   }
 
   /**
-   * Retrun all delayed jobs, orginized by the timetsamp at where they are to run at.
+   * Return all delayed jobs, organized by the timestamp at where they are to run at.
    * Note: This is a very slow command.
    * Will throw an error if redis cannot be reached.
    */
@@ -231,7 +230,7 @@ export namespace task {
   }
 
   /**
-   * Retrun all workers registered by all members of this cluster.
+   * Return all workers registered by all members of this cluster.
    * Note: MultiWorker processors each register as a unique worker.
    * Will throw an error if redis cannot be reached.
    */
@@ -295,7 +294,7 @@ export namespace task {
 
   /**
    * If a worker process crashes, it will leave its state in redis as "working".
-   * You can remove workers from redis you know to be over, by specificing an age which would make them too old to exist.
+   * You can remove workers from redis you know to be over, by specificizing an age which would make them too old to exist.
    * This method will remove the data created by a 'stuck' worker and move the payload to the error queue.
    * However, it will not actually remove any processes which may be running.  A job *may* be running that you have removed.
    * Will throw an error if redis cannot be reached.
@@ -331,7 +330,7 @@ export namespace task {
     const jobs = [];
     const loadedTasks = [];
 
-    Object.keys(api.tasks.tasks).forEach(taskName => {
+    Object.keys(api.tasks.tasks).forEach((taskName) => {
       const thisTask = api.tasks.tasks[taskName];
       if (thisTask.frequency > 0) {
         jobs.push(async () => {
@@ -409,5 +408,67 @@ export namespace task {
       );
     }
     api.tasks.loadTasks(true);
+  }
+
+  async function validateInput(taskName: string, inputs: Inputs) {
+    const task: Task = api.tasks.tasks[taskName];
+
+    if (!task) {
+      throw new Error(`task ${taskName} not found`);
+    }
+
+    for (const key in task.inputs) {
+      // default
+      if (inputs[key] === undefined && task.inputs[key].default !== undefined) {
+        if (typeof task.inputs[key].default === "function") {
+          inputs[key] = await task.inputs[key].default.call(
+            api,
+            inputs[key],
+            this
+          );
+        } else {
+          inputs[key] = task.inputs[key].default;
+        }
+      }
+
+      // validator
+      if (
+        inputs[key] !== undefined &&
+        task.inputs[key].validator !== undefined
+      ) {
+        let validatorResponse;
+        if (typeof task.inputs[key].validator === "function") {
+          // allowed to throw too
+          const method = task.inputs[key].validator as Function;
+          validatorResponse = await method.call(api, inputs[key], this);
+        } else {
+          const method = this.prepareStringMethod(task.inputs[key].validator);
+          validatorResponse = await method.call(api, inputs[key], this);
+        }
+
+        // validator function returned nothing; assume param is OK
+        if (validatorResponse === null || validatorResponse === undefined) {
+          // ok
+        }
+
+        // validator returned something that was not `true`
+        else if (validatorResponse !== true) {
+          if (validatorResponse === false) {
+            throw new Error(
+              `${inputs[key]} is not a valid value for ${key} in task ${taskName}`
+            );
+          } else {
+            throw new Error(validatorResponse);
+          }
+        }
+      }
+
+      // required
+      if (task.inputs[key].required === true) {
+        if (config.general.missingParamChecks.indexOf(inputs[key]) >= 0) {
+          throw new Error(`${key} is a required input for task ${taskName}`);
+        }
+      }
+    }
   }
 }

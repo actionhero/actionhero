@@ -2,13 +2,12 @@ import * as request from "request-promise-native";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import { Process, config, route } from "../../../../src/index";
+import { api, Process, config, route } from "../../../../src/index";
 
 const actionhero = new Process();
-let api;
 let url;
 
-const toJson = async string => {
+const toJson = async (string) => {
   try {
     return JSON.parse(string);
   } catch (error) {
@@ -18,7 +17,7 @@ const toJson = async string => {
 
 describe("Server: Web", () => {
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
     url = "http://localhost:" + config.servers.web.port;
   });
 
@@ -32,48 +31,71 @@ describe("Server: Web", () => {
       originalRoutes = api.routes.routes;
       api.actions.versions.mimeTestAction = [1];
       api.actions.actions.mimeTestAction = {
+        // @ts-ignore
         1: {
           name: "mimeTestAction",
           description: "I am a test",
           matchExtensionMimeType: true,
           inputs: {
             key: { required: true },
-            path: { required: false }
+            path: { required: false },
           },
           outputExample: {},
-          run: data => {
+          run: async (data) => {
             data.response.matchedRoute = data.connection.matchedRoute;
-          }
-        }
+          },
+        },
       };
 
       api.actions.versions.login = [1, 2];
       api.actions.actions.login = {
+        // @ts-ignore
         1: {
           name: "login",
           description: "login",
+          version: 1,
           matchExtensionMimeType: true,
           inputs: {
-            user_id: { required: true }
+            user_id: { required: true },
           },
           outputExample: {},
-          run: data => {
+          run: async (data) => {
             data.response.user_id = data.params.user_id;
-          }
+            data.response.version = 1;
+          },
         },
 
+        // @ts-ignore
         2: {
           name: "login",
           description: "login",
+          version: 2,
           matchExtensionMimeType: true,
           inputs: {
-            userID: { required: true }
+            userID: { required: true },
           },
           outputExample: {},
-          run: data => {
+          run: async (data) => {
             data.response.userID = data.params.userID;
-          }
-        }
+            data.response.version = 2;
+          },
+        },
+
+        // @ts-ignore
+        three: {
+          name: "login",
+          description: "login",
+          version: "three",
+          matchExtensionMimeType: true,
+          inputs: {
+            userID: { required: true },
+          },
+          outputExample: {},
+          run: async (data) => {
+            data.response.userID = data.params.userID;
+            data.response.version = "three";
+          },
+        },
       };
 
       api.params.buildPostVariables();
@@ -86,15 +108,23 @@ describe("Server: Web", () => {
           { path: "/mimeTestAction/:key", action: "mimeTestAction" },
           { path: "/thing", action: "thing" },
           { path: "/thing/stuff", action: "thingStuff" },
+          { path: "/v:apiVersion/login", action: "login" },
+          { path: "/:apiVersion/login", action: "login" },
           { path: "/old_login", action: "login", apiVersion: "1" },
           {
             path: "/a/wild/:key/:path(^.*$)",
             action: "mimeTestAction",
             apiVersion: "1",
-            matchTrailingPathParts: true
-          }
+            matchTrailingPathParts: true,
+          },
+          {
+            path: "/a/complex/:key/__:path(^.*$)",
+            action: "mimeTestAction",
+            apiVersion: "1",
+            matchTrailingPathParts: true,
+          },
         ],
-        post: [{ path: "/login/:userID(^(\\d{3}|admin)$)", action: "login" }]
+        post: [{ path: "/login/:userID(^(\\d{3}|admin)$)", action: "login" }],
       });
     });
 
@@ -114,8 +144,8 @@ describe("Server: Web", () => {
       route.registerRoute("all", "/other-login", "login", null);
       const loaded = {};
       const registered = {};
-      api.routes.verbs.forEach(verb => {
-        api.routes.routes[verb].forEach(route => {
+      api.routes.verbs.forEach((verb) => {
+        api.routes.routes[verb].forEach((route) => {
           if (!loaded[verb])
             loaded[verb] =
               route.action === "user" && route.path === "/user/:userID";
@@ -172,7 +202,7 @@ describe("Server: Web", () => {
       expect(body.matchedRoute.action).toEqual("mimeTestAction");
     });
 
-    test("route actions have the matched route availalbe to the action", async () => {
+    test("route actions have the matched route available to the action", async () => {
       const body = await request
         .get(url + "/api/mimeTestAction/thing.json")
         .then(toJson);
@@ -365,6 +395,19 @@ describe("Server: Web", () => {
         );
         expect(body.requesterInformation.receivedParams.key).toEqual("theKey");
       });
+
+      test("works with with matchTrailingPathParts and ignored variable prefixes", async () => {
+        const body = await request
+          .get(url + "/api/a/complex/theKey/__path-stuff")
+          .then(toJson);
+        expect(body.requesterInformation.receivedParams.action).toEqual(
+          "mimeTestAction"
+        );
+        expect(body.requesterInformation.receivedParams.path).toEqual(
+          "path-stuff"
+        );
+        expect(body.requesterInformation.receivedParams.key).toEqual("theKey");
+      });
     });
 
     describe("spaces in URL with public files", () => {
@@ -376,9 +419,9 @@ describe("Server: Web", () => {
       beforeAll(async () => {
         const tmpDir = os.tmpdir();
         const readStream = fs.createReadStream(source);
-        api.staticFile.searchLoactions.push(tmpDir);
+        api.staticFile.searchLocations.push(tmpDir);
 
-        await new Promise(resolve => {
+        await new Promise((resolve) => {
           readStream.pipe(
             fs.createWriteStream(
               tmpDir + path.sep + "actionhero with space.png"
@@ -390,7 +433,7 @@ describe("Server: Web", () => {
 
       afterAll(() => {
         fs.unlinkSync(os.tmpdir() + path.sep + "actionhero with space.png");
-        api.staticFile.searchLoactions.pop();
+        api.staticFile.searchLocations.pop();
       });
 
       test("will decode %20 or plus sign to a space so that file system can read", async () => {
@@ -414,6 +457,43 @@ describe("Server: Web", () => {
         }
       });
     });
+
+    describe("versions", () => {
+      test("versions can be numbers", async () => {
+        const body = await request
+          .get(url + "/api/1/login?user_id=123")
+          .then(toJson);
+        expect(body.version).toEqual(1);
+        expect(body.user_id).toEqual("123");
+      });
+
+      test("versions can be strings", async () => {
+        const body = await request
+          .get(url + "/api/three/login?userID=123")
+          .then(toJson);
+        expect(body.version).toEqual("three");
+        expect(body.userID).toEqual("123");
+      });
+
+      test("versions have an ignored prefix", async () => {
+        const body = await request
+          .get(url + "/api/v1/login?user_id=123")
+          .then(toJson);
+        expect(body.version).toEqual(1);
+        expect(body.user_id).toEqual("123");
+        expect(body.requesterInformation.receivedParams.apiVersion).toBe("1");
+        expect(body.requesterInformation.receivedParams.action).toBe("login");
+      });
+
+      test("routes with no version will default to the highest version number", async () => {
+        // sorting numerically, 2 > 'three'
+        const body = await request
+          .get(url + "/api/login?userID=123")
+          .then(toJson);
+        expect(body.version).toEqual(2);
+        expect(body.userID).toEqual("123");
+      });
+    });
   });
 
   describe("manually set routes persist a reload", () => {
@@ -428,14 +508,14 @@ describe("Server: Web", () => {
     test("it remembers manually loaded routes", async () => {
       route.registerRoute("get", "/a-custom-route", "randomNumber", null);
       const response = await request.get(url + "/api/a-custom-route", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.statusCode).toEqual(200);
 
       api.routes.loadRoutes();
 
       const responseAgain = await request.get(url + "/api/a-custom-route", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(responseAgain.statusCode).toEqual(200);
     });

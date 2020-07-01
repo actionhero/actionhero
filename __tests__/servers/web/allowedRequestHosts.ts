@@ -22,15 +22,15 @@ jest.mock("./../../../src/config/servers/web.ts", () => ({
           queryRouting: true,
           metadataOptions: {
             serverInformation: true,
-            requesterInformation: false
+            requesterInformation: false,
           },
           fingerprintOptions: {
-            cookieKey: "sessionID"
-          }
+            cookieKey: "sessionID",
+          },
         };
-      }
-    }
-  }
+      },
+    },
+  },
 }));
 
 describe("Server: Web", () => {
@@ -43,13 +43,29 @@ describe("Server: Web", () => {
     await actionhero.stop();
   });
 
-  describe("request redirecton (allowedRequestHosts)", () => {
+  describe("request redirection (allowedRequestHosts)", () => {
     test("will redirect clients if they do not request the proper host", async () => {
       try {
         await request.get({
           followRedirect: false,
           url: url + "/api/randomNumber",
-          headers: { Host: "lalala.site.com" }
+          headers: { Host: "lalala.site.com" },
+        });
+        throw new Error("should not get here");
+      } catch (error) {
+        expect(error.statusCode).toEqual(302);
+        expect(error.response.body).toMatch(
+          /You are being redirected to https:\/\/www.site.com\/api\/randomNumber/
+        );
+      }
+    });
+
+    test("will redirect clients if they do not request the proper protocol", async () => {
+      try {
+        await request.get({
+          followRedirect: false,
+          url: url + "/api/randomNumber",
+          headers: { Host: "www.site.com" },
         });
         throw new Error("should not get here");
       } catch (error) {
@@ -66,8 +82,8 @@ describe("Server: Web", () => {
         url: url + "/api/randomNumber",
         headers: {
           Host: "www.site.com",
-          "x-forwarded-proto": "https"
-        }
+          "x-forwarded-proto": "https",
+        },
       });
 
       expect(response).toMatch(/randomNumber/);

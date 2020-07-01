@@ -1,5 +1,5 @@
 /**
- * Is the JS Object passed in truly just an obejct?
+ * Is the JS Object passed in truly just an object?
  */
 export function isPlainObject(o: any) {
   const safeTypes = [
@@ -10,7 +10,7 @@ export function isPlainObject(o: any) {
     Array,
     Date,
     RegExp,
-    Buffer
+    Buffer,
   ];
   const safeInstances = ["boolean", "number", "string", "function"];
   const expandPreventMatchKey = "_toExpand"; // set `_toExpand = false` within an object if you don't want to expand it

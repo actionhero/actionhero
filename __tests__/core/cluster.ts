@@ -1,18 +1,18 @@
 import {
+  api,
   Process,
   config,
   utils,
   specHelper,
   chatRoom,
-  redis
+  redis,
 } from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 
 describe("Core: Action Cluster", () => {
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
     for (var room in config.general.startingChatRooms) {
       try {
         await chatRoom.destroy(room);
@@ -77,18 +77,18 @@ describe("Core: Action Cluster", () => {
 
       const connection = await api.connections.apply(client.id, "set", [
         "auth",
-        true
+        true,
       ]);
       expect(connection.id).toEqual(client.id);
       expect(client.auth).toEqual(true);
       client.destroy();
     });
 
-    test("can send arbitraty messages to connections connected to other servers", async () => {
+    test("can send arbitrary messages to connections connected to other servers", async () => {
       const client = await specHelper.buildConnection();
 
       const connection = await api.connections.apply(client.id, "sendMessage", {
-        message: "hi"
+        message: "hi",
       });
       const message = connection.messages[connection.messages.length - 1];
       expect(message.message).toEqual("hi");

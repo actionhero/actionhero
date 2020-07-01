@@ -1,13 +1,13 @@
 import { Process, specHelper } from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 
 describe("Action", () => {
   describe("sleepTest", () => {
     beforeAll(async () => {
-      api = await actionhero.start();
+      await actionhero.start();
     });
+
     afterAll(async () => {
       await actionhero.stop();
     });
@@ -19,7 +19,7 @@ describe("Action", () => {
 
     test("can change sleepDuration", async () => {
       const { sleepDuration } = await specHelper.runAction("sleepTest", {
-        sleepDuration: 100
+        sleepDuration: 100,
       });
       expect(sleepDuration).toEqual(100);
     });

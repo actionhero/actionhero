@@ -2,19 +2,19 @@
 // You can use SKIP_CLI_TEST_SETUP=true to skip the setup portion of these tests if you are testing this file repeatedly
 
 import * as fs from "fs";
-import * as os from "os";
 import * as path from "path";
 import { spawn } from "child_process";
 import * as request from "request-promise-native";
 import * as isrunning from "is-running";
 
-const testDir = os.tmpdir() + path.sep + "actionheroTestProject";
+const testDir = path.join(process.cwd(), "tmp", "actionheroTestProject");
 const binary = "./node_modules/.bin/actionhero";
 const pacakgeJSON = require(path.join(__dirname, "/../../package.json"));
 
 console.log(`testDir: ${testDir}`);
 
 const port = 18080 + parseInt(process.env.JEST_WORKER_ID || "0");
+const host = "localhost";
 let pid;
 let AHPath;
 
@@ -44,26 +44,26 @@ const doCommand = async (
 
     let env = process.env;
     // we don't want the CLI commands to source typescript files
-    // when running jest, it will reset NDOE_ENV=test
+    // when running jest, it will reset NODE_ENV=test
     delete env.NODE_ENV;
-    // but somtimes we do /shrug/
+    // but sometimes we do /shrug/
     env = Object.assign(env, extraEnv);
 
     const cmd = spawn(bin, args, {
       cwd: useCwd ? testDir : __dirname,
-      env: env
+      env: env,
     });
 
-    cmd.stdout.on("data", data => {
+    cmd.stdout.on("data", (data) => {
       stdout += data.toString();
     });
-    cmd.stderr.on("data", data => {
+    cmd.stderr.on("data", (data) => {
       stderr += data.toString();
     });
 
     pid = cmd.pid;
 
-    cmd.on("close", exitCode => {
+    cmd.on("close", (exitCode) => {
       if (stderr.length > 0 || exitCode !== 0) {
         const error = new ErrorWithStd(stderr);
         error.stderr = stderr;
@@ -78,7 +78,7 @@ const doCommand = async (
 };
 
 async function sleep(time) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(resolve, time);
   });
 }
@@ -113,7 +113,7 @@ describe("Core: CLI", () => {
 
     test("can call npm install in the new project", async () => {
       try {
-        await doCommand("npm install");
+        await doCommand("npm install --ignore-scripts");
       } catch (error) {
         // we might get warnings about package.json locks, etc.  we want to ignore them
         if (error.toString().indexOf("npm") < 0) {
@@ -133,12 +133,14 @@ describe("Core: CLI", () => {
       expect(stdout).toMatch("<3, the Actionhero Team");
 
       [
+        "tsconfig.json",
+        "src/server.ts",
         "src/actions",
         "src/tasks",
         "src/initializers",
         "src/servers",
         "src/bin",
-        "src/actions/showDocumentation.ts",
+        "src/actions/swagger.ts",
         "src/actions/status.ts",
         "src/config",
         "src/config/api.ts",
@@ -164,8 +166,7 @@ describe("Core: CLI", () => {
         "__tests__",
         "__tests__/actions/status.ts",
         ".gitignore",
-        "boot.js"
-      ].forEach(f => {
+      ].forEach((f) => {
         expect(fs.existsSync(testDir + "/" + f)).toEqual(true);
       });
     }, 20000);
@@ -177,7 +178,7 @@ describe("Core: CLI", () => {
 
     test("can call the help command", async () => {
       const { stdout } = await doCommand(`${binary} help`);
-      expect(stdout).toMatch(/actionhero start cluster/);
+      expect(stdout).toMatch(/generate action/);
       expect(stdout).toMatch(
         /The reusable, scalable, and quick node.js API server for stateless and stateful applications/
       );
@@ -212,10 +213,10 @@ describe("Core: CLI", () => {
           `${testDir}/__tests__/tasks/myTask.ts`,
           `${testDir}/src/bin/myCommand.ts`,
           `${testDir}/src/servers/myServer.ts`,
-          `${testDir}/src/initializers/myInitializer.ts`
+          `${testDir}/src/initializers/myInitializer.ts`,
         ];
 
-        files.forEach(f => {
+        files.forEach((f) => {
           if (fs.existsSync(f)) {
             fs.unlinkSync(f);
           }
@@ -293,38 +294,16 @@ describe("Core: CLI", () => {
       }, 20000);
     });
 
-    test("can ensure no boot.js does not break, will console.log message", async () => {
-      const origBootjs = String(fs.readFileSync(`${testDir}/boot.js`));
-      await doCommand(`rm ${testDir}/boot.js`, false);
-
-      const { stdout } = await doCommand(`${binary} version`);
-      expect(stdout).toContain(pacakgeJSON.version);
-
-      // replace with orig boot.js
-      fs.writeFileSync(`${testDir}/boot.js`, origBootjs);
-    }, 20000);
-
-    test("can ensure a custom boot.js runs before everything else", async () => {
-      const origBootjs = String(fs.readFileSync(`${testDir}/boot.js`));
-      fs.writeFileSync(
-        `${testDir}/boot.js`,
-        `exports.default = async function BOOT() {
-          await new Promise((resolve)=> setTimeout(resolve,500))
-          console.log('BOOTING')
-        }`
-      );
-
-      const { stdout } = await doCommand(`${binary} version`);
-      expect({ stdout, start: stdout.startsWith("BOOTING") }).toEqual({
-        stdout,
-        start: true
-      });
-      expect(stdout).toContain(pacakgeJSON.version);
-      // replace with orig boot.js
-      fs.writeFileSync(`${testDir}/boot.js`, origBootjs);
-    }, 20000);
-
     test("can call npm test in the new project and not fail", async () => {
+      // since prettier no longer works with node < 10, we need to skip this test
+      const nodeVersion = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
+      if (nodeVersion < 10) {
+        console.log(
+          `skpping 'npm test' because this node version ${nodeVersion} < 10.0.0`
+        );
+        return;
+      }
+
       // jest writes to stderr for some reason, so we need to test for the exit code here
       try {
         await doCommand("npm test", true, { NODE_ENV: "test" });
@@ -335,11 +314,11 @@ describe("Core: CLI", () => {
       }
     }, 120000);
 
-    describe("can run a single server", () => {
+    describe("can run the server", () => {
       let serverPid;
 
-      beforeAll(async function() {
-        doCommand(`${binary} start`, true, { PORT: port });
+      beforeAll(async function () {
+        doCommand(`node dist/server.js`, true, { PORT: port });
         await sleep(5000);
         serverPid = pid;
       }, 20000);
@@ -350,11 +329,10 @@ describe("Core: CLI", () => {
         }
       });
 
-      test("can boot a single server", async () => {
-        const response = await request(
-          `http://localhost:${port}/api/showDocumentation`,
-          { json: true }
-        );
+      test("can boot the server", async () => {
+        const response = await request(`http://${host}:${port}/api/status`, {
+          json: true,
+        });
         expect(response.serverInformation.serverName).toEqual(
           "my_actionhero_project"
         );
@@ -363,10 +341,9 @@ describe("Core: CLI", () => {
       test("can handle signals to reboot", async () => {
         await doCommand(`kill -s USR2 ${serverPid}`);
         await sleep(3000);
-        const response = await request(
-          `http://localhost:${port}/api/showDocumentation`,
-          { json: true }
-        );
+        const response = await request(`http://${host}:${port}/api/status`, {
+          json: true,
+        });
         expect(response.serverInformation.serverName).toEqual(
           "my_actionhero_project"
         );
@@ -376,7 +353,7 @@ describe("Core: CLI", () => {
         await doCommand(`kill ${serverPid}`);
         await sleep(1000);
         try {
-          await request(`http://localhost:${port}/api/showDocumentation`);
+          await request(`http://${host}:${port}/api/status`);
           throw new Error("should not get here");
         } catch (error) {
           expect(error.toString()).toMatch(
@@ -386,139 +363,6 @@ describe("Core: CLI", () => {
       });
 
       // test('will shutdown after the alloted time')
-    });
-
-    describe("can run a cluster", () => {
-      let clusterPid;
-      beforeAll(async function() {
-        doCommand(`${binary} start cluster --workers=2`, true, { PORT: port });
-        await sleep(10000);
-        clusterPid = pid;
-      }, 30000);
-
-      afterAll(async () => {
-        if (isrunning(clusterPid)) {
-          await doCommand(`kill ${clusterPid}`);
-        }
-      });
-
-      test("should be running the cluster with 2 nodes", async () => {
-        const { stdout } = await doCommand("ps awx");
-        const parents = stdout.split("\n").filter(l => {
-          return l.indexOf("actionhero start cluster") >= 0;
-        });
-        const children = stdout.split("\n").filter(l => {
-          return l.indexOf("actionhero start") >= 0 && l.indexOf("cluster") < 0;
-        });
-        expect(parents.length).toEqual(1);
-        expect(children.length).toEqual(2);
-
-        const response = await request(
-          `http://localhost:${port}/api/showDocumentation`,
-          { json: true }
-        );
-        expect(response.serverInformation.serverName).toEqual(
-          "my_actionhero_project"
-        );
-      });
-
-      test("can handle signals to add a worker", async () => {
-        await doCommand(`kill -s TTIN ${clusterPid}`);
-        await sleep(2000);
-
-        const { stdout } = await doCommand("ps awx");
-        const parents = stdout.split("\n").filter(l => {
-          return l.indexOf("bin/actionhero start cluster") >= 0;
-        });
-        const children = stdout.split("\n").filter(l => {
-          return (
-            l.indexOf("bin/actionhero start") >= 0 && l.indexOf("cluster") < 0
-          );
-        });
-        expect(parents.length).toEqual(1);
-        expect(children.length).toEqual(3);
-      }, 20000);
-
-      test("can handle signals to remove a worker", async () => {
-        await doCommand(`kill -s TTOU ${clusterPid}`);
-        await sleep(2000);
-
-        const { stdout } = await doCommand("ps awx");
-        const parents = stdout.split("\n").filter(l => {
-          return l.indexOf("bin/actionhero start cluster") >= 0;
-        });
-        const children = stdout.split("\n").filter(l => {
-          return (
-            l.indexOf("bin/actionhero start") >= 0 && l.indexOf("cluster") < 0
-          );
-        });
-        expect(parents.length).toEqual(1);
-        expect(children.length).toEqual(2);
-      }, 20000);
-
-      test("can handle signals to reboot (graceful)", async () => {
-        await doCommand(`kill -s USR2 ${clusterPid}`);
-        await sleep(3000);
-
-        const { stdout } = await doCommand("ps awx");
-        const parents = stdout.split("\n").filter(l => {
-          return l.indexOf("actionhero start cluster") >= 0;
-        });
-        const children = stdout.split("\n").filter(l => {
-          return l.indexOf("actionhero start") >= 0 && l.indexOf("cluster") < 0;
-        });
-        expect(parents.length).toEqual(1);
-        expect(children.length).toEqual(2);
-
-        const response = await request(
-          `http://localhost:${port}/api/showDocumentation`,
-          { json: true }
-        );
-        expect(response.serverInformation.serverName).toEqual(
-          "my_actionhero_project"
-        );
-      }, 20000);
-
-      test("can handle signals to reboot (hup)", async () => {
-        await doCommand(`kill -s WINCH ${clusterPid}`);
-        await sleep(3000);
-
-        const { stdout } = await doCommand("ps awx");
-        const parents = stdout.split("\n").filter(l => {
-          return l.indexOf("actionhero start cluster") >= 0;
-        });
-        const children = stdout.split("\n").filter(l => {
-          return l.indexOf("actionhero start") >= 0 && l.indexOf("cluster") < 0;
-        });
-        expect(parents.length).toEqual(1);
-        expect(children.length).toEqual(2);
-
-        const response = await request(
-          `http://localhost:${port}/api/showDocumentation`,
-          { json: true }
-        );
-        expect(response.serverInformation.serverName).toEqual(
-          "my_actionhero_project"
-        );
-      }, 20000);
-
-      test("can handle signals to stop", async () => {
-        await doCommand(`kill ${clusterPid}`);
-        await sleep(8000);
-
-        const { stdout } = await doCommand("ps awx");
-        const parents = stdout.split("\n").filter(l => {
-          return l.indexOf("actionhero start cluster") >= 0;
-        });
-        const children = stdout.split("\n").filter(l => {
-          return l.indexOf("actionhero start") >= 0 && l.indexOf("cluster") < 0;
-        });
-        expect(parents.length).toEqual(0);
-        expect(children.length).toEqual(0);
-      }, 20000);
-
-      // test('can detect flapping and exit')
-      // test('can reboot and abosrb code changes without downtime')
     });
   }
 });

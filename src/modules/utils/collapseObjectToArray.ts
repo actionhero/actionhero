@@ -1,5 +1,5 @@
 /**
- * Collapsses an Object with numerical keys (like `arguments` in a function) to an Array
+ * Collapses an Object with numerical keys (like `arguments` in a function) to an Array
  */
 export function collapseObjectToArray(obj: object): Array<any> | boolean {
   try {

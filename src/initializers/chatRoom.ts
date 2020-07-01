@@ -38,8 +38,8 @@ export class ChatRoom extends Initializer {
       messageChannel: "/actionhero/chat/chat",
       keys: {
         rooms: "actionhero:chatRoom:rooms",
-        members: "actionhero:chatRoom:members:"
-      }
+        members: "actionhero:chatRoom:members:",
+      },
     };
 
     /**
@@ -64,8 +64,8 @@ export class ChatRoom extends Initializer {
           sentAt: new Date().getTime(),
           connection: {
             id: connection.id || "0",
-            room: room
-          }
+            room: room,
+          },
         };
 
         const messagePayload = api.chatRoom.generateMessagePayload(payload);
@@ -83,8 +83,8 @@ export class ChatRoom extends Initializer {
           sentAt: newPayload.sentAt,
           connection: {
             id: newPayload.from,
-            room: newPayload.room
-          }
+            room: newPayload.room,
+          },
         };
 
         await redis.publish(payloadToSend);
@@ -93,21 +93,21 @@ export class ChatRoom extends Initializer {
       }
     };
 
-    api.chatRoom.generateMessagePayload = message => {
+    api.chatRoom.generateMessagePayload = (message) => {
       return {
         message: message.message,
         room: message.connection.room,
         from: message.connection.id,
         context: "user",
-        sentAt: message.sentAt
+        sentAt: message.sentAt,
       };
     };
 
-    api.chatRoom.incomingMessage = message => {
+    api.chatRoom.incomingMessage = (message) => {
       const messagePayload = api.chatRoom.generateMessagePayload(message);
-      Object.keys(api.connections.connections).forEach(connetionId => {
-        const connection = api.connections.connections[connetionId];
-        // we can parallize this, no need to await
+      Object.keys(api.connections.connections).forEach((connectionId) => {
+        const connection = api.connections.connections[connectionId];
+        // we can parallelize this, no need to await
         api.chatRoom.incomingMessagePerConnection(connection, messagePayload);
       });
     };
@@ -171,7 +171,7 @@ export class ChatRoom extends Initializer {
       return;
     }
 
-    api.redis.subscriptionHandlers.chat = message => {
+    api.redis.subscriptionHandlers.chat = (message) => {
       if (api.chatRoom) {
         api.chatRoom.incomingMessage(message);
       }

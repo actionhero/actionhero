@@ -3,7 +3,8 @@
     "outDir": "./dist",
     "allowJs": true,
     "module": "commonjs",
-    "target": "es2018"
+    "target": "es2018",
+    "sourceMap": true
   },
   "include": ["./src/**/*"]
 }

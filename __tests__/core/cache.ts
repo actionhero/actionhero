@@ -1,15 +1,14 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as os from "os";
-import { Process, cache, utils, id } from "./../../src/index";
+import { api, Process, cache, utils, id } from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 
 describe("Core", () => {
   describe("cache", () => {
     beforeAll(async () => {
-      api = await actionhero.start();
+      await actionhero.start();
     });
     afterAll(async () => {
       await actionhero.stop();
@@ -117,7 +116,7 @@ describe("Core", () => {
       await utils.sleep(timeout);
 
       let loadResp = await cache.load("testKey_slow", {
-        expireTimeMS: expireTime
+        expireTimeMS: expireTime,
       });
       expect(loadResp.value).toEqual("abc123");
 
@@ -220,7 +219,7 @@ describe("Core", () => {
         await cache.unlock(key);
       });
 
-      test("things can be locked, checked, and unlocked aribitrarily", async () => {
+      test("things can be locked, checked, and unlocked arbitrarily", async () => {
         let lockOk;
         lockOk = await cache.lock(key, 100);
         expect(lockOk).toEqual(true);

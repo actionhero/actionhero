@@ -1,7 +1,7 @@
 const path = require("path");
 
 export const DEFAULT = {
-  general: config => {
+  general: (config) => {
     const packageJSON = require("./../../package.json");
 
     return {
@@ -9,27 +9,24 @@ export const DEFAULT = {
       serverName: packageJSON.name,
       // A unique token to your application that servers will use to authenticate to each other
       serverToken: "change-me",
-      // the redis prefix for actionhero's cache objects
+      // the redis prefix for Actionhero cache objects
       cachePrefix: "actionhero:cache:",
-      // the redis prefix for actionhero's cache/lock objects
+      // the redis prefix for Actionhero cache/lock objects
       lockPrefix: "actionhero:lock:",
-      // how long will a lock last before it exipres (ms)?
+      // how long will a lock last before it expires (ms)?
       lockDuration: 1000 * 10, // 10 seconds
-      // Watch for changes in actions, configs, initializers, servers and tasks; and reload/restart them on the fly
-      developmentMode: true,
-      // When developmentMode is active, actionhero tries to swap actions and tasks in-memory for their updated version
-      // (without restarting the whole application). If you're having trouble with unwanted side effects after in-memory
-      // reloading, then set this to true to force an application restart on change.
-      // Changes to configs/initializers/servers while in developmentMode will force an application restart in any case.
-      developmentModeForceRestart: false,
       // How many pending actions can a single connection be working on
       simultaneousActions: 5,
       // allow connections to be created without remoteIp and remotePort (they will be set to 0)
       enforceConnectionProperties: true,
       // disables the whitelisting of client params
       disableParamScrubbing: false,
+      // enable action response to logger
+      enableResponseLogging: false,
       // params you would like hidden from any logs
       filteredParams: [],
+      // responses you would like hidden from any logs
+      filteredResponse: [],
       // values that signify missing params
       missingParamChecks: [null, "", undefined],
       // The default filetype to server when a user requests a directory
@@ -42,7 +39,7 @@ export const DEFAULT = {
       channel: "actionhero",
       // How long to wait for an RPC call before considering it a failure
       rpcTimeout: 5000,
-      // should CLI methods and help include internal ActionHero CLI methods?
+      // should CLI methods and help include internal Actionhero CLI methods?
       cliIncludeInternal: true,
       // configuration for your actionhero project structure
       paths: {
@@ -59,7 +56,7 @@ export const DEFAULT = {
         test: [path.join(process.cwd(), "__tests__")],
         // for the src and dist paths, assume we are running in compiled mode from `dist`
         src: path.join(process.cwd(), "src"),
-        dist: path.join(process.cwd(), "dist")
+        dist: path.join(process.cwd(), "dist"),
       },
 
       // hash containing chat rooms you wish to be created at server boot
@@ -67,37 +64,30 @@ export const DEFAULT = {
         // format is {roomName: {authKey, authValue}}
         // 'secureRoom': {authorized: true},
       },
-
-      // Polyfill the api object with all of the Actionhero namespaces.
-      // NOTE: This behavior will be deprecated in the furture and the
-      // default will be changed to false.
-      legacyApiPolyfill: true
     };
-  }
+  },
 };
 
 export const test = {
-  general: config => {
+  general: (config) => {
     return {
       serverToken: `serverToken-${process.env.JEST_WORKER_ID || 0}`,
-      developmentMode: true,
       startingChatRooms: {
         defaultRoom: {},
-        otherRoom: {}
+        otherRoom: {},
       },
       paths: {
-        locale: [path.join(process.cwd(), "locales")]
+        locale: [path.join(process.cwd(), "locales")],
       },
-      rpcTimeout: 3000
+      rpcTimeout: 3000,
     };
-  }
+  },
 };
 
 export const production = {
-  general: config => {
+  general: (config) => {
     return {
       fileRequestLogLevel: "debug",
-      developmentMode: false
     };
-  }
+  },
 };

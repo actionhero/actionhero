@@ -1,11 +1,10 @@
 import * as request from "request-promise-native";
-import { Process, config } from "./../../../src/index";
+import { api, Process, config } from "./../../../src/index";
 
 const actionhero = new Process();
-let api;
 let url;
 
-const toJson = async string => {
+const toJson = async (string) => {
   try {
     return JSON.parse(string);
   } catch (error) {
@@ -31,20 +30,20 @@ jest.mock("./../../../src/config/servers/web.ts", () => ({
           queryRouting: true,
           metadataOptions: {
             serverInformation: true,
-            requesterInformation: false
+            requesterInformation: false,
           },
           fingerprintOptions: {
-            cookieKey: "sessionID"
-          }
+            cookieKey: "sessionID",
+          },
         };
-      }
-    }
-  }
+      },
+    },
+  },
 }));
 
 describe("Server: Web", () => {
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
     url = "http://localhost:" + config.servers.web.port;
   });
 
@@ -56,7 +55,7 @@ describe("Server: Web", () => {
     test("returnErrorCodes false should still have a status of 200", async () => {
       config.servers.web.returnErrorCodes = false;
       const response = await request.del(url + "/api/", {
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
       });
       expect(response.statusCode).toEqual(200);
     });

@@ -43,7 +43,7 @@ export namespace chatRoom {
     leave?: Function;
     /**Called when a connection says a message to a room. */
     onSayReceive?: Function;
-    /**Called when a connection is about to recieve a say message. */
+    /**Called when a connection is about to receive a say message. */
     say?: Function;
   }
 
@@ -105,7 +105,7 @@ export namespace chatRoom {
   }
 
   /**
-   * Remove an exsitng chat room.  All connections in the room will be removed.  Throws an error if the room does not exist.
+   * Remove an existing chat room.  All connections in the room will be removed.  Throws an error if the room does not exist.
    */
   export async function destroy(room: string) {
     const found = await chatRoom.exists(room);
@@ -152,7 +152,7 @@ export namespace chatRoom {
   export async function sanitizeMemberDetails(memberData) {
     return {
       id: memberData.id,
-      joinedAt: memberData.joinedAt
+      joinedAt: memberData.joinedAt,
     };
   }
 
@@ -167,7 +167,9 @@ export namespace chatRoom {
       const found = await chatRoom.exists(room);
       if (found === true) {
         const key = api.chatRoom.keys.members + room;
-        const members = await api.redis.clients.client.hgetall(key);
+        const members = (await api.redis.clients.client.hgetall(key)) as {
+          [key: string]: string;
+        };
         const cleanedMembers = {};
         let count = 0;
 
@@ -180,7 +182,7 @@ export namespace chatRoom {
         return {
           room: room,
           members: cleanedMembers,
-          membersCount: count
+          membersCount: count,
         };
       } else {
         throw new Error(await config.errors.connectionRoomNotExist(room));
@@ -191,18 +193,18 @@ export namespace chatRoom {
   }
 
   /**
-   * An overwritable method which configures what properties of connections in a room are initially stored about a connection when added via `api.chatRoom.addMember`
+   * An overwrite-able method which configures what properties of connections in a room are initially stored about a connection when added via `api.chatRoom.addMember`
    */
   export async function generateMemberDetails(connection: Connection) {
     return {
       id: connection.id,
       joinedAt: new Date().getTime(),
-      host: id
+      host: id,
     };
   }
 
   /**
-   * Add a connection (via id) to a rooom.  Throws errors if the room does not exist, or the connection is already in the room.  Middleware errors also throw.
+   * Add a connection (via id) to a room.  Throws errors if the room does not exist, or the connection is already in the room.  Middleware errors also throw.
    */
   export async function addMember(
     connectionId: string,
@@ -249,8 +251,8 @@ export namespace chatRoom {
   }
 
   /**
-   * Remote a connection (via id) from a rooom.  Throws errors if the room does not exist, or the connection is not in the room.  Middleware errors also throw.
-   * toWaitRemote: Should this method wait until the remote ActionHero server (the one the connection is connected too) responds?
+   * Remote a connection (via id) from a room.  Throws errors if the room does not exist, or the connection is not in the room.  Middleware errors also throw.
+   * toWaitRemote: Should this method wait until the remote Actionhero server (the one the connection is connected too) responds?
    */
   export async function removeMember(
     connectionId: string,
@@ -294,5 +296,19 @@ export namespace chatRoom {
     }
 
     return true;
+  }
+
+  /**
+   * Send a message to all clients connected to this room
+   * - connection should either be a real client you are emulating (found in api.connections) or just `{}` for a mock
+   * - room is the string name of an already-existing room
+   * - message can be anything: string, json, object, etc
+   */
+  export async function broadcast(
+    connection: Connection | { [key: string]: any },
+    room: string,
+    message: any
+  ) {
+    return api.chatRoom.broadcast(connection, room, message);
   }
 }

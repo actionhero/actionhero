@@ -1,4 +1,4 @@
-import { Process } from "actionhero";
+import { Process, tasks, specHelper } from "actionhero";
 const actionhero = new Process();
 let api;
 
@@ -17,8 +17,8 @@ describe("Task", () => {
     });
 
     test("can be enqueued", async () => {
-      await api.tasks.enqueue("%%name%%", {});
-      const found = await api.specHelper.findEnqueuedTasks("%%name%%");
+      await task.enqueue("%%name%%", {});
+      const found = await specHelper.findEnqueuedTasks("%%name%%");
       expect(found.length).toEqual(1);
       expect(found[0].timestamp).toBeNull();
     });

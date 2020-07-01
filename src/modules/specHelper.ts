@@ -29,7 +29,7 @@ export namespace specHelper {
     connection.params.action = actionName;
 
     connection.messageId = connection.params.messageId || uuid.v4();
-    const response = await new Promise(resolve => {
+    const response = await new Promise((resolve) => {
       api.servers.servers.testServer.processAction(connection);
       connection.actionCallbacks[connection.messageId] = resolve;
     });
@@ -45,7 +45,7 @@ export namespace specHelper {
     connection.params.file = file;
 
     connection.messageCount = uuid.v4();
-    const response = await new Promise(resolve => {
+    const response = await new Promise((resolve) => {
       api.servers.servers.testServer.processFile(connection);
       connection.actionCallbacks[connection.messageId] = resolve;
     });
@@ -75,9 +75,9 @@ export namespace specHelper {
     const worker = new Worker(
       {
         connection: {
-          redis: api.redis.clients.tasks
+          redis: api.redis.clients.tasks,
         },
-        queues: config.tasks.queues || ["default"]
+        queues: config.tasks.queues || ["default"],
       },
       api.tasks.jobs
     );
@@ -97,8 +97,8 @@ export namespace specHelper {
 
   /**
    * Use the specHelper to find enqueued instances of a task
-   * This will return an array of intances of the task which have been enqueued either in the normal queues or delayed queues
-   * If a task is enqued in a delayed queue, it will have a 'timestamp' propery
+   * This will return an array of instances of the task which have been enqueued either in the normal queues or delayed queues
+   * If a task is enqueued in a delayed queue, it will have a 'timestamp' property
    * i.e. [ { class: 'regularTask', queue: 'testQueue', args: [ [Object] ] } ]
    */
   export async function findEnqueuedTasks(taskName: string) {
@@ -110,8 +110,8 @@ export namespace specHelper {
       const q = queues[i];
       const length = await api.resque.queue.length(q);
       const batchFound = await task.queued(q, 0, length + 1);
-      let matches = batchFound.filter(t => t.class === taskName);
-      matches = matches.map(m => {
+      let matches = batchFound.filter((t) => t.class === taskName);
+      matches = matches.map((m) => {
         m.timestamp = null;
         return m;
       });
@@ -121,8 +121,8 @@ export namespace specHelper {
     // delayed queues
     const allDelayed = await api.resque.queue.allDelayed();
     for (const timestamp in allDelayed) {
-      let matches = allDelayed[timestamp].filter(t => t.class === taskName);
-      matches = matches.map(m => {
+      let matches = allDelayed[timestamp].filter((t) => t.class === taskName);
+      matches = matches.map((m) => {
         m.timestamp = parseInt(timestamp);
         return m;
       });
@@ -130,5 +130,17 @@ export namespace specHelper {
     }
 
     return found;
+  }
+
+  /**
+   * Delete all enqueued instances of a task, both in all the normal queues and all of the delayed queues
+   */
+  export async function deleteEnqueuedTasks(taskName: string, params: {}) {
+    const queues = await api.resque.queue.queues();
+    for (const i in queues) {
+      const q = queues[i];
+      await api.resque.queue.del(q, taskName, [params]);
+      await api.resque.queue.delDelayed(q, taskName, [params]);
+    }
   }
 }

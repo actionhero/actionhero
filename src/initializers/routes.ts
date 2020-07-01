@@ -10,7 +10,7 @@ export interface RoutesApi {
 }
 
 /**
- * Countains routing options for web clients.  Can associate routes with actions or files.
+ * Contains routing options for web clients.  Can associate routes with actions or files.
  */
 export class Routes extends Initializer {
   constructor() {
@@ -22,7 +22,7 @@ export class Routes extends Initializer {
   async initialize(config) {
     api.routes = {
       routes: {},
-      verbs: ["head", "get", "post", "put", "patch", "delete"]
+      verbs: ["head", "get", "post", "put", "patch", "delete"],
     };
 
     api.routes.processRoute = (connection, pathParts) => {
@@ -116,20 +116,32 @@ export class Routes extends Initializer {
 
         if (!pathPart) {
           return response;
-        } else if (matchPart[0] === ":" && matchPart.indexOf("(") < 0) {
-          variable = matchPart.replace(":", "");
-          response.params[variable] = pathPart;
-        } else if (matchPart[0] === ":" && matchPart.indexOf("(") >= 0) {
-          variable = matchPart.replace(":", "").split("(")[0];
-          regexp = matchPart.substring(
-            matchPart.indexOf("(") + 1,
-            matchPart.length - 1
-          );
-          const matches = pathPart.match(new RegExp(regexp, "g"));
-          if (matches) {
+        }
+
+        if (matchPart.indexOf(":") >= 0) {
+          const trimmedMatchParts = matchPart.split(":");
+          const trimmedMatchPart =
+            trimmedMatchParts[trimmedMatchParts.length - 1];
+          const replacement = trimmedMatchParts[trimmedMatchParts.length - 2];
+          if (replacement) {
+            pathPart = pathPart.replace(replacement, "");
+          }
+
+          if (trimmedMatchPart.indexOf("(") < 0) {
+            variable = trimmedMatchPart;
             response.params[variable] = pathPart;
           } else {
-            return response;
+            variable = trimmedMatchPart.replace(":", "").split("(")[0];
+            regexp = trimmedMatchPart.substring(
+              trimmedMatchPart.indexOf("(") + 1,
+              trimmedMatchPart.length - 1
+            );
+            const matches = pathPart.match(new RegExp(regexp, "g"));
+            if (matches) {
+              response.params[variable] = pathPart;
+            } else {
+              return response;
+            }
           }
         } else {
           if (
@@ -147,10 +159,10 @@ export class Routes extends Initializer {
     };
 
     // load in the routes file
-    api.routes.loadRoutes = rawRoutes => {
+    api.routes.loadRoutes = (rawRoutes) => {
       let counter = 0;
 
-      api.routes.verbs.forEach(verb => {
+      api.routes.verbs.forEach((verb) => {
         api.routes.routes[verb] = api.routes.routes[verb] || [];
       });
 
@@ -192,7 +204,7 @@ export class Routes extends Initializer {
         }
       }
 
-      api.params.postVariables = utils.arrayUniqueify(api.params.postVariables);
+      api.params.postVariables = utils.arrayUnique(api.params.postVariables);
 
       if (config.servers.web && config.servers.web.simpleRouting === true) {
         const simplePaths = [];
