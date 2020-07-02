@@ -1,12 +1,11 @@
-import { config, Process, Action, specHelper } from "./../../src/index";
+import { config, api, Process, Action, specHelper } from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 
 describe("Core", () => {
   describe("api", () => {
     beforeAll(async () => {
-      api = await actionhero.start();
+      await actionhero.start();
     });
     afterAll(async () => {
       await actionhero.stop();
@@ -58,6 +57,7 @@ describe("Core", () => {
       beforeAll(() => {
         api.actions.versions.versionedAction = [1, 2, 3];
         api.actions.actions.versionedAction = {
+          //@ts-ignore
           1: {
             name: "versionedAction",
             description: "I am a test",
@@ -67,6 +67,7 @@ describe("Core", () => {
               data.response.version = 1;
             },
           },
+          //@ts-ignore
           2: {
             name: "versionedAction",
             description: "I am a test",
@@ -76,6 +77,7 @@ describe("Core", () => {
               data.response.version = 2;
             },
           },
+          //@ts-ignore
           3: {
             name: "versionedAction",
             description: "I am a test",
@@ -185,6 +187,7 @@ describe("Core", () => {
       beforeAll(() => {
         api.actions.versions.testAction = [1];
         api.actions.actions.testAction = {
+          //@ts-ignore
           1: {
             name: "testAction",
             description: "this action has some required params",
@@ -315,6 +318,7 @@ describe("Core", () => {
       beforeAll(() => {
         api.actions.versions.testAction = [1];
         api.actions.actions.testAction = {
+          //@ts-ignore
           1: {
             name: "testAction",
             description: "this action has some required params",
@@ -345,7 +349,7 @@ describe("Core", () => {
                 },
               },
             },
-            run: function async(data) {
+            run: async (data) => {
               data.response.params = data.params;
             },
           },
@@ -461,6 +465,7 @@ describe("Core", () => {
 
         api.actions.versions.testAction = [1];
         api.actions.actions.testAction = {
+          //@ts-ignore
           1: {
             name: "testAction",
             description: "I am a test",
@@ -472,7 +477,7 @@ describe("Core", () => {
                 ],
               },
             },
-            run: (data) => {},
+            run: async () => {},
           },
         };
       });
@@ -516,6 +521,7 @@ describe("Core", () => {
 
         api.actions.versions.testAction = [1];
         api.actions.actions.testAction = {
+          // @ts-ignore
           1: {
             name: "testAction",
             description: "I am a test",
@@ -550,6 +556,7 @@ describe("Core", () => {
       beforeAll(() => {
         api.actions.versions.testAction = [1];
         api.actions.actions.testAction = {
+          // @ts-ignore
           1: {
             name: "testAction",
             description: "I am a test",

@@ -1,15 +1,14 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as os from "os";
-import { Process, cache, utils, id } from "./../../src/index";
+import { api, Process, cache, utils, id } from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 
 describe("Core", () => {
   describe("cache", () => {
     beforeAll(async () => {
-      api = await actionhero.start();
+      await actionhero.start();
     });
     afterAll(async () => {
       await actionhero.stop();

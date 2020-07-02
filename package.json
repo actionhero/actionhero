@@ -1,8 +1,8 @@
 {
   "author": "Evan Tahler <evantahler@gmail.com>",
   "name": "actionhero",
-  "description": "actionhero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks",
-  "version": "22.0.7",
+  "description": "The reusable, scalable, and quick node.js API server for stateless and stateful applications",
+  "version": "23.0.3",
   "homepage": "http://www.actionherojs.com",
   "license": "Apache-2.0",
   "repository": {
@@ -31,39 +31,39 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "@types/glob": "^7.1.1",
-    "@types/ioredis": "^4.14.9",
-    "@types/node": "^13.11.0",
-    "@types/uuid": "^7.0.2",
+    "@types/glob": "^7.1.2",
+    "@types/ioredis": "^4.17.0",
+    "@types/node": "^14.0.14",
+    "@types/uuid": "^8.0.0",
     "browser_fingerprint": "^2.0.2",
     "dot-prop": "^5.2.0",
     "etag": "^1.8.1",
     "formidable": "^1.2.2",
     "glob": "^7.1.6",
-    "i18n": "^0.8.6",
-    "ioredis": "^4.16.1",
+    "i18n": "^0.10.0",
+    "ioredis": "^4.17.3",
     "is-running": "^2.1.0",
-    "mime": "^2.4.4",
-    "node-resque": "^7.0.2",
+    "mime": "^2.4.6",
+    "node-resque": "^7.0.4",
     "optimist": "^0.6.1",
     "primus": "^7.3.4",
-    "qs": "^6.9.3",
-    "uglify-js": "^3.8.1",
-    "uuid": "^7.0.3",
-    "winston": "^3.2.1",
-    "ws": "^7.2.3"
+    "qs": "^6.9.4",
+    "uglify-js": "^3.10.0",
+    "uuid": "^8.2.0",
+    "winston": "^3.3.3",
+    "ws": "^7.3.0"
   },
   "devDependencies": {
-    "@types/jest": "^25.2.1",
-    "jest": "^25.2.7",
+    "@types/jest": "^26.0.3",
+    "jest": "^26.1.0",
     "jest-environment-webdriver": "^0.2.0",
-    "prettier": "^2.0.4",
+    "prettier": "^2.0.5",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.8",
-    "ts-jest": "^25.3.1",
-    "ts-node-dev": "^1.0.0-pre.44",
-    "typedoc": "^0.17.4",
-    "typescript": "^3.8.3"
+    "ts-jest": "^26.1.1",
+    "ts-node-dev": "^1.0.0-pre.50",
+    "typedoc": "^0.17.8",
+    "typescript": "^3.9.6"
   },
   "optionalDependencies": {},
   "bin": {
@@ -71,7 +71,8 @@
   },
   "jest": {
     "testPathIgnorePatterns": [
-      "<rootDir>/__tests__/testPlugin"
+      "<rootDir>/__tests__/testPlugin",
+      "<rootDir>/tmp"
     ],
     "transform": {
       "^.+\\.ts?$": "ts-jest"
@@ -83,7 +84,7 @@
     "prepare": "npm run build && npm run docs",
     "pretest": "npm run lint && npm run build",
     "dev": "ts-node-dev --transpile-only --no-deps ./src/server",
-    "debug": "ts-node-dev --transpile-only --no-deps --inspect -- ./src/server ",
+    "debug": "tsc && ts-node-dev --transpile-only --no-deps --inspect -- ./src/server ",
     "start": "node ./dist/server.js",
     "build": "rm -rf dist && ./node_modules/.bin/tsc --sourceMap false --declaration",
     "docs": "typedoc --out docs --theme default --mode file",

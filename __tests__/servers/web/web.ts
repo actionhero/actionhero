@@ -2,10 +2,9 @@ import * as request from "request-promise-native";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
-import { Process, config, utils, route } from "./../../../src/index";
+import { api, Process, config, utils, route } from "./../../../src/index";
 
 const actionhero = new Process();
-let api;
 let url;
 
 const toJson = async (string) => {
@@ -18,7 +17,7 @@ const toJson = async (string) => {
 
 describe("Server: Web", () => {
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
     url = "http://localhost:" + config.servers.web.port;
   });
 
@@ -77,12 +76,13 @@ describe("Server: Web", () => {
       config.servers.web.returnErrorCodes = true;
       api.actions.versions.customRender = [1];
       api.actions.actions.customRender = {
+        // @ts-ignore
         1: {
           name: "customRender",
           description: "I am a test",
           version: 1,
           outputExample: {},
-          run: (data) => {
+          run: async (data) => {
             data.toRender = false;
             data.connection.rawConnection.res.writeHead(200, {
               "Content-Type": "text/plain",
@@ -131,11 +131,12 @@ describe("Server: Web", () => {
     beforeAll(() => {
       api.actions.versions.stringErrorTestAction = [1];
       api.actions.actions.stringErrorTestAction = {
+        // @ts-ignore
         1: {
           name: "stringErrorTestAction",
           description: "stringErrorTestAction",
           version: 1,
-          run: (data) => {
+          run: async (data) => {
             data.response.error = "broken";
           },
         },
@@ -143,11 +144,12 @@ describe("Server: Web", () => {
 
       api.actions.versions.errorErrorTestAction = [1];
       api.actions.actions.errorErrorTestAction = {
+        // @ts-ignore
         1: {
           name: "errorErrorTestAction",
           description: "errorErrorTestAction",
           version: 1,
-          run: (data) => {
+          run: async () => {
             throw new Error("broken");
           },
         },
@@ -155,11 +157,12 @@ describe("Server: Web", () => {
 
       api.actions.versions.complexErrorTestAction = [1];
       api.actions.actions.complexErrorTestAction = {
+        // @ts-ignore
         1: {
           name: "complexErrorTestAction",
           description: "complexErrorTestAction",
           version: 1,
-          run: (data) => {
+          run: async (data) => {
             data.response.error = { error: "broken", reason: "stuff" };
           },
         },
@@ -352,6 +355,7 @@ describe("Server: Web", () => {
     beforeAll(() => {
       api.actions.versions.paramTestAction = [1];
       api.actions.actions.paramTestAction = {
+        // @ts-ignore
         1: {
           name: "paramTestAction",
           description: "I return connection.rawConnection.params",
@@ -417,12 +421,13 @@ describe("Server: Web", () => {
     beforeAll(() => {
       api.actions.versions.headerTestAction = [1];
       api.actions.actions.headerTestAction = {
+        // @ts-ignore
         1: {
           name: "headerTestAction",
           description: "I am a test",
           version: 1,
           outputExample: {},
-          run: (data) => {
+          run: async (data) => {
             data.connection.rawConnection.responseHeaders.push(["thing", "A"]);
             data.connection.rawConnection.responseHeaders.push(["thing", "B"]);
             data.connection.rawConnection.responseHeaders.push(["thing", "C"]);
@@ -561,6 +566,7 @@ describe("Server: Web", () => {
     beforeAll(() => {
       api.actions.versions.statusTestAction = [1];
       api.actions.actions.statusTestAction = {
+        // @ts-ignore
         1: {
           name: "statusTestAction",
           description: "I am a test",
@@ -569,7 +575,7 @@ describe("Server: Web", () => {
             query: { required: false },
             randomKey: { required: false },
           },
-          run: (data) => {
+          run: async (data) => {
             if (data.params.key !== "value") {
               data.connection.rawConnection.responseHttpCode = 402;
               throw new ErrorWithCode("key != value");
@@ -741,25 +747,9 @@ describe("Server: Web", () => {
   });
 
   describe("documentation", () => {
-    test("documentation can be returned via a documentation action", async () => {
-      const body = await request
-        .get(url + "/api/showDocumentation")
-        .then(toJson);
-      expect(body.documentation).toBeInstanceOf(Object);
-    });
-
-    test("should have actions with all the right parts", async () => {
-      const body = await request
-        .get(url + "/api/showDocumentation")
-        .then(toJson);
-      for (const actionName in body.documentation) {
-        for (const version in body.documentation[actionName]) {
-          const action = body.documentation[actionName][version];
-          expect(typeof action.name).toEqual("string");
-          expect(typeof action.description).toEqual("string");
-          expect(action.inputs).toBeInstanceOf(Object);
-        }
-      }
+    test("documentation can be returned via a swagger action", async () => {
+      const body = await request.get(url + "/api/swagger").then(toJson);
+      expect(body.paths).toBeInstanceOf(Object);
     });
   });
 
@@ -815,7 +805,7 @@ describe("Server: Web", () => {
       });
       expect(response.statusCode).toEqual(200);
       expect(response.body).toMatch(
-        /Actionhero.js is a multi-transport API Server/
+        /Actionhero is a multi-transport API Server/
       );
     });
 
@@ -825,7 +815,7 @@ describe("Server: Web", () => {
       });
       expect(response.statusCode).toEqual(200);
       expect(response.body).toMatch(
-        /Actionhero.js is a multi-transport API Server/
+        /Actionhero is a multi-transport API Server/
       );
     });
 
@@ -922,12 +912,13 @@ describe("Server: Web", () => {
       originalRoutes = api.routes.routes;
       api.actions.versions.proxyHeaders = [1];
       api.actions.actions.proxyHeaders = {
+        // @ts-ignore
         1: {
           name: "proxyHeaders",
           description: "proxy header test",
           inputs: {},
           outputExample: {},
-          run: (data) => {
+          run: async (data) => {
             data.connection.setHeader("X-Foo", "bar");
           },
         },
@@ -935,6 +926,7 @@ describe("Server: Web", () => {
 
       api.actions.versions.proxyStatusCode = [1];
       api.actions.actions.proxyStatusCode = {
+        // @ts-ignore
         1: {
           name: "proxyStatusCode",
           description: "proxy status code test",
@@ -948,7 +940,7 @@ describe("Server: Web", () => {
             },
           },
           outputExample: {},
-          run: (data) => {
+          run: async (data) => {
             data.connection.setStatusCode(data.params.code);
           },
         },
@@ -956,6 +948,7 @@ describe("Server: Web", () => {
 
       api.actions.versions.pipe = [1];
       api.actions.actions.pipe = {
+        // @ts-ignore
         1: {
           name: "pipe",
           description: "pipe response test",
@@ -963,7 +956,7 @@ describe("Server: Web", () => {
             mode: { required: true },
           },
           outputExample: {},
-          run: (data) => {
+          run: async (data) => {
             data.toRender = false;
             if (data.params.mode === "string") {
               data.connection.pipe("a string", { "custom-header": "cool" });

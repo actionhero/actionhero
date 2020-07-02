@@ -1,10 +1,16 @@
 export const DEFAULT = {
   tasks: (config) => {
     return {
+      _toExpand: false,
+
       // Should this node run a scheduler to promote delayed tasks?
       scheduler: false,
+
       // what queues should the taskProcessors work?
       queues: ["*"],
+      // Or, rather than providing a static list of `queues`, you can define a method that returns the list of queues.
+      // queues: async () => { return ["queueA", "queueB"]; },
+
       // Logging levels of task workers
       workerLogging: {
         failure: "error", // task failure

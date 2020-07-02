@@ -8,6 +8,8 @@ Actionhero would not be the success it is today without the contributions of [ma
 
 Before you begin your contribution, please let us know in the Actionhero Slack team, which is available at https://slack.actionherojs.com. There are community members who can help you, and you may want to team up with another community member. This also helps ensure that more than one person isn't working on the same thing.
 
+By engaging the with Actionhero community or contributing to this or related projects, you agree to our [Code of Conduct](https://github.com/actionhero/actionhero/blob/master/CODE_OF_CONDUCT.md).
+
 ## Pull Requests
 
 All changes to Actionhero should be sent in as [Pull Requests](https://help.github.com/articles/about-pull-requests) to our [Github Project](https://github.com/actionhero/actionhero). Changes by any other method will be instantly rejected. GitHub allows us to coordinate and communicate in a single place. Pull requests also allow us to run our test suite against all new code to ensure that things still work the way they are supposed to after your change.
@@ -31,19 +33,17 @@ We use [prettier.js](https://prettier.io/) to manage our lint rules. We run `pre
 
 ## Documentation
 
-If your contribution adds a new feature of modifies an existing behavior, document your changes using [JSdoc](http://usejsdoc.org/). We use JSdoc to automatically document Actionhero, and build [https://docs.actionherojs.com](docs.actionherojs.com) on every push to the master branch or merge of your Pull Request. There are many plugins to help you with this, like this one for [Atom](https://atom.io/packages/jsdoc), or this one for [VS Code](https://github.com/joelday/vscode-docthis).
+If your contribution adds a new feature of modifies an existing behavior, document your changes using [Typedoc](https://typedoc.org/). We use Typedoc to automatically document Actionhero, and build [https://docs.actionherojs.com](docs.actionherojs.com) on every push to the master branch or merge of your Pull Request. There are many plugins to help you with this, and are built into editors like VSCode.
 
-If you are documenting code, inline JSdocs are preferred. The only exceptions are tutorials, which are stand-alone markdown files in the `./tutorials` directory of the project. An example of a newly documented method would be:
+If you are documenting code, inline JSdocs are preferred. The only exceptions are tutorials, which are stand-alone markdown files in the `./tutorials` directory of the [www.actionherojs.com project](https://github.com/actionhero/www.actionherojs.com). An example of a newly documented method would be:
 
 ```js
 /**
-Sleep with a Promise
-From api.utils.sleep
-
-@param {Number} time The number of ms to sleep
+Sleep with a Promise.
+`time` is the number of ms to sleep.
 */
-api.utils.sleep = time => {
-  return new Promise(resolve => {
+api.utils.sleep = (time: number) => {
+  return new Promise((resolve) => {
     setTimeout(resolve, time);
   });
 };

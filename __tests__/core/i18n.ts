@@ -1,10 +1,16 @@
 import * as I18n from "i18n";
 import * as fs from "fs";
 import * as path from "path";
-import { Process, config, i18n, utils, specHelper } from "./../../src/index";
+import {
+  api,
+  Process,
+  config,
+  i18n,
+  utils,
+  specHelper,
+} from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 let originalDetermineConnectionLocale;
 
 const readLocaleFile = (locale) => {
@@ -33,7 +39,7 @@ fs.writeFileSync(
 describe("Core", () => {
   describe("i18n", () => {
     beforeAll(async () => {
-      api = await actionhero.start();
+      await actionhero.start();
       originalDetermineConnectionLocale = i18n.determineConnectionLocale;
 
       const options = config.i18n;

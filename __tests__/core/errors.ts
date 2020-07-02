@@ -1,14 +1,13 @@
-import { Process, config, specHelper } from "./../../src/index";
+import { api, Process, config, specHelper } from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 let originalUnknownAction;
 let originalGenericError;
 
 describe("Core", () => {
   describe("errors", () => {
     beforeAll(async () => {
-      api = await actionhero.start();
+      await actionhero.start();
       originalUnknownAction = config.errors.unknownAction;
     });
 
@@ -57,10 +56,11 @@ describe("Core", () => {
   describe("Core: Errors: Custom Error Decoration", () => {
     const errorMsg = "worst action ever!";
     beforeAll(async () => {
-      api = await actionhero.start();
+      await actionhero.start();
       originalGenericError = config.errors.genericError;
       api.actions.versions.errorAction = [1];
       api.actions.actions.errorAction = {
+        // @ts-ignore
         1: {
           name: "errorAction",
           description: "this action throws errors",

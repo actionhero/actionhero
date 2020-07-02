@@ -1,10 +1,9 @@
 "use strict";
 // we need to use 'use strict' here because we are relying on EVAL to load a variable
 
-import { Process, config, chatRoom, utils } from "./../../src/index";
+import { api, Process, config, chatRoom, utils } from "./../../src/index";
 
 const actionhero = new Process();
-let api;
 let clientA;
 let clientB;
 let clientC;
@@ -14,6 +13,7 @@ let url;
 const connectClients = async () => {
   // get ActionheroWebsocketClient in scope
   const ActionheroWebsocketClient = eval(
+    // @ts-ignore
     api.servers.servers.websocket.compileActionheroWebsocketClientJS()
   ); // eslint-disable-line
 
@@ -76,7 +76,7 @@ const awaitRoom = async (client, method, room): Promise<any> => {
 
 describe("Server: Web Socket", () => {
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
     await api.redis.clients.client.flushdb();
     await api.redis.clients.client.flushdb();
     await chatRoom.add("defaultRoom");

@@ -3,11 +3,11 @@
  */
 
 import * as path from "path";
-import { Process, config } from "./../../src/index";
+import { api, Process, config } from "./../../src/index";
 const packageJSON = require(path.join(__dirname, "..", "..", "package.json"));
+const host = process.env.SELENIUM_TEST_HOST || "localhost";
 
 const actionhero = new Process();
-let api;
 let url;
 
 // stub the selenium infected variables
@@ -23,9 +23,9 @@ const ensureNoErrors = async () => {
 
 describe("browser integration tests", () => {
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
     await api.redis.clients.client.flushdb();
-    url = "http://localhost:" + config.servers.web.port;
+    url = `http://${host}:${config.servers.web.port}`;
   });
 
   afterAll(async () => {
@@ -54,25 +54,31 @@ describe("browser integration tests", () => {
         .getText();
       expect(actionheroVersion).toEqual(packageJSON.version);
     });
+  });
+
+  describe("swagger page", () => {
+    beforeAll(async () => {
+      await browser.get(`${url}/swagger.html`);
+      browser.sleep(1000);
+    });
+
+    test("loads the page", async () => {
+      const title = await browser.findElement(by.tagName("h2")).getText();
+      expect(title).toMatch(/^actionhero/);
+    });
 
     test("documentation is loaded", async () => {
-      const actionNameElements = await browser.findElements(by.tagName("h3"));
-      const actionNames = [];
-      for (const i in actionNameElements) {
-        actionNames.push(await actionNameElements[i].getText());
-      }
-
-      const expextedActions = [
-        "cacheTest v1",
-        "createChatRoom v1",
-        "randomNumber v1",
-        "showDocumentation v1",
-        "sleepTest v1",
-        "status v1",
-        "validationTest v1",
-      ];
-
-      expect(actionNames).toEqual(expect.arrayContaining(expextedActions));
+      const elements = await browser.findElements(by.tagName("h4"));
+      const actionNames = await Promise.all(elements.map((e) => e.getText()));
+      expect(actionNames.sort()).toEqual([
+        "cacheTest",
+        "createChatRoom",
+        "randomNumber",
+        "sleepTest",
+        "status",
+        "swagger",
+        "validationTest",
+      ]);
     });
   });
 

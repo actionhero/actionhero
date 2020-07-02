@@ -92,7 +92,7 @@ export class ActionProcessor {
       error = new Error(error);
     }
 
-    if (error && !this.response.error) {
+    if (error && (typeof this.response === "string" || !this.response.error)) {
       if (typeof this.response === "string" || Array.isArray(this.response)) {
         this.response = error.toString();
       } else {
@@ -114,18 +114,29 @@ export class ActionProcessor {
     }
 
     const filteredParams = utils.filterObjectForLogging(this.params);
-
     const logLine = {
       to: this.connection.remoteIP,
       action: this.action,
       params: JSON.stringify(filteredParams),
       duration: this.duration,
       error: "",
+      response: undefined,
     };
 
+    let filteredResponse;
+    if (config.general.enableResponseLogging) {
+      filteredResponse = utils.filterResponseForLogging(this.response);
+      logLine.response = JSON.stringify(filteredResponse);
+    }
+
     if (error) {
+      logLevel = "error";
       if (error instanceof Error) {
         logLine.error = error.toString();
+        Object.getOwnPropertyNames(error)
+          .filter((prop) => prop !== "message")
+          .sort((a, b) => (a === "stack" || b === "stack" ? -1 : 1))
+          .forEach((prop) => (logLine[prop] = error[prop]));
       } else {
         try {
           logLine.error = JSON.stringify(error);
@@ -136,9 +147,6 @@ export class ActionProcessor {
     }
 
     log(`[ action @ ${this.connection.type} ]`, logLevel, logLine);
-    if (error?.stack) {
-      error.stack.split(EOL).map((l) => log(` ! ${l}`, "error"));
-    }
   }
 
   private async preProcessAction() {

@@ -1,25 +1,23 @@
 {
-    "name": "actionhero.js",
-    "description": "actionhero.js is a multi-transport API Server with integrated cluster capabilities and delayed tasks",
-    "repository": "https://github.com/actionhero/actionhero",
-    "logo": "https://raw.githubusercontent.com/actionhero/actionhero/master/public/logo/actionhero.png",
-    "keywords": [
-        "api",
-        "realtime",
-        "socket",
-        "http",
-        "https",
-        "web",
-        "game",
-        "cluster",
-        "soa",
-        "action",
-        "task",
-        "delay",
-        "service",
-        "tcp"
-    ],
-    "addons": [
-      { "plan": "heroku-redis" }
-    ]
+  "name": "actionhero.js",
+  "description": "The reusable, scalable, and quick node.js API server for stateless and stateful applications",
+  "repository": "https://github.com/actionhero/actionhero",
+  "logo": "https://raw.githubusercontent.com/actionhero/actionhero/master/public/logo/actionhero.png",
+  "keywords": [
+    "api",
+    "realtime",
+    "socket",
+    "http",
+    "https",
+    "web",
+    "game",
+    "cluster",
+    "soa",
+    "action",
+    "task",
+    "delay",
+    "service",
+    "tcp"
+  ],
+  "addons": [{ "plan": "heroku-redis" }]
 }

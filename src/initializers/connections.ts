@@ -35,6 +35,12 @@ export interface ConnectionsApi {
   globalMiddleware: Array<string>;
   allowedVerbs: Array<string>;
   cleanConnection: Function;
+  apply: (
+    connectionId: string,
+    method?: string,
+    args?: any
+  ) => Promise<Connection>;
+  addMiddleware: (ConnectionMiddleware) => void;
 }
 
 export class Connections extends Initializer {
@@ -69,11 +75,7 @@ export class Connections extends Initializer {
       /**
        * Find a connection on any server in the cluster and call a method on it.
        */
-      apply: async (
-        connectionId: string,
-        method: string,
-        args: Array<any> = []
-      ) => {
+      apply: async (connectionId: string, method: string, args: any) => {
         return redis.doCluster(
           "api.connections.applyResponder",
           [connectionId, method, args],

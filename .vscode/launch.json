@@ -1,0 +1,42 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Actionhero Debugger (attach)",
+      "protocol": "inspector",
+      "port": 9229,
+      "restart": true,
+      "localRoot": "${workspaceFolder}",
+      "outFiles": ["${workspaceRoot}/dist/**/*.js"],
+      "sourceMaps": true,
+      "remoteRoot": "."
+    },
+
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Actionhero Debugger (launch)",
+      "program": "${workspaceFolder}/src/server.ts",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "outputCapture": "std"
+    },
+
+    {
+      "name": "Debug Jest Tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceRoot}/node_modules/.bin/jest",
+        "--runInBand",
+        "${workspaceRoot}/__tests__"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "port": 9229
+    }
+  ]
+}

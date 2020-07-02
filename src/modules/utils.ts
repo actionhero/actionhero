@@ -5,6 +5,7 @@ import { collapseObjectToArray } from "./utils/collapseObjectToArray";
 import { ensureNoTsHeaderFiles } from "./utils/ensureNoTsHeaderFiles";
 import { eventLoopDelay } from "./utils/eventLoopDelay";
 import { filterObjectForLogging } from "./utils/filterObjectForLogging";
+import { filterResponseForLogging } from "./utils/filterResponseForLogging";
 import { getExternalIPAddress } from "./utils/getExternalIPAddress";
 import { hashMerge } from "./utils/hashMerge";
 import { isPlainObject } from "./utils/isPlainObject";
@@ -36,6 +37,7 @@ export const utils = {
   ensureNoTsHeaderFiles,
   eventLoopDelay,
   filterObjectForLogging,
+  filterResponseForLogging,
   getExternalIPAddress,
   hashMerge,
   isPlainObject,
