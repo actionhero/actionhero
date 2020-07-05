@@ -159,6 +159,7 @@ describe("Core: CLI", () => {
         "public",
         "public/index.html",
         "public/chat.html",
+        "public/swagger.html",
         "public/css/cosmo.css",
         "public/javascript",
         "public/logo/actionhero.png",

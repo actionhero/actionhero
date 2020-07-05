@@ -27,7 +27,7 @@ export class Resque extends Initializer {
     super();
     this.name = "resque";
     this.loadPriority = 600;
-    this.startPriority = 200;
+    this.startPriority = 950;
     this.stopPriority = 100;
   }
 
@@ -146,7 +146,9 @@ export class Resque extends Initializer {
         api.resque.multiWorker = new ActionheroMultiWorker(
           {
             connection: api.resque.connectionDetails,
-            queues: config.tasks.queues,
+            queues: Array.isArray(config.tasks.queues)
+              ? config.tasks.queues
+              : await config.tasks.queues(),
             timeout: config.tasks.timeout,
             checkTimeout: config.tasks.checkTimeout,
             minTaskProcessors: config.tasks.minTaskProcessors,

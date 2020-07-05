@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-import { Process } from "./index";
 
 // load any custom code, configure the env, as needed
 
 async function main() {
   // create a new actionhero process
+  const { Process } = await import("./index");
   const app = new Process();
 
   // handle unix signals and uncaught exceptions & rejections

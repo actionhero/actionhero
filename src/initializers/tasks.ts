@@ -24,7 +24,7 @@ export class Tasks extends Initializer {
     super();
     this.name = "tasks";
     this.loadPriority = 699;
-    this.startPriority = 900;
+    this.startPriority = 975;
   }
 
   async initialize(config) {
