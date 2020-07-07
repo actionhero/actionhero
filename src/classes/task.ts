@@ -90,7 +90,5 @@ export abstract class Task {
 }
 
 export interface TaskData {
-  params: {
-    [key: string]: any;
-  };
+  [key: string]: any;
 }
