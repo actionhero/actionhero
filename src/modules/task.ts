@@ -1,5 +1,5 @@
 import { api, config, utils, log } from "./../index";
-import { Task, TaskData } from "./../classes/task";
+import { Task, TaskInputs } from "./../classes/task";
 
 export namespace task {
   /**
@@ -54,11 +54,11 @@ export namespace task {
    */
   export async function enqueue(
     taskName: string,
-    taskData: TaskData,
+    inputs: TaskInputs,
     queue: string = api.tasks.tasks[taskName].queue
   ) {
-    await validateInput(taskName, taskData);
-    return api.resque.queue.enqueue(queue, taskName, [taskData]);
+    await validateInput(taskName, inputs);
+    return api.resque.queue.enqueue(queue, taskName, [inputs]);
   }
 
   /**
@@ -67,17 +67,17 @@ export namespace task {
    *
    * Inputs:
    * * taskName: The name of the task.
-   * * taskData: Task data params to pass to the task.
+   * * inputs: inputs to pass to the task.
    * * queue: (Optional) Which queue/priority to run this instance of the task on.
    */
   export async function enqueueAt(
     timestamp: number,
     taskName: string,
-    taskData: TaskData,
+    inputs: TaskInputs,
     queue: string = api.tasks.tasks[taskName].queue
   ) {
-    await validateInput(taskName, taskData);
-    return api.resque.queue.enqueueAt(timestamp, queue, taskName, [taskData]);
+    await validateInput(taskName, inputs);
+    return api.resque.queue.enqueueAt(timestamp, queue, taskName, [inputs]);
   }
 
   /**
@@ -87,17 +87,17 @@ export namespace task {
    * Inputs:
    * * timestamp: At what time the task is able to be run.  Does not guarantee that the task will be run at this time. (in ms)
    * * taskName: The name of the task.
-   * * taskData: Task data params to pass to the task.
+   * * inputs: inputs to pass to the task.
    * * queue: (Optional) Which queue/priority to run this instance of the task on.
    */
   export async function enqueueIn(
     time: number,
     taskName: string,
-    taskData: TaskData,
+    inputs: TaskInputs,
     queue: string = api.tasks.tasks[taskName].queue
   ) {
-    await validateInput(taskName, taskData);
-    return api.resque.queue.enqueueIn(time, queue, taskName, [taskData]);
+    await validateInput(taskName, inputs);
+    return api.resque.queue.enqueueIn(time, queue, taskName, [inputs]);
   }
 
   /**
@@ -113,10 +113,10 @@ export namespace task {
   export async function del(
     q: string,
     taskName: string,
-    taskData?: TaskData,
+    args?: TaskInputs,
     count?: number
   ) {
-    return api.resque.queue.del(q, taskName, [taskData], count);
+    return api.resque.queue.del(q, taskName, [args], count);
   }
 
   /**
@@ -126,14 +126,14 @@ export namespace task {
    * Inputs:
    * * q: Which queue/priority is to run on?
    * * taskName: The name of the job, likely to be the same name as a tak.
-   * * taskData  The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing. It is best to read job properties first via `api.tasks.delayedAt` or similar method.
+   * * inputs  The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing. It is best to read job properties first via `api.tasks.delayedAt` or similar method.
    */
   export async function delDelayed(
     q: string,
     taskName: string,
-    taskData?: TaskData
+    inputs?: TaskInputs
   ) {
-    return api.resque.queue.delDelayed(q, taskName, [taskData]);
+    return api.resque.queue.delDelayed(q, taskName, [inputs]);
   }
 
   /**
@@ -143,14 +143,14 @@ export namespace task {
    * Inputs:
    * * q: Which queue/priority is to run on?
    * * taskName: The name of the job, likely to be the same name as a tak.
-   * * taskData: The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing.  It is best to read job properties first via `api.tasks.delayedAt` or similar method.
+   * * inputs: The arguments of the job.  Note, arguments passed to a Task initially may be modified when enqueuing.  It is best to read job properties first via `api.tasks.delayedAt` or similar method.
    */
   export async function scheduledAt(
     q: string,
     taskName: string,
-    taskData: TaskData
+    inputs: TaskInputs
   ): Promise<Array<number>> {
-    return api.resque.queue.scheduledAt(q, taskName, [taskData]);
+    return api.resque.queue.scheduledAt(q, taskName, [inputs]);
   }
 
   /**
@@ -174,7 +174,7 @@ export namespace task {
     q: string,
     start: number,
     stop: number
-  ): Promise<Array<TaskData>> {
+  ): Promise<Array<TaskInputs>> {
     return api.resque.queue.queued(q, start, stop);
   }
 
@@ -409,7 +409,7 @@ export namespace task {
     api.tasks.loadTasks(true);
   }
 
-  async function validateInput(taskName: string, taskData: TaskData) {
+  async function validateInput(taskName: string, inputs: TaskInputs) {
     const task: Task = api.tasks.tasks[taskName];
 
     if (!task) {
@@ -418,34 +418,31 @@ export namespace task {
 
     for (const key in task.inputs) {
       // default
-      if (
-        taskData[key] === undefined &&
-        task.inputs[key].default !== undefined
-      ) {
+      if (inputs[key] === undefined && task.inputs[key].default !== undefined) {
         if (typeof task.inputs[key].default === "function") {
-          taskData[key] = await task.inputs[key].default.call(
+          inputs[key] = await task.inputs[key].default.call(
             api,
-            taskData[key],
+            inputs[key],
             this
           );
         } else {
-          taskData[key] = task.inputs[key].default;
+          inputs[key] = task.inputs[key].default;
         }
       }
 
       // validator
       if (
-        taskData[key] !== undefined &&
+        inputs[key] !== undefined &&
         task.inputs[key].validator !== undefined
       ) {
         let validatorResponse;
         if (typeof task.inputs[key].validator === "function") {
           // allowed to throw too
           const method = task.inputs[key].validator as Function;
-          validatorResponse = await method.call(api, taskData[key], this);
+          validatorResponse = await method.call(api, inputs[key], this);
         } else {
           const method = this.prepareStringMethod(task.inputs[key].validator);
-          validatorResponse = await method.call(api, taskData[key], this);
+          validatorResponse = await method.call(api, inputs[key], this);
         }
 
         // validator function returned nothing; assume param is OK
@@ -457,7 +454,7 @@ export namespace task {
         else if (validatorResponse !== true) {
           if (validatorResponse === false) {
             throw new Error(
-              `${taskData[key]} is not a valid value for ${key} in task ${taskName}`
+              `${inputs[key]} is not a valid value for ${key} in task ${taskName}`
             );
           } else {
             throw new Error(validatorResponse);
@@ -467,7 +464,7 @@ export namespace task {
 
       // required
       if (task.inputs[key].required === true) {
-        if (config.general.missingParamChecks.indexOf(taskData[key]) >= 0) {
+        if (config.general.missingParamChecks.indexOf(inputs[key]) >= 0) {
           throw new Error(`${key} is a required input for task ${taskName}`);
         }
       }
