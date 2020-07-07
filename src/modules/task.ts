@@ -1,6 +1,5 @@
 import { api, config, utils, log } from "./../index";
-import { Inputs } from "./../classes/inputs";
-import { Task } from "./../classes/task";
+import { Task, TaskInputs } from "./../classes/task";
 
 export namespace task {
   /**
@@ -55,7 +54,7 @@ export namespace task {
    */
   export async function enqueue(
     taskName: string,
-    inputs: { [key: string]: any },
+    inputs: TaskInputs,
     queue: string = api.tasks.tasks[taskName].queue
   ) {
     await validateInput(taskName, inputs);
@@ -74,7 +73,7 @@ export namespace task {
   export async function enqueueAt(
     timestamp: number,
     taskName: string,
-    inputs: { [key: string]: any },
+    inputs: TaskInputs,
     queue: string = api.tasks.tasks[taskName].queue
   ) {
     await validateInput(taskName, inputs);
@@ -94,7 +93,7 @@ export namespace task {
   export async function enqueueIn(
     time: number,
     taskName: string,
-    inputs: { [key: string]: any },
+    inputs: TaskInputs,
     queue: string = api.tasks.tasks[taskName].queue
   ) {
     await validateInput(taskName, inputs);
@@ -114,7 +113,7 @@ export namespace task {
   export async function del(
     q: string,
     taskName: string,
-    args?: { [key: string]: any },
+    args?: TaskInputs,
     count?: number
   ) {
     return api.resque.queue.del(q, taskName, [args], count);
@@ -132,7 +131,7 @@ export namespace task {
   export async function delDelayed(
     q: string,
     taskName: string,
-    inputs?: { [key: string]: any }
+    inputs?: TaskInputs
   ) {
     return api.resque.queue.delDelayed(q, taskName, [inputs]);
   }
@@ -149,7 +148,7 @@ export namespace task {
   export async function scheduledAt(
     q: string,
     taskName: string,
-    inputs: { [key: string]: any }
+    inputs: TaskInputs
   ): Promise<Array<number>> {
     return api.resque.queue.scheduledAt(q, taskName, [inputs]);
   }
@@ -175,7 +174,7 @@ export namespace task {
     q: string,
     start: number,
     stop: number
-  ): Promise<Array<{ [key: string]: any }>> {
+  ): Promise<Array<TaskInputs>> {
     return api.resque.queue.queued(q, start, stop);
   }
 
@@ -410,7 +409,7 @@ export namespace task {
     api.tasks.loadTasks(true);
   }
 
-  async function validateInput(taskName: string, inputs: Inputs) {
+  async function validateInput(taskName: string, inputs: TaskInputs) {
     const task: Task = api.tasks.tasks[taskName];
 
     if (!task) {
