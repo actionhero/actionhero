@@ -116,5 +116,8 @@ export class Actions extends Initializer {
           .forEach((f) => api.actions.loadFile(f));
       }
     }
+
+    // now that the actions are loaded, we can add all the inputs to api.params
+    api.params.buildPostVariables();
   }
 }
