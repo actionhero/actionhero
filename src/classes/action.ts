@@ -94,5 +94,13 @@ export abstract class Action {
         `action \`${this.name}\` is a reserved verb for connections. choose a new name`
       );
     }
+
+    Object.keys(this.inputs).forEach((input) => {
+      if (api.params.globalSafeParams.indexOf(input) >= 0) {
+        throw new Error(
+          `action \`${this.name}\` input \`${input}\` is a reserved param. choose a new input`
+        );
+      }
+    });
   }
 }
