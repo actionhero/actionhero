@@ -98,7 +98,7 @@ export abstract class Action {
     Object.keys(this.inputs).forEach((input) => {
       if (api.params.globalSafeParams.indexOf(input) >= 0) {
         throw new Error(
-          `action \`${this.name}\` input \`${input}\` is a reserved param. choose a new input`
+          `action \`${this.name}\` input \`${input}\` is a reserved param`
         );
       }
     });
