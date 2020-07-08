@@ -181,6 +181,28 @@ describe("Core", () => {
           expect(error.toString()).toMatch(/name is required for this action/);
         }
       });
+
+      test("actions cannot use reserved params as inputs", () => {
+        class BadAction extends Action {
+          constructor() {
+            super();
+            this.name = "bad";
+            this.description = "bad";
+            this.outputExample = {};
+            this.inputs = {
+              apiVersion: { required: true },
+            };
+          }
+
+          async run() {}
+        }
+
+        const badAction = new BadAction();
+
+        expect(() => badAction.validate()).toThrow(
+          "input `apiVersion` in action `bad` is a reserved param"
+        );
+      });
     });
 
     describe("Action Params", () => {
