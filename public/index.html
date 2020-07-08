@@ -95,13 +95,9 @@
 
     <script type="text/javascript">
       var populateStatus = function (data) {
-        if (data.serverInformation) {
-          document.getElementById("serverVersion").innerHTML =
-            data.serverInformation.apiVersion;
-          document.getElementById("serverName").innerHTML =
-            data.serverInformation.serverName;
-          document.getElementById("serverId").innerHTML = data.id;
-        }
+        document.getElementById("serverVersion").innerHTML = data.version;
+        document.getElementById("serverName").innerHTML = data.name;
+        document.getElementById("serverId").innerHTML = data.id;
         document.getElementById("actionheroVersion").innerHTML =
           data.actionheroVersion;
         document.getElementById("uptime").innerHTML = Math.round(
