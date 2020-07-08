@@ -16,7 +16,7 @@ const responses = {
     description: "Invalid input",
   },
   404: {
-    description: "Not Fount",
+    description: "Not Found",
   },
   422: {
     description: "Missing or invalid params",
