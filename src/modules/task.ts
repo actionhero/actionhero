@@ -333,13 +333,22 @@ export namespace task {
       const thisTask = api.tasks.tasks[taskName];
       if (thisTask.frequency > 0) {
         jobs.push(async () => {
-          const toRun = await task.enqueue(taskName, {});
-          if (toRun === true) {
-            log(
-              `enqueuing periodic task: ${taskName}`,
-              config.tasks.schedulerLogging.enqueue
-            );
-            loadedTasks.push(taskName);
+          try {
+            const toRun = await task.enqueue(taskName, {});
+            if (toRun === true) {
+              log(
+                `enqueuing periodic task: ${taskName}`,
+                config.tasks.schedulerLogging.enqueue
+              );
+              loadedTasks.push(taskName);
+            }
+          } catch (error) {
+            if (error.match(/already enqueued at this time/)) {
+              // this is OK, the job was enqueued by another process as this method was running
+              log(error.toString(), "warning");
+            } else {
+              throw error;
+            }
           }
         });
       }
