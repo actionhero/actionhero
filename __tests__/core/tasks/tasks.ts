@@ -261,6 +261,13 @@ describe("Core: Tasks", () => {
     expect(length).toEqual(1);
   });
 
+  test("re-enquing a recurring task will not throw", async () => {
+    await task.enqueueAllRecurrentTasks();
+    await task.enqueueAllRecurrentTasks(); // does not throw
+    const length = await api.resque.queue.length(queue);
+    expect(length).toEqual(1);
+  });
+
   test("re-enqueuing a periodic task should not enqueue it again", async () => {
     const tryOne = await task.enqueue("periodicTask", null);
     const tryTwo = await task.enqueue("periodicTask", null);
