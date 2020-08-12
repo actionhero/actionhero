@@ -69,7 +69,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    needs: lint
+    needs: build
     container:
       image: node
       options: --network-alias main
@@ -108,6 +108,6 @@ jobs:
 
   complete:
     runs-on: ubuntu-latest
-    needs: [test, docs]
+    needs: [lint, docs, test]
     steps:
       - run: echo "Done!"
