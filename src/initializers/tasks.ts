@@ -35,7 +35,7 @@ export class Tasks extends Initializer {
       globalMiddleware: [],
     };
 
-    api.tasks.loadFile = (fullFilePath: string, reload: boolean = false) => {
+    api.tasks.loadFile = (fullFilePath: string, reload = false) => {
       let task;
       let collection = require(fullFilePath);
       for (const i in collection) {

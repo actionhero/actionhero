@@ -264,9 +264,7 @@ export class Resque extends Initializer {
   }
 
   async start(config) {
-    if (config.redis.enabled === false) {
-      return;
-    }
+    if (config.redis.enabled === false) return;
 
     if (
       config.tasks.minTaskProcessors === 0 &&
@@ -281,9 +279,7 @@ export class Resque extends Initializer {
   }
 
   async stop(config) {
-    if (config.redis.enabled === false) {
-      return;
-    }
+    if (config.redis.enabled === false) return;
 
     await api.resque.stopScheduler();
     await api.resque.stopMultiWorker();
