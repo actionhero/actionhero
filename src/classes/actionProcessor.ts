@@ -103,11 +103,11 @@ export class ActionProcessor {
     this.incrementPendingActions(-1);
     this.duration = new Date().getTime() - this.actionStartTime;
     this.working = false;
-    this.logAction(error);
+    this.logAndReportAction(error);
     return this;
   }
 
-  private logAction(error) {
+  private logAndReportAction(error) {
     let logLevel = "info";
     if (this.actionTemplate && this.actionTemplate.logLevel) {
       logLevel = this.actionTemplate.logLevel;
@@ -147,6 +147,7 @@ export class ActionProcessor {
     }
 
     log(`[ action @ ${this.connection.type} ]`, logLevel, logLine);
+    if (error) api.exceptionHandlers.action(error, logLine);
   }
 
   private async preProcessAction() {

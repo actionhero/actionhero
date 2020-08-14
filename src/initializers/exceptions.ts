@@ -5,6 +5,7 @@ export interface ExceptionHandlerAPI {
   reporters: Array<any>;
   report: Function;
   loader?: Function;
+  action?: Function;
   task?: Function;
 }
 
@@ -41,11 +42,54 @@ export class Exceptions extends Initializer {
       },
     };
 
+    api.exceptionHandlers.loader = (fullFilePath, error) => {
+      const name = "loader:" + fullFilePath;
+      api.exceptionHandlers.report(
+        error,
+        "loader",
+        name,
+        { fullFilePath: fullFilePath },
+        "alert"
+      );
+    };
+
+    api.exceptionHandlers.action = (
+      error,
+      { to, action, params, duration, response }
+    ) => {
+      api.exceptionHandlers.report(
+        error,
+        "action",
+        `action: ${action}`,
+        { to, action, params, duration, error, response },
+        "alert"
+      );
+    };
+
+    api.exceptionHandlers.task = (error, queue, task, workerId) => {
+      let simpleName;
+      try {
+        simpleName = task.class;
+      } catch (e) {
+        simpleName = error.message;
+      }
+      const name = "task:" + simpleName;
+      api.exceptionHandlers.report(
+        error,
+        "task",
+        name,
+        { task: task, queue: queue, workerId: workerId },
+        config.tasks.workerLogging.failure
+      );
+    };
+
     const consoleReporter = (error, type, name, objects, severity) => {
       let message = "";
       const data = {};
 
-      if (type === "loader") {
+      if (type === "action") {
+        // no need to log anything, it was handled already by the actionProcessor
+      } else if (type === "loader") {
         message = `Failed to load ${objects.fullFilePath}`;
       } else if (type === "task") {
         message = `error from task`;
@@ -68,37 +112,9 @@ export class Exceptions extends Initializer {
 
       data["stacktrace"] = error?.stack;
 
-      log(message, severity, data);
+      if (message !== "") log(message, severity, data);
     };
 
     api.exceptionHandlers.reporters.push(consoleReporter);
-
-    api.exceptionHandlers.loader = (fullFilePath, error) => {
-      const name = "loader:" + fullFilePath;
-      api.exceptionHandlers.report(
-        error,
-        "loader",
-        name,
-        { fullFilePath: fullFilePath },
-        "alert"
-      );
-    };
-
-    api.exceptionHandlers.task = (error, queue, task, workerId) => {
-      let simpleName;
-      try {
-        simpleName = task.class;
-      } catch (e) {
-        simpleName = error.message;
-      }
-      const name = "task:" + simpleName;
-      api.exceptionHandlers.report(
-        error,
-        "task",
-        name,
-        { task: task, queue: queue, workerId: workerId },
-        config.tasks.workerLogging.failure
-      );
-    };
   }
 }
