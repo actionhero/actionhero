@@ -54,14 +54,14 @@
     "ws": "^7.3.1"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.9",
-    "jest": "^26.3.0",
+    "@types/jest": "^26.0.10",
+    "jest": "^26.4.0",
     "jest-environment-webdriver": "^0.2.0",
     "prettier": "^2.0.5",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9",
     "ts-jest": "^26.2.0",
-    "ts-node-dev": "^1.0.0-pre.56",
+    "ts-node-dev": "^1.0.0-pre.57",
     "typedoc": "^0.18.0",
     "typescript": "^3.9.7"
   },
