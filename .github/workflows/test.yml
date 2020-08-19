@@ -78,9 +78,6 @@ jobs:
       redis:
         image: redis
 
-      selenium:
-        image: selenium/standalone-chrome
-
     strategy:
       matrix:
         node-version: [10.x, 12.x, 14.x]
@@ -102,8 +99,6 @@ jobs:
       - run: ./node_modules/.bin/jest --ci
         env:
           REDIS_HOST: redis
-          SELENIUM_TEST_HOST: main
-          SELENIUM_REMOTE_URL: http://selenium:4444/wd/hub
           maxMemoryAlloted: 1000
 
   complete:
