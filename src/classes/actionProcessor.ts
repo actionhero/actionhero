@@ -114,7 +114,7 @@ export class ActionProcessor {
     }
 
     const filteredParams = utils.filterObjectForLogging(this.params);
-    const logLine = {
+    let logLine = {
       to: this.connection.remoteIP,
       action: this.action,
       params: JSON.stringify(filteredParams),
@@ -130,20 +130,12 @@ export class ActionProcessor {
     }
 
     if (error) {
-      logLevel = "error";
-      if (error instanceof Error) {
-        logLine.error = error.toString();
-        Object.getOwnPropertyNames(error)
-          .filter((prop) => prop !== "message")
-          .sort((a, b) => (a === "stack" || b === "stack" ? -1 : 1))
-          .forEach((prop) => (logLine[prop] = error[prop]));
-      } else {
-        try {
-          logLine.error = JSON.stringify(error);
-        } catch (e) {
-          logLine.error = String(error);
-        }
-      }
+      let errorFields;
+      ({
+        logLevel = "error",
+        errorFields,
+      } = config.errors.serializers.actionProcessor(error));
+      logLine = { ...logLine, ...errorFields };
     }
 
     log(`[ action @ ${this.connection.type} ]`, logLevel, logLine);
