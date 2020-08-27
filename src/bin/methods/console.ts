@@ -1,5 +1,5 @@
 import * as REPL from "repl";
-import {  api, env, CLI } from "./../../index";
+import { api, env, CLI } from "./../../index";
 
 export class Console extends CLI {
   constructor() {
