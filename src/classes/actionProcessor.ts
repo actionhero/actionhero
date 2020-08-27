@@ -131,15 +131,34 @@ export class ActionProcessor {
 
     if (error) {
       let errorFields;
-      ({
-        logLevel = "error",
-        errorFields,
-      } = config.errors.serializers.actionProcessor(error));
+      const formatErrorLogLine =
+        config.errors.serializers.actionProcessor ||
+        this.applyDefaultErrorLogLineFormat;
+      ({ logLevel = "error", errorFields } = formatErrorLogLine(error));
       logLine = { ...logLine, ...errorFields };
     }
 
     log(`[ action @ ${this.connection.type} ]`, logLevel, logLine);
     if (error) api.exceptionHandlers.action(error, logLine);
+  }
+
+  private applyDefaultErrorLogLineFormat(error) {
+    const errorFields: { error: string } = { error: null };
+    if (error instanceof Error) {
+      errorFields.error = error.toString();
+      Object.getOwnPropertyNames(error)
+        .filter((prop) => prop !== "message")
+        .sort((a, b) => (a === "stack" || b === "stack" ? -1 : 1))
+        .forEach((prop) => (errorFields[prop] = error[prop]));
+    } else {
+      try {
+        errorFields.error = JSON.stringify(error);
+      } catch (e) {
+        errorFields.error = String(error);
+      }
+    }
+
+    return { errorFields };
   }
 
   private async preProcessAction() {

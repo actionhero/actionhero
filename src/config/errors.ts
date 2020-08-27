@@ -31,24 +31,7 @@ export const DEFAULT = {
             }
           },
         },
-        actionProcessor: (error) => {
-          const errorFields: { error: string } = { error: null };
-          if (error instanceof Error) {
-            errorFields.error = error.toString();
-            Object.getOwnPropertyNames(error)
-              .filter((prop) => prop !== "message")
-              .sort((a, b) => (a === "stack" || b === "stack" ? -1 : 1))
-              .forEach((prop) => (errorFields[prop] = error[prop]));
-          } else {
-            try {
-              errorFields.error = JSON.stringify(error);
-            } catch (e) {
-              errorFields.error = String(error);
-            }
-          }
-
-          return { errorFields };
-        },
+        actionProcessor: null,
       },
 
       // ///////////
