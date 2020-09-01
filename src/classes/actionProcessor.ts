@@ -114,7 +114,7 @@ export class ActionProcessor {
     }
 
     const filteredParams = utils.filterObjectForLogging(this.params);
-    const logLine = {
+    let logLine = {
       to: this.connection.remoteIP,
       action: this.action,
       params: JSON.stringify(filteredParams),
@@ -130,24 +130,35 @@ export class ActionProcessor {
     }
 
     if (error) {
-      logLevel = "error";
-      if (error instanceof Error) {
-        logLine.error = error.toString();
-        Object.getOwnPropertyNames(error)
-          .filter((prop) => prop !== "message")
-          .sort((a, b) => (a === "stack" || b === "stack" ? -1 : 1))
-          .forEach((prop) => (logLine[prop] = error[prop]));
-      } else {
-        try {
-          logLine.error = JSON.stringify(error);
-        } catch (e) {
-          logLine.error = String(error);
-        }
-      }
+      let errorFields;
+      const formatErrorLogLine =
+        config.errors.serializers.actionProcessor ||
+        this.applyDefaultErrorLogLineFormat;
+      ({ logLevel = "error", errorFields } = formatErrorLogLine(error));
+      logLine = { ...logLine, ...errorFields };
     }
 
     log(`[ action @ ${this.connection.type} ]`, logLevel, logLine);
     if (error) api.exceptionHandlers.action(error, logLine);
+  }
+
+  private applyDefaultErrorLogLineFormat(error) {
+    const errorFields: { error: string } = { error: null };
+    if (error instanceof Error) {
+      errorFields.error = error.toString();
+      Object.getOwnPropertyNames(error)
+        .filter((prop) => prop !== "message")
+        .sort((a, b) => (a === "stack" || b === "stack" ? -1 : 1))
+        .forEach((prop) => (errorFields[prop] = error[prop]));
+    } else {
+      try {
+        errorFields.error = JSON.stringify(error);
+      } catch (e) {
+        errorFields.error = String(error);
+      }
+    }
+
+    return { errorFields };
   }
 
   private async preProcessAction() {
