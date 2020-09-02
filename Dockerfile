@@ -1,6 +1,8 @@
 FROM alpine:latest
 MAINTAINER admin@actionherojs.com
 
+ENV PORT=3000
+
 WORKDIR /actionhero
 
 COPY package*.json ./
@@ -10,4 +12,4 @@ RUN npm install
 RUN npm run prepare
 
 CMD ["node", "./dist/server.js"]
-EXPOSE 8080
+EXPOSE $PORT
