@@ -1,7 +1,7 @@
 FROM alpine:latest
 MAINTAINER admin@actionherojs.com
 
-ENV PORT=3000
+ENV PORT=8080
 
 WORKDIR /actionhero
 
