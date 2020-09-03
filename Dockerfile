@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:alpine
 LABEL maintainer="admin@actionherojs.com"
 
 ENV PORT=8080
