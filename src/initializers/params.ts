@@ -13,7 +13,7 @@ export class Params extends Initializer {
   constructor() {
     super();
     this.name = "params";
-    this.loadPriority = 420;
+    this.loadPriority = 400;
   }
 
   async initialize() {
@@ -51,7 +51,5 @@ export class Params extends Initializer {
       api.params.postVariables = utils.arrayUnique(postVariables);
       return api.params.postVariables;
     };
-
-    api.params.buildPostVariables();
   }
 }

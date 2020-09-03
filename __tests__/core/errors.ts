@@ -95,5 +95,14 @@ describe("Core", () => {
       expect(response.error).toEqual("Error: worst action ever!");
       expect(response.requestId).toEqual("id-12345");
     });
+
+    test("exceptionHandlers get action errors", async (done) => {
+      api.exceptionHandlers.reporters.push((error) => {
+        expect(error.message).toMatch(/worst action ever/);
+        done();
+      });
+
+      const response = await specHelper.runAction("errorAction");
+    });
   });
 });

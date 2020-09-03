@@ -24,7 +24,7 @@ export class Tasks extends Initializer {
     super();
     this.name = "tasks";
     this.loadPriority = 699;
-    this.startPriority = 900;
+    this.startPriority = 975;
   }
 
   async initialize(config) {
@@ -35,7 +35,7 @@ export class Tasks extends Initializer {
       globalMiddleware: [],
     };
 
-    api.tasks.loadFile = (fullFilePath: string, reload: boolean = false) => {
+    api.tasks.loadFile = (fullFilePath: string, reload = false) => {
       let task;
       let collection = require(fullFilePath);
       for (const i in collection) {

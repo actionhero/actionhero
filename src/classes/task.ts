@@ -55,7 +55,7 @@ export abstract class Task {
    * * data: The data about this instance of the task, specifically params.
    * * worker: Instance of a node-resque worker. You can inspect `worker.job` and set `worker.result` explicitly if your Task does not return a value.
    */
-  abstract async run(data: TaskData, worker): Promise<any>;
+  abstract async run(data: TaskInputs, worker): Promise<any>;
 
   private defaults() {
     return {
@@ -89,8 +89,6 @@ export abstract class Task {
   }
 }
 
-export interface TaskData {
-  params: {
-    [key: string]: any;
-  };
+export interface TaskInputs {
+  [key: string]: any;
 }

@@ -363,16 +363,20 @@ export class Process {
       log(`[ SIGNAL ] - SIGINT`, "notice");
       let timer = awaitHardStop();
       await this.stop();
-      clearTimeout(timer);
-      stopCallback(0);
+      if (!this.shuttingDown) {
+        clearTimeout(timer);
+        stopCallback(0);
+      }
     });
 
     process.on("SIGTERM", async () => {
       log(`[ SIGNAL ] - SIGTERM`, "notice");
       let timer = awaitHardStop();
       await this.stop();
-      clearTimeout(timer);
-      stopCallback(0);
+      if (!this.shuttingDown) {
+        clearTimeout(timer);
+        stopCallback(0);
+      }
     });
 
     process.on("SIGUSR2", async () => {

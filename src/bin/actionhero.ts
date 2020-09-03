@@ -179,7 +179,7 @@ const projectRoot = determineProjectRoot();
 
   const commands = [];
   if (!optimist.argv._ || optimist.argv._.length === 0) {
-    commands.push("start");
+    commands.push("help");
   }
   optimist.argv._.forEach(function (arg: string) {
     commands.push(arg);
