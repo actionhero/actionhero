@@ -22,6 +22,9 @@ services:
     networks:
       - actionhero_frontend
       - actionhero_backend
+    volumes: 
+      - /actionhero/node_modules
+      - /actionhero/dist
 
   # OR, Build it locally:
   #
@@ -34,6 +37,9 @@ services:
   #     REDIS_HOST: redis
   #     REDIS_PORT: 6379
   #     REDIS_DB: 0
+  #   volumes: 
+  #     - /actionhero/node_modules
+  #     - /actionhero/dist
 
   proxy:
     image: dockercloud/haproxy
