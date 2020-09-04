@@ -22,9 +22,6 @@ services:
     networks:
       - actionhero_frontend
       - actionhero_backend
-    volumes: 
-      - /actionhero/node_modules
-      - /actionhero/dist
 
   # OR, Build it locally:
   #
@@ -46,9 +43,6 @@ services:
   #   networks:
   #     - actionhero_frontend
   #     - actionhero_backend
-  #   volumes: 
-  #     - /actionhero/node_modules
-  #     - /actionhero/dist
 
   proxy:
     image: dockercloud/haproxy
