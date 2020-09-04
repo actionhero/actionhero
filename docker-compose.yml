@@ -27,13 +27,22 @@ services:
   #
   # actionhero:
   #   build: ./
+  #   image: actionhero
   #   ports:
-  #     - 80:8080
+  #     - 8080
   #   environment:
-  #     TCP_PORTS: 8080
+  #     SERVICE_PORTS: 8080
   #     REDIS_HOST: redis
   #     REDIS_PORT: 6379
   #     REDIS_DB: 0
+  #   depends_on:
+  #     - redis
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 3
+  #   networks:
+  #     - actionhero_frontend
+  #     - actionhero_backend
 
   proxy:
     image: dockercloud/haproxy
