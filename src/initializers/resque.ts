@@ -43,9 +43,7 @@ export class Resque extends Initializer {
   }
 
   async initialize(config) {
-    if (config.redis.enabled === false) {
-      return;
-    }
+    if (config.redis.enabled === false) return;
 
     const resqueOverrides = config.tasks.resque_overrides;
 
@@ -273,7 +271,6 @@ export class Resque extends Initializer {
       config.tasks.minTaskProcessors = 1;
     }
 
-    await api.resque.startQueue();
     await api.resque.startScheduler();
     await api.resque.startMultiWorker();
   }
