@@ -259,9 +259,6 @@ export class Resque extends Initializer {
         }
       },
     };
-
-    // we want to start the queue now, so that it's available for other initializers and CLI commands
-    await api.resque.startQueue();
   }
 
   async start(config) {

@@ -163,12 +163,13 @@ export class Tasks extends Initializer {
     };
 
     api.tasks.loadTasks(false);
+
+    // we want to start the queue now, so that it's available for other initializers and CLI commands
+    await api.resque.startQueue();
   }
 
   async start(config) {
-    if (config.redis.enabled === false) {
-      return;
-    }
+    if (config.redis.enabled === false) return;
 
     if (config.tasks.scheduler === true) {
       await taskModule.enqueueAllRecurrentTasks();
