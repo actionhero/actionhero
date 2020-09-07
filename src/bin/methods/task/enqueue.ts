@@ -27,7 +27,6 @@ export class TaskEnqueue extends CLI {
       args = JSON.parse(params.params);
     }
 
-    await api.resque.startQueue();
     const toRun = await task.enqueue(params.name, args);
     log("response", "info", toRun);
     return true;
