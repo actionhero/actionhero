@@ -25,6 +25,10 @@ export const DEFAULT = {
       ]
 
       ---------------------- */
+      get: [
+        { path: '/testError', action: 'testErr' },
+        { path: '/testAppError', action: 'testAppErr' }
+      ]
     };
   },
 };

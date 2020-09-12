@@ -22,7 +22,7 @@ export const DEFAULT = {
       // disables the whitelisting of client params
       disableParamScrubbing: false,
       // enable action response to logger
-      enableResponseLogging: false,
+      enableResponseLogging: true,
       // params you would like hidden from any logs
       filteredParams: [],
       // responses you would like hidden from any logs

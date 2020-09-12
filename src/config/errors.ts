@@ -10,11 +10,16 @@ export const DEFAULT = {
       serializers: {
         servers: {
           web: (error) => {
-            if (error.message) {
-              return String(error.message);
-            } else {
-              return error;
+            // if (error.message) {
+            //   return String(error.message);
+            // } else {
+            //   return error;
+            // }
+            if (error.name === "AppError") {
+              return { code: error.appCode, message: error.message };
             }
+
+            return { code: 500, message: "ISE" };
           },
           websocket: (error) => {
             if (error.message) {
