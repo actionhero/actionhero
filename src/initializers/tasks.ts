@@ -69,6 +69,7 @@ export class Tasks extends Initializer {
       if (task.frequency > 0) {
         if (plugins.indexOf("JobLock") < 0) {
           plugins.push("JobLock");
+          pluginOptions.JobLock = { reEnqueue: false };
         }
         if (plugins.indexOf("QueueLock") < 0) {
           plugins.push("QueueLock");

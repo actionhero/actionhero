@@ -327,7 +327,7 @@ export namespace task {
    */
   export async function enqueueAllRecurrentTasks() {
     const jobs = [];
-    const loadedTasks = [];
+    const enqueuedTasks: string[] = [];
 
     Object.keys(api.tasks.tasks).forEach((taskName) => {
       const thisTask = api.tasks.tasks[taskName];
@@ -340,22 +340,17 @@ export namespace task {
                 `enqueuing periodic task: ${taskName}`,
                 config.tasks.schedulerLogging.enqueue
               );
-              loadedTasks.push(taskName);
+              enqueuedTasks.push(taskName);
             }
           } catch (error) {
-            if (error.match(/already enqueued at this time/)) {
-              // this is OK, the job was enqueued by another process as this method was running
-              log(error.toString(), "warning");
-            } else {
-              throw error;
-            }
+            checkForRepeatRecurringTaskEnqueue(taskName, error);
           }
         });
       }
     });
 
     await utils.asyncWaterfall(jobs);
-    return loadedTasks;
+    return enqueuedTasks;
   }
 
   /**
@@ -477,6 +472,18 @@ export namespace task {
           throw new Error(`${key} is a required input for task ${taskName}`);
         }
       }
+    }
+  }
+
+  function checkForRepeatRecurringTaskEnqueue(taskName, error: Error) {
+    if (error.toString().match(/already enqueued at this time/)) {
+      // this is OK, the job was enqueued by another process as this method was running
+      log(
+        `not enqueuing periodic task ${taskName} - error.toString()`,
+        "warning"
+      );
+    } else {
+      throw error;
     }
   }
 }
