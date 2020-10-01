@@ -1,7 +1,6 @@
 import * as path from "path";
 import * as glob from "glob";
 import * as fs from "fs";
-import { Api } from "./api";
 import { buildConfig, ConfigInterface } from "./../modules/config";
 import { log } from "../modules/log";
 import { Initializer } from "./initializer";

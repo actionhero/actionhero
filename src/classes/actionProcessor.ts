@@ -4,7 +4,6 @@ import { config } from "./../modules/config";
 import { log } from "../modules/log";
 import { utils } from "../modules/utils";
 import * as dotProp from "dot-prop";
-import { EOL } from "os";
 import { api } from "../index";
 
 export class ActionProcessor {
