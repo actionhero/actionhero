@@ -22,12 +22,14 @@ loggers = config.logger.loggers.map((loggerBuilder: Function) => {
 
 /**
  * Log a message, with optional metadata.  The message can be logged to a number of locations (stdio, files, etc) as configured via config/logger.js
- * The default log levels are: `7=debug` `6=info` `5=notice` `4=warning` `3=error` `2=crit` `1=alert` `0=emerg`
- * Learn more at https://github.com/winstonjs/winston
  *
- * the most basic use.  Will assume 'info' as the severity: `log('hello')`
- * custom severity: `log('OH NO!', 'warning')`
- * custom severity with a metadata object: `log('OH NO, something went wrong', 'warning', { error: new Error('things are busted') })`
+ * The most basic use.  Will assume 'info' as the severity: `log('hello')`
+ * Custom severity: `log('OH NO!', 'warning')`
+ * Custom severity with a metadata object: `log('OH NO, something went wrong', 'warning', { error: new Error('things are busted') })`
+ *
+ * The default log levels are: `emerg: 0, alert: 1, crit: 2,  error: 3,  warning: 4,  notice: 5, info: 6, debug: 7`.
+ * Logging levels in winston conform to the severity ordering specified by RFC5424: severity of all levels is assumed to be numerically ascending from most important to least important.
+ * Learn more at https://github.com/winstonjs/winston
  */
 export function log(message: string, severity: string = "info", data?: any) {
   loggers.map((logger) => {
