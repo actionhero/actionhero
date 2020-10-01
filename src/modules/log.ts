@@ -2,7 +2,8 @@ import * as winston from "winston";
 import { config } from "./config";
 import { utils } from "./utils";
 
-export let loggers = [];
+// exported as `import { loggers } from "actionhero"`
+export let loggers: winston.Logger[] = [];
 
 config.general.paths.log.forEach((p: string) => {
   try {
