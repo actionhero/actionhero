@@ -16,7 +16,7 @@ describe("Core", () => {
       log("hello");
     });
 
-    test("the winston loggers are available via api.loggers", () => {
+    test("the winston loggers are available via the export loggers", () => {
       expect(loggers.length).toBe(2);
     });
   });
