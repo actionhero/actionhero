@@ -7,6 +7,7 @@ import {
   task,
   specHelper,
 } from "../../../src/index";
+import { sleep } from "../../../src/modules/utils/sleep";
 
 const actionhero = new Process();
 
@@ -46,6 +47,7 @@ describe("Core: Tasks", () => {
       }
 
       async run(params) {
+        await sleep(10);
         taskOutput.push("periodicTask");
         return "periodicTask";
       }
@@ -262,10 +264,42 @@ describe("Core: Tasks", () => {
   });
 
   test("re-enquing a recurring task will not throw", async () => {
-    await task.enqueueAllRecurrentTasks();
-    await task.enqueueAllRecurrentTasks(); // does not throw
-    const length = await api.resque.queue.length(queue);
+    let length = await api.resque.queue.length(queue);
+    expect(length).toEqual(0);
+
+    // does not throw
+    await Promise.all([
+      task.enqueueAllRecurrentTasks(),
+      task.enqueueAllRecurrentTasks(),
+      task.enqueueAllRecurrentTasks(),
+    ]);
+
+    length = await api.resque.queue.length(queue);
     expect(length).toEqual(1);
+  });
+
+  test("if we get in a situation where 2 instances of a periodic task end at the same time, only one instance will be enqueued", async () => {
+    let length = await api.resque.queue.length(queue);
+    expect(length).toEqual(0);
+    let timestamps = await task.timestamps();
+    expect(timestamps).toHaveLength(0);
+
+    // also tests that jobLock does what we want
+    await Promise.all([
+      specHelper.runFullTask("periodicTask", {}),
+      specHelper.runFullTask("periodicTask", {}),
+      specHelper.runFullTask("periodicTask", {}),
+      specHelper.runFullTask("periodicTask", {}),
+      specHelper.runFullTask("periodicTask", {}),
+    ]);
+
+    expect(taskOutput.length).toBe(1);
+
+    timestamps = await task.timestamps();
+    expect(timestamps).toHaveLength(1);
+    const { tasks } = await task.delayedAt(timestamps[0]);
+    expect(tasks).toHaveLength(1);
+    expect(tasks[0].class).toEqual("periodicTask");
   });
 
   test("re-enqueuing a periodic task should not enqueue it again", async () => {
