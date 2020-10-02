@@ -84,7 +84,10 @@ export namespace specHelper {
 
     try {
       await worker.connect();
-      const result = await worker.performInline(taskName, params);
+      const result = await worker.performInline(
+        taskName,
+        Array.isArray(params) ? params : [params]
+      );
       await worker.end();
       return result;
     } catch (error) {
