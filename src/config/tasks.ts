@@ -47,6 +47,8 @@ export const DEFAULT = {
       maxEventLoopDelay: 5,
       // how long before we mark a resque worker / task processor as stuck/dead?
       stuckWorkerTimeout: 1000 * 60 * 60,
+      // should the scheduler automatically try to retry failed tasks which were failed due to being 'stuck'?
+      retryStuckJobs: false,
       // Customize Resque primitives, replace null with required replacement.
       resque_overrides: {
         queue: null,
