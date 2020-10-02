@@ -93,6 +93,7 @@ export class Resque extends Initializer {
             connection: api.resque.connectionDetails,
             timeout: config.tasks.timeout,
             stuckWorkerTimeout: config.tasks.stuckWorkerTimeout,
+            retryStuckJobs: config.tasks.retryStuckJobs,
           });
 
           api.resque.scheduler.on("error", (error) => {
