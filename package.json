@@ -44,7 +44,7 @@
     "ioredis": "^4.17.3",
     "is-running": "^2.1.0",
     "mime": "^2.4.6",
-    "node-resque": "^7.2.1",
+    "node-resque": "^8.0.0",
     "optimist": "^0.6.1",
     "primus": "^7.3.5",
     "qs": "^6.9.4",
