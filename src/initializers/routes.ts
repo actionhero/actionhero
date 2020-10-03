@@ -79,7 +79,11 @@ export class Routes extends Initializer {
       }
     };
 
-    api.routes.matchURL = (pathParts, match, matchTrailingPathParts) => {
+    api.routes.matchURL = (
+      pathParts,
+      match: string,
+      matchTrailingPathParts: boolean
+    ) => {
       const response = { match: false, params: {} };
       const matchParts = match.split("/");
       let regexp = "";
@@ -172,8 +176,8 @@ export class Routes extends Initializer {
         }
       }
 
-      let v;
-      let verb;
+      let v: string;
+      let verb: string;
       for (const i in rawRoutes) {
         const method = i.toLowerCase();
         for (const j in rawRoutes[i]) {
@@ -206,13 +210,11 @@ export class Routes extends Initializer {
 
       api.params.postVariables = utils.arrayUnique(api.params.postVariables);
 
-      if (config.servers.web && config.servers.web.automaticRoutes) {
-        const verbs = config.servers.web.automaticRoutes
-          .split(",")
-          .map((v) => v.trim())
-          .map((v) => v.toLowerCase());
-
-        verbs.forEach((verb) => {
+      if (
+        config.servers.web &&
+        Array.isArray(config.servers.web.automaticRoutes)
+      ) {
+        config.servers.web.automaticRoutes.forEach((verb: string) => {
           if (!api.routes.verbs.includes(verb)) {
             throw new Error(`${verb} is not an HTTP verb`);
           }

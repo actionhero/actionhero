@@ -39,8 +39,12 @@ export const DEFAULT = {
         //  Visitors can always visit /api and /public as normal
         rootEndpointType: "file",
         // In addition to what's defined in config/routes.ts, should we make a route for every action?  Useful for debugging or simple APIs.
-        // automaticRoutes should a be comma-separated list of HTTP verbs, ie: null (default), 'get', 'post', 'get,put', 'get,post,put', etc.
-        automaticRoutes: process.env.AUTOMATIC_ROUTES,
+        // automaticRoutes should an array of strings - HTTP verbs, ie: [] (default), ['get'], ['post'], ['get','put'], ['get','post','put'], etc.
+        automaticRoutes: process.env.AUTOMATIC_ROUTES
+          ? process.env.AUTOMATIC_ROUTES.split(",")
+              .map((v) => v.trim())
+              .map((v) => v.toLowerCase())
+          : [],
         // The cache or (if etags are enabled) next-revalidation time to be returned for all flat files served from /public; defined in seconds
         flatFileCacheDuration: 60,
         // Add an etag header to requested flat files which acts as fingerprint that changes when the file is updated;

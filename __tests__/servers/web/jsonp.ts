@@ -11,7 +11,7 @@ jest.mock("./../../../src/config/servers/web.ts", () => ({
       web: () => {
         return {
           enabled: true,
-          automaticRoutes: "get,post",
+          automaticRoutes: ["get", "post"],
           secure: false,
           urlPathForActions: "api",
           urlPathForFiles: "public",
