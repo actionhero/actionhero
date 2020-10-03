@@ -19,8 +19,9 @@ jest.mock("./../../../src/config/servers/web.ts", () => ({
     servers: {
       web: () => {
         return {
-          saveRawBody: true,
           enabled: true,
+          saveRawBody: true,
+          automaticRoutes: "post",
           secure: false,
           urlPathForActions: "api",
           urlPathForFiles: "public",

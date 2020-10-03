@@ -23,6 +23,7 @@ const ensureNoErrors = async () => {
 
 describe("browser integration tests", () => {
   beforeAll(async () => {
+    process.env.AUTOMATIC_ROUTES = "get";
     await actionhero.start();
     await api.redis.clients.client.flushdb();
     url = `http://${host}:${config.servers.web.port}`;

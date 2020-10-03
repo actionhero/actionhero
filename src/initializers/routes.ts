@@ -206,22 +206,28 @@ export class Routes extends Initializer {
 
       api.params.postVariables = utils.arrayUnique(api.params.postVariables);
 
-      if (config.servers.web && config.servers.web.simpleRouting === true) {
-        const simplePaths = [];
-        for (const action in api.actions.actions) {
-          simplePaths.push("/" + action);
-          for (v in api.routes.verbs) {
-            verb = api.routes.verbs[v];
+      if (config.servers.web && config.servers.web.automaticRoutes) {
+        const verbs = config.servers.web.automaticRoutes
+          .split(",")
+          .map((v) => v.trim())
+          .map((v) => v.toLowerCase());
+
+        verbs.forEach((verb) => {
+          if (!api.routes.verbs.includes(verb)) {
+            throw new Error(`${verb} is not an HTTP verb`);
+          }
+
+          log(
+            `creating routes automatically for all actions to ${verb} HTTP verb`
+          );
+
+          for (const action in api.actions.actions) {
             route.registerRoute(verb, "/" + action, action, null);
           }
-        }
-        log(
-          `${simplePaths.length} simple routes loaded from action names`,
-          "debug"
-        );
-
-        log("routes:", "debug", api.routes.routes);
+        });
       }
+
+      log("routes:", "debug", api.routes.routes);
     };
 
     api.routes.loadRoutes();

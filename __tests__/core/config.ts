@@ -69,6 +69,7 @@ describe("Core: config folders", () => {
   test("routes should be rebuilt and contain both paths", async () => {
     expect(config.routes).toEqual({
       get: [
+        { path: "/status", action: "status" },
         { path: "/api-status", action: "status" },
         { path: "/random-number", action: "randomNumber" },
       ],
