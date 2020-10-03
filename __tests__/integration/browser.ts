@@ -23,7 +23,6 @@ const ensureNoErrors = async () => {
 
 describe("browser integration tests", () => {
   beforeAll(async () => {
-    process.env.AUTOMATIC_ROUTES = "get";
     await actionhero.start();
     await api.redis.clients.client.flushdb();
     url = `http://${host}:${config.servers.web.port}`;
@@ -72,13 +71,9 @@ describe("browser integration tests", () => {
       const elements = await browser.findElements(by.tagName("h4"));
       const actionNames = await Promise.all(elements.map((e) => e.getText()));
       expect(actionNames.sort()).toEqual([
-        "cacheTest",
         "createChatRoom",
-        "randomNumber",
-        "sleepTest",
         "status",
         "swagger",
-        "validationTest",
       ]);
     });
   });
