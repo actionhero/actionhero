@@ -1,7 +1,11 @@
 export const DEFAULT = {
   routes: (config) => {
     return {
-      get: [{ path: "/status", action: "status" }],
+      get: [
+        { path: "/status", action: "status" },
+        { path: "/swagger", action: "swagger" },
+        { path: "/createChatRoom", action: "createChatRoom" },
+      ],
 
       /* ---------------------
       For web clients (http and https) you can define an optional RESTful mapping to help route requests to actions.
