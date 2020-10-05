@@ -713,16 +713,11 @@ export class WebServer extends Server {
         connection.rawConnection.params.files = files;
         this.fillParamsFromWebRequest(connection, files);
         this.fillParamsFromWebRequest(connection, fields);
-
-        if (this.config.queryRouting !== true) {
-          connection.params.action = null;
-        }
+        connection.params.action = null;
         api.routes.processRoute(connection, pathParts);
         return requestMode;
       } else {
-        if (this.config.queryRouting !== true) {
-          connection.params.action = null;
-        }
+        connection.params.action = null;
         api.routes.processRoute(connection, pathParts);
         return requestMode;
       }

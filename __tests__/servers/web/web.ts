@@ -17,6 +17,7 @@ const toJson = async (string) => {
 
 describe("Server: Web", () => {
   beforeAll(async () => {
+    process.env.AUTOMATIC_ROUTES = "head,get,post,put,delete";
     await actionhero.start();
     url = "http://localhost:" + config.servers.web.port;
   });

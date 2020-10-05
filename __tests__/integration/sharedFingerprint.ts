@@ -31,6 +31,7 @@ const connectClient = async (query = ""): Promise<any> => {
 
 describe("Integration: Web Server + Websocket Socket shared fingerprint", () => {
   beforeAll(async () => {
+    process.env.AUTOMATIC_ROUTES = "get";
     await actionhero.start();
     await api.redis.clients.client.flushdb();
     url = "http://localhost:" + config.servers.web.port;

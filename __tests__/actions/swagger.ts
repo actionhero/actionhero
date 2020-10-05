@@ -5,6 +5,7 @@ const actionhero = new Process();
 describe("Action", () => {
   describe("swagger", () => {
     beforeAll(async () => {
+      process.env.AUTOMATIC_ROUTES = "get";
       await actionhero.start();
     });
 

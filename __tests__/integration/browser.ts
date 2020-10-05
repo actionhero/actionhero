@@ -71,13 +71,9 @@ describe("browser integration tests", () => {
       const elements = await browser.findElements(by.tagName("h4"));
       const actionNames = await Promise.all(elements.map((e) => e.getText()));
       expect(actionNames.sort()).toEqual([
-        "cacheTest",
         "createChatRoom",
-        "randomNumber",
-        "sleepTest",
         "status",
         "swagger",
-        "validationTest",
       ]);
     });
   });

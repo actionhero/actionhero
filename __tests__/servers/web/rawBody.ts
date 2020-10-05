@@ -19,16 +19,15 @@ jest.mock("./../../../src/config/servers/web.ts", () => ({
     servers: {
       web: () => {
         return {
-          saveRawBody: true,
           enabled: true,
+          saveRawBody: true,
+          automaticRoutes: ["post"],
           secure: false,
           urlPathForActions: "api",
           urlPathForFiles: "public",
           rootEndpointType: "file",
           port: 18080 + parseInt(process.env.JEST_WORKER_ID || "0"),
           matchExtensionMime: true,
-          simpleRouting: true,
-          queryRouting: true,
           metadataOptions: {
             serverInformation: true,
             requesterInformation: false,

@@ -79,7 +79,11 @@ export class Routes extends Initializer {
       }
     };
 
-    api.routes.matchURL = (pathParts, match, matchTrailingPathParts) => {
+    api.routes.matchURL = (
+      pathParts,
+      match: string,
+      matchTrailingPathParts: boolean
+    ) => {
       const response = { match: false, params: {} };
       const matchParts = match.split("/");
       let regexp = "";
@@ -172,8 +176,8 @@ export class Routes extends Initializer {
         }
       }
 
-      let v;
-      let verb;
+      let v: string;
+      let verb: string;
       for (const i in rawRoutes) {
         const method = i.toLowerCase();
         for (const j in rawRoutes[i]) {
@@ -206,22 +210,26 @@ export class Routes extends Initializer {
 
       api.params.postVariables = utils.arrayUnique(api.params.postVariables);
 
-      if (config.servers.web && config.servers.web.simpleRouting === true) {
-        const simplePaths = [];
-        for (const action in api.actions.actions) {
-          simplePaths.push("/" + action);
-          for (v in api.routes.verbs) {
-            verb = api.routes.verbs[v];
+      if (
+        config.servers.web &&
+        Array.isArray(config.servers.web.automaticRoutes)
+      ) {
+        config.servers.web.automaticRoutes.forEach((verb: string) => {
+          if (!api.routes.verbs.includes(verb)) {
+            throw new Error(`${verb} is not an HTTP verb`);
+          }
+
+          log(
+            `creating routes automatically for all actions to ${verb} HTTP verb`
+          );
+
+          for (const action in api.actions.actions) {
             route.registerRoute(verb, "/" + action, action, null);
           }
-        }
-        log(
-          `${simplePaths.length} simple routes loaded from action names`,
-          "debug"
-        );
-
-        log("routes:", "debug", api.routes.routes);
+        });
       }
+
+      log("routes:", "debug", api.routes.routes);
     };
 
     api.routes.loadRoutes();

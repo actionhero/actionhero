@@ -17,6 +17,7 @@ const toJson = async (string) => {
 
 describe("Server: Web", () => {
   beforeAll(async () => {
+    // process.env.AUTOMATIC_ROUTES = "head,get,post,put,delete";
     await actionhero.start();
     url = "http://localhost:" + config.servers.web.port;
   });
@@ -42,6 +43,10 @@ describe("Server: Web", () => {
           },
           outputExample: {},
           run: async (data) => {
+            if (data.params.key === "fail") {
+              throw new Error("failed");
+            }
+
             data.response.matchedRoute = data.connection.matchedRoute;
           },
         },
@@ -110,6 +115,7 @@ describe("Server: Web", () => {
           { path: "/thing/stuff", action: "thingStuff" },
           { path: "/v:apiVersion/login", action: "login" },
           { path: "/:apiVersion/login", action: "login" },
+          { path: "/login", action: "login" },
           { path: "/old_login", action: "login", apiVersion: "1" },
           {
             path: "/a/wild/:key/:path(^.*$)",
@@ -167,15 +173,6 @@ describe("Server: Web", () => {
         const body = await toJson(error.response.body);
         expect(body.error).toEqual("unknown action or invalid apiVersion");
       }
-    });
-
-    test("explicit action declarations still override routed actions, if the defined action is real", async () => {
-      const body = await request
-        .get(url + "/api/user/123?action=randomNumber")
-        .then(toJson);
-      expect(body.requesterInformation.receivedParams.action).toEqual(
-        "randomNumber"
-      );
     });
 
     test("route actions will override explicit actions, if the defined action is null", async () => {
@@ -369,17 +366,15 @@ describe("Server: Web", () => {
 
       test("will not change header information if there is a connection.error", async () => {
         try {
-          await request.get(url + "/api/mimeTestAction");
+          await request.get(url + "/api/mimeTestAction/fail");
           throw new Error("should not get here");
         } catch (error) {
-          expect(error.statusCode).toEqual(422);
+          expect(error.statusCode).toEqual(400);
           const body = await toJson(error.response.body);
           expect(error.response.headers["content-type"]).toEqual(
             "application/json; charset=utf-8"
           );
-          expect(body.error).toEqual(
-            "key is a required parameter for this action"
-          );
+          expect(body.error).toEqual("failed");
         }
       });
 
