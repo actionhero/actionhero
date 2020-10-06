@@ -1,4 +1,12 @@
-import { config, api, Process, Action, specHelper } from "./../../src/index";
+import {
+  config,
+  api,
+  Process,
+  Action,
+  specHelper,
+  UnwrapPromise,
+  AssertEqualType,
+} from "./../../src/index";
 
 const actionhero = new Process();
 
@@ -63,8 +71,8 @@ describe("Core", () => {
             description: "I am a test",
             version: 1,
             outputExample: {},
-            run: async (data) => {
-              data.response.version = 1;
+            run: async () => {
+              return { version: 1 };
             },
           },
           //@ts-ignore
@@ -73,8 +81,8 @@ describe("Core", () => {
             description: "I am a test",
             version: 2,
             outputExample: {},
-            run: async (data) => {
-              data.response.version = 2;
+            run: async () => {
+              return { version: 2 };
             },
           },
           //@ts-ignore
@@ -202,6 +210,28 @@ describe("Core", () => {
         expect(() => badAction.validate()).toThrow(
           "input `apiVersion` in action `bad` is a reserved param"
         );
+      });
+
+      test("the return types of actions can be imported", async () => {
+        const { RandomNumber } = await import("../../src/actions/randomNumber");
+        type ResponseType = UnwrapPromise<typeof RandomNumber.prototype.run>;
+
+        // now that we know the types, we can enforce that new objects match the type
+        const responsePayload: ResponseType = {
+          randomNumber: 1,
+          stringRandomNumber: "some string",
+        };
+
+        const responsePartial: ResponseType["randomNumber"] = 2;
+
+        // <AssertEqualType> will fail compilation if the types are not equal
+        const typeMatch: AssertEqualType<
+          typeof responsePayload,
+          ResponseType
+        > = true;
+
+        expect(typeMatch).toBe(true);
+        expect(responsePartial).toBe(2);
       });
     });
 

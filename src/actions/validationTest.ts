@@ -1,4 +1,4 @@
-import { api, Action } from "./../index";
+import { Action } from "./../index";
 
 export class ValidationTest extends Action {
   constructor() {
@@ -18,7 +18,7 @@ export class ValidationTest extends Action {
     };
   }
 
-  async run({ params, response }) {
-    response.string = params.string;
+  async run({ params }) {
+    return { string: params.string };
   }
 }

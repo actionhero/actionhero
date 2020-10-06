@@ -21,53 +21,50 @@ module.exports = class Status extends Action {
     };
   }
 
-  async checkRam(data) {
+  async run({ connection }) {
+    let nodeStatus: string = connection.localize("Node Healthy");
+    const problems: string[] = [];
+
     const consumedMemoryMB =
       Math.round((process.memoryUsage().heapUsed / 1024 / 1024) * 100) / 100;
-    data.response.consumedMemoryMB = consumedMemoryMB;
     if (consumedMemoryMB > maxMemoryAlloted) {
-      data.response.nodeStatus = data.connection.localize("Unhealthy");
-      data.response.problems.push(
-        data.connection.localize([
+      nodeStatus = connection.localize("Unhealthy");
+      problems.push(
+        connection.localize([
           "Using more than {{maxMemoryAlloted}} MB of RAM/HEAP",
           { maxMemoryAlloted: maxMemoryAlloted },
         ])
       );
     }
-  }
 
-  async checkResqueQueues(data) {
     const details = await task.details();
     let length = 0;
     Object.keys(details.queues).forEach((q) => {
       length += details.queues[q].length;
     });
-
-    data.response.resqueTotalQueueLength = length;
+    const resqueTotalQueueLength = length;
 
     if (length > maxResqueQueueLength) {
-      data.response.nodeStatus = data.connection.localize("Node Unhealthy");
-      data.response.problems.push(
-        data.connection.localize([
+      nodeStatus = connection.localize("Node Unhealthy");
+      problems.push(
+        connection.localize([
           "Resque Queues over {{maxResqueQueueLength}} jobs",
           { maxResqueQueueLength: maxResqueQueueLength },
         ])
       );
     }
-  }
 
-  async run(data) {
-    data.response.uptime = new Date().getTime() - api.bootTime;
-    data.response.nodeStatus = data.connection.localize("Node Healthy");
-    data.response.problems = [];
-
-    data.response.id = id;
-    data.response.actionheroVersion = actionheroVersion;
-    data.response.name = packageJSON.name;
-    data.response.description = packageJSON.description;
-    data.response.version = packageJSON.version;
-
-    await this.checkRam(data);
-    await this.checkResqueQueues(data);
+    return {
+      id: id,
+      actionheroVersion: actionheroVersion,
+      name: packageJSON.name,
+      description: packageJSON.description,
+      version: packageJSON.version,
+      uptime: new Date().getTime() - api.bootTime,
+      consumedMemoryMB,
+      resqueTotalQueueLength,
+      nodeStatus,
+      problems,
+    };
   }
 };

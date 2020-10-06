@@ -6,15 +6,16 @@ import { utils } from "../modules/utils";
 import * as dotProp from "dot-prop";
 import { api } from "../index";
 
-export class ActionProcessor {
+export class ActionProcessor<ActionClass extends Action> {
   connection: Connection;
-  action: string;
+  action: ActionClass["name"];
   toProcess: boolean;
   toRender: boolean;
   messageId: number | string;
   params: {
     [key: string]: any;
   };
+  // params: ActionClass["inputs"];
   missingParams: Array<string>;
   validatorErrors: Array<string | Error>;
   actionStartTime: number;
@@ -371,7 +372,11 @@ export class ActionProcessor {
 
   private async runAction() {
     try {
-      await this.preProcessAction();
+      const preProcessResponse = await this.preProcessAction();
+      if (preProcessResponse !== undefined && preProcessResponse !== null) {
+        Object.assign(this.response, preProcessResponse);
+      }
+
       await this.reduceParams();
       await this.validateParams();
       this.lockParams();
@@ -389,8 +394,16 @@ export class ActionProcessor {
 
     if (this.toProcess === true) {
       try {
-        await this.actionTemplate.run(this);
-        await this.postProcessAction();
+        const actionResponse = await this.actionTemplate.run(this);
+        if (actionResponse !== undefined && actionResponse !== null) {
+          Object.assign(this.response, actionResponse);
+        }
+
+        const postProcessResponse = await this.postProcessAction();
+        if (postProcessResponse !== undefined && postProcessResponse !== null) {
+          Object.assign(this.response, postProcessResponse);
+        }
+
         return this.completeAction();
       } catch (error) {
         return this.completeAction(error);
