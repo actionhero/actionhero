@@ -10,14 +10,12 @@ export class CacheTest extends Action {
         required: true,
         formatter: this.stringFormatter,
         validator: this.stringValidator,
-        type: "string",
       },
 
       value: {
         required: true,
         formatter: this.stringFormatter,
         validator: this.stringValidator,
-        type: "string",
       },
     };
 
@@ -49,7 +47,7 @@ export class CacheTest extends Action {
     }
   }
 
-  async run({ params }) {
+  async run({ params }: { params: { key: string; value: string } }) {
     const key = `cacheTest_${params.key}`;
     const value = params.value;
 

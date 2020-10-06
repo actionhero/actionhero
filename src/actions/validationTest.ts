@@ -18,7 +18,7 @@ export class ValidationTest extends Action {
     };
   }
 
-  async run({ params }) {
+  async run({ params }: { params: { string: string } }) {
     return { string: params.string };
   }
 }

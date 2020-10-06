@@ -30,7 +30,7 @@ export class SleepTest extends Action {
     };
   }
 
-  async run({ params }) {
+  async run({ params }: { params: { sleepDuration: number } }) {
     const sleepDuration = params.sleepDuration;
     const sleepStarted = new Date().getTime();
 
