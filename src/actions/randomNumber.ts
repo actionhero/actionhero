@@ -1,5 +1,4 @@
-import { ActionProcessor } from "../classes/actionProcessor";
-import { api, Action } from "./../index";
+import { Action } from "./../index";
 
 export class RandomNumber extends Action {
   constructor() {
