@@ -38,9 +38,9 @@ describe("Core", () => {
     test("cache.keys", async () => {
       await cache.save("otherKey", "abc123");
       const keys = await cache.keys();
-      expect(keys).toEqual([
-        "actionhero:cache:testKey",
+      expect(keys.sort()).toEqual([
         "actionhero:cache:otherKey",
+        "actionhero:cache:testKey",
       ]);
 
       await cache.client().del("actionhero:cache:otherKey");
@@ -49,9 +49,9 @@ describe("Core", () => {
     test("cache.getKeys", async () => {
       await cache.client().set("act:other:namespace:k", 2);
       const keys = await cache.getKeys("act*");
-      expect(keys).toEqual([
-        "actionhero:cache:testKey",
+      expect(keys.sort()).toEqual([
         "act:other:namespace:k",
+        "actionhero:cache:testKey",
       ]);
     });
 
