@@ -13,13 +13,15 @@ export class ActionProcessor<ActionClass extends Action> {
   toRender: boolean;
   messageId: number | string;
   params: {
+    action: string;
+    apiVersion: string | number;
     [key: string]: any;
   };
   // params: ActionClass["inputs"];
   missingParams: Array<string>;
   validatorErrors: Array<string | Error>;
   actionStartTime: number;
-  actionTemplate: Action;
+  actionTemplate: ActionClass;
   working: boolean;
   response: {
     [key: string]: any;
@@ -36,7 +38,10 @@ export class ActionProcessor<ActionClass extends Action> {
     this.toProcess = true;
     this.toRender = true;
     this.messageId = connection.messageId || 0;
-    this.params = Object.assign({}, connection.params);
+    this.params = Object.assign(
+      { action: null, apiVersion: null },
+      connection.params
+    );
     this.missingParams = [];
     this.validatorErrors = [];
     this.actionStartTime = null;
@@ -342,6 +347,8 @@ export class ActionProcessor<ActionClass extends Action> {
             api.actions.versions[this.action].length - 1
           ];
       }
+
+      //@ts-ignore
       this.actionTemplate =
         api.actions.actions[this.action][this.params.apiVersion];
     }

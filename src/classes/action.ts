@@ -1,5 +1,4 @@
 import { Inputs } from "./inputs";
-import { ActionProcessor } from "./actionProcessor";
 import { api } from "../index";
 
 /**
@@ -57,7 +56,7 @@ export abstract class Action {
    * The main "do something" method for this action.  It can be `async`.  Usually the goal of this run method is to set properties on `data.response`.  If error is thrown in this method, it will be logged, caught, and appended to `data.response.error`
    * @param data The data about this connection, response, and params.
    */
-  abstract async run(data): Promise<ActionResponse>;
+  abstract async run(data: { [key: string]: any }): Promise<ActionResponse>;
 
   private defaults() {
     return {
