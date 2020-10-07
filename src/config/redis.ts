@@ -47,6 +47,7 @@ export const DEFAULT = {
 
     return {
       enabled: true,
+      scanCount: 1000,
 
       _toExpand: false,
       client: {
