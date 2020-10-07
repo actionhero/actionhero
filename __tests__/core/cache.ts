@@ -35,6 +35,26 @@ describe("Core", () => {
       expect(value).toEqual("abc123");
     });
 
+    test("cache.keys", async () => {
+      await cache.save("otherKey", "abc123");
+      const keys = await cache.keys();
+      expect(keys).toEqual([
+        "actionhero:cache:testKey",
+        "actionhero:cache:otherKey",
+      ]);
+
+      await cache.client().del("actionhero:cache:otherKey");
+    });
+
+    test("cache.getKeys", async () => {
+      await cache.client().set("act:other:namespace:k", 2);
+      const keys = await cache.getKeys("act*");
+      expect(keys).toEqual([
+        "actionhero:cache:testKey",
+        "act:other:namespace:k",
+      ]);
+    });
+
     test("cache.load failures", async () => {
       try {
         await cache.load("something else");
@@ -229,6 +249,19 @@ describe("Core", () => {
         expect(lockOk).toEqual(true);
         lockOk = await cache.checkLock(key);
         expect(lockOk).toEqual(true);
+      });
+
+      test("cache.locks", async () => {
+        let locks = await cache.locks();
+        expect(locks).toEqual([]);
+
+        await cache.lock(key, 100);
+        locks = await cache.locks();
+        expect(locks).toEqual(["actionhero:lock:testKey"]);
+
+        await cache.unlock(key);
+        locks = await cache.locks();
+        expect(locks).toEqual([]);
       });
 
       test("locks have a TTL and the default will be assumed from config", async () => {
