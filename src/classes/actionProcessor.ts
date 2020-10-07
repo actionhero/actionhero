@@ -6,19 +6,22 @@ import { utils } from "../modules/utils";
 import * as dotProp from "dot-prop";
 import { api } from "../index";
 
-export class ActionProcessor {
+export class ActionProcessor<ActionClass extends Action> {
   connection: Connection;
-  action: string;
+  action: ActionClass["name"];
   toProcess: boolean;
   toRender: boolean;
   messageId: number | string;
   params: {
+    action: string;
+    apiVersion: string | number;
     [key: string]: any;
   };
+  // params: ActionClass["inputs"];
   missingParams: Array<string>;
   validatorErrors: Array<string | Error>;
   actionStartTime: number;
-  actionTemplate: Action;
+  actionTemplate: ActionClass;
   working: boolean;
   response: {
     [key: string]: any;
@@ -35,7 +38,10 @@ export class ActionProcessor {
     this.toProcess = true;
     this.toRender = true;
     this.messageId = connection.messageId || 0;
-    this.params = Object.assign({}, connection.params);
+    this.params = Object.assign(
+      { action: null, apiVersion: null },
+      connection.params
+    );
     this.missingParams = [];
     this.validatorErrors = [];
     this.actionStartTime = null;
@@ -341,6 +347,8 @@ export class ActionProcessor {
             api.actions.versions[this.action].length - 1
           ];
       }
+
+      //@ts-ignore
       this.actionTemplate =
         api.actions.actions[this.action][this.params.apiVersion];
     }
@@ -371,7 +379,11 @@ export class ActionProcessor {
 
   private async runAction() {
     try {
-      await this.preProcessAction();
+      const preProcessResponse = await this.preProcessAction();
+      if (preProcessResponse !== undefined && preProcessResponse !== null) {
+        Object.assign(this.response, preProcessResponse);
+      }
+
       await this.reduceParams();
       await this.validateParams();
       this.lockParams();
@@ -389,8 +401,16 @@ export class ActionProcessor {
 
     if (this.toProcess === true) {
       try {
-        await this.actionTemplate.run(this);
-        await this.postProcessAction();
+        const actionResponse = await this.actionTemplate.run(this);
+        if (actionResponse !== undefined && actionResponse !== null) {
+          Object.assign(this.response, actionResponse);
+        }
+
+        const postProcessResponse = await this.postProcessAction();
+        if (postProcessResponse !== undefined && postProcessResponse !== null) {
+          Object.assign(this.response, postProcessResponse);
+        }
+
         return this.completeAction();
       } catch (error) {
         return this.completeAction(error);

@@ -49,7 +49,25 @@ export class Swagger extends Action {
   }
 
   buildSwaggerPaths() {
-    const swaggerPaths = {};
+    const swaggerPaths: {
+      [path: string]: {
+        [method: string]: {
+          tags: string[];
+          summary: string;
+          consumes: string[];
+          produces: string[];
+          parameters: Array<{
+            in: string;
+            name: string;
+            type: string;
+            required: boolean;
+            default: string | number | boolean;
+          }>;
+          responses: typeof responses;
+          security: string[];
+        };
+      };
+    } = {};
     const tags = [];
 
     Object.keys(api.routes.routes).map((method) => {
@@ -107,10 +125,10 @@ export class Swagger extends Action {
     return { swaggerPaths, tags };
   }
 
-  async run(data) {
+  async run() {
     const { swaggerPaths, tags } = this.buildSwaggerPaths();
 
-    data.response = {
+    return {
       swagger: SWAGGER_VERSION,
       info: {
         description: parentPackageJSON.description,

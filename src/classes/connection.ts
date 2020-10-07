@@ -148,7 +148,7 @@ export class Connection {
   /**
    * Localize a key for this connection's locale.  Keys usually look like `messages.errors.notFound`, and are defined in your locales directory.  Strings can be interpolated as well, connection.localize('the count was {{count}}', {count: 4})
    */
-  localize(message: string) {
+  localize(message: string | string[]) {
     // this.locale will be sourced automatically
     return i18n.localize(message, this);
   }

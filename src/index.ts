@@ -29,6 +29,9 @@ export { projectRoot } from "./classes/process/projectRoot";
 export { typescript } from "./classes/process/typescript";
 export { id } from "./classes/process/id";
 
+// export typescript helpers
+export { UnwrapPromise, AssertEqualType } from "./modules/tsUtils";
+
 // API object to hold connections, actions, tasks, initializers, and servers
 import { Api } from "./classes/api";
 

@@ -18,6 +18,7 @@ export class CacheTest extends Action {
         validator: this.stringValidator,
       },
     };
+
     this.outputExample = {
       cacheTestResults: {
         saveResp: true,
@@ -46,15 +47,17 @@ export class CacheTest extends Action {
     }
   }
 
-  async run({ params, response }) {
+  async run({ params }: { params: { key: string; value: string } }) {
     const key = `cacheTest_${params.key}`;
     const value = params.value;
 
-    response.cacheTestResults = {
-      saveResp: await cache.save(key, value, 5000),
-      sizeResp: await cache.size(),
-      loadResp: await cache.load(key),
-      deleteResp: await cache.destroy(key),
+    return {
+      cacheTestResults: {
+        saveResp: await cache.save(key, value, 5000),
+        sizeResp: await cache.size(),
+        loadResp: await cache.load(key),
+        deleteResp: await cache.destroy(key),
+      },
     };
   }
 }
