@@ -70,17 +70,19 @@ export namespace cache {
   /**
    * Returns all the keys in redis which are under this Actionhero namespace.  Potentially very slow.
    */
-  export async function keys(): Promise<Array<string>> {
+  export async function keys(optionalScopePrefix = ""): Promise<Array<string>> {
     // return client().keys(redisPrefix + "*");
-    return getKeys(redisPrefix + "*");
+    return getKeys(redisPrefix + optionalScopePrefix + "*");
   }
 
   /**
    * Returns all the locks in redis which are under this Actionhero namespace.  Potentially slow.
    */
-  export async function locks(): Promise<Array<string>> {
+  export async function locks(
+    optionalScopePrefix = ""
+  ): Promise<Array<string>> {
     // return client().keys(lockPrefix + "*");
-    return getKeys(lockPrefix + "*");
+    return getKeys(lockPrefix + optionalScopePrefix + "*");
   }
 
   /**
