@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as glob from "glob";
+import * as os from "os";
 import { argv } from "optimist";
 import { utils } from "./utils";
 import { ensureNoTsHeaderFiles } from "./utils/ensureNoTsHeaderFiles";
@@ -85,7 +86,9 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
     if (f.includes("routes.js") || f.includes("routes.ts")) {
       // We don't want to merge in routes from Actionhero core unless we are running core directly
       // Routes can be loaded by plugins via `registerRoute`
-      if (f.includes("node_modules")) return;
+      if (f.includes(`${os.EOL}node_modules${os.EOL}actionhero${os.EOL}`)) {
+        return;
+      }
 
       let localRoutes: { [key: string]: any } = { routes: {} };
 
