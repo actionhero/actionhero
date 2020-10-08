@@ -83,6 +83,10 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
   const loadConfigFile = (f: string) => {
     const localConfig = require(f);
     if (f.includes("routes.js") || f.includes("routes.ts")) {
+      // We don't want to merge in routes from Actionhero core unless we are running core directly
+      // Routes can be loaded by plugins via `registerRoute`
+      if (f.includes("node_modules")) return;
+
       let localRoutes: { [key: string]: any } = { routes: {} };
 
       if (localConfig.DEFAULT) {
