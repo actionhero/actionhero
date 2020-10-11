@@ -2,13 +2,11 @@ import * as fs from "fs";
 import * as path from "path";
 import { CLI, utils } from "./../../../index";
 
-const PackageJSON = require(path.join(
-  __dirname,
-  "..",
-  "..",
-  "..",
-  "package.json"
-));
+const PackageJSON = JSON.parse(
+  fs
+    .readFileSync(path.join(__dirname, "..", "..", "..", "package.json"))
+    .toString()
+);
 
 export class GeneratePlugin extends CLI {
   constructor() {

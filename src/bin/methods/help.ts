@@ -47,9 +47,10 @@ export class Help extends CLI {
 
     files = utils.arrayUnique(files);
 
-    files.forEach((f) => {
+    for (const i in files) {
+      const f = files[i];
       try {
-        const ExportedClasses = require(f);
+        const ExportedClasses = await import(f);
         const req = new ExportedClasses[Object.keys(ExportedClasses)[0]]();
         if (
           req.name &&
@@ -63,7 +64,7 @@ export class Help extends CLI {
           methods[req.name] = req;
         }
       } catch (e) {}
-    });
+    }
 
     const methodNames = Object.keys(methods).sort();
 

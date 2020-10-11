@@ -74,11 +74,9 @@ const projectRoot = determineProjectRoot();
   const handleUnbuiltProject = async (commands: Array<string>) => {
     try {
       // when generating the project from scratch, we cannot rely on the normal initializers
-      const ExportedRunnerClasses = require(path.join(
-        __dirname,
-        "methods",
-        commands.join(path.sep)
-      ));
+      const ExportedRunnerClasses = await import(
+        path.join(__dirname, "methods", commands.join(path.sep))
+      );
 
       if (Object.keys(ExportedRunnerClasses).length > 1) {
         throw new Error("actionhero CLI files should only export one method");
@@ -101,7 +99,7 @@ const projectRoot = determineProjectRoot();
     console.log(`ACTIONHERO COMMAND >> ${commands.join(" ")}`);
     console.log("⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻");
 
-    const { config, Process } = require(path.join(__dirname, "..", "index"));
+    const { config, Process } = await import("../index");
     const actionHeroProcess = new Process();
     await actionHeroProcess.initialize();
 
@@ -111,24 +109,24 @@ const projectRoot = determineProjectRoot();
       let p: string;
       p = path.join(__dirname, "methods", commands.join(path.sep) + ".js");
       if (fs.existsSync(p) && config.general.cliIncludeInternal !== false) {
-        ExportedClasses = require(p);
+        ExportedClasses = await import(p);
       }
 
       p = path.join(__dirname, "methods", commands.join(path.sep) + ".ts");
       if (fs.existsSync(p) && config.general.cliIncludeInternal !== false) {
-        ExportedClasses = require(p);
+        ExportedClasses = await import(p);
       }
 
       if (!ExportedClasses) {
-        config.general.paths.cli.forEach((cliPath: string) => {
+        config.general.paths.cli.forEach(async (cliPath: string) => {
           p = path.join(cliPath, commands.join(path.sep) + ".js");
           if (fs.existsSync(p)) {
-            ExportedClasses = require(p);
+            ExportedClasses = await import(p);
           }
 
           p = path.join(cliPath, commands.join(path.sep) + ".ts");
           if (fs.existsSync(p)) {
-            ExportedClasses = require(p);
+            ExportedClasses = await import(p);
           }
         });
       }
@@ -139,7 +137,7 @@ const projectRoot = determineProjectRoot();
             const pluginPath = config.plugins[pluginName].path;
             p = path.join(pluginPath, "bin", commands.join(path.sep) + ".js");
             if (fs.existsSync(p)) {
-              ExportedClasses = require(p);
+              ExportedClasses = await import(p);
             }
 
             p = path.join(
@@ -149,7 +147,7 @@ const projectRoot = determineProjectRoot();
               commands.join(path.sep) + ".js"
             );
             if (fs.existsSync(p)) {
-              ExportedClasses = require(p);
+              ExportedClasses = await import(p);
             }
           }
         }

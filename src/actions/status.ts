@@ -1,8 +1,14 @@
 import { api, id, task, Action, actionheroVersion } from "./../index";
 import * as path from "path";
-const packageJSON = require(path.normalize(
-  path.join(__dirname, "..", "..", "package.json")
-));
+import * as fs from "fs";
+
+const packageJSON = JSON.parse(
+  fs
+    .readFileSync(
+      path.normalize(path.join(__dirname, "..", "..", "package.json"))
+    )
+    .toString()
+);
 
 // These values are probably good starting points, but you should expect to tweak them for your application
 const maxEventLoopDelay = process.env.eventLoopDelay || 10;

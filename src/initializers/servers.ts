@@ -61,7 +61,7 @@ export class Servers extends Initializer {
 
     for (const j in files) {
       const filename = files[j];
-      const ExportedClasses = require(filename);
+      const ExportedClasses = await import(filename);
 
       const exportLen = Object.keys(ExportedClasses).length;
       // we have named exports

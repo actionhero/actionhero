@@ -3,7 +3,8 @@ import { Inputs } from "./inputs";
 /**
  * Create a new Actionhero Task. The required properties of an task. These can be defined statically (this.name) or as methods which return a value.
  * ```js
- * const { Task, api, log } = require('actionhero')
+ * import { Task, api, log } from "actionhero"
+ *
  * module.exports = class SayHello extends Task {
  *  constructor () {
  *   super()
