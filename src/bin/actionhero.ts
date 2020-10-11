@@ -118,7 +118,8 @@ const projectRoot = determineProjectRoot();
       }
 
       if (!ExportedClasses) {
-        config.general.paths.cli.forEach(async (cliPath: string) => {
+        for (const i in config.general.paths.cli) {
+          const cliPath = config.general.paths.cli[i];
           p = path.join(cliPath, commands.join(path.sep) + ".js");
           if (fs.existsSync(p)) {
             ExportedClasses = await import(p);
@@ -128,7 +129,7 @@ const projectRoot = determineProjectRoot();
           if (fs.existsSync(p)) {
             ExportedClasses = await import(p);
           }
-        });
+        }
       }
 
       if (!ExportedClasses) {
