@@ -1,8 +1,13 @@
-const path = require("path");
+import * as path from "path";
+import * as fs from "fs";
 
 export const DEFAULT = {
   general: (config) => {
-    const packageJSON = require("./../../package.json");
+    const packageJSON = JSON.parse(
+      fs
+        .readFileSync(path.join(__dirname, "..", "..", "package.json"))
+        .toString()
+    );
 
     return {
       apiVersion: packageJSON.version,

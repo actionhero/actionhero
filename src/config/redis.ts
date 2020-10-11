@@ -6,6 +6,9 @@ let db = process.env.REDIS_DB || process.env.JEST_WORKER_ID || "0";
 let password = process.env.REDIS_PASSWORD || null;
 const maxBackoff = 1000;
 
+// this cannot be imported as the ioredis types are not exported for --declaration
+const Redis = require("ioredis");
+
 if (process.env.REDIS_URL) {
   const parsed = new URL(process.env.REDIS_URL);
   if (parsed.password) {
@@ -51,17 +54,17 @@ export const DEFAULT = {
 
       _toExpand: false,
       client: {
-        konstructor: require("ioredis"),
+        konstructor: Redis,
         args: [commonArgs],
         buildNew: true,
       },
       subscriber: {
-        konstructor: require("ioredis"),
+        konstructor: Redis,
         args: [commonArgs],
         buildNew: true,
       },
       tasks: {
-        konstructor: require("ioredis"),
+        konstructor: Redis,
         args: [commonArgs],
         buildNew: true,
       },

@@ -4,7 +4,8 @@ import { api } from "../index";
 /**
  * Create a new Actionhero Action. The required properties of an action. These can be defined statically (this.name) or as methods which return a value.
  *```js
- * const { Action } = require('actionhero')
+ * import { Action } from "actionhero";
+ *
  * module.exports = class RandomNumber extends Action {
  *  constructor () {
  *    super()

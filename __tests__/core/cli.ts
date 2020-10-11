@@ -9,7 +9,9 @@ import * as isrunning from "is-running";
 
 const testDir = path.join(process.cwd(), "tmp", "actionheroTestProject");
 const binary = "./node_modules/.bin/actionhero";
-const pacakgeJSON = require(path.join(__dirname, "/../../package.json"));
+const pacakgeJSON = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "/../../package.json")).toString()
+);
 
 console.log(`testDir: ${testDir}`);
 

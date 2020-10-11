@@ -3,8 +3,11 @@
  */
 
 import * as path from "path";
+import * as fs from "fs";
 import { api, Process, config } from "./../../src/index";
-const packageJSON = require(path.join(__dirname, "..", "..", "package.json"));
+const packageJSON = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "..", "..", "package.json")).toString()
+);
 const host = process.env.SELENIUM_TEST_HOST || "localhost";
 
 const actionhero = new Process();

@@ -61,6 +61,10 @@ export namespace specHelper {
     taskName: string,
     params: object | Array<any>
   ): Promise<{ [key: string]: any }> {
+    if (!api.tasks.tasks[taskName]) {
+      throw new Error(`task ${taskName} not found`);
+    }
+
     return api.tasks.tasks[taskName].run(params);
   }
 
