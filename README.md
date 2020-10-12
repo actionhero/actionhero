@@ -122,7 +122,7 @@ Or deploy a free API server now:
 ## Sample Projects
 
 - [Simple](https://github.com/actionhero/actionhero-tutorial)
-- [Elaborate (Angular, Sequelize)](https://github.com/actionhero/actionhero-angular-bootstrap-cors-csrf)
+- [Elaborate (React, Next.JS, Bootstrap, Sequelize)](https://github.com/actionhero/actionhero-chat)
 - [Client Use: React](https://github.com/actionhero/actionhero-react-next-chat)
 - [Client Use: React Native](https://github.com/actionhero/actionhero-react-native)
 
