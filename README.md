@@ -54,8 +54,8 @@ Currently actionhero supports the following out of the box...
 # Generate a new Project
 npx actionhero generate
 npm install
-npm run build # <--- new! I compile the TS to JS
-npm run dev # <--- new! I use `ts-node` to let you develop on your ts files without compiling
+npm run build 
+npm run dev # <-- I automatically notice changes and restart, as well as compiling .ts files
 
 # Use the actionhero CLI
 (npx) actionhero generate action --name my_action
@@ -63,11 +63,9 @@ npm run dev # <--- new! I use `ts-node` to let you develop on your ts files with
 
 # Test
 npm test
-# I'll run `prettier` and `build` for you first
-# I handle .ts files now!
 
 # To deploy your app
-npm run build # <--- new! I compile the TS to JS
+npm run build
 npm run start
 ```
 
