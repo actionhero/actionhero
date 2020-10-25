@@ -1,4 +1,4 @@
-import { log, Task, Connection, ActionProcessor } from "./../index";
+import { log, Task, action } from "./../index";
 
 export class RunAction extends Task {
   constructor() {
@@ -11,21 +11,13 @@ export class RunAction extends Task {
   }
 
   async run(params) {
-    if (!params) {
-      params = {};
-    }
+    if (!params) params = {};
 
-    const connection = new Connection({
-      type: "task",
-      remotePort: "0",
-      remoteIP: "0",
-      rawConnection: {},
-    });
-
-    connection.params = params;
-
-    const actionProcessor = new ActionProcessor(connection);
-    const { response } = await actionProcessor.processAction();
+    const response = await action.run(
+      params.action,
+      params.version,
+      params.params
+    );
 
     if (response.error) {
       log("task error: " + response.error, "error", {
@@ -35,7 +27,6 @@ export class RunAction extends Task {
       log("[ action @ task ]", "debug", { params: JSON.stringify(params) });
     }
 
-    connection.destroy();
     return response;
   }
 }

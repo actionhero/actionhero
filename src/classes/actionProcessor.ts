@@ -333,24 +333,29 @@ export class ActionProcessor<ActionClass extends Action> {
     this.params = Object.freeze(this.params);
   }
 
-  async processAction() {
+  async processAction(
+    actionName?: string,
+    apiVersion = this.params.apiVersion
+  ) {
     this.actionStartTime = new Date().getTime();
     this.working = true;
     this.incrementTotalActions();
     this.incrementPendingActions();
-    this.action = this.params.action;
+    this.action = actionName || this.params.action;
 
     if (api.actions.versions[this.action]) {
-      if (!this.params.apiVersion) {
-        this.params.apiVersion =
+      if (!apiVersion) {
+        apiVersion =
           api.actions.versions[this.action][
             api.actions.versions[this.action].length - 1
           ];
       }
 
       //@ts-ignore
-      this.actionTemplate =
-        api.actions.actions[this.action][this.params.apiVersion];
+      this.actionTemplate = api.actions.actions[this.action][apiVersion];
+
+      // send back the version we use to send in the api response
+      if (!this.params.apiVersion) this.params.apiVersion = apiVersion;
     }
 
     if (api.running !== true) {
