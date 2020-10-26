@@ -190,12 +190,12 @@ export class Redis extends Initializer {
     const keys = Object.keys(api.redis.clients);
     for (const i in keys) {
       const client = api.redis.clients[keys[i]];
-      if (typeof client.quit === "function") {
-        await client.quit();
-        //@ts-ignore
-      } else if (typeof client.end === "function") {
+      //@ts-ignore
+      if (typeof client.end === "function") {
         //@ts-ignore
         await client.end();
+      } else if (typeof client.quit === "function") {
+        await client.quit();
       } else if (typeof client.disconnect === "function") {
         await client.disconnect();
       }

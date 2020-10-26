@@ -167,7 +167,7 @@ export class Tasks extends Initializer {
     await api.tasks.loadTasks(false);
 
     // we want to start the queue now, so that it's available for other initializers and CLI commands
-    await api.resque.startQueue();
+    if (config.redis.enabled === true) await api.resque.startQueue();
   }
 
   async start(config) {
