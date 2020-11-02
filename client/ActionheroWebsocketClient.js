@@ -63,6 +63,7 @@ ActionheroWebsocketClient.prototype.connect = function (callback) {
   })
 
   self.client.on('reconnect', function () {
+    self.state = 'connected'
     self.emit('reconnect')
   })
 
