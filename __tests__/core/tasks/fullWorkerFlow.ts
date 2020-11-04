@@ -156,6 +156,17 @@ describe("Core: Tasks", () => {
       await api.resque.stopScheduler();
     });
 
+    test("enqueuing the same task multiple times does not produce an error", async () => {
+      await task.enqueueRecurrentTask("periodicTask");
+      await task.enqueueRecurrentTask("periodicTask"); // does not throw
+      await task.enqueueRecurrentTask("periodicTask"); // does not throw
+
+      const taskTimes = await task.allDelayed();
+      expect(Object.keys(taskTimes).length).toBe(1);
+      const tasks = Object.values(taskTimes)[0];
+      expect(tasks.length).toBe(1);
+    });
+
     test("trying to run an unknown job will return a failure, but not crash the server", async (done) => {
       config.tasks.queues = ["*"];
 

@@ -69,15 +69,23 @@ export namespace task {
    * * taskName: The name of the task.
    * * inputs: inputs to pass to the task.
    * * queue: (Optional) Which queue/priority to run this instance of the task on.
+   * * suppressDuplicateTaskError: (optional) Suppress errors when the same task with the same arguments are double-enqueued for the same time
    */
   export async function enqueueAt(
     timestamp: number,
     taskName: string,
     inputs: TaskInputs,
-    queue: string = api.tasks.tasks[taskName].queue
+    queue: string = api.tasks.tasks[taskName].queue,
+    suppressDuplicateTaskError = false
   ) {
     await validateInput(taskName, inputs);
-    return api.resque.queue.enqueueAt(timestamp, queue, taskName, [inputs]);
+    return api.resque.queue.enqueueAt(
+      timestamp,
+      queue,
+      taskName,
+      [inputs],
+      suppressDuplicateTaskError
+    );
   }
 
   /**
@@ -89,15 +97,23 @@ export namespace task {
    * * taskName: The name of the task.
    * * inputs: inputs to pass to the task.
    * * queue: (Optional) Which queue/priority to run this instance of the task on.
+   * * suppressDuplicateTaskError: (optional) Suppress errors when the same task with the same arguments are double-enqueued for the same time
    */
   export async function enqueueIn(
     time: number,
     taskName: string,
     inputs: TaskInputs,
-    queue: string = api.tasks.tasks[taskName].queue
+    queue: string = api.tasks.tasks[taskName].queue,
+    suppressDuplicateTaskError = false
   ) {
     await validateInput(taskName, inputs);
-    return api.resque.queue.enqueueIn(time, queue, taskName, [inputs]);
+    return api.resque.queue.enqueueIn(
+      time,
+      queue,
+      taskName,
+      [inputs],
+      suppressDuplicateTaskError
+    );
   }
 
   /**
@@ -224,7 +240,7 @@ export namespace task {
    * Note: This is a very slow command.
    * Will throw an error if redis cannot be reached.
    */
-  export async function allDelayed(): Promise<any> {
+  export async function allDelayed(): Promise<{ [timestamp: string]: any[] }> {
     return api.resque.queue.allDelayed();
   }
 
@@ -313,7 +329,7 @@ export namespace task {
     if (thisTask.frequency > 0) {
       await task.del(thisTask.queue, taskName);
       await task.delDelayed(thisTask.queue, taskName);
-      await task.enqueueIn(thisTask.frequency, taskName, {});
+      await task.enqueueIn(thisTask.frequency, taskName, {}, undefined, true);
       log(
         `re-enqueued recurrent job ${taskName}`,
         config.tasks.schedulerLogging.reEnqueue
