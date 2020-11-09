@@ -1,4 +1,4 @@
-import { api, id, task, Action, actionheroVersion } from "./../index";
+import { api, id, config, task, Action, actionheroVersion } from "./../index";
 import * as path from "path";
 import * as fs from "fs";
 
@@ -11,7 +11,6 @@ const packageJSON = JSON.parse(
 );
 
 // These values are probably good starting points, but you should expect to tweak them for your application
-const maxEventLoopDelay = process.env.eventLoopDelay || 10;
 const maxMemoryAlloted = process.env.maxMemoryAlloted || 500;
 const maxResqueQueueLength = process.env.maxResqueQueueLength || 1000;
 
@@ -43,21 +42,24 @@ module.exports = class Status extends Action {
       );
     }
 
-    const details = await task.details();
-    let length = 0;
-    Object.keys(details.queues).forEach((q) => {
-      length += details.queues[q].length;
-    });
-    const resqueTotalQueueLength = length;
+    let resqueTotalQueueLength = 0;
+    if (config.redis.enabled) {
+      const details = await task.details();
+      let length = 0;
+      Object.keys(details.queues).forEach((q) => {
+        length += details.queues[q].length;
+      });
+      resqueTotalQueueLength = length;
 
-    if (length > maxResqueQueueLength) {
-      nodeStatus = connection.localize("Node Unhealthy");
-      problems.push(
-        connection.localize([
-          "Resque Queues over {{maxResqueQueueLength}} jobs",
-          { maxResqueQueueLength: maxResqueQueueLength },
-        ])
-      );
+      if (length > maxResqueQueueLength) {
+        nodeStatus = connection.localize("Node Unhealthy");
+        problems.push(
+          connection.localize([
+            "Resque Queues over {{maxResqueQueueLength}} jobs",
+            { maxResqueQueueLength: maxResqueQueueLength },
+          ])
+        );
+      }
     }
 
     return {
