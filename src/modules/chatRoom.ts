@@ -302,7 +302,10 @@ export namespace chatRoom {
 
   /**
    * Send a message to all clients connected to this room
-   * - connection should either be a real client you are emulating (found in api.connections) or just `{}` for a mock
+   * - connection:
+   *        - {} send to every connections
+   *        - should either be a real client you are emulating (found in api.connections)
+   *        - a mock
    * - room is the string name of an already-existing room
    * - message can be anything: string, json, object, etc
    */
