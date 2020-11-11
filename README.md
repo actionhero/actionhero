@@ -143,3 +143,6 @@ Or deploy a free API server now:
 > Technology is a powerful force in our society. Data, software, and communication can be used for bad: to entrench unfair power structures, to undermine human rights, and to protect vested interests. But they can also be used for good: to make underrepresented people’s voices heard, to create opportunities for everyone, and to avert disasters. This project is dedicated to everyone working toward the good.
 >
 > > Inspired by Martin Kleppmann
+
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Factionhero%2Factionhero&count_bg=%23C85D3D&title_bg=%23555555&icon=node-dot-js.svg&icon_color=%23E7E7E7&title=hits&edge_flat=true)](https://hits.seeyoufarm.com)
+
