@@ -95,7 +95,7 @@ describe("browser integration tests", () => {
 
       test("can connect", async () => {
         await page.goto(url);
-        await utils.sleep(1000);
+        await utils.sleep(3000);
         const chat = await page.$eval("#chatBox", (e) => e.textContent);
         expect(chat).toContain("Hello! Welcome to the actionhero api");
       });
