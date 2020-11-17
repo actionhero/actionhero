@@ -78,9 +78,6 @@ jobs:
       redis:
         image: redis
 
-      selenium:
-        image: selenium/standalone-chrome
-
     strategy:
       matrix:
         node-version: [10.x, 12.x, 14.x]
@@ -98,12 +95,12 @@ jobs:
             node_modules
             dist
           key: ${{ runner.os }}-cache-${{ github.sha }}
+      - name: install puppeteer dependencies
+        run: apt-get update && apt-get install -y libgtk2.0-0 libgtk-3-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb libgbm-dev
       - run: npm rebuild
       - run: ./node_modules/.bin/jest --ci
         env:
           REDIS_HOST: redis
-          SELENIUM_TEST_HOST: main
-          SELENIUM_REMOTE_URL: http://selenium:4444/wd/hub
           maxMemoryAlloted: 1000
 
   complete:
