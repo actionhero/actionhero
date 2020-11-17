@@ -35,13 +35,14 @@ describe("browser integration tests", () => {
 
     test("loads the page", async () => {
       await page.goto(url);
+      await utils.sleep(1000);
       const title = await page.$eval("h1", (e) => e.textContent);
       expect(title).toEqual("Your Actionhero Server is working.");
     });
 
     test("server status is loaded", async () => {
       await page.goto(url);
-
+      await page.waitForSelector("#serverName");
       const serverName = await page.$eval("#serverName", (e) => e.textContent);
       expect(serverName).toEqual("actionhero");
 
@@ -60,6 +61,7 @@ describe("browser integration tests", () => {
 
     test("loads the page", async () => {
       await page.goto(url);
+      await page.waitForSelector("h2");
       const title = await page.$eval("h2", (e) => e.textContent);
       expect(title).toMatch(/^actionhero/);
     });
@@ -95,7 +97,7 @@ describe("browser integration tests", () => {
 
       test("can connect", async () => {
         await page.goto(url);
-        await utils.sleep(3000);
+        await utils.sleep(2000);
         const chat = await page.$eval("#chatBox", (e) => e.textContent);
         expect(chat).toContain("Hello! Welcome to the actionhero api");
       });
@@ -107,7 +109,8 @@ describe("browser integration tests", () => {
         const chatSubmit = await page.$("#submitButton");
         await chatSubmit.click();
 
-        utils.sleep(1000);
+        await utils.sleep(1000);
+
         const chat = await page.$eval("#chatBox", (e) => e.textContent);
         expect(chat).toContain("hello world");
       });
