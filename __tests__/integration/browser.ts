@@ -16,7 +16,10 @@ describe("browser integration tests", () => {
   beforeAll(async () => {
     await actionhero.start();
     await api.redis.clients.client.flushdb();
-    browser = await puppeteer.launch({ headless: true });
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox"],
+    });
     page = await browser.newPage();
   });
 
