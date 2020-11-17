@@ -1,6 +1,4 @@
 import { URL } from "url";
-import * as IORedis from "ioredis";
-import * as MockIORedis from "ioredis-mock";
 
 /**
  * This is the standard redis config for Actionhero.
@@ -9,6 +7,8 @@ import * as MockIORedis from "ioredis-mock";
 
 export const DEFAULT = {
   redis: (config) => {
+    const konstructor = require("ioredis");
+
     let host = process.env.REDIS_HOST || "127.0.0.1";
     let port = process.env.REDIS_PORT || 6379;
     let db = process.env.REDIS_DB || process.env.JEST_WORKER_ID || "0";
@@ -46,17 +46,17 @@ export const DEFAULT = {
 
       _toExpand: false,
       client: {
-        konstructor: IORedis,
+        konstructor,
         args: [commonArgs],
         buildNew: true,
       },
       subscriber: {
-        konstructor: IORedis,
+        konstructor,
         args: [commonArgs],
         buildNew: true,
       },
       tasks: {
-        konstructor: IORedis,
+        konstructor,
         args: [commonArgs],
         buildNew: true,
       },
@@ -72,6 +72,7 @@ export const DEFAULT = {
 
 // export const DEFAULT = {
 //   redis: (config) => {
+//     const MockIORedis = require("ioredis-mock");
 //     const baseRedis = new MockIORedis();
 
 //     return {
