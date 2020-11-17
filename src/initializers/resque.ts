@@ -43,8 +43,6 @@ export class Resque extends Initializer {
   }
 
   async initialize(config) {
-    if (config.redis.enabled === false) return;
-
     const resqueOverrides = config.tasks.resque_overrides;
 
     api.resque = {
@@ -56,6 +54,10 @@ export class Resque extends Initializer {
         config.tasks.connectionOptions.tasks,
         {
           redis: api.redis.clients.tasks,
+          pkg:
+            api.redis.clients.tasks?.constructor?.name === "RedisMock"
+              ? "ioredis-mock"
+              : "ioredis",
         }
       ),
 
@@ -263,8 +265,6 @@ export class Resque extends Initializer {
   }
 
   async start(config) {
-    if (config.redis.enabled === false) return;
-
     if (
       config.tasks.minTaskProcessors === 0 &&
       config.tasks.maxTaskProcessors > 0
@@ -277,8 +277,6 @@ export class Resque extends Initializer {
   }
 
   async stop(config) {
-    if (config.redis.enabled === false) return;
-
     await api.resque.stopScheduler();
     await api.resque.stopMultiWorker();
     await api.resque.stopQueue();

@@ -43,23 +43,21 @@ module.exports = class Status extends Action {
     }
 
     let resqueTotalQueueLength = 0;
-    if (config.redis.enabled) {
-      const details = await task.details();
-      let length = 0;
-      Object.keys(details.queues).forEach((q) => {
-        length += details.queues[q].length;
-      });
-      resqueTotalQueueLength = length;
+    const details = await task.details();
+    let length = 0;
+    Object.keys(details.queues).forEach((q) => {
+      length += details.queues[q].length;
+    });
+    resqueTotalQueueLength = length;
 
-      if (length > maxResqueQueueLength) {
-        nodeStatus = connection.localize("Node Unhealthy");
-        problems.push(
-          connection.localize([
-            "Resque Queues over {{maxResqueQueueLength}} jobs",
-            { maxResqueQueueLength: maxResqueQueueLength },
-          ])
-        );
-      }
+    if (length > maxResqueQueueLength) {
+      nodeStatus = connection.localize("Node Unhealthy");
+      problems.push(
+        connection.localize([
+          "Resque Queues over {{maxResqueQueueLength}} jobs",
+          { maxResqueQueueLength: maxResqueQueueLength },
+        ])
+      );
     }
 
     return {

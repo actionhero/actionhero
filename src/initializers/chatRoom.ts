@@ -28,10 +28,6 @@ export class ChatRoom extends Initializer {
   }
 
   async initialize(config) {
-    if (config.redis.enabled === false) {
-      return;
-    }
-
     api.chatRoom = {
       middleware: {},
       globalMiddleware: [],
@@ -167,10 +163,6 @@ export class ChatRoom extends Initializer {
   }
 
   async start(config) {
-    if (config.redis.enabled === false) {
-      return;
-    }
-
     api.redis.subscriptionHandlers.chat = (message) => {
       if (api.chatRoom) {
         api.chatRoom.incomingMessage(message);

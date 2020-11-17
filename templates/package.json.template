@@ -10,6 +10,7 @@
     "actionhero": "%%versionNumber%%",
     "ws": "latest",
     "ioredis": "latest",
+    "ioredis-mock": "latest",
     "winston": "latest"
   },
   "devDependencies": {
