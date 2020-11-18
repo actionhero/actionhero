@@ -23,7 +23,7 @@ export namespace cache {
   export const lockRetry: number = 100;
 
   export function client() {
-    if (config.redis.enabled && api.redis.clients && api.redis.clients.client) {
+    if (api.redis.clients && api.redis.clients.client) {
       return api.redis.clients.client;
     } else {
       throw new Error("redis not connected, cache cannot be used");

@@ -80,6 +80,10 @@ export namespace specHelper {
       {
         connection: {
           redis: api.redis.clients.tasks,
+          pkg:
+            api.redis.clients.tasks?.constructor?.name === "RedisMock"
+              ? "ioredis-mock"
+              : "ioredis",
         },
         queues: config.tasks.queues || ["default"],
       },
