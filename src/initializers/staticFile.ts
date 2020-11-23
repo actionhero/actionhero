@@ -118,7 +118,7 @@ export class StaticFile extends Initializer {
 
         await new Promise((resolve) => {
           fileStream.on("open", () => {
-            resolve();
+            resolve(null);
           });
         });
 

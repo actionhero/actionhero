@@ -103,7 +103,7 @@ export class WebServer extends Server {
     await new Promise((resolve) => {
       this.server.listen(this.config.port, this.config.bindIP, () => {
         this.chmodSocket(this.config.bindIP, this.config.port);
-        resolve();
+        resolve(null);
       });
     });
 

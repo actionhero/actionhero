@@ -5,7 +5,7 @@ import { Inputs } from "./inputs";
  * ```js
  * import { Task, api, log } from "actionhero"
  *
- * module.exports = class SayHello extends Task {
+ * export default class SayHello extends Task {
  *  constructor () {
  *   super()
  *    this.name = 'sayHello'
@@ -56,7 +56,7 @@ export abstract class Task {
    * * data: The data about this instance of the task, specifically params.
    * * worker: Instance of a node-resque worker. You can inspect `worker.job` and set `worker.result` explicitly if your Task does not return a value.
    */
-  abstract async run(data: TaskInputs, worker): Promise<any>;
+  abstract run(data: TaskInputs, worker): Promise<any>;
 
   private defaults() {
     return {
