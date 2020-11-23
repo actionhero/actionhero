@@ -74,22 +74,22 @@ export abstract class Server extends EventEmitter {
   /**
    * Method run as part of the `initialize` lifecycle of your server.  Usually configures the server.
    */
-  abstract async initialize(): Promise<void>;
+  abstract initialize(): Promise<void>;
 
   /**
    * Method run as part of the `start` lifecycle of your server.  Usually boots the server (listens on port, etc).
    */
-  abstract async start(): Promise<void>;
+  abstract start(): Promise<void>;
 
   /**
    * Method run as part of the `stop` lifecycle of your server.  Usually configures the server (disconnects from port, etc).
    */
-  abstract async stop(): Promise<void>;
+  abstract stop(): Promise<void>;
 
   /**
    * Must be defined explaining how to send a message to an individual connection.
    */
-  abstract async sendMessage(
+  abstract sendMessage(
     connection: Connection,
     message: string | object | Array<any>,
     messageId?: string
@@ -98,7 +98,7 @@ export abstract class Server extends EventEmitter {
   /**
    * Must be defined explaining how to send a file to an individual connection.  Might be a noop for some connection types.
    */
-  abstract async sendFile(
+  abstract sendFile(
     connection: Connection,
     error: Error,
     fileStream: any,

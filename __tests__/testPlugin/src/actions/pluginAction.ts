@@ -1,6 +1,6 @@
 import { Action } from "../../../../src/index";
 
-module.exports = class PluginAction extends Action {
+export default class PluginAction extends Action {
   constructor() {
     super();
     this.name = "pluginAction";

@@ -345,7 +345,7 @@ describe("Server: Web Socket", () => {
             clientA.removeListener("say", listener);
             expect(response.context).toEqual("user");
             expect(response.message).toEqual("hello from client 2");
-            resolve();
+            resolve(null);
           };
 
           clientA.on("say", listener);
@@ -359,7 +359,7 @@ describe("Server: Web Socket", () => {
             clientA.removeListener("say", listener);
             expect(response.context).toEqual("user");
             expect(response.message).toEqual("hello from client 2");
-            resolve();
+            resolve(null);
           };
 
           clientB.say = (room, message) => {
@@ -379,7 +379,7 @@ describe("Server: Web Socket", () => {
             expect(response.message).toEqual(
               "I have entered the room: " + clientB.id
             );
-            resolve();
+            resolve(null);
           };
 
           clientA.roomAdd("otherRoom", () => {
@@ -397,7 +397,7 @@ describe("Server: Web Socket", () => {
             expect(response.message).toEqual(
               "I have left the room: " + clientB.id
             );
-            resolve();
+            resolve(null);
           };
 
           clientA.on("say", listener);
@@ -605,7 +605,7 @@ describe("Server: Web Socket", () => {
             expect(sleep).toEqual(response.sleepDuration);
             completed++;
             if (completed === started) {
-              resolve();
+              resolve(null);
             }
           };
 

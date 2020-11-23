@@ -328,7 +328,7 @@ describe("Core: Middleware", () => {
 
       await new Promise((resolve, reject) => {
         setTimeout(() => {
-          resolve();
+          resolve(null);
         }, 1000);
         specHelper.runAction("randomNumber").then(() => {
           throw new Error("should.not.get.here");

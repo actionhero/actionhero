@@ -1,4 +1,4 @@
-import { api, id, config, task, Action, actionheroVersion } from "./../index";
+import { api, id, task, Action, actionheroVersion } from "./../index";
 import * as path from "path";
 import * as fs from "fs";
 
@@ -13,8 +13,7 @@ const packageJSON = JSON.parse(
 // These values are probably good starting points, but you should expect to tweak them for your application
 const maxMemoryAlloted = process.env.maxMemoryAlloted || 500;
 const maxResqueQueueLength = process.env.maxResqueQueueLength || 1000;
-
-module.exports = class Status extends Action {
+export default class Status extends Action {
   constructor() {
     super();
     this.name = "status";
@@ -73,4 +72,4 @@ module.exports = class Status extends Action {
       problems,
     };
   }
-};
+}
