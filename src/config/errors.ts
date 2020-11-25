@@ -31,6 +31,8 @@ export const DEFAULT = {
             }
           },
         },
+        // See ActionProcessor#applyDefaultErrorLogLineFormat to see an example of how to customize
+        actionProcessor: null,
       },
 
       // ///////////
