@@ -19,6 +19,8 @@ export function filterResponseForLogging(
         0,
         config.logger.maxLogStringLength
       );
+    } else if (response[i] instanceof Error) {
+      filteredResponse[i] = response[i].message ?? String(response[i]);
     } else {
       filteredResponse[i] = response[i];
     }

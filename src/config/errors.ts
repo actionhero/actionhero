@@ -10,16 +10,11 @@ export const DEFAULT = {
       serializers: {
         servers: {
           web: (error) => {
-            // if (error.message) {
-            //   return String(error.message);
-            // } else {
-            //   return error;
-            // }
-            if (error.name === "AppError") {
-              return { code: error.appCode, message: error.message };
+            if (error.message) {
+              return String(error.message);
+            } else {
+              return error;
             }
-
-            return { code: 500, message: "ISE" };
           },
           websocket: (error) => {
             if (error.message) {
@@ -36,8 +31,6 @@ export const DEFAULT = {
             }
           },
         },
-        // See ActionProcessor#applyDefaultErrorLogLineFormat to see an example of how to customize
-        actionProcessor: null,
       },
 
       // ///////////
