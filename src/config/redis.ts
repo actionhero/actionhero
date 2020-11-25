@@ -1,33 +1,28 @@
 import { URL } from "url";
 
-let host = process.env.REDIS_HOST || "127.0.0.1";
-let port = process.env.REDIS_PORT || 6379;
-let db = process.env.REDIS_DB || process.env.JEST_WORKER_ID || "0";
-let password = process.env.REDIS_PASSWORD || null;
-const maxBackoff = 1000;
-
-if (process.env.REDIS_URL) {
-  const parsed = new URL(process.env.REDIS_URL);
-  if (parsed.password) {
-    password = parsed.password;
-  }
-  if (parsed.hostname) {
-    host = parsed.hostname;
-  }
-  if (parsed.port) {
-    port = parsed.port;
-  }
-  if (parsed.pathname) {
-    db = parsed.pathname.substring(1);
-  }
-}
+/**
+ * This is the standard redis config for Actionhero.
+ * This will use a redis server to persist cache, share chat message between processes, etc.
+ */
 
 export const DEFAULT = {
   redis: (config) => {
-    // konstructor: The redis client constructor method.  All redis methods must be promises
-    // args: The arguments to pass to the constructor
-    // buildNew: is it `new konstructor()` or just `konstructor()`?
+    const konstructor = require("ioredis");
 
+    let host = process.env.REDIS_HOST || "127.0.0.1";
+    let port = process.env.REDIS_PORT || 6379;
+    let db = process.env.REDIS_DB || process.env.JEST_WORKER_ID || "0";
+    let password = process.env.REDIS_PASSWORD || null;
+
+    if (process.env.REDIS_URL) {
+      const parsed = new URL(process.env.REDIS_URL);
+      if (parsed.password) password = parsed.password;
+      if (parsed.hostname) host = parsed.hostname;
+      if (parsed.port) port = parsed.port;
+      if (parsed.pathname) db = parsed.pathname.substring(1);
+    }
+
+    const maxBackoff = 1000;
     const commonArgs = {
       port,
       host,
@@ -46,24 +41,58 @@ export const DEFAULT = {
     };
 
     return {
-      enabled: true,
+      scanCount: 1000,
 
       _toExpand: false,
       client: {
-        konstructor: require("ioredis"),
+        konstructor,
         args: [commonArgs],
         buildNew: true,
       },
       subscriber: {
-        konstructor: require("ioredis"),
+        konstructor,
         args: [commonArgs],
         buildNew: true,
       },
       tasks: {
-        konstructor: require("ioredis"),
+        konstructor,
         args: [commonArgs],
         buildNew: true,
       },
     };
   },
 };
+
+/**
+ * If you do not want to connect to a real redis server, and want to emulate the functionally of redis in-memory, you can use `MockIORedis`
+ * Note that large data sets will be stored in RAM, and not persisted to disk.  Multiple Actionhero processes cannot share cache, chat messages, etc.
+ * Redis Pub/Sub works with this configuration.
+ */
+
+// export const DEFAULT = {
+//   redis: (config) => {
+//     const MockIORedis = require("ioredis-mock");
+//     const baseRedis = new MockIORedis();
+
+//     return {
+//       scanCount: 1000,
+
+//       _toExpand: false,
+//       client: {
+//         konstructor: () => baseRedis,
+//         args: [],
+//         buildNew: false,
+//       },
+//       subscriber: {
+//         konstructor: () => baseRedis.createConnectedClient(),
+//         args: [],
+//         buildNew: false,
+//       },
+//       tasks: {
+//         konstructor: () => baseRedis.createConnectedClient(),
+//         args: [],
+//         buildNew: false,
+//       },
+//     };
+//   },
+// };

@@ -1,83 +1,81 @@
-/**
- * @jest-environment jest-environment-webdriver
- */
-
 import * as path from "path";
-import { api, Process, config } from "./../../src/index";
-const packageJSON = require(path.join(__dirname, "..", "..", "package.json"));
-const host = process.env.SELENIUM_TEST_HOST || "localhost";
+import * as fs from "fs";
+import * as puppeteer from "puppeteer";
+import { api, Process, config, utils } from "../../src/index";
+const packageJSON = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "..", "..", "package.json")).toString()
+);
+const host = "localhost";
 
 const actionhero = new Process();
-let url;
-
-// stub the selenium infected variables
-declare var browser: any;
-declare var by: any;
-
-const ensureNoErrors = async () => {
-  const errorMessage = await browser.findElement(by.id("error")).getText();
-  if (errorMessage) {
-    throw new Error(errorMessage);
-  }
-};
+let browser: puppeteer.Browser;
+let page: puppeteer.Page;
+let url: string;
 
 describe("browser integration tests", () => {
   beforeAll(async () => {
     await actionhero.start();
     await api.redis.clients.client.flushdb();
-    url = `http://${host}:${config.servers.web.port}`;
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox"],
+    });
+    page = await browser.newPage();
   });
 
   afterAll(async () => {
+    await browser.close();
     await actionhero.stop();
   });
 
   describe("default index page", () => {
-    beforeAll(async () => {
-      await browser.get(url);
-      await ensureNoErrors();
-      await browser.sleep(1000);
+    beforeAll(() => {
+      url = `http://${host}:${config.servers.web.port}`;
     });
 
     test("loads the page", async () => {
-      const title = await browser.findElement(by.tagName("h1")).getText();
+      await page.goto(url);
+      await utils.sleep(1000);
+      const title = await page.$eval("h1", (e) => e.textContent);
       expect(title).toEqual("Your Actionhero Server is working.");
     });
 
     test("server status is loaded", async () => {
-      const serverName = await browser
-        .findElement(by.id("serverName"))
-        .getText();
+      await page.goto(url);
+      await page.waitForSelector("#serverName");
+      const serverName = await page.$eval("#serverName", (e) => e.textContent);
       expect(serverName).toEqual("actionhero");
-      const actionheroVersion = await browser
-        .findElement(by.id("actionheroVersion"))
-        .getText();
+
+      const actionheroVersion = await page.$eval(
+        "#actionheroVersion",
+        (e) => e.textContent
+      );
       expect(actionheroVersion).toEqual(packageJSON.version);
     });
   });
 
   describe("swagger page", () => {
-    beforeAll(async () => {
-      await browser.get(`${url}/swagger.html`);
-      browser.sleep(1000);
+    beforeAll(() => {
+      url = `http://${host}:${config.servers.web.port}/swagger.html`;
     });
 
     test("loads the page", async () => {
-      const title = await browser.findElement(by.tagName("h2")).getText();
+      await page.goto(url);
+      await page.waitForSelector("h2");
+      const title = await page.$eval("h2", (e) => e.textContent);
       expect(title).toMatch(/^actionhero/);
     });
 
     test("documentation is loaded", async () => {
-      const elements = await browser.findElements(by.tagName("h4"));
-      const actionNames = await Promise.all(elements.map((e) => e.getText()));
+      await page.goto(url);
+      await page.waitForSelector("h4");
+      const actionNames = await page.$$eval("h4", (elements) =>
+        elements.map((e) => e.textContent)
+      );
       expect(actionNames.sort()).toEqual([
-        "cacheTest",
         "createChatRoom",
-        "randomNumber",
-        "sleepTest",
         "status",
         "swagger",
-        "validationTest",
       ]);
     });
   });
@@ -86,45 +84,46 @@ describe("browser integration tests", () => {
     let sessionIDCookie;
 
     test("I can be assigned a session on another page", async () => {
-      await browser.get(url);
-      await ensureNoErrors();
-      sessionIDCookie = await browser.manage().getCookie("sessionID");
+      sessionIDCookie = (await page.cookies()).filter(
+        (c) => c.name === "sessionID"
+      )[0];
       expect(sessionIDCookie.value).toBeTruthy();
     });
 
     describe("on the chat page", () => {
-      beforeAll(async () => {
-        await browser.get(`${url}/chat.html`);
-        browser.sleep(1000);
-      });
-
-      afterAll(async () => {
-        // navigate away to close the WS connection
-        await browser.get(url);
+      beforeAll(() => {
+        url = `http://${host}:${config.servers.web.port}/chat.html`;
       });
 
       test("can connect", async () => {
-        const chat = await browser.findElement(by.id("chatBox")).getText();
+        await page.goto(url);
+        await utils.sleep(2000);
+        const chat = await page.$eval("#chatBox", (e) => e.textContent);
         expect(chat).toContain("Hello! Welcome to the actionhero api");
       });
 
       test("can chat", async () => {
-        const chatForm = await browser.findElement(by.id("message"));
-        await chatForm.sendKeys("hello world");
-        const chatSumbit = await browser.findElement(by.id("submitButton"));
-        await chatSumbit.click();
+        await page.goto(url);
+        const chatForm = await page.$("#message");
+        await chatForm.type("hello world");
+        const chatSubmit = await page.$("#submitButton");
+        await chatSubmit.click();
 
-        browser.sleep(1000);
-        const chat = await browser.findElement(by.id("chatBox")).getText();
+        await utils.sleep(1000);
+
+        const chat = await page.$eval("#chatBox", (e) => e.textContent);
         expect(chat).toContain("hello world");
       });
 
       test("has the same fingerprint", async () => {
-        const thisSessionID = await browser.manage().getCookie("sessionID");
+        const thisSessionID = (await page.cookies()).filter(
+          (c) => c.name === "sessionID"
+        )[0];
         expect(thisSessionID.value).toEqual(sessionIDCookie.value);
-        const fingerprintFromWebSocket = await browser
-          .findElement(by.id("fingerprint"))
-          .getText();
+        const fingerprintFromWebSocket = await page.$eval(
+          "#fingerprint",
+          (e) => e.textContent
+        );
         expect(fingerprintFromWebSocket).toEqual(sessionIDCookie.value);
       });
     });

@@ -16,13 +16,14 @@ export namespace cache {
     retry?: boolean | number;
   }
 
-  export const redisPrefix = config.general.cachePrefix;
-  export const lockPrefix = config.general.lockPrefix;
-  export const lockDuration = config.general.lockDuration;
-  export const lockRetry = 100;
+  export const redisPrefix: string = config.general.cachePrefix;
+  export const lockPrefix: string = config.general.lockPrefix;
+  export const lockDuration: number = config.general.lockDuration;
+  export const scanCount: number = config.redis.scanCount || 1000;
+  export const lockRetry: number = 100;
 
   export function client() {
-    if (config.redis.enabled && api.redis.clients && api.redis.clients.client) {
+    if (api.redis.clients && api.redis.clients.client) {
       return api.redis.clients.client;
     } else {
       throw new Error("redis not connected, cache cannot be used");
@@ -42,50 +43,79 @@ export namespace cache {
   }
 
   /**
+   * A generic method to find all keys which match a pattern.
+   * @pattern likely has a * at the end of the string.  Other arguments are for recursion and not required.
+   */
+  export async function getKeys(
+    pattern: string,
+    count: number = scanCount,
+    keysAry = [],
+    cursor = 0
+  ): Promise<Array<string>> {
+    // return client().keys(redisPrefix + "*");
+
+    const [newCursor, matches] = await client().scan(
+      cursor,
+      "match",
+      pattern,
+      "count",
+      count
+    );
+
+    if (matches && matches.length > 0) keysAry = keysAry.concat(matches);
+    if (newCursor === "0") return keysAry;
+    return cache.getKeys(pattern, count, keysAry, parseInt(newCursor));
+  }
+
+  /**
    * Returns all the keys in redis which are under this Actionhero namespace.  Potentially very slow.
    */
-  export async function keys(): Promise<Array<string>> {
-    return client().keys(redisPrefix + "*");
+  export async function keys(optionalScopePrefix = ""): Promise<Array<string>> {
+    // return client().keys(redisPrefix + "*");
+    return getKeys(redisPrefix + optionalScopePrefix + "*");
   }
 
   /**
    * Returns all the locks in redis which are under this Actionhero namespace.  Potentially slow.
    */
-  export async function locks(): Promise<Array<string>> {
-    return client().keys(lockPrefix + "*");
+  export async function locks(
+    optionalScopePrefix = ""
+  ): Promise<Array<string>> {
+    // return client().keys(lockPrefix + "*");
+    return getKeys(lockPrefix + optionalScopePrefix + "*");
   }
 
   /**
    * Returns the number of keys in redis which are under this Actionhero namespace.  Potentially very slow.
    */
-  export async function size(): Promise<number> {
-    const keys = await cache.keys();
+  export async function size(pattern = redisPrefix + "*") {
     let length = 0;
-    if (keys) {
-      length = keys.length;
-    }
-
+    const keys = await cache.getKeys(pattern);
+    if (keys) length = keys.length;
     return length;
   }
 
   /**
    * Removes all keys in redis which are under this Actionhero namespace.  Potentially very slow.
+   * Returns the deleted keys.
    */
-  export async function clear(): Promise<boolean> {
-    const keys = await cache.keys();
-    const jobs = [];
+  export async function clear(pattern = redisPrefix + "*") {
+    const keys = await cache.getKeys(pattern);
+
+    const pipelineArgs = [];
     keys.forEach((key: string) => {
-      jobs.push(client().del(key));
+      pipelineArgs.push(["del", key]);
     });
 
-    await Promise.all(jobs);
-    return true;
+    await client().pipeline(pipelineArgs).exec();
+
+    return keys;
   }
 
   /**
    * Write the current concents of redis (only the keys in Actionhero's namespace) to a file.
    */
-  export async function dumpWrite(file: string): Promise<number> {
+  export async function dumpWrite(file: string) {
     const data = {};
     const jobs = [];
     const keys = await cache.keys();
@@ -110,7 +140,7 @@ export namespace cache {
    * Load in contents for redis (and api.cache) saved to a file
    * Warning! Any existing keys in redis (under this Actionhero namespace) will be removed.
    */
-  export async function dumpRead(file: string): Promise<number> {
+  export async function dumpRead(file: string) {
     const jobs = [];
     await cache.clear();
     const fileData = fs.readFileSync(file).toString();

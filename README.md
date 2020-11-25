@@ -54,8 +54,8 @@ Currently actionhero supports the following out of the box...
 # Generate a new Project
 npx actionhero generate
 npm install
-npm run build # <--- new! I compile the TS to JS
-npm run dev # <--- new! I use `ts-node` to let you develop on your ts files without compiling
+npm run build
+npm run dev # <-- I automatically notice changes and restart, as well as compiling .ts files
 
 # Use the actionhero CLI
 (npx) actionhero generate action --name my_action
@@ -63,11 +63,9 @@ npm run dev # <--- new! I use `ts-node` to let you develop on your ts files with
 
 # Test
 npm test
-# I'll run `prettier` and `build` for you first
-# I handle .ts files now!
 
 # To deploy your app
-npm run build # <--- new! I compile the TS to JS
+npm run build
 npm run start
 ```
 
@@ -122,7 +120,7 @@ Or deploy a free API server now:
 ## Sample Projects
 
 - [Simple](https://github.com/actionhero/actionhero-tutorial)
-- [Elaborate (Angular, Sequelize)](https://github.com/actionhero/actionhero-angular-bootstrap-cors-csrf)
+- [Elaborate (React, Next.JS, Bootstrap, Sequelize)](https://github.com/actionhero/actionhero-chat)
 - [Client Use: React](https://github.com/actionhero/actionhero-react-next-chat)
 - [Client Use: React Native](https://github.com/actionhero/actionhero-react-native)
 
@@ -139,3 +137,12 @@ Or deploy a free API server now:
 ## License
 
 [Apache 2.0](https://github.com/actionhero/actionhero/blob/master/LICENSE.txt)
+
+## Dedication
+
+> Technology is a powerful force in our society. Data, software, and communication can be used for bad: to entrench unfair power structures, to undermine human rights, and to protect vested interests. But they can also be used for good: to make underrepresented people’s voices heard, to create opportunities for everyone, and to avert disasters. This project is dedicated to everyone working toward the good.
+>
+> > Inspired by Martin Kleppmann
+
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Factionhero%2Factionhero&count_bg=%23C85D3D&title_bg=%23555555&icon=node-dot-js.svg&icon_color=%23E7E7E7&title=hits&edge_flat=true)](https://hits.seeyoufarm.com)
+

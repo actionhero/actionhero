@@ -1,4 +1,4 @@
-import { api, Action } from "./../index";
+import { Action } from "./../index";
 
 function sleep(time: number): Promise<void> {
   return new Promise((resolve) => {
@@ -30,7 +30,7 @@ export class SleepTest extends Action {
     };
   }
 
-  async run({ response, params }) {
+  async run({ params }: { params: { sleepDuration: number } }) {
     const sleepDuration = params.sleepDuration;
     const sleepStarted = new Date().getTime();
 
@@ -38,9 +38,6 @@ export class SleepTest extends Action {
     const sleepEnded = new Date().getTime();
     const sleepDelta = sleepEnded - sleepStarted;
 
-    response.sleepStarted = sleepStarted;
-    response.sleepEnded = sleepEnded;
-    response.sleepDelta = sleepDelta;
-    response.sleepDuration = sleepDuration;
+    return { sleepStarted, sleepEnded, sleepDelta, sleepDuration };
   }
 }

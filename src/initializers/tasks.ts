@@ -35,9 +35,9 @@ export class Tasks extends Initializer {
       globalMiddleware: [],
     };
 
-    api.tasks.loadFile = (fullFilePath: string, reload = false) => {
+    api.tasks.loadFile = async (fullFilePath: string, reload = false) => {
       let task;
-      let collection = require(fullFilePath);
+      let collection = await import(fullFilePath);
       for (const i in collection) {
         const TaskClass = collection[i];
         task = new TaskClass();
@@ -69,6 +69,7 @@ export class Tasks extends Initializer {
       if (task.frequency > 0) {
         if (plugins.indexOf("JobLock") < 0) {
           plugins.push("JobLock");
+          pluginOptions.JobLock = { reEnqueue: false };
         }
         if (plugins.indexOf("QueueLock") < 0) {
           plugins.push("QueueLock");
@@ -133,16 +134,17 @@ export class Tasks extends Initializer {
       };
     };
 
-    api.tasks.loadTasks = (reload) => {
-      config.general.paths.task.forEach((p) => {
-        utils
-          .ensureNoTsHeaderFiles(
-            glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"))
-          )
-          .forEach((f) => {
-            api.tasks.loadFile(f, reload);
-          });
-      });
+    api.tasks.loadTasks = async (reload) => {
+      for (const i in config.general.paths.task) {
+        const p = config.general.paths.task[i];
+        await Promise.all(
+          utils
+            .ensureNoTsHeaderFiles(
+              glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"))
+            )
+            .map((f) => api.tasks.loadFile(f, reload))
+        );
+      }
 
       for (const pluginName in config.plugins) {
         if (config.plugins[pluginName].tasks !== false) {
@@ -162,15 +164,13 @@ export class Tasks extends Initializer {
       }
     };
 
-    api.tasks.loadTasks(false);
+    await api.tasks.loadTasks(false);
 
     // we want to start the queue now, so that it's available for other initializers and CLI commands
     await api.resque.startQueue();
   }
 
   async start(config) {
-    if (config.redis.enabled === false) return;
-
     if (config.tasks.scheduler === true) {
       await taskModule.enqueueAllRecurrentTasks();
     }

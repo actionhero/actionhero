@@ -12,7 +12,7 @@ export { ActionProcessor } from "./classes/actionProcessor";
 // export modules (lower case)
 export { utils } from "./modules/utils";
 export { config } from "./modules/config";
-export { log } from "./modules/log";
+export { log, loggers } from "./modules/log";
 export { action } from "./modules/action";
 export { task } from "./modules/task";
 export { cache } from "./modules/cache";
@@ -28,6 +28,9 @@ export { actionheroVersion } from "./classes/process/actionheroVersion";
 export { projectRoot } from "./classes/process/projectRoot";
 export { typescript } from "./classes/process/typescript";
 export { id } from "./classes/process/id";
+
+// export typescript helpers
+export { UnwrapPromise, AssertEqualType } from "./modules/tsUtils";
 
 // API object to hold connections, actions, tasks, initializers, and servers
 import { Api } from "./classes/api";

@@ -69,15 +69,23 @@ export namespace task {
    * * taskName: The name of the task.
    * * inputs: inputs to pass to the task.
    * * queue: (Optional) Which queue/priority to run this instance of the task on.
+   * * suppressDuplicateTaskError: (optional) Suppress errors when the same task with the same arguments are double-enqueued for the same time
    */
   export async function enqueueAt(
     timestamp: number,
     taskName: string,
     inputs: TaskInputs,
-    queue: string = api.tasks.tasks[taskName].queue
+    queue: string = api.tasks.tasks[taskName].queue,
+    suppressDuplicateTaskError = false
   ) {
     await validateInput(taskName, inputs);
-    return api.resque.queue.enqueueAt(timestamp, queue, taskName, [inputs]);
+    return api.resque.queue.enqueueAt(
+      timestamp,
+      queue,
+      taskName,
+      [inputs],
+      suppressDuplicateTaskError
+    );
   }
 
   /**
@@ -89,15 +97,23 @@ export namespace task {
    * * taskName: The name of the task.
    * * inputs: inputs to pass to the task.
    * * queue: (Optional) Which queue/priority to run this instance of the task on.
+   * * suppressDuplicateTaskError: (optional) Suppress errors when the same task with the same arguments are double-enqueued for the same time
    */
   export async function enqueueIn(
     time: number,
     taskName: string,
     inputs: TaskInputs,
-    queue: string = api.tasks.tasks[taskName].queue
+    queue: string = api.tasks.tasks[taskName].queue,
+    suppressDuplicateTaskError = false
   ) {
     await validateInput(taskName, inputs);
-    return api.resque.queue.enqueueIn(time, queue, taskName, [inputs]);
+    return api.resque.queue.enqueueIn(
+      time,
+      queue,
+      taskName,
+      [inputs],
+      suppressDuplicateTaskError
+    );
   }
 
   /**
@@ -224,7 +240,7 @@ export namespace task {
    * Note: This is a very slow command.
    * Will throw an error if redis cannot be reached.
    */
-  export async function allDelayed(): Promise<any> {
+  export async function allDelayed(): Promise<{ [timestamp: string]: any[] }> {
     return api.resque.queue.allDelayed();
   }
 
@@ -313,7 +329,7 @@ export namespace task {
     if (thisTask.frequency > 0) {
       await task.del(thisTask.queue, taskName);
       await task.delDelayed(thisTask.queue, taskName);
-      await task.enqueueIn(thisTask.frequency, taskName, {});
+      await task.enqueueIn(thisTask.frequency, taskName, {}, undefined, true);
       log(
         `re-enqueued recurrent job ${taskName}`,
         config.tasks.schedulerLogging.reEnqueue
@@ -327,7 +343,7 @@ export namespace task {
    */
   export async function enqueueAllRecurrentTasks() {
     const jobs = [];
-    const loadedTasks = [];
+    const enqueuedTasks: string[] = [];
 
     Object.keys(api.tasks.tasks).forEach((taskName) => {
       const thisTask = api.tasks.tasks[taskName];
@@ -340,22 +356,17 @@ export namespace task {
                 `enqueuing periodic task: ${taskName}`,
                 config.tasks.schedulerLogging.enqueue
               );
-              loadedTasks.push(taskName);
+              enqueuedTasks.push(taskName);
             }
           } catch (error) {
-            if (error.match(/already enqueued at this time/)) {
-              // this is OK, the job was enqueued by another process as this method was running
-              log(error.toString(), "warning");
-            } else {
-              throw error;
-            }
+            checkForRepeatRecurringTaskEnqueue(taskName, error);
           }
         });
       }
     });
 
     await utils.asyncWaterfall(jobs);
-    return loadedTasks;
+    return enqueuedTasks;
   }
 
   /**
@@ -415,7 +426,7 @@ export namespace task {
         api.tasks.middleware
       );
     }
-    api.tasks.loadTasks(true);
+    await api.tasks.loadTasks(true);
   }
 
   async function validateInput(taskName: string, inputs: TaskInputs) {
@@ -477,6 +488,18 @@ export namespace task {
           throw new Error(`${key} is a required input for task ${taskName}`);
         }
       }
+    }
+  }
+
+  function checkForRepeatRecurringTaskEnqueue(taskName, error: Error) {
+    if (error.toString().match(/already enqueued at this time/)) {
+      // this is OK, the job was enqueued by another process as this method was running
+      log(
+        `not enqueuing periodic task ${taskName} - error.toString()`,
+        "warning"
+      );
+    } else {
+      throw error;
     }
   }
 }

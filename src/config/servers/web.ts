@@ -1,4 +1,4 @@
-const os = require("os");
+import * as os from "os";
 
 export const DEFAULT = {
   servers: {
@@ -38,10 +38,13 @@ export const DEFAULT = {
         // When visiting the root URL, should visitors see 'api' or 'file'?
         //  Visitors can always visit /api and /public as normal
         rootEndpointType: "file",
-        // simple routing also adds an 'all' route which matches /api/:action for all actions
-        simpleRouting: true,
-        // queryRouting allows an action to be defined via a URL param, ie: /api?action=:action
-        queryRouting: true,
+        // In addition to what's defined in config/routes.ts, should we make a route for every action?  Useful for debugging or simple APIs.
+        // automaticRoutes should an array of strings - HTTP verbs, ie: [] (default), ['get'], ['post'], ['get','put'], ['get','post','put'], etc.
+        automaticRoutes: process.env.AUTOMATIC_ROUTES
+          ? process.env.AUTOMATIC_ROUTES.split(",")
+              .map((v) => v.trim())
+              .map((v) => v.toLowerCase())
+          : [],
         // The cache or (if etags are enabled) next-revalidation time to be returned for all flat files served from /public; defined in seconds
         flatFileCacheDuration: 60,
         // Add an etag header to requested flat files which acts as fingerprint that changes when the file is updated;

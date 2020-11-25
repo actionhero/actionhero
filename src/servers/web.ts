@@ -103,7 +103,7 @@ export class WebServer extends Server {
     await new Promise((resolve) => {
       this.server.listen(this.config.port, this.config.bindIP, () => {
         this.chmodSocket(this.config.bindIP, this.config.port);
-        resolve();
+        resolve(null);
       });
     });
 
@@ -711,16 +711,11 @@ export class WebServer extends Server {
         connection.rawConnection.params.files = files;
         this.fillParamsFromWebRequest(connection, files);
         this.fillParamsFromWebRequest(connection, fields);
-
-        if (this.config.queryRouting !== true) {
-          connection.params.action = null;
-        }
+        connection.params.action = null;
         api.routes.processRoute(connection, pathParts);
         return requestMode;
       } else {
-        if (this.config.queryRouting !== true) {
-          connection.params.action = null;
-        }
+        connection.params.action = null;
         api.routes.processRoute(connection, pathParts);
         return requestMode;
       }

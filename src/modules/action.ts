@@ -1,3 +1,5 @@
+import { Connection } from "../classes/connection";
+import { ActionProcessor } from "../classes/actionProcessor";
 import { api, utils, config } from "../index";
 
 export namespace action {
@@ -47,6 +49,40 @@ export namespace action {
         api.actions.globalMiddleware,
         api.actions.middleware
       );
+    }
+  }
+
+  /**
+   * Run an Action in-line, perhaps from within another Action or Task.
+   */
+  export async function run<ActionClass>(
+    actionName: string,
+    actionVersion?: string | number,
+    params: { [key: string]: any } = {},
+    connectionProperties = {}
+  ) {
+    const connection = new Connection({
+      type: "in-line-action",
+      remotePort: "0",
+      remoteIP: "0",
+      rawConnection: {},
+    });
+
+    connection.params = params;
+    Object.assign(connection, connectionProperties);
+
+    try {
+      const actionProcessor = new ActionProcessor(connection);
+      const data = await actionProcessor.processAction(
+        actionName,
+        actionVersion
+      );
+
+      if (data.response.error) throw new Error(data.response.error);
+
+      return data.response;
+    } finally {
+      await connection.destroy();
     }
   }
 }

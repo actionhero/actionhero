@@ -61,6 +61,10 @@ export namespace specHelper {
     taskName: string,
     params: object | Array<any>
   ): Promise<{ [key: string]: any }> {
+    if (!api.tasks.tasks[taskName]) {
+      throw new Error(`task ${taskName} not found`);
+    }
+
     return api.tasks.tasks[taskName].run(params);
   }
 
@@ -76,6 +80,10 @@ export namespace specHelper {
       {
         connection: {
           redis: api.redis.clients.tasks,
+          pkg:
+            api.redis.clients.tasks?.constructor?.name === "RedisMock"
+              ? "ioredis-mock"
+              : "ioredis",
         },
         queues: config.tasks.queues || ["default"],
       },
@@ -84,7 +92,10 @@ export namespace specHelper {
 
     try {
       await worker.connect();
-      const result = await worker.performInline(taskName, params);
+      const result = await worker.performInline(
+        taskName,
+        Array.isArray(params) ? params : [params]
+      );
       await worker.end();
       return result;
     } catch (error) {

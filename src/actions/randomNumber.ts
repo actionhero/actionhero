@@ -1,4 +1,4 @@
-import { api, Action } from "./../index";
+import { Action } from "./../index";
 
 export class RandomNumber extends Action {
   constructor() {
@@ -8,11 +8,14 @@ export class RandomNumber extends Action {
     this.outputExample = { randomNumber: 0.123 };
   }
 
-  async run({ connection, response }) {
-    response.randomNumber = Math.random();
-    response.stringRandomNumber = connection.localize([
+  async run({ connection }) {
+    const randomNumber = Math.random();
+    const stringRandomNumber: string = connection.localize([
       "Your random number is {{randomNumber}}",
-      response,
+      // @ts-ignore
+      { randomNumber },
     ]);
+
+    return { randomNumber, stringRandomNumber };
   }
 }

@@ -1,12 +1,12 @@
 import { Inputs } from "./inputs";
-import { ActionProcessor } from "./actionProcessor";
 import { api } from "../index";
 
 /**
  * Create a new Actionhero Action. The required properties of an action. These can be defined statically (this.name) or as methods which return a value.
  *```js
- * const { Action } = require('actionhero')
- * module.exports = class RandomNumber extends Action {
+ * import { Action } from "actionhero";
+ *
+ * export default class RandomNumber extends Action {
  *  constructor () {
  *    super()
  *    this.name = 'randomNumber'
@@ -27,7 +27,7 @@ export abstract class Action {
   /**The version of this Action (default: 1) */
   version: number | string;
   //*An example response payload  (default: {})
-  outputExample: object;
+  outputExample?: object;
   /**The inputs of the Action (default: {}) */
   inputs: Inputs;
   /**The Middleware specific to this Action (default: []).  Middleware is described by the string names of the middleware. */
@@ -57,7 +57,7 @@ export abstract class Action {
    * The main "do something" method for this action.  It can be `async`.  Usually the goal of this run method is to set properties on `data.response`.  If error is thrown in this method, it will be logged, caught, and appended to `data.response.error`
    * @param data The data about this connection, response, and params.
    */
-  abstract async run(data: ActionProcessor): Promise<void>;
+  abstract run(data: { [key: string]: any }): Promise<ActionResponse>;
 
   private defaults() {
     return {
@@ -104,3 +104,5 @@ export abstract class Action {
     });
   }
 }
+
+export type ActionResponse = { [key: string]: any } | null | void;

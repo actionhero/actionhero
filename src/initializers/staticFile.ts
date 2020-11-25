@@ -38,7 +38,7 @@ export interface StaticFileApi {
 }
 
 /**
- * Countains helpers for returning flies to connections.
+ * Contains helpers for returning flies to connections.
  */
 export class StaticFile extends Initializer {
   constructor() {
@@ -118,7 +118,7 @@ export class StaticFile extends Initializer {
 
         await new Promise((resolve) => {
           fileStream.on("open", () => {
-            resolve();
+            resolve(null);
           });
         });
 

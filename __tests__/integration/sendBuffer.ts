@@ -7,6 +7,7 @@ let url;
 
 describe("Server: sendBuffer", () => {
   beforeAll(async () => {
+    process.env.AUTOMATIC_ROUTES = "get";
     await actionhero.start();
     url = "http://localhost:" + config.servers.web.port;
   });

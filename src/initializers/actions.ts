@@ -55,7 +55,7 @@ export class Actions extends Initializer {
       let action;
 
       try {
-        let collection = require(fullFilePath);
+        let collection = await import(fullFilePath);
         if (typeof collection === "function") {
           collection = [collection];
         }

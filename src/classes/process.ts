@@ -1,7 +1,6 @@
 import * as path from "path";
 import * as glob from "glob";
 import * as fs from "fs";
-import { Api } from "./api";
 import { buildConfig, ConfigInterface } from "./../modules/config";
 import { log } from "../modules/log";
 import { Initializer } from "./initializer";
@@ -108,13 +107,14 @@ export class Process {
     initializerFiles = utils.arrayUnique(initializerFiles);
     initializerFiles = utils.ensureNoTsHeaderFiles(initializerFiles);
 
-    initializerFiles.forEach((f) => {
+    for (const i in initializerFiles) {
+      const f = initializerFiles[i];
       const file = path.normalize(f);
       if (require.cache[require.resolve(file)]) {
         delete require.cache[require.resolve(file)];
       }
 
-      let exportedClasses = require(file);
+      let exportedClasses = await import(file);
 
       // allow for old-js style single default exports
       if (typeof exportedClasses === "function") {
@@ -227,7 +227,7 @@ export class Process {
           stopInitializerRankings[initializer.stopPriority].push(stopFunction);
         }
       }
-    });
+    }
 
     // flatten all the ordered initializer methods
     this.loadInitializers = this.flattenOrderedInitializer(

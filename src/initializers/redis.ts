@@ -31,10 +31,6 @@ export class Redis extends Initializer {
   }
 
   async initialize(config) {
-    if (config.redis.enabled === false) {
-      return;
-    }
-
     api.redis = {
       clients: {},
       subscriptionHandlers: {},
@@ -124,8 +120,7 @@ export class Redis extends Initializer {
           log(`Redis connection \`${r}\` reconnecting`, "info");
         });
       } else {
-        api.redis.clients[r] = config.redis[r].konstructor.apply(
-          null,
+        api.redis.clients[r] = config.redis[r].konstructor(
           config.redis[r].args
         );
         api.redis.clients[r].on("error", (error) => {
@@ -134,7 +129,7 @@ export class Redis extends Initializer {
         log(`Redis connection \`${r}\` connected`, "debug");
       }
 
-      await api.redis.clients[r].get("_test");
+      if (r !== "subscriber") await api.redis.clients[r].get("_test");
     }
 
     if (!api.redis.status.subscribed) {
@@ -167,20 +162,12 @@ export class Redis extends Initializer {
   }
 
   async start(config) {
-    if (config.redis.enabled === false) {
-      log("redis is disabled", "notice");
-    } else {
-      await redis.doCluster("api.log", [
-        `actionhero member ${id} has joined the cluster`,
-      ]);
-    }
+    await redis.doCluster("api.log", [
+      `actionhero member ${id} has joined the cluster`,
+    ]);
   }
 
   async stop(config) {
-    if (config.redis.enabled === false) {
-      return;
-    }
-
     await api.redis.clients.subscriber.unsubscribe();
     api.redis.status.subscribed = false;
     await redis.doCluster("api.log", [
@@ -190,12 +177,12 @@ export class Redis extends Initializer {
     const keys = Object.keys(api.redis.clients);
     for (const i in keys) {
       const client = api.redis.clients[keys[i]];
-      if (typeof client.quit === "function") {
-        await client.quit();
-        //@ts-ignore
-      } else if (typeof client.end === "function") {
+      //@ts-ignore
+      if (typeof client.end === "function") {
         //@ts-ignore
         await client.end();
+      } else if (typeof client.quit === "function") {
+        await client.quit();
       } else if (typeof client.disconnect === "function") {
         await client.disconnect();
       }

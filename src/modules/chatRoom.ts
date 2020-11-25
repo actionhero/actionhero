@@ -59,6 +59,14 @@ export namespace chatRoom {
     };
   }
 
+  export function client() {
+    if (api.redis.clients && api.redis.clients.client) {
+      return api.redis.clients.client;
+    } else {
+      throw new Error("redis not connected, chatRoom cannot be used");
+    }
+  }
+
   /**
    * Add a middleware component to connection handling.
    */
@@ -89,7 +97,7 @@ export namespace chatRoom {
    * List all chat rooms created
    */
   export async function list(): Promise<Array<string>> {
-    return api.redis.clients.client.smembers(api.chatRoom.keys.rooms);
+    return client().smembers(api.chatRoom.keys.rooms);
   }
 
   /**
@@ -98,7 +106,7 @@ export namespace chatRoom {
   export async function add(room: string) {
     const found = await chatRoom.exists(room);
     if (found === false) {
-      return api.redis.clients.client.sadd(api.chatRoom.keys.rooms, room);
+      return client().sadd(api.chatRoom.keys.rooms, room);
     } else {
       throw new Error(await config.errors.connectionRoomExists(room));
     }
@@ -115,7 +123,7 @@ export namespace chatRoom {
         room,
         await config.errors.connectionRoomHasBeenDeleted(room)
       );
-      const membersHash = await api.redis.clients.client.hgetall(
+      const membersHash = await client().hgetall(
         api.chatRoom.keys.members + room
       );
 
@@ -123,8 +131,8 @@ export namespace chatRoom {
         await chatRoom.removeMember(id, room, false);
       }
 
-      await api.redis.clients.client.srem(api.chatRoom.keys.rooms, room);
-      await api.redis.clients.client.del(api.chatRoom.keys.members + room);
+      await client().srem(api.chatRoom.keys.rooms, room);
+      await client().del(api.chatRoom.keys.members + room);
     } else {
       throw new Error(await config.errors.connectionRoomNotExist(room));
     }
@@ -134,10 +142,7 @@ export namespace chatRoom {
    * Check if a room exists.
    */
   export async function exists(room: string): Promise<boolean> {
-    const bool = await api.redis.clients.client.sismember(
-      api.chatRoom.keys.rooms,
-      room
-    );
+    const bool = await client().sismember(api.chatRoom.keys.rooms, room);
     let found = false;
     // @ts-ignore
     if (bool === 1 || bool === true) {
@@ -240,7 +245,7 @@ export namespace chatRoom {
     if (connection.rooms.indexOf(room) < 0) {
       const memberDetails = chatRoom.generateMemberDetails(connection);
       connection.rooms.push(room);
-      await api.redis.clients.client.hset(
+      await client().hset(
         api.chatRoom.keys.members + room,
         connection.id,
         JSON.stringify(memberDetails)
@@ -289,10 +294,7 @@ export namespace chatRoom {
     if (connection.rooms.indexOf(room) >= 0) {
       const index = connection.rooms.indexOf(room);
       connection.rooms.splice(index, 1);
-      await api.redis.clients.client.hdel(
-        api.chatRoom.keys.members + room,
-        connection.id
-      );
+      await client().hdel(api.chatRoom.keys.members + room, connection.id);
     }
 
     return true;
@@ -300,7 +302,10 @@ export namespace chatRoom {
 
   /**
    * Send a message to all clients connected to this room
-   * - connection should either be a real client you are emulating (found in api.connections) or just `{}` for a mock
+   * - connection:
+   *        - {} send to every connections
+   *        - should either be a real client you are emulating (found in api.connections)
+   *        - a mock
    * - room is the string name of an already-existing room
    * - message can be anything: string, json, object, etc
    */

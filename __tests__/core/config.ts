@@ -14,8 +14,8 @@ const newConfigFolderPaths = [
 ];
 
 const routeFilesContent = [
-  "export const DEFAULT = {\n  routes: (api) => {\n    return {\n\n      get: [\n        { path: '/api-status', action: 'status' }\n      ]\n\n    }\n  }\n}\n",
-  "export const DEFAULT= {\n  routes: (api) => {\n    return {\n\n      get: [\n        { path: '/random-number', action: 'randomNumber' }\n      ]\n\n    }\n  }\n}\n",
+  "export const DEFAULT = { collection: () => { return { a: 1 } } }",
+  "export const DEFAULT = { collection: () => { return { b: 2 } } }",
 ];
 
 const createRouteFile = async (newConfigFolderPath, routeFileContent) => {
@@ -24,7 +24,7 @@ const createRouteFile = async (newConfigFolderPath, routeFileContent) => {
   } catch (ex) {}
 
   try {
-    const newRoutesFilePath = path.join(newConfigFolderPath, "routes.ts");
+    const newRoutesFilePath = path.join(newConfigFolderPath, "collection.ts");
 
     await promisify(fs.writeFile)(newRoutesFilePath, routeFileContent, {
       encoding: "utf-8",
@@ -34,7 +34,7 @@ const createRouteFile = async (newConfigFolderPath, routeFileContent) => {
 
 const removeRouteFile = async (newConfigFolderPath) => {
   try {
-    const newRoutesFilePath = path.join(newConfigFolderPath, "routes.ts");
+    const newRoutesFilePath = path.join(newConfigFolderPath, "collection.ts");
 
     await promisify(fs.unlink)(newRoutesFilePath);
   } catch (ex) {}
@@ -67,11 +67,9 @@ describe("Core: config folders", () => {
   });
 
   test("routes should be rebuilt and contain both paths", async () => {
-    expect(config.routes).toEqual({
-      get: [
-        { path: "/api-status", action: "status" },
-        { path: "/random-number", action: "randomNumber" },
-      ],
+    expect(config.collection).toEqual({
+      a: 1,
+      b: 2,
     });
   });
 });
