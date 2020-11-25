@@ -369,7 +369,7 @@ describe("Server: Web", () => {
           await request.get(url + "/api/mimeTestAction/fail");
           throw new Error("should not get here");
         } catch (error) {
-          expect(error.statusCode).toEqual(400);
+          expect(error.statusCode).toEqual(500);
           const body = await toJson(error.response.body);
           expect(error.response.headers["content-type"]).toEqual(
             "application/json; charset=utf-8"
