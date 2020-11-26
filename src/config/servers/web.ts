@@ -45,6 +45,8 @@ export const DEFAULT = {
               .map((v) => v.trim())
               .map((v) => v.toLowerCase())
           : [],
+        // Default HTTP status code for errors thrown in an action
+        defaultErrorStatusCode: 500,
         // The cache or (if etags are enabled) next-revalidation time to be returned for all flat files served from /public; defined in seconds
         flatFileCacheDuration: 60,
         // Add an etag header to requested flat files which acts as fingerprint that changes when the file is updated;

@@ -186,7 +186,7 @@ describe("Server: Web", () => {
         await request.get(url + "/api/stringErrorTestAction");
         throw new Error("should not get here");
       } catch (error) {
-        expect(error.statusCode).toEqual(400);
+        expect(error.statusCode).toEqual(500);
         const body = await toJson(error.response.body);
         expect(body.error).toEqual("broken");
       }
@@ -197,7 +197,7 @@ describe("Server: Web", () => {
         await request.get(url + "/api/errorErrorTestAction");
         throw new Error("should not get here");
       } catch (error) {
-        expect(error.statusCode).toEqual(400);
+        expect(error.statusCode).toEqual(500);
         const body = await toJson(error.response.body);
         expect(body.error).toEqual("broken");
       }
@@ -208,7 +208,7 @@ describe("Server: Web", () => {
         await request.get(url + "/api/complexErrorTestAction");
         throw new Error("should not get here");
       } catch (error) {
-        expect(error.statusCode).toEqual(400);
+        expect(error.statusCode).toEqual(500);
         const body = await toJson(error.response.body);
         expect(body.error).toEqual({ error: "broken", reason: "stuff" });
       }
@@ -739,7 +739,7 @@ describe("Server: Web", () => {
           throw new Error("should not get here");
         } catch (error) {
           expect(error.statusCode).not.toEqual(999);
-          expect(error.statusCode).toEqual(400);
+          expect(error.statusCode).toEqual(500);
           const body = await toJson(error.response.body);
           expect(body.error).toEqual("999: Key 'expired-key' is expired");
         }

@@ -491,10 +491,9 @@ export class WebServer extends Server {
           data.connection.rawConnection.responseHttpCode = 404;
         } else if (data.actionStatus === "missing_params") {
           data.connection.rawConnection.responseHttpCode = 422;
-        } else if (data.actionStatus === "server_error") {
-          data.connection.rawConnection.responseHttpCode = 500;
         } else {
-          data.connection.rawConnection.responseHttpCode = 400;
+          data.connection.rawConnection.responseHttpCode =
+            this.config.defaultErrorStatusCode ?? 500;
         }
       }
     }
