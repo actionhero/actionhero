@@ -1,6 +1,12 @@
 import * as path from "path";
 
 function isTypescript(): boolean {
+  // do we have any flags?
+  if (process.env.ACTIONHERO_TYPESCRIPT_MODE)
+    return process.env.ACTIONHERO_TYPESCRIPT_MODE.toLowerCase() === "true"
+      ? true
+      : false;
+
   // if this file is typescript, we are running typescript :D
   // this is the best check, but fails when actionhero is compiled to js though...
   const extension = path.extname(__filename);
@@ -19,11 +25,7 @@ function isTypescript(): boolean {
      * Are we running in typescript at the moment?
      * see https://github.com/TypeStrong/ts-node/pull/858 for more details
      */
-    return process[Symbol.for("ts-node.register.instance")] ||
-      (process.env.NODE_ENV === "test" &&
-        process.env.ACTIONHERO_TEST_FILE_EXTENSION !== "js")
-      ? true
-      : false;
+    return process[Symbol.for("ts-node.register.instance")] ? true : false;
   } catch (error) {
     console.error(error);
     return false;
