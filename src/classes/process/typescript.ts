@@ -2,10 +2,11 @@ import * as path from "path";
 
 function isTypescript(): boolean {
   // do we have any flags?
-  if (process.env.ACTIONHERO_TYPESCRIPT_MODE)
+  if (process.env.ACTIONHERO_TYPESCRIPT_MODE?.length > 0) {
     return process.env.ACTIONHERO_TYPESCRIPT_MODE.toLowerCase() === "true"
       ? true
       : false;
+  }
 
   // if this file is typescript, we are running typescript :D
   // this is the best check, but fails when actionhero is compiled to js though...
