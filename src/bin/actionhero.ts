@@ -7,42 +7,49 @@ import { program } from "commander";
 import { typescript } from "../classes/process/typescript";
 import { projectRoot } from "../classes/process/projectRoot";
 
-export default async function main() {
-  const parentPackageJSON = path.join(projectRoot, "package.json");
+export namespace ActionheroCLIRunner {
+  export async function run() {
+    program.storeOptionsAsProperties(false);
+    program.version(getVersion());
 
-  program.storeOptionsAsProperties(false);
-  program.version(getVersion());
+    let pathsLoaded: string[] = [];
+    try {
+      const { config } = await import("../index");
 
-  let pathsLoaded: string[] = [];
-  try {
-    const { config } = await import("../index");
-
-    // this project
-    for (const i in config.general.paths.cli) {
-      await loadDirectory(path.join(config.general.paths.cli[i]));
-    }
-
-    // plugins
-    for (const pluginName in config.plugins) {
-      if (config.plugins[pluginName].cli !== false) {
-        await loadDirectory(config.plugins[pluginName].path);
+      // this project
+      for (const i in config.general.paths.cli) {
+        await loadDirectory(
+          path.join(config.general.paths.cli[i]),
+          pathsLoaded
+        );
       }
+
+      // plugins
+      for (const pluginName in config.plugins) {
+        if (config.plugins[pluginName].cli !== false) {
+          await loadDirectory(config.plugins[pluginName].path, pathsLoaded);
+        }
+      }
+
+      // core
+      if (config.general.cliIncludeInternal !== false) {
+        await loadDirectory(__dirname, pathsLoaded);
+      }
+    } catch (e) {
+      // we are trying to build a new project, only load the generate command
+      await loadDirectory(path.join(__dirname), pathsLoaded, "generate");
     }
 
-    // core
-    if (config.general.cliIncludeInternal !== false) {
-      await loadDirectory(__dirname);
-    }
-  } catch (e) {
-    // we are trying to build a new project
-    await loadDirectory(path.join(__dirname), "generate"); // core
+    program.parse(process.argv);
   }
-
-  program.parse(process.argv);
 
   // --- Utils --- //
 
-  async function loadDirectory(dir: string, match = "*") {
+  export async function loadDirectory(
+    dir: string,
+    pathsLoaded: string[],
+    match = "*"
+  ) {
     if (!fs.existsSync(dir)) return;
     const realpath = fs.realpathSync(dir);
     if (pathsLoaded.includes(realpath)) return;
@@ -61,7 +68,7 @@ export default async function main() {
     }
   }
 
-  async function convertCLIToCommanderAction(cli) {
+  export async function convertCLIToCommanderAction(cli) {
     if (
       Object.getPrototypeOf(cli?.prototype?.constructor || {}).name !== "CLI"
     ) {
@@ -92,7 +99,7 @@ export default async function main() {
     }
   }
 
-  async function runCommand(instance, _program) {
+  export async function runCommand(instance, _program) {
     let toStop = false;
     const params = _program.opts();
 
@@ -118,11 +125,13 @@ export default async function main() {
     }
   }
 
-  function readPackageJSON(file) {
+  export function readPackageJSON(file) {
     return JSON.parse(fs.readFileSync(file).toString());
   }
 
-  function getVersion(): string {
+  export function getVersion(): string {
+    const parentPackageJSON = path.join(projectRoot, "package.json");
+
     if (fs.existsSync(parentPackageJSON)) {
       const pkg = readPackageJSON(parentPackageJSON);
       return pkg.version;
@@ -135,4 +144,4 @@ export default async function main() {
   }
 }
 
-main();
+ActionheroCLIRunner.run();
