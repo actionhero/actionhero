@@ -5,8 +5,8 @@ import { config, utils, CLI } from "./../../../index";
 export class GenerateInitializer extends CLI {
   constructor() {
     super();
-    this.name = "generate initializer";
-    this.description = "generate a new initializer";
+    this.name = "generate-initializer";
+    this.description = "Generate a new Initializer";
     this.example =
       "actionhero generate initializer --name=[name] --loadPriority=[p] --startPriority=[p] --stopPriority=[p]";
     this.inputs = {

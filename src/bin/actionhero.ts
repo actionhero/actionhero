@@ -2,207 +2,137 @@
 
 import * as path from "path";
 import * as fs from "fs";
-import * as optimist from "optimist";
-import { spawn } from "child_process";
+import * as glob from "glob";
+import { program } from "commander";
+import { typescript } from "../classes/process/typescript";
+import { projectRoot } from "../classes/process/projectRoot";
 
-interface RunnerInputs {
-  [propName: string]: any;
-}
+export default async function main() {
+  const parentPackageJSON = path.join(projectRoot, "package.json");
 
-interface Runner {
-  name: string;
-  inputs: RunnerInputs;
-}
+  program.storeOptionsAsProperties(false);
+  program.version(getVersion());
 
-// cannot import this until we know where to load from!
-function determineProjectRoot() {
-  let projectRoot = process.cwd();
-  if (process.env.project_root) {
-    projectRoot = process.env.project_root;
-  } else if (process.env.projectRoot) {
-    projectRoot = process.env.projectRoot;
-  } else if (process.env.PROJECT_ROOT) {
-    projectRoot = process.env.PROJECT_ROOT;
-  }
+  let pathsLoaded: string[] = [];
+  try {
+    const { config } = await import("../index");
 
-  return projectRoot;
-}
-
-const projectRoot = determineProjectRoot();
-
-(async () => {
-  const formatParams = (runner: Runner) => {
-    const params: any = {};
-
-    if (!runner.inputs) {
-      runner.inputs = {};
+    // this project
+    for (const i in config.general.paths.cli) {
+      await loadDirectory(path.join(config.general.paths.cli[i]));
     }
 
-    Object.keys(runner.inputs).forEach((inputName) => {
-      const collection = runner.inputs[inputName];
-      let value = optimist.argv[inputName];
-
-      if (
-        collection.default &&
-        (value === undefined || value === null || value === "")
-      ) {
-        if (typeof collection.default === "function") {
-          value = collection.default();
-        } else {
-          value = collection.default;
-        }
-        console.log(`using default value of \`${value}\` for \`${inputName}\``);
+    // plugins
+    for (const pluginName in config.plugins) {
+      if (config.plugins[pluginName].cli !== false) {
+        await loadDirectory(config.plugins[pluginName].path);
       }
+    }
 
-      if (
-        collection.required === true &&
-        (value === undefined || value === null || value === "")
-      ) {
-        console.error(
-          `Error: \`${inputName}\` is a required command-line argument to the method \`${runner.name}\``
-        );
-        // console.log(`You can provide it via \`${runner.name} --${inputName}=value\``)
+    // core
+    if (config.general.cliIncludeInternal !== false) {
+      await loadDirectory(__dirname);
+    }
+  } catch (e) {
+    // we are trying to build a new project
+    await loadDirectory(path.join(__dirname), "generate"); // core
+  }
+
+  program.parse(process.argv);
+
+  // --- Utils --- //
+
+  async function loadDirectory(dir: string, match = "*") {
+    if (!fs.existsSync(dir)) return;
+    const realpath = fs.realpathSync(dir);
+    if (pathsLoaded.includes(realpath)) return;
+    pathsLoaded.push(realpath);
+
+    const matcher = `${realpath}/**/+(${
+      typescript ? `${match}.js|*.ts` : `${match}.js`
+    })`;
+    const files = glob.sync(matcher);
+    for (const i in files) {
+      const collection = await import(files[i]);
+      for (const j in collection) {
+        const command = collection[j];
+        convertCLIToCommanderAction(command);
+      }
+    }
+  }
+
+  async function convertCLIToCommanderAction(cli) {
+    if (
+      Object.getPrototypeOf(cli?.prototype?.constructor || {}).name !== "CLI"
+    ) {
+      return;
+    }
+
+    const instance = new cli();
+    const command = program
+      .command(instance.name)
+      .description(instance.description)
+      .action(async (_program) => {
+        await runCommand(instance, _program);
+      })
+      .on("--help", () => {
+        if (instance.example) {
+          console.log("");
+          console.log("Example: \r\n" + "  " + instance.example);
+        }
+      });
+
+    for (const key in instance.inputs) {
+      const input = instance.inputs[key];
+      if (input.required && !input.default) {
+        command.requiredOption(`--${key} <${key}>`, input.description);
+      } else {
+        command.option(`--${key} <${key}>`, input.description, input.default);
+      }
+    }
+  }
+
+  async function runCommand(instance, _program) {
+    let toStop = false;
+    const params = _program.opts();
+
+    if (instance.initialize === false && instance.start === false) {
+      toStop = await instance.run({ params });
+    } else {
+      try {
+        const { Process } = await import("../index");
+        const actionHeroProcess = new Process();
+
+        if (instance.initialize) await actionHeroProcess.initialize();
+        if (instance.start) await actionHeroProcess.start();
+
+        toStop = await instance.run({ params });
+      } catch (error) {
+        console.error(error.toString());
         process.exit(1);
       }
+    }
 
-      params[inputName] = value;
-    });
+    if (toStop || toStop === null || toStop === undefined) {
+      setTimeout(process.exit, 500, 0);
+    }
+  }
 
-    return params;
-  };
+  function readPackageJSON(file) {
+    return JSON.parse(fs.readFileSync(file).toString());
+  }
 
-  const handleUnbuiltProject = async (commands: Array<string>) => {
-    try {
-      // when generating the project from scratch, we cannot rely on the normal initializers
-      const ExportedRunnerClasses = await import(
-        path.join(__dirname, "methods", commands.join(path.sep))
+  function getVersion(): string {
+    if (fs.existsSync(parentPackageJSON)) {
+      const pkg = readPackageJSON(parentPackageJSON);
+      return pkg.version;
+    } else {
+      const pkg = readPackageJSON(
+        path.join(__dirname, "..", "..", "package.json")
       );
-
-      if (Object.keys(ExportedRunnerClasses).length > 1) {
-        throw new Error("actionhero CLI files should only export one method");
-      }
-
-      const runner = new ExportedRunnerClasses[
-        Object.keys(ExportedRunnerClasses)[0]
-      ]();
-      const params = formatParams(runner);
-      await runner.run({ params: params });
-      setTimeout(process.exit, 100, 0);
-    } catch (error) {
-      console.error(error.toString());
-      process.exit(1);
+      return pkg.version;
     }
-  };
-
-  const handleMethod = async (commands: Array<string>) => {
-    console.log("₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋₋");
-    console.log(`ACTIONHERO COMMAND >> ${commands.join(" ")}`);
-    console.log("⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻⁻");
-
-    const { config, Process } = await import("../index");
-    const actionHeroProcess = new Process();
-    await actionHeroProcess.initialize();
-
-    try {
-      let ExportedClasses;
-
-      let p: string;
-      p = path.join(__dirname, "methods", commands.join(path.sep) + ".js");
-      if (fs.existsSync(p) && config.general.cliIncludeInternal !== false) {
-        ExportedClasses = await import(p);
-      }
-
-      p = path.join(__dirname, "methods", commands.join(path.sep) + ".ts");
-      if (fs.existsSync(p) && config.general.cliIncludeInternal !== false) {
-        ExportedClasses = await import(p);
-      }
-
-      if (!ExportedClasses) {
-        for (const i in config.general.paths.cli) {
-          const cliPath = config.general.paths.cli[i];
-          p = path.join(cliPath, commands.join(path.sep) + ".js");
-          if (fs.existsSync(p)) {
-            ExportedClasses = await import(p);
-          }
-
-          p = path.join(cliPath, commands.join(path.sep) + ".ts");
-          if (fs.existsSync(p)) {
-            ExportedClasses = await import(p);
-          }
-        }
-      }
-
-      if (!ExportedClasses) {
-        for (const pluginName in config.plugins) {
-          if (config.plugins[pluginName].cli !== false) {
-            const pluginPath = config.plugins[pluginName].path;
-            p = path.join(pluginPath, "bin", commands.join(path.sep) + ".js");
-            if (fs.existsSync(p)) {
-              ExportedClasses = await import(p);
-            }
-
-            p = path.join(
-              pluginPath,
-              "dist",
-              "bin",
-              commands.join(path.sep) + ".js"
-            );
-            if (fs.existsSync(p)) {
-              ExportedClasses = await import(p);
-            }
-          }
-        }
-      }
-
-      if (!ExportedClasses) {
-        console.error(
-          `Error: \`${commands.join(" ")}\` is not a method I can perform.`
-        );
-        console.error("run `actionhero help` to learn more");
-        setTimeout(process.exit, 500, 1);
-      } else if (Object.keys(ExportedClasses).length > 1) {
-        throw new Error("actionhero CLI files should only export one method");
-      } else {
-        const runner = new ExportedClasses[Object.keys(ExportedClasses)[0]]();
-        const params = formatParams(runner);
-        const toStop = await runner.run({ params: params });
-        if (toStop || toStop === null || toStop === undefined) {
-          setTimeout(process.exit, 500, 0);
-        }
-      }
-    } catch (error) {
-      console.error(error);
-      process.exit(1);
-    }
-  };
-
-  const commands = [];
-  if (!optimist.argv._ || optimist.argv._.length === 0) {
-    commands.push("help");
   }
-  optimist.argv._.forEach(function (arg: string) {
-    commands.push(arg);
-  });
+}
 
-  const argsMatch = (a: Array<string>, b: Array<string>) => {
-    if (a.length !== b.length) {
-      return false;
-    }
-    for (const i in a) {
-      if (a[i] !== b[i]) {
-        return false;
-      }
-    }
-    return true;
-  };
-
-  if (argsMatch(commands, ["version"])) {
-    handleUnbuiltProject(commands);
-  } else if (argsMatch(commands, ["generate"])) {
-    handleUnbuiltProject(commands);
-  } else if (argsMatch(commands, ["generate", "plugin"])) {
-    handleUnbuiltProject(commands);
-  } else {
-    handleMethod(commands);
-  }
-})();
+main();

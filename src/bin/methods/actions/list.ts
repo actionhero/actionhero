@@ -4,7 +4,7 @@ export class ActionsList extends CLI {
   constructor() {
     super();
     this.name = "actions list";
-    this.description = "I will list the actions defined on this server";
+    this.description = "List the actions defined on this server";
   }
 
   async run() {

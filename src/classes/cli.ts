@@ -14,6 +14,12 @@ export abstract class CLI {
     [key: string]: any;
   };
 
+  /** Should the server initialize before running this command? */
+  initialize: boolean;
+
+  /** Should the server start before running this command? */
+  start: boolean;
+
   constructor() {
     const defaults = this.getDefaults();
     for (const key in defaults) {
@@ -39,6 +45,8 @@ export abstract class CLI {
       description: this.name,
       example: "",
       inputs: {},
+      initialize: true,
+      start: false,
     };
   }
 

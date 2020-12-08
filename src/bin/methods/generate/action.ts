@@ -5,8 +5,8 @@ import { config, utils, CLI } from "./../../../index";
 export class GenerateAction extends CLI {
   constructor() {
     super();
-    this.name = "generate action";
-    this.description = "generate a new action";
+    this.name = "generate-action";
+    this.description = "Generate a new Action";
     this.example =
       "actionhero generate action --name=[name] --description=[description]";
     this.inputs = {

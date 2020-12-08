@@ -5,8 +5,8 @@ import { config, utils, CLI } from "./../../../index";
 export class GenerateTask extends CLI {
   constructor() {
     super();
-    this.name = "generate task";
-    this.description = "generate a new task";
+    this.name = "generate-task";
+    this.description = "Generate a new Task";
     this.example =
       "actionhero generate task --name=[name] --description=[description] --scope=[scope] --frequency=[frequency]";
     this.inputs = {
