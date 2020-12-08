@@ -159,9 +159,7 @@ describe("Core: Plugins", () => {
           );
           throw new Error("should not get here");
         } catch (error) {
-          expect(error.toString()).toMatch(
-            /`hello` is not a method I can perform/
-          );
+          expect(error.toString()).toMatch(/unknown command 'hello'/);
         }
       },
       30 * 1000
@@ -218,9 +216,7 @@ describe("Core: Plugins", () => {
           );
           throw new Error("should not get here");
         } catch (error) {
-          expect(error.toString()).toMatch(
-            /`hello` is not a method I can perform/
-          );
+          expect(error.toString()).toMatch(/unknown command 'hello'/);
         }
       },
       30 * 1000

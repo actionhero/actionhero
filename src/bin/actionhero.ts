@@ -6,6 +6,7 @@ import * as glob from "glob";
 import { program } from "commander";
 import { typescript } from "../classes/process/typescript";
 import { projectRoot } from "../classes/process/projectRoot";
+import { ensureNoTsHeaderFiles } from "../modules/utils/ensureNoTsHeaderFiles";
 
 export namespace ActionheroCLIRunner {
   export async function run() {
@@ -27,7 +28,16 @@ export namespace ActionheroCLIRunner {
       // plugins
       for (const pluginName in config.plugins) {
         if (config.plugins[pluginName].cli !== false) {
-          await loadDirectory(config.plugins[pluginName].path, pathsLoaded);
+          // old plugins
+          await loadDirectory(
+            path.join(config.plugins[pluginName].path, "bin"),
+            pathsLoaded
+          );
+          // new plugins
+          await loadDirectory(
+            path.join(config.plugins[pluginName].path, "dist", "bin"),
+            pathsLoaded
+          );
         }
       }
 
@@ -58,7 +68,7 @@ export namespace ActionheroCLIRunner {
     const matcher = `${realpath}/**/+(${
       typescript ? `${match}.js|*.ts` : `${match}.js`
     })`;
-    const files = glob.sync(matcher);
+    const files = ensureNoTsHeaderFiles(glob.sync(matcher));
     for (const i in files) {
       const collection = await import(files[i]);
       for (const j in collection) {
