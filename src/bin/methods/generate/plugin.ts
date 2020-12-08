@@ -4,16 +4,16 @@ import { CLI, utils } from "./../../../index";
 
 const PackageJSON = JSON.parse(
   fs
-    .readFileSync(path.join(__dirname, "..", "..", "..", "package.json"))
+    .readFileSync(path.join(__dirname, "..", "..", "..", "..", "package.json"))
     .toString()
 );
 
 export class GeneratePlugin extends CLI {
   constructor() {
     super();
-    this.name = "generate plugin";
+    this.name = "generate-plugin";
     this.description =
-      "generate the structure of a new actionhero plugin in an empty directory";
+      "Generate the structure of a new actionhero plugin in an empty directory";
     this.example = "actionhero generate plugin";
     this.inputs = {};
   }

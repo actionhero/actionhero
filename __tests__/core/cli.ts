@@ -125,14 +125,9 @@ describe("Core: CLI", () => {
       }
     }, 120000);
 
-    test("can call the version command (before generate)", async () => {
-      const { stdout } = await doCommand(`${binary} version`);
-      expect(stdout).toContain(pacakgeJSON.version);
-    }, 20000);
-
     test("can generate a new project", async () => {
       const { stdout } = await doCommand(`${binary} generate`);
-      expect(stdout).toMatch("<3, the Actionhero Team");
+      expect(stdout).toMatch("❤️  the Actionhero Team");
 
       [
         "tsconfig.json",
@@ -181,16 +176,15 @@ describe("Core: CLI", () => {
 
     test("can call the help command", async () => {
       const { stdout } = await doCommand(`${binary} help`);
-      expect(stdout).toMatch(/generate action/);
-      expect(stdout).toMatch(
-        /The reusable, scalable, and quick node.js API server for stateless and stateful applications/
-      );
-      expect(stdout).toMatch(/actionhero generate server/);
+      expect(stdout).toMatch(/generate-action/);
+      expect(stdout).toMatch(/Usage: actionhero \[options\] \[command\]/);
+      expect(stdout).toMatch(/generate-server/);
+      expect(stdout).toMatch(/generate-server \[options\]/);
     }, 20000);
 
     test("can call the version command (after generate)", async () => {
-      const { stdout } = await doCommand(`${binary} version`);
-      expect(stdout).toContain(pacakgeJSON.version);
+      const { stdout } = await doCommand(`${binary} --version`);
+      expect(stdout).toContain("0.1.0"); // this project's version
     }, 20000);
 
     test("will show a warning with bogus input", async () => {
@@ -200,10 +194,8 @@ describe("Core: CLI", () => {
       } catch (error) {
         expect(error).toBeTruthy();
         expect(error.exitCode).toEqual(1);
-        expect(error.stderr).toMatch(
-          /`not-a-thing` is not a method I can perform/
-        );
-        expect(error.stderr).toMatch(/run `actionhero help` to learn more/);
+        expect(error.stderr).toMatch(/unknown command 'not-a-thing'/);
+        expect(error.stderr).toMatch(/See 'actionhero --help/);
       }
     }, 20000);
 
@@ -228,7 +220,7 @@ describe("Core: CLI", () => {
 
       test("can generate an action", async () => {
         await doCommand(
-          `${binary} generate action --name=myAction --description=my_description`
+          `${binary} generate-action --name=myAction --description=my_description`
         );
         const actionData = String(
           fs.readFileSync(`${testDir}/src/actions/myAction.ts`)
@@ -244,7 +236,7 @@ describe("Core: CLI", () => {
 
       test("can generate a task", async () => {
         await doCommand(
-          `${binary} generate task --name=myTask --description=my_description --queue=my_queue --frequency=12345`
+          `${binary} generate-task --name=myTask --description=my_description --queue=my_queue --frequency=12345`
         );
         const taskData = String(
           fs.readFileSync(`${testDir}/src/tasks/myTask.ts`)
@@ -262,7 +254,7 @@ describe("Core: CLI", () => {
 
       test("can generate a CLI command", async () => {
         await doCommand(
-          `${binary} generate cli --name=myCommand --description=my_description --example=my_example`
+          `${binary} generate-cli --name=myCommand --description=my_description --example=my_example`
         );
         const data = String(fs.readFileSync(`${testDir}/src/bin/myCommand.ts`));
         expect(data).toMatch(/this.name = "myCommand"/);
@@ -270,7 +262,7 @@ describe("Core: CLI", () => {
       }, 20000);
 
       test("can generate a server", async () => {
-        await doCommand(`${binary} generate server --name=myServer`);
+        await doCommand(`${binary} generate-server --name=myServer`);
         const data = String(
           fs.readFileSync(`${testDir}/src/servers/myServer.ts`)
         );
@@ -283,7 +275,7 @@ describe("Core: CLI", () => {
 
       test("can generate an initializer", async () => {
         await doCommand(
-          `${binary} generate initializer --name=myInitializer --stopPriority=123`
+          `${binary} generate-initializer --name=myInitializer --stopPriority=123`
         );
         const data = String(
           fs.readFileSync(`${testDir}/src/initializers/myInitializer.ts`)

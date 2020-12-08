@@ -6,7 +6,7 @@ export class Console extends CLI {
     super();
     this.name = "console";
     this.description =
-      "start an interactive REPL session with the api object in-scope";
+      "Start an interactive REPL session with the api object in-scope";
   }
 
   async run() {

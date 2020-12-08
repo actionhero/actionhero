@@ -3,8 +3,8 @@ import { api, log, task, CLI } from "./../../../index";
 export class TaskEnqueue extends CLI {
   constructor() {
     super();
-    this.name = "task enqueue";
-    this.description = "enqueue a defined task into your actionhero cluster";
+    this.name = "task-enqueue";
+    this.description = "Enqueue a defined Task into your actionhero cluster";
     this.example =
       "actionhero task enqueue --name=[taskName] --args=[JSON-formatted args]";
     this.inputs = {

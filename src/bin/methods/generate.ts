@@ -15,7 +15,8 @@ export class Generate extends CLI {
     super();
     this.name = "generate";
     this.description =
-      "will prepare an empty directory with a template Actionhero project";
+      "Generate a new Actionhero Project in an empty directory";
+    this.initialize = false;
   }
 
   async run() {
@@ -176,7 +177,7 @@ export class Generate extends CLI {
 You need to run \`npm install\` to install dependencies, and then \`npm run build\` to build the .js from this .ts project.
 Then, run 'npm run dev' to start your server
 
-<3, the Actionhero Team
+❤️  the Actionhero Team
 www.actionherojs.com
 -------------------------------------------------------------------------------------------------------------------
       `

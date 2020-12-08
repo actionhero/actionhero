@@ -5,8 +5,8 @@ import { config, utils, CLI } from "./../../../index";
 export class GenerateServer extends CLI {
   constructor() {
     super();
-    this.name = "generate server";
-    this.description = "generate a new server";
+    this.name = "generate-server";
+    this.description = "Generate a new Server";
     this.example = "actionhero generate server --name=[name]";
     this.inputs = {
       name: { required: true },
