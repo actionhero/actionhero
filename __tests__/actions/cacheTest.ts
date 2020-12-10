@@ -72,13 +72,13 @@ describe("Action", () => {
     });
 
     test("works with correct params", async () => {
-      const { cacheTestResults } = await specHelper.runAction<typeof RunMethod>(
-        "cacheTest",
-        {
-          key: "testKey",
-          value: "abc123",
-        }
-      );
+      const { cacheTestResults, error } = await specHelper.runAction<
+        typeof RunMethod
+      >("cacheTest", {
+        key: "testKey",
+        value: "abc123",
+      });
+      expect(error).toBeFalsy();
       expect(cacheTestResults.saveResp).toEqual(true);
       expect(cacheTestResults.loadResp.value).toEqual("abc123");
       expect(cacheTestResults.deleteResp).toEqual(true);

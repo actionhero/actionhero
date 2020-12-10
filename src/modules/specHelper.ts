@@ -30,11 +30,11 @@ export namespace specHelper {
     connection.params.action = actionName;
 
     connection.messageId = connection.params.messageId || uuid.v4();
-    const response: ActionRunMethod extends Action["run"]
+    const response: (ActionRunMethod extends Action["run"]
       ? UnwrapPromise<ActionRunMethod>
-      : any & {
-          error: string;
-        } = await new Promise((resolve) => {
+      : any) & {
+      error: string;
+    } = await new Promise((resolve) => {
       api.servers.servers.testServer.processAction(connection);
       connection.actionCallbacks[connection.messageId] = resolve;
     });
@@ -70,11 +70,11 @@ export namespace specHelper {
       throw new Error(`task ${taskName} not found`);
     }
 
-    const result: TaskRunMethod extends Task["run"]
+    const result: (TaskRunMethod extends Task["run"]
       ? UnwrapPromise<TaskRunMethod>
-      : any & {
-          error: string;
-        } = api.tasks.tasks[taskName].run(params);
+      : any) & {
+      error: string;
+    } = api.tasks.tasks[taskName].run(params);
     return result;
   }
 
@@ -102,11 +102,11 @@ export namespace specHelper {
 
     try {
       await worker.connect();
-      const result: TaskRunMethod extends Task["run"]
+      const result: (TaskRunMethod extends Task["run"]
         ? UnwrapPromise<TaskRunMethod>
-        : any & {
-            error: string;
-          } = await worker.performInline(
+        : any) & {
+        error: string;
+      } = await worker.performInline(
         taskName,
         Array.isArray(params) ? params : [params]
       );
