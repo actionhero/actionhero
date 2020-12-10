@@ -1,6 +1,6 @@
 import * as uuid from "uuid";
 import { Worker } from "node-resque";
-import { api, config, task } from "./../index";
+import { api, config, task, Task, Action } from "./../index";
 import { UnwrapPromise } from "./tsUtils/unwrapPromise";
 
 export namespace specHelper {
@@ -30,9 +30,11 @@ export namespace specHelper {
     connection.params.action = actionName;
 
     connection.messageId = connection.params.messageId || uuid.v4();
-    const response: UnwrapPromise<ActionRunMethod> & {
-      error: string;
-    } = await new Promise((resolve) => {
+    const response: ActionRunMethod extends Action["run"]
+      ? UnwrapPromise<ActionRunMethod>
+      : any & {
+          error: string;
+        } = await new Promise((resolve) => {
       api.servers.servers.testServer.processAction(connection);
       connection.actionCallbacks[connection.messageId] = resolve;
     });
@@ -68,9 +70,11 @@ export namespace specHelper {
       throw new Error(`task ${taskName} not found`);
     }
 
-    const result: UnwrapPromise<TaskRunMethod> & {
-      error: string;
-    } = api.tasks.tasks[taskName].run(params);
+    const result: TaskRunMethod extends Task["run"]
+      ? UnwrapPromise<TaskRunMethod>
+      : any & {
+          error: string;
+        } = api.tasks.tasks[taskName].run(params);
     return result;
   }
 
@@ -98,9 +102,11 @@ export namespace specHelper {
 
     try {
       await worker.connect();
-      const result: UnwrapPromise<TaskRunMethod> & {
-        error: string;
-      } = await worker.performInline(
+      const result: TaskRunMethod extends Task["run"]
+        ? UnwrapPromise<TaskRunMethod>
+        : any & {
+            error: string;
+          } = await worker.performInline(
         taskName,
         Array.isArray(params) ? params : [params]
       );
