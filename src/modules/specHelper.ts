@@ -16,7 +16,7 @@ export namespace specHelper {
   export async function runAction(
     actionName: string,
     input: { [key: string]: any } = {}
-  ): Promise<{ [key: string]: any }> {
+  ): Promise<any> {
     let connection;
 
     if (input.id && input.type === "testServer") {

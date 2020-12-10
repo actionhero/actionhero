@@ -1,5 +1,8 @@
 import { Process, specHelper } from "./../../src/index";
+import { UnwrapPromise } from "../..";
+import { ValidationTest } from "../../src/actions/validationTest";
 
+type ActionResponse = UnwrapPromise<typeof ValidationTest.prototype.run>;
 const actionhero = new Process();
 
 describe("Action", () => {
@@ -26,6 +29,16 @@ describe("Action", () => {
       expect(error).toEqual(
         'Error: Input for parameter "string" failed validation!'
       );
+    });
+
+    test("works with a string", async () => {
+      const { string }: ActionResponse = await specHelper.runAction(
+        "validationTest",
+        {
+          string: "hello",
+        }
+      );
+      expect(string).toEqual("hello");
     });
   });
 });

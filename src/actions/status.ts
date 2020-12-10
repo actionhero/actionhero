@@ -13,7 +13,7 @@ const packageJSON = JSON.parse(
 // These values are probably good starting points, but you should expect to tweak them for your application
 const maxMemoryAlloted = process.env.maxMemoryAlloted || 500;
 const maxResqueQueueLength = process.env.maxResqueQueueLength || 1000;
-export default class Status extends Action {
+export class Status extends Action {
   constructor() {
     super();
     this.name = "status";

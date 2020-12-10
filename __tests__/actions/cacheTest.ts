@@ -1,5 +1,8 @@
 import { Process, specHelper } from "./../../src/index";
+import { UnwrapPromise } from "../..";
+import { CacheTest } from "../../src/actions/cacheTest";
 
+type ActionResponse = UnwrapPromise<typeof CacheTest.prototype.run>;
 const actionhero = new Process();
 
 describe("Action", () => {
@@ -55,10 +58,13 @@ describe("Action", () => {
     });
 
     test("works with correct params", async () => {
-      const { cacheTestResults } = await specHelper.runAction("cacheTest", {
-        key: "testKey",
-        value: "abc123",
-      });
+      const { cacheTestResults }: ActionResponse = await specHelper.runAction(
+        "cacheTest",
+        {
+          key: "testKey",
+          value: "abc123",
+        }
+      );
       expect(cacheTestResults.saveResp).toEqual(true);
       expect(cacheTestResults.loadResp.value).toEqual("abc123");
       expect(cacheTestResults.deleteResp).toEqual(true);

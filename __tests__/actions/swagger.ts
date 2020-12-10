@@ -1,5 +1,8 @@
 import { Process, specHelper } from "./../../src/index";
+import { UnwrapPromise } from "../..";
+import { Swagger } from "../../src/actions/swagger";
 
+type ActionResponse = UnwrapPromise<typeof Swagger.prototype.run>;
 const actionhero = new Process();
 
 describe("Action", () => {
@@ -14,7 +17,11 @@ describe("Action", () => {
     });
 
     test("returns the correct parts", async () => {
-      const { paths, basePath, host } = await specHelper.runAction("swagger");
+      const {
+        paths,
+        basePath,
+        host,
+      }: ActionResponse = await specHelper.runAction("swagger");
       expect(basePath).toBe("/api/");
       expect(host).toMatch(/localhost/);
       expect(Object.keys(paths).length).toEqual(9); // 9 actions
