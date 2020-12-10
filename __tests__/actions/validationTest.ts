@@ -1,8 +1,7 @@
 import { Process, specHelper } from "./../../src/index";
-import { UnwrapPromise } from "../..";
 import { ValidationTest } from "../../src/actions/validationTest";
 
-type ActionResponse = UnwrapPromise<typeof ValidationTest.prototype.run>;
+const RunMethod = ValidationTest.prototype.run;
 const actionhero = new Process();
 
 describe("Action", () => {
@@ -32,10 +31,11 @@ describe("Action", () => {
     });
 
     test("works with a string", async () => {
-      const { string }: ActionResponse = await specHelper.runAction(
+      const { string } = await specHelper.runAction<typeof RunMethod>(
         "validationTest",
         {
           string: "hello",
+          ValidationTest,
         }
       );
       expect(string).toEqual("hello");

@@ -1,6 +1,7 @@
 import * as uuid from "uuid";
 import { Worker } from "node-resque";
 import { api, config, task } from "./../index";
+import { UnwrapPromise } from "./tsUtils/unwrapPromise";
 
 export namespace specHelper {
   /**
@@ -13,10 +14,10 @@ export namespace specHelper {
   /**
    * Run an action via the specHelper server.
    */
-  export async function runAction(
+  export async function runAction<ActionRunMethod>(
     actionName: string,
     input: { [key: string]: any } = {}
-  ): Promise<any> {
+  ) {
     let connection;
 
     if (input.id && input.type === "testServer") {
@@ -29,7 +30,9 @@ export namespace specHelper {
     connection.params.action = actionName;
 
     connection.messageId = connection.params.messageId || uuid.v4();
-    const response = await new Promise((resolve) => {
+    const response: UnwrapPromise<ActionRunMethod> & {
+      error: string;
+    } = await new Promise((resolve) => {
       api.servers.servers.testServer.processAction(connection);
       connection.actionCallbacks[connection.messageId] = resolve;
     });

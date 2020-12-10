@@ -1,9 +1,7 @@
 import { Process, specHelper } from "./../../src/index";
-import { UnwrapPromise } from "../..";
 import { RecursiveAction } from "../../src/actions/recursiveAction";
 
-type ActionResponse = UnwrapPromise<typeof RecursiveAction.prototype.run>;
-
+const RunMethod = RecursiveAction.prototype.run;
 const actionhero = new Process();
 
 describe("Action", () => {
@@ -17,7 +15,7 @@ describe("Action", () => {
     });
 
     test("merges its own response with the randomNumber response", async () => {
-      const response: ActionResponse = await specHelper.runAction(
+      const response = await specHelper.runAction<typeof RunMethod>(
         "recursiveAction"
       );
       expect(response.local).toEqual(true);
