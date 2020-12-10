@@ -1,6 +1,7 @@
 import * as uuid from "uuid";
 import { Worker } from "node-resque";
-import { api, config, task } from "./../index";
+import { api, config, task, Task, Action } from "./../index";
+import { UnwrapPromise } from "./tsUtils/unwrapPromise";
 
 export namespace specHelper {
   /**
@@ -13,10 +14,10 @@ export namespace specHelper {
   /**
    * Run an action via the specHelper server.
    */
-  export async function runAction(
+  export async function runAction<ActionRunMethod>(
     actionName: string,
     input: { [key: string]: any } = {}
-  ): Promise<{ [key: string]: any }> {
+  ) {
     let connection;
 
     if (input.id && input.type === "testServer") {
@@ -29,7 +30,11 @@ export namespace specHelper {
     connection.params.action = actionName;
 
     connection.messageId = connection.params.messageId || uuid.v4();
-    const response = await new Promise((resolve) => {
+    const response: (ActionRunMethod extends Action["run"]
+      ? UnwrapPromise<ActionRunMethod>
+      : any) & {
+      error: string;
+    } = await new Promise((resolve) => {
       api.servers.servers.testServer.processAction(connection);
       connection.actionCallbacks[connection.messageId] = resolve;
     });
@@ -57,22 +62,27 @@ export namespace specHelper {
    * Use the specHelper to run a task.
    * Note: this only runs the task's `run()` method, and no middleware.  This is faster than api.specHelper.runFullTask.
    */
-  export async function runTask(
+  export async function runTask<TaskRunMethod>(
     taskName: string,
     params: object | Array<any>
-  ): Promise<{ [key: string]: any }> {
+  ) {
     if (!api.tasks.tasks[taskName]) {
       throw new Error(`task ${taskName} not found`);
     }
 
-    return api.tasks.tasks[taskName].run(params);
+    const result: (TaskRunMethod extends Task["run"]
+      ? UnwrapPromise<TaskRunMethod>
+      : any) & {
+      error: string;
+    } = api.tasks.tasks[taskName].run(params);
+    return result;
   }
 
   /**
    * Use the specHelper to run a task.
    * Note: this will run a full Task worker, and will also include any middleware.  This is slower than api.specHelper.runTask.
    */
-  export async function runFullTask(
+  export async function runFullTask<TaskRunMethod>(
     taskName: string,
     params: object | Array<any>
   ) {
@@ -92,7 +102,11 @@ export namespace specHelper {
 
     try {
       await worker.connect();
-      const result = await worker.performInline(
+      const result: (TaskRunMethod extends Task["run"]
+        ? UnwrapPromise<TaskRunMethod>
+        : any) & {
+        error: string;
+      } = await worker.performInline(
         taskName,
         Array.isArray(params) ? params : [params]
       );
