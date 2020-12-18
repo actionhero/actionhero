@@ -10,10 +10,25 @@ export class GenerateInitializer extends CLI {
     this.example =
       "actionhero generate initializer --name=<name> --loadPriority=[p] --startPriority=[p] --stopPriority=[p]";
     this.inputs = {
-      name: { required: true },
-      loadPriority: { required: true, default: 1000 },
-      startPriority: { required: true, default: 1000 },
-      stopPriority: { required: true, default: 1000 },
+      name: {
+        required: true,
+        description: "The name of the Initializer to generate",
+      },
+      loadPriority: {
+        required: true,
+        description: "The order that this Initializer will initialize",
+        default: 1000,
+      },
+      startPriority: {
+        required: true,
+        description: "The order that this Initializer will start",
+        default: 1000,
+      },
+      stopPriority: {
+        required: true,
+        description: "The order that this Initializer will stop",
+        default: 1000,
+      },
     };
   }
 

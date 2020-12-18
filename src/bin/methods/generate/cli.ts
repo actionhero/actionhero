@@ -9,9 +9,20 @@ export class GenerateCLI extends CLI {
     this.description = "Generate a new cli command";
     this.example = "actionhero generate cli --name=<name>";
     this.inputs = {
-      name: { required: true },
-      description: { required: false, default: "an actionhero cli command" },
-      example: { required: false, default: "actionhero command --option=yes" },
+      name: {
+        required: true,
+        description: "The name of the CLI Command to generate",
+      },
+      description: {
+        required: false,
+        description: "The name of the CLI Command",
+        default: "an actionhero cli command",
+      },
+      example: {
+        required: false,
+        description: "An example to include for the CLI Command's help",
+        default: "actionhero command --option=yes",
+      },
     };
   }
 
