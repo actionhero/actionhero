@@ -176,7 +176,9 @@ describe("Core: Tasks", () => {
   });
 
   test("setup worked", () => {
-    expect(Object.keys(api.tasks.tasks)).toHaveLength(4 + 1);
+    expect(
+      Object.keys(api.tasks.tasks).filter((k) => k !== "test-task") // test-task might be in scope from integration test
+    ).toHaveLength(4 + 1);
   });
 
   test("all queues should start empty", async () => {
