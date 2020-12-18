@@ -10,7 +10,6 @@ export class TaskEnqueue extends CLI {
     this.inputs = {
       name: { required: true },
       args: { required: false },
-      params: { required: false },
     };
   }
 
@@ -22,9 +21,6 @@ export class TaskEnqueue extends CLI {
     let args = {};
     if (params.args) {
       args = JSON.parse(params.args);
-    }
-    if (params.params) {
-      args = JSON.parse(params.params);
     }
 
     const toRun = await task.enqueue(params.name, args);

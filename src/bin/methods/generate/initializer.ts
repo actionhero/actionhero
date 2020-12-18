@@ -8,7 +8,7 @@ export class GenerateInitializer extends CLI {
     this.name = "generate-initializer";
     this.description = "Generate a new Initializer";
     this.example =
-      "actionhero generate initializer --name=[name] --loadPriority=[p] --startPriority=[p] --stopPriority=[p]";
+      "actionhero generate initializer --name=<name> --loadPriority=[p] --startPriority=[p] --stopPriority=[p]";
     this.inputs = {
       name: { required: true },
       loadPriority: { required: true, default: 1000 },
