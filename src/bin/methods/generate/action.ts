@@ -10,8 +10,15 @@ export class GenerateAction extends CLI {
     this.example =
       "actionhero generate action --name=<name> --description=[description]";
     this.inputs = {
-      name: { required: true },
-      description: { required: true, default: "an actionhero action" },
+      name: {
+        required: true,
+        description: "The name of the Action to Generate",
+      },
+      description: {
+        required: true,
+        description: "The description of the Action",
+        default: "an actionhero action",
+      },
     };
   }
 

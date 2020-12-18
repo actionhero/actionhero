@@ -6,10 +6,13 @@ export class TaskEnqueue extends CLI {
     this.name = "task-enqueue";
     this.description = "Enqueue a defined Task into your actionhero cluster";
     this.example =
-      "actionhero task enqueue --name=[taskName] --args=[JSON-formatted args]";
+      "actionhero task enqueue --name=[taskName] --args=[JSON-encoded args]";
     this.inputs = {
-      name: { required: true },
-      args: { required: false },
+      name: { required: true, description: "The name of the Task to enqueue" },
+      args: {
+        required: false,
+        description: "Arguments to the Task (JSON encoded)",
+      },
     };
   }
 

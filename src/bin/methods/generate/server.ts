@@ -9,7 +9,10 @@ export class GenerateServer extends CLI {
     this.description = "Generate a new Server";
     this.example = "actionhero generate server --name=<name>";
     this.inputs = {
-      name: { required: true },
+      name: {
+        required: true,
+        description: "The name of the Server to generate",
+      },
     };
   }
 

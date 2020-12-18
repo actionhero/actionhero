@@ -10,10 +10,21 @@ export class GenerateTask extends CLI {
     this.example =
       "actionhero generate task --name=<name> -queue=<queue> --description=[description] --frequency=[frequency]";
     this.inputs = {
-      name: { required: true },
-      queue: { required: true },
-      description: { required: true, default: "an actionhero task" },
-      frequency: { required: true, default: "0" },
+      name: { required: true, description: "The name of the Task to generate" },
+      queue: {
+        required: true,
+        description: "The queue that this Task will run on",
+      },
+      description: {
+        required: true,
+        description: "The description of this Task",
+        default: "an actionhero task",
+      },
+      frequency: {
+        required: true,
+        description: "Should this Task run periodically? Frequency is in ms",
+        default: "0",
+      },
     };
   }
 
