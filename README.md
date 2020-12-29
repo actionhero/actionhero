@@ -79,8 +79,8 @@ Or deploy a free API server now:
 
 - [Getting Started @ www.actionherojs.com](https://www.actionherojs.com/get-started)
   - Actionhero's website can be found @ [https://github.com/actionhero/www.actionherojs.com/](https://github.com/actionhero/www.actionherojs.com/). If you want to contribute to this site, visit the [related project](https://github.com/actionhero/www.actionherojs.com)
-- [Read the typedoc documentation @ docs.actionherojs.com](http://docs.actionherojs.com/)
   - ---> Start with the [Tutorials](https://www.actionherojs.com/tutorials) <---
+- [Read the typedoc documentation @ docs.actionherojs.com](http://docs.actionherojs.com/)
   - Starting with Actionhero version 18, the documentation for each version is included in this repository (and the NPM package) in the `/docs` folder. The current version of this documentation is also automatically deployed to https://docs.actionherojs.com.
 - [Find community-based resources](https://github.com/l0oky/awesome-actionhero)
 - [Interact with the Community & View the Release History](https://www.actionherojs.com/community)
@@ -143,4 +143,3 @@ Or deploy a free API server now:
 > Technology is a powerful force in our society. Data, software, and communication can be used for bad: to entrench unfair power structures, to undermine human rights, and to protect vested interests. But they can also be used for good: to make underrepresented people’s voices heard, to create opportunities for everyone, and to avert disasters. This project is dedicated to everyone working toward the good.
 >
 > > Inspired by Martin Kleppmann
-
