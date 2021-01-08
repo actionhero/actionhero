@@ -12,7 +12,6 @@ import { env } from "./process/env";
 import { writePidFile, clearPidFile } from "./process/pid";
 
 import { api } from "../index";
-import { throws } from "assert";
 
 let config: ConfigInterface = {};
 
