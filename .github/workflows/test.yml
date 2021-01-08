@@ -101,7 +101,7 @@ jobs:
       - run: ./node_modules/.bin/jest --ci
         env:
           REDIS_HOST: redis
-          maxMemoryAlloted: 1000
+          maxMemoryAlloted: 10000
 
   complete:
     runs-on: ubuntu-latest
