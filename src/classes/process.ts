@@ -12,12 +12,15 @@ import { env } from "./process/env";
 import { writePidFile, clearPidFile } from "./process/pid";
 
 import { api } from "../index";
+import { throws } from "assert";
 
 let config: ConfigInterface = {};
 
 export class Process {
   running: boolean;
   initialized: boolean;
+  started: boolean;
+  stopped: boolean;
   shuttingDown: boolean;
   bootTime: number;
   initializers: Initializers;
@@ -30,6 +33,9 @@ export class Process {
   };
 
   constructor() {
+    this.initialized = false;
+    this.started = false;
+    this.stopped = false;
     this.initializers = {};
     this.loadInitializers = [];
     this.startInitializers = [];
@@ -250,9 +256,7 @@ export class Process {
   }
 
   async start(params = {}) {
-    if (this.initialized !== true) {
-      await this.initialize(params);
-    }
+    if (this.initialized !== true) await this.initialize(params);
 
     writePidFile();
     this.running = true;
@@ -276,6 +280,8 @@ export class Process {
     } catch (error) {
       return this.fatalError(error, "start");
     }
+
+    this.started = true;
   }
 
   async stop() {
@@ -283,6 +289,7 @@ export class Process {
       this.shuttingDown = true;
       this.running = false;
       this.initialized = false;
+      this.started = false;
 
       log("stopping process...", "notice");
       await utils.sleep(100);
@@ -302,6 +309,8 @@ export class Process {
       } catch (error) {
         return this.fatalError(error, "stop");
       }
+
+      this.stopped = true;
     } else if (this.shuttingDown === true) {
       // double sigterm; ignore it
     } else {
