@@ -27,7 +27,7 @@ export class TaskEnqueue extends CLI {
     }
 
     const toRun = await task.enqueue(params.name, args);
-    log("response", "info", toRun);
+    log(`enqueued: ${toRun}`, "info");
     return true;
   }
 }

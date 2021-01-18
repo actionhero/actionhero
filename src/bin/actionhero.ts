@@ -89,7 +89,7 @@ export namespace ActionheroCLIRunner {
     const command = program
       .command(instance.name)
       .description(instance.description)
-      .action(async (_program) => {
+      .action(async (filename, _program) => {
         await runCommand(instance, _program);
       })
       .on("--help", () => {
