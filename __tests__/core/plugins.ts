@@ -86,7 +86,7 @@ describe("Core: Plugins", () => {
           { env }
         );
         expect(error2).toEqual("");
-        expect(helloResponse).toContain("hello");
+        expect(helloResponse).toContain("Hello, Actionhero");
       },
       30 * 1000
     );

@@ -17,17 +17,17 @@ export class GenerateInitializer extends CLI {
       loadPriority: {
         required: true,
         description: "The order that this Initializer will initialize",
-        default: 1000,
+        default: "1000",
       },
       startPriority: {
         required: true,
         description: "The order that this Initializer will start",
-        default: 1000,
+        default: "1000",
       },
       stopPriority: {
         required: true,
         description: "The order that this Initializer will stop",
-        default: 1000,
+        default: "1000",
       },
     };
   }
