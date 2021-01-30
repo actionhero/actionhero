@@ -7,6 +7,7 @@ import { program } from "commander";
 import { typescript } from "../classes/process/typescript";
 import { projectRoot } from "../classes/process/projectRoot";
 import { ensureNoTsHeaderFiles } from "../modules/utils/ensureNoTsHeaderFiles";
+import { CLI } from "../classes/cli";
 
 export namespace ActionheroCLIRunner {
   export async function run() {
@@ -85,33 +86,56 @@ export namespace ActionheroCLIRunner {
       return;
     }
 
-    const instance = new cli();
+    const instance: CLI = new cli();
     const command = program
       .command(instance.name)
       .description(instance.description)
-      .action(async (filename, _program) => {
-        await runCommand(instance, _program);
+      .action(async (_arg1, _arg2, _arg3, _arg4, _arg5) => {
+        await runCommand(instance, _arg1, _arg2, _arg3, _arg4, _arg5);
       })
       .on("--help", () => {
         if (instance.example) {
           console.log("");
           console.log("Example: \r\n" + "  " + instance.example);
         }
+        if (typeof instance.help === "function") instance.help();
       });
 
     for (const key in instance.inputs) {
       const input = instance.inputs[key];
-      if (input.required && !input.default) {
-        command.requiredOption(`--${key} <${key}>`, input.description);
-      } else {
-        command.option(`--${key} [${key}]`, input.description, input.default);
-      }
+      const separators = input.required ? ["<", ">"] : ["[", "]"];
+      const methodName = input.required ? "requiredOption" : "option";
+      command[methodName](
+        `${input.letter ? `-${input.letter}, ` : ""}--${key} ${
+          input.flag ? "" : `${separators[0]}${key}${separators[1]}`
+        }`,
+        input.description,
+        input.default
+      );
     }
   }
 
-  export async function runCommand(instance, _program) {
+  export async function runCommand(
+    instance: CLI,
+    _arg1: any,
+    _arg2: any,
+    _arg3: any,
+    _arg4: any,
+    _arg5: any
+  ) {
     let toStop = false;
-    const params = _program.opts();
+
+    let _arguments = [];
+    let params = {};
+    [_arg1, _arg2, _arg3, _arg4, _arg5].forEach((arg) => {
+      if (typeof arg?.opts === "function") {
+        params = arg.opts();
+      } else if (arg !== null && arg !== undefined && typeof arg !== "object") {
+        _arguments.push(arg);
+      }
+    });
+
+    params["_arguments"] = _arguments;
 
     if (instance.initialize === false && instance.start === false) {
       toStop = await instance.run({ params });
