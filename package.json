@@ -2,7 +2,7 @@
   "author": "Evan Tahler <evantahler@gmail.com>",
   "name": "actionhero",
   "description": "The reusable, scalable, and quick node.js API server for stateless and stateful applications",
-  "version": "25.0.5",
+  "version": "25.0.6",
   "homepage": "http://www.actionherojs.com",
   "license": "Apache-2.0",
   "repository": {
@@ -73,7 +73,7 @@
   },
   "optionalDependencies": {},
   "bin": {
-    "actionhero": "./dist/bin/actionhero.js"
+    "actionhero": "dist/bin/actionhero.js"
   },
   "jest": {
     "testPathIgnorePatterns": [
