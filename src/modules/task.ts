@@ -394,8 +394,13 @@ export namespace task {
    * Return wholistic details about the task system, including failures, queues, and workers.
    * Will throw an error if redis cannot be reached.
    */
-  export async function details(): Promise<{ [key: string]: any }> {
-    const details = { queues: {}, workers: {}, stats: null };
+  export async function details() {
+    const details: {
+      queues: { [key: string]: any };
+      workers: { [key: string]: any };
+      stats: { [key: string]: any };
+      leader: string;
+    } = { queues: {}, workers: {}, stats: null, leader: null };
 
     details.workers = await task.allWorkingOn();
     details.stats = await task.stats();
@@ -406,6 +411,8 @@ export namespace task {
       const length = await api.resque.queue.length(queue);
       details.queues[queue] = { length: length };
     }
+
+    details.leader = await api.resque.queue.leader();
 
     return details;
   }
