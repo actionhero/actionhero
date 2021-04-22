@@ -16,6 +16,8 @@ export abstract class CLI {
       default?: string | boolean;
       letter?: string;
       flag?: boolean;
+      placeholder?: string;
+      variadic?: boolean;
       description?: string;
     };
   };
