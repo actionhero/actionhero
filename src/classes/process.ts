@@ -404,7 +404,10 @@ export class Process {
       log(`Error with initializer step: ${JSON.stringify(type)}`, "emerg");
 
       errors.forEach((error) => {
-        log(error.stack, "emerg");
+        log(
+          error.stack,
+          process.env.ACTIONHERO_FATAL_ERROR_STACK_LOG_LEVEL || "emerg"
+        );
       });
 
       await this.stop();
