@@ -407,7 +407,7 @@ export class Process {
         ? process.env.ACTIONHERO_FATAL_ERROR_STACK_DISPLAY === "true"
         : true;
       errors.forEach((error) => {
-        log(showStack ? error.stack || error : error.message || error, "debug");
+        log(showStack ? error.stack ?? error : error.message ?? error, "emerg");
       });
 
       await this.stop();
