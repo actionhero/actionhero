@@ -403,11 +403,11 @@ export class Process {
     if (errors) {
       log(`Error with initializer step: ${JSON.stringify(type)}`, "emerg");
 
+      const showStack = process.env.ACTIONHERO_FATAL_ERROR_STACK_DISPLAY
+        ? process.env.ACTIONHERO_FATAL_ERROR_STACK_DISPLAY === "true"
+        : true;
       errors.forEach((error) => {
-        log(
-          error.stack,
-          process.env.ACTIONHERO_FATAL_ERROR_STACK_LOG_LEVEL || "emerg"
-        );
+        log(showStack ? error.stack || error : error.message || error, "debug");
       });
 
       await this.stop();
