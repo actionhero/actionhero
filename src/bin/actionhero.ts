@@ -107,7 +107,11 @@ export namespace ActionheroCLIRunner {
       const methodName = input.required ? "requiredOption" : "option";
       command[methodName](
         `${input.letter ? `-${input.letter}, ` : ""}--${key} ${
-          input.flag ? "" : `${separators[0]}${key}${separators[1]}`
+          input.flag
+            ? ""
+            : `${separators[0]}${input.placeholder || key}${
+                input.variadic ? "..." : ""
+              }${separators[1]}`
         }`,
         input.description,
         input.default
