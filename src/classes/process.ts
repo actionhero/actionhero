@@ -20,7 +20,7 @@ export class Process {
   initialized: boolean;
   started: boolean;
   stopped: boolean;
-  stopReasons?: string[];
+  stopReasons?: string[] = [];
   shuttingDown: boolean;
   bootTime: number;
   initializers: Initializers;
@@ -297,7 +297,7 @@ export class Process {
         : undefined;
 
       log("stopping process...", "notice");
-      if (this.stopReasons.length > 0) {
+      if (this.stopReasons?.length > 0) {
         log(`stop reasons: ${this.stopReasons.join(", ")}`, "debug");
       }
 
