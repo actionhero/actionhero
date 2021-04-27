@@ -285,17 +285,15 @@ export class Process {
     this.started = true;
   }
 
-  async stop(stopReasons?: string | string[]) {
+  async stop(stopReasons: string | string[] = []) {
     if (this.running) {
       this.shuttingDown = true;
       this.running = false;
       this.initialized = false;
       this.started = false;
-      this.stopReasons = stopReasons
-        ? Array.isArray(stopReasons)
-          ? stopReasons
-          : [stopReasons]
-        : undefined;
+      this.stopReasons = Array.isArray(stopReasons)
+        ? stopReasons
+        : [stopReasons];
 
       log("stopping process...", "notice");
       if (this.stopReasons?.length > 0) {
