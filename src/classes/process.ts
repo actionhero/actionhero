@@ -20,6 +20,7 @@ export class Process {
   initialized: boolean;
   started: boolean;
   stopped: boolean;
+  stopReasons?: string[];
   shuttingDown: boolean;
   bootTime: number;
   initializers: Initializers;
@@ -39,6 +40,7 @@ export class Process {
     this.loadInitializers = [];
     this.startInitializers = [];
     this.stopInitializers = [];
+    this.stopReasons = [];
 
     this.startCount = 0;
 
@@ -283,14 +285,21 @@ export class Process {
     this.started = true;
   }
 
-  async stop() {
+  async stop(stopReasons: string | string[] = []) {
     if (this.running) {
       this.shuttingDown = true;
       this.running = false;
       this.initialized = false;
       this.started = false;
+      this.stopReasons = Array.isArray(stopReasons)
+        ? stopReasons
+        : [stopReasons];
 
       log("stopping process...", "notice");
+      if (this.stopReasons?.length > 0) {
+        log(`stop reasons: ${this.stopReasons.join(", ")}`, "debug");
+      }
+
       await utils.sleep(100);
 
       this.stopInitializers.push(async () => {
@@ -396,10 +405,9 @@ export class Process {
   }
 
   // HELPERS
-  async fatalError(errors, type) {
-    if (errors && !(errors instanceof Array)) {
-      errors = [errors];
-    }
+  async fatalError(errors: Error | Error[] = [], type: any) {
+    if (!(errors instanceof Array)) errors = [errors];
+
     if (errors) {
       log(`Error with initializer step: ${JSON.stringify(type)}`, "emerg");
 
@@ -407,10 +415,15 @@ export class Process {
         ? process.env.ACTIONHERO_FATAL_ERROR_STACK_DISPLAY === "true"
         : true;
       errors.forEach((error) => {
-        log(showStack ? error.stack ?? error : error.message ?? error, "emerg");
+        log(
+          showStack
+            ? error.stack ?? error.toString()
+            : error.message ?? error.toString(),
+          "emerg"
+        );
       });
 
-      await this.stop();
+      await this.stop(errors.map((e) => e.message ?? e.toString()));
 
       await utils.sleep(1000); // allow time for console.log to print
       process.exit(1);

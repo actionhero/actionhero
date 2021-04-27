@@ -25,7 +25,8 @@ describe("Core", () => {
     });
 
     test("a new process can be stopped", async () => {
-      await actionhero.stop();
+      await actionhero.stop("some reason");
+      expect(actionhero.stopReasons).toEqual(["some reason"]);
       expect(actionhero.initialized).toBe(false);
       expect(actionhero.started).toBe(false);
       expect(actionhero.stopped).toBe(true);
