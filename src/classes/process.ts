@@ -20,7 +20,7 @@ export class Process {
   initialized: boolean;
   started: boolean;
   stopped: boolean;
-  stopReasons?: string[] = [];
+  stopReasons?: string[];
   shuttingDown: boolean;
   bootTime: number;
   initializers: Initializers;
@@ -40,6 +40,7 @@ export class Process {
     this.loadInitializers = [];
     this.startInitializers = [];
     this.stopInitializers = [];
+    this.stopReasons = [];
 
     this.startCount = 0;
 
