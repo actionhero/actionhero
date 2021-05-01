@@ -18,9 +18,6 @@ function determineId() {
   } else if (!config || !config.general.id) {
     let externalIP = utils.getExternalIPAddress();
     if (!externalIP) {
-      const message =
-        " * Error fetching this hosts external IP address; setting id base to 'actionhero'";
-      console.log(message);
       externalIP = "actionhero";
     }
 
