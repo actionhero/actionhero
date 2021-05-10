@@ -2,9 +2,7 @@
  * Parse an IPv6 address, returning both host and port.
  * see https://github.com/actionhero/actionhero/issues/275
  */
-export function parseIPv6URI(
-  addr: string
-): {
+export function parseIPv6URI(addr: string): {
   host: string;
   port: number;
 } {

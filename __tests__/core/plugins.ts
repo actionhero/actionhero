@@ -68,20 +68,14 @@ describe("Core: Plugins", () => {
         const env = Object.assign({}, process.env);
         env.configChanges = JSON.stringify(configChanges);
 
-        const {
-          stdout: helpResponse,
-          stderr: error1,
-        } = await exec(
+        const { stdout: helpResponse, stderr: error1 } = await exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts help",
           { env }
         );
         expect(error1).toEqual("");
         expect(helpResponse).toContain("hello");
 
-        const {
-          stdout: helloResponse,
-          stderr: error2,
-        } = await exec(
+        const { stdout: helloResponse, stderr: error2 } = await exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts hello",
           { env }
         );
@@ -142,10 +136,7 @@ describe("Core: Plugins", () => {
         const env = Object.assign({}, process.env);
         env.configChanges = JSON.stringify(configChanges);
 
-        const {
-          stdout: helpResponse,
-          stderr: error1,
-        } = await exec(
+        const { stdout: helpResponse, stderr: error1 } = await exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts help",
           { env }
         );
@@ -199,10 +190,7 @@ describe("Core: Plugins", () => {
       "will not load CLI command from an un-loaded plugin",
       async () => {
         const env = Object.assign({}, process.env);
-        const {
-          stdout: helpResponse,
-          stderr: error1,
-        } = await exec(
+        const { stdout: helpResponse, stderr: error1 } = await exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts help",
           { env }
         );

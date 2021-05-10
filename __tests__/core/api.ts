@@ -225,10 +225,8 @@ describe("Core", () => {
         const responsePartial: ResponseType["randomNumber"] = 2;
 
         // <AssertEqualType> will fail compilation if the types are not equal
-        const typeMatch: AssertEqualType<
-          typeof responsePayload,
-          ResponseType
-        > = true;
+        const typeMatch: AssertEqualType<typeof responsePayload, ResponseType> =
+          true;
 
         expect(typeMatch).toBe(true);
         expect(responsePartial).toBe(2);

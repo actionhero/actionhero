@@ -115,9 +115,10 @@ export class SpecHelper extends Initializer {
           }
         } else {
           if (data.response.error) {
-            data.response.error = await config.errors.serializers.servers.specHelper(
-              data.response.error
-            );
+            data.response.error =
+              await config.errors.serializers.servers.specHelper(
+                data.response.error
+              );
           }
 
           if (api.specHelper.returnMetadata) {
