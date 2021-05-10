@@ -7,9 +7,9 @@ import * as dotProp from "dot-prop";
  * Hides any sensitive data as defined by `api.config.general.filteredResponse`
  * Truncates long strings via `api.config.logger.maxLogStringLength`
  */
-export function filterResponseForLogging(
-  response: object
-): { [key: string]: any } {
+export function filterResponseForLogging(response: object): {
+  [key: string]: any;
+} {
   const filteredResponse = {};
   for (const i in response) {
     if (isPlainObject(response[i])) {

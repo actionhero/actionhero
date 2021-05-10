@@ -92,9 +92,8 @@ describe("Core", () => {
         ]);
         await utils.sleep(100);
 
-        const { message, room, from } = client2.messages[
-          client2.messages.length - 1
-        ];
+        const { message, room, from } =
+          client2.messages[client2.messages.length - 1];
         expect(message).toEqual("Hi from client 1");
         expect(room).toEqual("defaultRoom");
         expect(from).toEqual(client1.id);

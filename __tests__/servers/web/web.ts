@@ -364,7 +364,8 @@ describe("Server: Web", () => {
           run: async (data) => {
             data.response = data.connection.rawConnection.params;
             if (data.connection.rawConnection.params.rawBody) {
-              data.response.rawBody = data.connection.rawConnection.params.rawBody.toString();
+              data.response.rawBody =
+                data.connection.rawConnection.params.rawBody.toString();
             }
           },
         },

@@ -3,9 +3,7 @@ import { parseIPv6URI } from "./parseIPv6URI";
 /**
  * Return ip and port information if defined in the header
  */
-export function parseHeadersForClientAddress(
-  headers: object
-): {
+export function parseHeadersForClientAddress(headers: object): {
   ip: string;
   port: number;
 } {

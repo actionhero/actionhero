@@ -108,9 +108,8 @@ describe("with ioredis-mock", () => {
     await client1.verbs("say", ["defaultRoom", "Hi"]);
     await utils.sleep(10);
 
-    const { message, room, from } = client2.messages[
-      client2.messages.length - 1
-    ];
+    const { message, room, from } =
+      client2.messages[client2.messages.length - 1];
 
     expect(message).toEqual("Hi");
     expect(room).toEqual("defaultRoom");

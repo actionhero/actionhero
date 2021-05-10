@@ -637,9 +637,8 @@ export class WebServer extends Server {
       }
     }
 
-    const extensionParts = connection.rawConnection.parsedURL.pathname.split(
-      "."
-    );
+    const extensionParts =
+      connection.rawConnection.parsedURL.pathname.split(".");
     if (extensionParts.length > 1) {
       connection.extension = extensionParts[extensionParts.length - 1];
     }

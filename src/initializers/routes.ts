@@ -63,10 +63,11 @@ export class Routes extends Initializer {
             connection.matchedRoute = route;
 
             if (route.dir) {
-              const requestedFile = connection.rawConnection.parsedURL.pathname.substring(
-                route.path.length,
-                connection.rawConnection.parsedURL.pathname.length
-              );
+              const requestedFile =
+                connection.rawConnection.parsedURL.pathname.substring(
+                  route.path.length,
+                  connection.rawConnection.parsedURL.pathname.length
+                );
               connection.params.file = path.normalize(
                 route.dir + "/" + requestedFile
               );
