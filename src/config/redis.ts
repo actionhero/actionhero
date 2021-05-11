@@ -8,8 +8,7 @@ import { URL } from "url";
 export const DEFAULT = {
   redis: (config) => {
     const konstructor = require("ioredis");
-
-    let protocol = "redis";
+    let protocol = process.env.REDIS_SSL ? "rediss" : "redis";
     let host = process.env.REDIS_HOST || "127.0.0.1";
     let port = process.env.REDIS_PORT || 6379;
     let db = process.env.REDIS_DB || process.env.JEST_WORKER_ID || "0";
@@ -30,6 +29,7 @@ export const DEFAULT = {
       host,
       password,
       db: parseInt(db),
+      // ssl options
       tls: protocol === "rediss" ? { rejectUnauthorized: false } : undefined,
       // you can learn more about retryStrategy @ https://github.com/luin/ioredis#auto-reconnect
       retryStrategy: (times) => {
