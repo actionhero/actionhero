@@ -263,16 +263,16 @@ export class Process {
     this.running = true;
     api.running = true;
     log(`environment: ${env}`, "notice");
-    log("*** Starting Actionhero ***", "info");
+    log(`*** Starting ${config.general.serverName} ***`, "info");
 
     this.startInitializers.push(() => {
       this.bootTime = new Date().getTime();
       if (this.startCount === 0) {
         log(`server ID: ${id}`, "notice");
-        log("*** Actionhero Started ***", "notice");
+        log(`*** ${config.general.serverName} Started ***`, "notice");
         this.startCount++;
       } else {
-        log("*** Actionhero Restarted ***", "notice");
+        log(`*** ${config.general.serverName} Restarted ***`, "notice");
       }
     });
 
@@ -304,7 +304,7 @@ export class Process {
 
       this.stopInitializers.push(async () => {
         clearPidFile();
-        log("*** Actionhero Stopped ***", "notice");
+        log(`*** ${config.general.serverName} Stopped ***`, "notice");
         delete this.shuttingDown;
         // reset initializers to prevent duplicate check on restart
         this.initializers = {};
@@ -322,7 +322,7 @@ export class Process {
     } else if (this.shuttingDown === true) {
       // double sigterm; ignore it
     } else {
-      const message = "Cannot shut down actionhero, not running";
+      const message = `Cannot shut down ${config.general.serverName}, not running`;
       log(message, "crit");
     }
   }

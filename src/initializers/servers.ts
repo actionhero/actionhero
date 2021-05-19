@@ -101,14 +101,17 @@ export class Servers extends Initializer {
       const serverName = serverNames[i];
       const server = api.servers.servers[serverName];
       if (server && server.config.enabled === true) {
-        let message = "";
-        message += `Starting server: \`${serverName}\``;
-        if (config.servers[serverName].bindIP) {
-          message += ` @ ${config.servers[serverName].bindIP}`;
-        }
-        if (config.servers[serverName].port) {
-          message += `:${config.servers[serverName].port}`;
-        }
+        const message = `Starting server: \`${serverName}\` ${
+          config.servers[serverName].bindIP
+            ? `@ ${serverName === "web" ? "http://" : ""}${
+                config.servers[serverName].bindIP
+              }${
+                config.servers[serverName].port
+                  ? `:${config.servers[serverName].port}`
+                  : ""
+              }`
+            : ""
+        }`;
         log(message, "notice");
         await server.start();
         log(`Server started: ${serverName}`, "debug");
