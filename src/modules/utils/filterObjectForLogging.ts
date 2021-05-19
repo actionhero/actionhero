@@ -8,6 +8,7 @@ import * as dotProp from "dot-prop";
  * Truncates long strings via `api.config.logger.maxLogStringLength`
  */
 export function filterObjectForLogging(params: object): { [key: string]: any } {
+  params = Object.assign({}, params);
   const sanitizedParams = {};
 
   for (const i in params) {
@@ -19,7 +20,7 @@ export function filterObjectForLogging(params: object): { [key: string]: any } {
     }
 
     if (isPlainObject(params[i])) {
-      sanitizedParams[i] = Object.assign({}, params[i]);
+      sanitizedParams[i] = params[i];
     } else if (typeof params[i] === "string") {
       sanitizedParams[i] = params[i].substring(
         0,
