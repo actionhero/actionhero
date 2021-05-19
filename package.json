@@ -2,7 +2,7 @@
   "author": "Evan Tahler <evantahler@gmail.com>",
   "name": "actionhero",
   "description": "The reusable, scalable, and quick node.js API server for stateless and stateful applications",
-  "version": "25.0.16",
+  "version": "26.0.0",
   "homepage": "http://www.actionherojs.com",
   "license": "Apache-2.0",
   "repository": {
@@ -31,7 +31,7 @@
     "typescript"
   ],
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=12.0.0"
   },
   "dependencies": {
     "@types/ioredis": "^4.26.2",
@@ -46,7 +46,7 @@
     "ioredis-mock": "^5.5.5",
     "is-running": "^2.1.0",
     "mime": "^2.5.2",
-    "node-resque": "^8.2.9",
+    "node-resque": "^9.0.0",
     "optimist": "^0.6.1",
     "primus": "^8.0.2",
     "qs": "^6.10.1",
