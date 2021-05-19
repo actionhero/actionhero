@@ -10,11 +10,12 @@ import * as dotProp from "dot-prop";
 export function filterResponseForLogging(response: object): {
   [key: string]: any;
 } {
+  response = Object.assign({}, response);
   const sanitizedResponse = {};
 
   for (const i in response) {
     if (isPlainObject(response[i])) {
-      sanitizedResponse[i] = Object.assign({}, response[i]);
+      sanitizedResponse[i] = response[i];
     } else if (typeof response[i] === "string") {
       sanitizedResponse[i] = response[i].substring(
         0,

@@ -264,12 +264,14 @@ describe("Utils", () => {
 
   describe("utils.filterObjectForLogging", () => {
     beforeEach(() => {
+      config.logger.maxLogArrayLength = 100;
       expect(config.general.filteredParams.length).toEqual(0);
     });
 
     afterEach(() => {
       // after each test, empty the array
       config.general.filteredParams = [];
+      config.logger.maxLogArrayLength = 10;
     });
 
     const testInput = {
@@ -287,6 +289,8 @@ describe("Utils", () => {
         name: "same as o1`s inner object!",
         o2p1: "nothing secret",
       },
+      a1: ["a", "b", "c"],
+      a2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
     };
 
     test("can filter top level params, no matter the type", () => {
@@ -297,6 +301,8 @@ describe("Utils", () => {
       expect(filteredParams.p2).toEqual("[FILTERED]");
       expect(filteredParams.o2).toEqual("[FILTERED]"); // entire object filtered
       expect(filteredParams.o1).toEqual(testInput.o1); // unchanged
+      expect(filteredParams.a1).toEqual(testInput.a1); // unchanged
+      expect(filteredParams.a2).toEqual(testInput.a2); // unchanged
     });
 
     test("will not filter things that do not exist", () => {
@@ -308,6 +314,8 @@ describe("Utils", () => {
       config.general.filteredParams.push("p3", "p4", "o1.o3", "o1.o2.p1");
       const filteredParams2 = utils.filterObjectForLogging(inputs);
       expect(filteredParams2).toEqual(testInput);
+      expect(filteredParams.a1).toEqual(testInput.a1); // unchanged
+      expect(filteredParams.a2).toEqual(testInput.a2); // unchanged
     });
 
     test("can filter a single level dot notation", () => {
@@ -321,6 +329,8 @@ describe("Utils", () => {
       expect(filteredParams.o1.o1p2).toEqual(testInput.o1.o1p2);
       expect(filteredParams.o1.o2).toEqual(testInput.o1.o2);
       expect(filteredParams.o2).toEqual(testInput.o2);
+      expect(filteredParams.a1).toEqual(testInput.a1);
+      expect(filteredParams.a2).toEqual(testInput.a2);
     });
 
     test("can filter two levels deep", () => {
@@ -333,6 +343,8 @@ describe("Utils", () => {
       expect(filteredParams.p1).toEqual(testInput.p1);
       expect(filteredParams.o1.o1p1).toEqual(testInput.o1.o1p1);
       expect(filteredParams.o1.o2.o2p2).toEqual(testInput.o1.o2.o2p2);
+      expect(filteredParams.a1).toEqual(testInput.a1);
+      expect(filteredParams.a2).toEqual(testInput.a2);
     });
 
     test("can filter with a function rather than an array", () => {
@@ -345,7 +357,26 @@ describe("Utils", () => {
       expect(filteredParams.p1).toEqual("[FILTERED]");
       expect(filteredParams.p2).toEqual("[FILTERED]");
       expect(filteredParams.o2).toEqual("[FILTERED]"); // entire object filtered
-      expect(filteredParams.o1).toEqual(testInput.o1); // unchanged
+      // Unchanged things
+      expect(filteredParams.o1).toEqual(testInput.o1);
+      expect(filteredParams.a1).toEqual(testInput.a1);
+      expect(filteredParams.a2).toEqual(testInput.a2);
+    });
+
+    test("short arrays will be displayed as-is", () => {
+      config.logger.maxLogArrayLength = 100;
+      const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
+      const filteredParams = utils.filterObjectForLogging(inputs);
+      expect(filteredParams.a1).toEqual(testInput.a1);
+      expect(filteredParams.a2).toEqual(testInput.a2);
+    });
+
+    test("long arrays will be collected", () => {
+      config.logger.maxLogArrayLength = 10;
+      const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
+      const filteredParams = utils.filterObjectForLogging(inputs);
+      expect(filteredParams.a1).toEqual(testInput.a1);
+      expect(filteredParams.a2).toEqual("11 items");
     });
   });
 
