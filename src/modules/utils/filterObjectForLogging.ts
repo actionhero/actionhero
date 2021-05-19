@@ -11,6 +11,13 @@ export function filterObjectForLogging(params: object): { [key: string]: any } {
   const sanitizedParams = {};
 
   for (const i in params) {
+    if (
+      Array.isArray(params[i]) &&
+      params[i].length > (config.logger?.maxLogArrayLength ?? 10)
+    ) {
+      params[i] = `${params[i].length} items`;
+    }
+
     if (isPlainObject(params[i])) {
       sanitizedParams[i] = Object.assign({}, params[i]);
     } else if (typeof params[i] === "string") {
