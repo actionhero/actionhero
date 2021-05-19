@@ -8,23 +8,33 @@ import * as dotProp from "dot-prop";
  * Truncates long strings via `api.config.logger.maxLogStringLength`
  */
 export function filterObjectForLogging(params: object): { [key: string]: any } {
-  const filteredParams = {};
+  const sanitizedParams = {};
+
   for (const i in params) {
     if (isPlainObject(params[i])) {
-      filteredParams[i] = Object.assign({}, params[i]);
+      sanitizedParams[i] = Object.assign({}, params[i]);
     } else if (typeof params[i] === "string") {
-      filteredParams[i] = params[i].substring(
+      sanitizedParams[i] = params[i].substring(
         0,
         config.logger.maxLogStringLength
       );
     } else {
-      filteredParams[i] = params[i];
+      sanitizedParams[i] = params[i];
     }
   }
-  config.general.filteredParams.forEach((configParam) => {
+
+  let filteredParams: string[];
+  if (typeof config.general.filteredParams === "function") {
+    filteredParams = config.general.filteredParams();
+  } else {
+    filteredParams = config.general.filteredParams;
+  }
+
+  filteredParams.forEach((configParam) => {
     if (dotProp.get(params, configParam) !== undefined) {
-      dotProp.set(filteredParams, configParam, "[FILTERED]");
+      dotProp.set(sanitizedParams, configParam, "[FILTERED]");
     }
   });
-  return filteredParams;
+
+  return sanitizedParams;
 }

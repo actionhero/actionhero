@@ -71,7 +71,6 @@
     "typedoc": "^0.20.36",
     "typescript": "^4.2.4"
   },
-  "optionalDependencies": {},
   "bin": {
     "actionhero": "dist/bin/actionhero.js"
   },
@@ -86,7 +85,7 @@
   },
   "scripts": {
     "postinstall": "echo 'To generate a new actionhero project, run \"npx actionhero generate\"'",
-    "test": "jest --maxWorkers 5",
+    "test": "jest --maxWorkers 50%",
     "prepare": "npm run build && npm run docs",
     "pretest": "npm run lint && npm run build",
     "dev": "ts-node-dev --transpile-only --no-deps ./src/server",

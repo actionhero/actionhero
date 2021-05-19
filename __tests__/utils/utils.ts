@@ -269,7 +269,7 @@ describe("Utils", () => {
 
     afterEach(() => {
       // after each test, empty the array
-      config.general.filteredParams.length = 0;
+      config.general.filteredParams = [];
     });
 
     const testInput = {
@@ -334,6 +334,19 @@ describe("Utils", () => {
       expect(filteredParams.o1.o1p1).toEqual(testInput.o1.o1p1);
       expect(filteredParams.o1.o2.o2p2).toEqual(testInput.o1.o2.o2p2);
     });
+
+    test("can filter with a function rather than an array", () => {
+      const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
+      config.general.filteredParams = () => {
+        return ["p1", "p2", "o2"];
+      };
+
+      const filteredParams = utils.filterObjectForLogging(inputs);
+      expect(filteredParams.p1).toEqual("[FILTERED]");
+      expect(filteredParams.p2).toEqual("[FILTERED]");
+      expect(filteredParams.o2).toEqual("[FILTERED]"); // entire object filtered
+      expect(filteredParams.o1).toEqual(testInput.o1); // unchanged
+    });
   });
 
   describe("utils.filterResponseForLogging", () => {
@@ -343,7 +356,7 @@ describe("Utils", () => {
 
     afterEach(() => {
       // after each test, empty the array
-      config.general.filteredResponse.length = 0;
+      config.general.filteredResponse = [];
     });
 
     const testInput = {
@@ -415,6 +428,19 @@ describe("Utils", () => {
       expect(filteredRespnose.p1).toEqual(testInput.p1);
       expect(filteredRespnose.o1.o1p1).toEqual(testInput.o1.o1p1);
       expect(filteredRespnose.o1.o2.o2p2).toEqual(testInput.o1.o2.o2p2);
+    });
+
+    test("can filter with a function rather than an array", () => {
+      const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
+      config.general.filteredResponse = () => {
+        return ["p1", "p2", "o2"];
+      };
+
+      const filteredRespnose = utils.filterResponseForLogging(inputs);
+      expect(filteredRespnose.p1).toEqual("[FILTERED]");
+      expect(filteredRespnose.p2).toEqual("[FILTERED]");
+      expect(filteredRespnose.o2).toEqual("[FILTERED]"); // entire object filtered
+      expect(filteredRespnose.o1).toEqual(testInput.o1); // unchanged
     });
   });
 });
