@@ -68,8 +68,8 @@ describe("browser integration tests", () => {
 
     test("documentation is loaded", async () => {
       await page.goto(url);
-      await page.waitForSelector("h4");
-      const actionNames = await page.$$eval("h4", (elements) =>
+      await page.waitForSelector("h3");
+      const actionNames = await page.$$eval("h3", (elements) =>
         elements.map((e) => e.textContent)
       );
       expect(actionNames.sort()).toEqual([
