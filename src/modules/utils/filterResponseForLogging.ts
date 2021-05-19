@@ -10,25 +10,35 @@ import * as dotProp from "dot-prop";
 export function filterResponseForLogging(response: object): {
   [key: string]: any;
 } {
-  const filteredResponse = {};
+  const sanitizedResponse = {};
+
   for (const i in response) {
     if (isPlainObject(response[i])) {
-      filteredResponse[i] = Object.assign({}, response[i]);
+      sanitizedResponse[i] = Object.assign({}, response[i]);
     } else if (typeof response[i] === "string") {
-      filteredResponse[i] = response[i].substring(
+      sanitizedResponse[i] = response[i].substring(
         0,
         config.logger.maxLogStringLength
       );
     } else if (response[i] instanceof Error) {
-      filteredResponse[i] = response[i].message ?? String(response[i]);
+      sanitizedResponse[i] = response[i].message ?? String(response[i]);
     } else {
-      filteredResponse[i] = response[i];
+      sanitizedResponse[i] = response[i];
     }
   }
-  config.general.filteredResponse.forEach((configParam) => {
+
+  let filteredResponse: string[];
+  if (typeof config.general.filteredResponse === "function") {
+    filteredResponse = config.general.filteredResponse();
+  } else {
+    filteredResponse = config.general.filteredResponse;
+  }
+
+  filteredResponse.forEach((configParam) => {
     if (dotProp.get(response, configParam) !== undefined) {
-      dotProp.set(filteredResponse, configParam, "[FILTERED]");
+      dotProp.set(sanitizedResponse, configParam, "[FILTERED]");
     }
   });
-  return filteredResponse;
+
+  return sanitizedResponse;
 }

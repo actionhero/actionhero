@@ -28,9 +28,9 @@ export const DEFAULT = {
       disableParamScrubbing: false,
       // enable action response to logger
       enableResponseLogging: false,
-      // params you would like hidden from any logs
+      // params you would like hidden from any logs. Can be an array of strings or a method that returns an array of strings.
       filteredParams: [],
-      // responses you would like hidden from any logs
+      // responses you would like hidden from any logs. Can be an array of strings or a method that returns an array of strings.
       filteredResponse: [],
       // values that signify missing params
       missingParamChecks: [null, "", undefined],
