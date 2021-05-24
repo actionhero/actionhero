@@ -13,7 +13,7 @@ import { BrowserFingerprint } from "browser_fingerprint";
 import { api, config, utils, Server, Connection } from "../index";
 
 export class WebServer extends Server {
-  server: any;
+  server: http.Server | https.Server;
   fingerPrinter: BrowserFingerprint;
 
   constructor() {
@@ -124,9 +124,12 @@ export class WebServer extends Server {
   }
 
   async stop() {
-    if (this.server) {
+    if (!this.server) return;
+
+    await new Promise((resolve) => {
+      this.server.once("close", resolve);
       this.server.close();
-    }
+    });
   }
 
   async sendMessage(connection: Connection, message) {

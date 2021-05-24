@@ -7,7 +7,7 @@ import * as uuid from "uuid";
 import { api, config, utils, log, Server, Connection } from "../index";
 
 export class WebSocketServer extends Server {
-  server: any;
+  server: Primus;
 
   constructor() {
     super();
@@ -69,15 +69,16 @@ export class WebSocketServer extends Server {
   }
 
   async stop() {
+    if (!this.server) return;
+
     if (this.config.destroyClientsOnShutdown === true) {
       this.connections().forEach((connection: Connection) => {
         connection.destroy();
       });
     }
 
-    if (this.server) {
-      this.server.destroy();
-    }
+    //@ts-ignore
+    this.server.destroy();
   }
 
   async sendMessage(connection: Connection, message, messageId: string) {
