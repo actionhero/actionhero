@@ -15,10 +15,12 @@ import { api, config, utils, Server, Connection } from "../index";
 export class WebServer extends Server {
   server: http.Server | https.Server;
   fingerPrinter: BrowserFingerprint;
+  sockets: { [id: string]: any };
 
   constructor() {
     super();
     this.type = "web";
+    this.sockets = {};
 
     this.attributes = {
       canChat: false,
@@ -100,6 +102,14 @@ export class WebServer extends Server {
       }
     });
 
+    let socketCounter = 0;
+    this.server.on("connection", (socket) => {
+      const id = socketCounter;
+      this.sockets[id] = socket;
+      socket.on("close", () => delete this.sockets[id]);
+      socketCounter++;
+    });
+
     await new Promise((resolve) => {
       this.server.listen(this.config.port, this.config.bindIP, () => {
         this.chmodSocket(this.config.bindIP, this.config.port);
@@ -127,8 +137,10 @@ export class WebServer extends Server {
     if (!this.server) return;
 
     await new Promise((resolve) => {
-      this.server.once("close", resolve);
-      this.server.close();
+      this.server.close(resolve);
+      for (const socket of Object.values(this.sockets)) {
+        socket.destroy();
+      }
     });
   }
 
