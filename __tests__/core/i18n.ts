@@ -53,7 +53,7 @@ describe("Core", () => {
       fs.unlinkSync(path.join(__dirname, "/../../locales/test-env-en.json"));
       fs.unlinkSync(path.join(__dirname, "/../../locales/test-env-es.json"));
       await actionhero.stop();
-      api.i18n.determineConnectionLocale = originalDetermineConnectionLocale;
+      i18n.determineConnectionLocale = originalDetermineConnectionLocale;
     });
 
     test("should create localization files by default, and strings from actions should be included", async () => {

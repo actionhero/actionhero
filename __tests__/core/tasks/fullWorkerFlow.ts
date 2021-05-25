@@ -167,25 +167,27 @@ describe("Core: Tasks", () => {
       expect(tasks.length).toBe(1);
     });
 
-    test("trying to run an unknown job will return a failure, but not crash the server", async (done) => {
-      config.tasks.queues = ["*"];
+    test("trying to run an unknown job will return a failure, but not crash the server", async () => {
+      await new Promise(async (resolve) => {
+        config.tasks.queues = ["*"];
 
-      const listener = async (workerId, queue, job, f) => {
-        expect(queue).toEqual(queue);
-        expect(job.class).toEqual("someCrazyTask");
-        expect(job.queue).toEqual("testQueue");
-        expect(String(f)).toEqual(
-          'Error: No job defined for class "someCrazyTask"'
-        );
-        api.resque.multiWorker.removeListener("failure", listener);
-        await api.resque.multiWorker.stop();
-        return done();
-      };
+        const listener = async (workerId, queue, job, f) => {
+          expect(queue).toEqual(queue);
+          expect(job.class).toEqual("someCrazyTask");
+          expect(job.queue).toEqual("testQueue");
+          expect(String(f)).toEqual(
+            'Error: No job defined for class "someCrazyTask"'
+          );
+          api.resque.multiWorker.removeListener("failure", listener);
+          await api.resque.multiWorker.stop();
+          return resolve(null);
+        };
 
-      api.resque.multiWorker.on("failure", listener);
+        api.resque.multiWorker.on("failure", listener);
 
-      await api.resque.queue.enqueue(queue, "someCrazyTask");
-      api.resque.multiWorker.start();
+        await api.resque.queue.enqueue(queue, "someCrazyTask");
+        api.resque.multiWorker.start();
+      });
     });
   });
 });
