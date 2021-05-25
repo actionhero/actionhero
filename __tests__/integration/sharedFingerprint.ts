@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 "use strict";
 // we need to use 'use strict' here because we are loading a variable from a remote host
 

@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 "use strict";
 // we need to use 'use strict' here because we are relying on EVAL to load a variable
 
@@ -405,7 +409,7 @@ describe("Server: Web Socket", () => {
         });
       });
 
-      test("will not get messages for rooms I am not in", async (done) => {
+      test("will not get messages for rooms I am not in", async () => {
         const response = await awaitRoom(clientB, "roomAdd", "otherRoom");
         expect(response.error).toBeUndefined();
         expect(clientB.rooms.length).toEqual(2);
@@ -421,7 +425,6 @@ describe("Server: Web Socket", () => {
         clientB.say("otherRoom", "you should not hear this");
         await utils.sleep(1000);
         clientC.removeListener("say", listener);
-        done();
       });
 
       test("connections can see member counts changing within rooms as folks join and leave", async () => {

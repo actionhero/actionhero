@@ -96,13 +96,15 @@ describe("Core", () => {
       expect(response.requestId).toEqual("id-12345");
     });
 
-    test("exceptionHandlers get action errors", async (done) => {
-      api.exceptionHandlers.reporters.push((error) => {
-        expect(error.message).toMatch(/worst action ever/);
-        done();
-      });
+    test("exceptionHandlers get action errors", async () => {
+      await new Promise(async (resolve) => {
+        api.exceptionHandlers.reporters.push((error) => {
+          expect(error.message).toMatch(/worst action ever/);
+          resolve(null);
+        });
 
-      const response = await specHelper.runAction("errorAction");
+        const response = await specHelper.runAction("errorAction");
+      });
     });
   });
 });
