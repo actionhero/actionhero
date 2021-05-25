@@ -102,10 +102,13 @@ export class WebServer extends Server {
       }
     });
 
+    let socketCounter = 0;
     this.server.on("connection", (socket) => {
-      const id = uuid.v4();
+      const id = socketCounter;
       this.sockets[id] = socket;
       socket.on("close", () => delete this.sockets[id]);
+      socketCounter++;
+      console.log({ socketCounter });
     });
 
     await new Promise((resolve) => {
