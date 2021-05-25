@@ -108,7 +108,6 @@ export class WebServer extends Server {
       this.sockets[id] = socket;
       socket.on("close", () => delete this.sockets[id]);
       socketCounter++;
-      console.log({ socketCounter });
     });
 
     await new Promise((resolve) => {
