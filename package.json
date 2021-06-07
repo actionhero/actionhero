@@ -64,7 +64,7 @@
     "@types/uuid": "^8.3.0",
     "jest": "^27.0.3",
     "prettier": "^2.3.0",
-    "puppeteer": "^9.1.1",
+    "puppeteer": "^10.0.0",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9",
     "ts-jest": "^27.0.2",
