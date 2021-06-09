@@ -1,4 +1,5 @@
 import { Inputs } from "./inputs";
+import { Plugin } from "node-resque";
 
 /**
  * Create a new Actionhero Task. The required properties of an task. These can be defined statically (this.name) or as methods which return a value.
@@ -30,7 +31,7 @@ export abstract class Task {
   /**The Middleware specific to this Task (default: []).  Middleware is described by the string names of the middleware */
   middleware: Array<string>;
   /**Plugins from node-resque to use on this task (default: []).  Plugins like `QueueLock can be applied` */
-  plugins: Array<string>;
+  plugins: Array<string | Plugin>;
   /**Options for the node-resque plugins. */
   pluginOptions: { [key: string]: any };
   /**The default queue to run this Task on (default: 'default') */

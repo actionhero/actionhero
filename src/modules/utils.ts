@@ -1,6 +1,5 @@
 import { arrayStartingMatch } from "./utils/arrayStartingMatch";
 import { arrayUnique } from "./utils/arrayUnique";
-import { asyncWaterfall } from "./utils/asyncWaterfall";
 import { collapseObjectToArray } from "./utils/collapseObjectToArray";
 import { ensureNoTsHeaderFiles } from "./utils/ensureNoTsHeaderFiles";
 import { eventLoopDelay } from "./utils/eventLoopDelay";
@@ -32,7 +31,6 @@ import {
 export const utils = {
   arrayStartingMatch,
   arrayUnique,
-  asyncWaterfall,
   collapseObjectToArray,
   ensureNoTsHeaderFiles,
   eventLoopDelay,

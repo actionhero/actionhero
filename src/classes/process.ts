@@ -248,7 +248,7 @@ export class Process {
     );
 
     try {
-      await utils.asyncWaterfall(this.loadInitializers);
+      for (const loader of this.loadInitializers) await loader();
     } catch (error) {
       return this.fatalError(error, "initialize");
     }
@@ -277,7 +277,7 @@ export class Process {
     });
 
     try {
-      await utils.asyncWaterfall(this.startInitializers);
+      for (const starter of this.startInitializers) await starter();
     } catch (error) {
       return this.fatalError(error, "start");
     }
@@ -313,7 +313,7 @@ export class Process {
       });
 
       try {
-        await utils.asyncWaterfall(this.stopInitializers);
+        for (const stopper of this.startInitializers) await stopper();
       } catch (error) {
         return this.fatalError(error, "stop");
       }

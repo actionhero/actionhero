@@ -74,7 +74,7 @@ export namespace specHelper {
       ? UnwrapPromise<TaskRunMethod>
       : any) & {
       error: string;
-    } = api.tasks.tasks[taskName].run(params);
+    } = await api.tasks.tasks[taskName].run(params, undefined);
     return result;
   }
 

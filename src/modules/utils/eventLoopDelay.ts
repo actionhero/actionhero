@@ -1,14 +1,12 @@
-import { asyncWaterfall } from "./asyncWaterfall";
-
 /**
  * Returns the average delay between a tick of the node.js event loop, as measured for N calls of `process.nextTick`
  */
 export async function eventLoopDelay(
   iterations: number = 10000
 ): Promise<number> {
-  const jobs = [];
+  const jobs: Array<() => Promise<number>> = [];
 
-  const sleepyFunc = async () => {
+  async function sleepyFunc(): Promise<number> {
     return new Promise((resolve) => {
       const start = process.hrtime();
       process.nextTick(() => {
@@ -17,7 +15,7 @@ export async function eventLoopDelay(
         resolve(ms);
       });
     });
-  };
+  }
 
   let i = 0;
   while (i < iterations) {
@@ -25,11 +23,12 @@ export async function eventLoopDelay(
     i++;
   }
 
-  const results = await asyncWaterfall(jobs);
+  const results = [];
+  for (const job of jobs) results.push(await job());
+
   let sum = 0;
-  results.forEach((t) => {
-    sum += t;
-  });
+  results.forEach((t) => (sum += t));
+
   const avg = Math.round((sum / results.length) * 10000) / 1000;
   return avg;
 }
