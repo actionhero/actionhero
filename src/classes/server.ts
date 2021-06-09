@@ -162,7 +162,7 @@ export abstract class Server extends EventEmitter {
    *})
    * ```
    */
-  async buildConnection(data: any) {
+  async buildConnection(data: { [key: string]: any }) {
     const details = {
       type: this.type,
       id: data.id,

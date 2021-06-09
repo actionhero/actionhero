@@ -92,8 +92,7 @@ export class Actions extends Initializer {
       }
     };
 
-    for (const i in config.general.paths.action) {
-      const p = config.general.paths.action[i];
+    for (const p of config.general.paths.action) {
       let files = glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"));
       files = utils.ensureNoTsHeaderFiles(files);
       for (const j in files) {

@@ -7,4 +7,4 @@ const packageJson = JSON.parse(
     .toString()
 );
 
-export const actionheroVersion = packageJson.version;
+export const actionheroVersion: string = packageJson.version;
