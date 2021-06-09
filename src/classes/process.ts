@@ -313,7 +313,7 @@ export class Process {
       });
 
       try {
-        for (const stopper of this.startInitializers) await stopper();
+        for (const stopper of this.stopInitializers) await stopper();
       } catch (error) {
         return this.fatalError(error, "stop");
       }
