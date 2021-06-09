@@ -46,7 +46,7 @@
     "ioredis-mock": "^5.6.0",
     "is-running": "^2.1.0",
     "mime": "^2.5.2",
-    "node-resque": "^9.0.1",
+    "node-resque": "^9.0.2",
     "optimist": "^0.6.1",
     "primus": "^8.0.3",
     "qs": "^6.10.1",
