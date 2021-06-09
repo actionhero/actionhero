@@ -107,7 +107,7 @@ export class Tasks extends Initializer {
             }
           }
 
-          plugins.push(new NodeResquePlugin());
+          plugins.push(NodeResquePlugin);
         }
       };
 

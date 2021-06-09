@@ -123,7 +123,7 @@ describe("Server: Web", () => {
       expect(Object.keys(api.connections.connections)).toHaveLength(0);
       const body = await request.get(url + "/api/customRender").then(toJson);
       expect(body).toBeTruthy();
-      await utils.sleep(100);
+      await utils.sleep(200);
       expect(Object.keys(api.connections.connections)).toHaveLength(0);
     });
   });
