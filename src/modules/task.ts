@@ -342,30 +342,25 @@ export namespace task {
    * Will throw an error if redis cannot be reached.
    */
   export async function enqueueAllRecurrentTasks() {
-    const jobs = [];
     const enqueuedTasks: string[] = [];
 
-    Object.keys(api.tasks.tasks).forEach((taskName) => {
-      const thisTask = api.tasks.tasks[taskName];
+    for (const thisTask of Object.values(api.tasks.tasks)) {
       if (thisTask.frequency > 0) {
-        jobs.push(async () => {
-          try {
-            const toRun = await task.enqueue(taskName, {});
-            if (toRun === true) {
-              log(
-                `enqueuing periodic task: ${taskName}`,
-                config.tasks.schedulerLogging.enqueue
-              );
-              enqueuedTasks.push(taskName);
-            }
-          } catch (error) {
-            checkForRepeatRecurringTaskEnqueue(taskName, error);
+        try {
+          const toRun = await task.enqueue(thisTask.name, {});
+          if (toRun === true) {
+            log(
+              `enqueuing periodic task: ${thisTask.name}`,
+              config.tasks.schedulerLogging.enqueue
+            );
+            enqueuedTasks.push(thisTask.name);
           }
-        });
+        } catch (error) {
+          checkForRepeatRecurringTaskEnqueue(thisTask.name, error);
+        }
       }
-    });
+    }
 
-    await utils.asyncWaterfall(jobs);
     return enqueuedTasks;
   }
 

@@ -1,4 +1,5 @@
 import { Inputs } from "./inputs";
+import { Plugin } from "node-resque";
 
 /**
  * Create a new Actionhero Task. The required properties of an task. These can be defined statically (this.name) or as methods which return a value.
@@ -23,20 +24,20 @@ export abstract class Task {
   name: string;
   /**The description of the Task (default this.name) */
   description: string;
-  /**How often to run this Task, in ms.  0 is non-recurring. (default: 0) */
-  frequency: number;
-  /**The inputs of the Task (default: {}) */
-  inputs: Inputs;
-  /**The Middleware specific to this Task (default: []).  Middleware is described by the string names of the middleware */
-  middleware: Array<string>;
-  /**Plugins from node-resque to use on this task (default: []).  Plugins like `QueueLock can be applied` */
-  plugins: Array<string>;
-  /**Options for the node-resque plugins. */
-  pluginOptions: { [key: string]: any };
   /**The default queue to run this Task on (default: 'default') */
   queue: string;
+  /**How often to run this Task, in ms.  0 is non-recurring. (default: 0) */
+  frequency?: number;
+  /**The inputs of the Task (default: {}) */
+  inputs?: Inputs;
+  /**The Middleware specific to this Task (default: []).  Middleware is described by the string names of the middleware */
+  middleware?: Array<string>;
+  /**Plugins from node-resque to use on this task (default: []).  Plugins like `QueueLock can be applied` */
+  plugins?: Array<string | typeof Plugin>;
+  /**Options for the node-resque plugins. */
+  pluginOptions?: { [key: string]: any };
   /**Re-enqueuing a periodic task in the case of an exception.  (default: false) */
-  reEnqueuePeriodicTaskIfException: boolean;
+  reEnqueuePeriodicTaskIfException?: boolean;
 
   constructor() {
     const coreProperties = this.defaults();
@@ -58,7 +59,7 @@ export abstract class Task {
    */
   abstract run(data: TaskInputs, worker): Promise<any>;
 
-  private defaults() {
+  private defaults?() {
     return {
       name: null,
       description: this.name,
@@ -71,7 +72,7 @@ export abstract class Task {
     };
   }
 
-  validate() {
+  validate?() {
     if (!this.name) {
       throw new Error("name is required for this task");
     }

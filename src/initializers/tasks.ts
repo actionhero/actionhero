@@ -3,11 +3,12 @@ import * as path from "path";
 import { Plugin } from "node-resque";
 import * as TaskModule from "./../modules/task";
 import { api, log, utils, task, Initializer } from "../index";
+import { Task } from "../classes/task";
 
 const taskModule = task;
 
 export interface TaskApi {
-  tasks: { [key: string]: any };
+  tasks: { [key: string]: Task };
   jobs: { [key: string]: any };
   middleware: { [key: string]: TaskModule.task.TaskMiddleware };
   globalMiddleware: Array<string>;

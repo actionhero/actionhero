@@ -279,7 +279,7 @@ describe("Core: specHelper", () => {
         frequency: 0,
         plugins: [],
         pluginOptions: {},
-        run: (api, params) => {
+        run: async () => {
           taskRan = true;
           return "OK";
         },

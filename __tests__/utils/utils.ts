@@ -18,43 +18,6 @@ describe("Utils", () => {
     });
   });
 
-  describe("utils.asyncWaterfall", () => {
-    test("works with no args", async () => {
-      const sleepyFunc = async () => {
-        await utils.sleep(100);
-        return new Date().getTime();
-      };
-
-      const jobs = [sleepyFunc, sleepyFunc, sleepyFunc];
-
-      const start = new Date().getTime();
-      const results = await utils.asyncWaterfall(jobs);
-      expect(new Date().getTime() - start).toBeGreaterThan(290);
-      expect(results[1]).toBeGreaterThan(results[0]);
-      expect(results[2]).toBeGreaterThan(results[1]);
-    });
-
-    test("works with args", async () => {
-      const sleepyFunc = async (response) => {
-        await utils.sleep(100);
-        return response;
-      };
-
-      const jobs = [
-        { method: sleepyFunc, args: ["a"] },
-        { method: sleepyFunc, args: ["b"] },
-        { method: sleepyFunc, args: ["c"] },
-      ];
-
-      const start = new Date().getTime();
-      const results = await utils.asyncWaterfall(jobs);
-      expect(new Date().getTime() - start).toBeGreaterThan(290);
-      expect(results[0]).toEqual("a");
-      expect(results[1]).toEqual("b");
-      expect(results[2]).toEqual("c");
-    });
-  });
-
   describe("utils.collapseObjectToArray", () => {
     test("fails with numerical keys", () => {
       const o = { 0: "a", 1: "b" };
