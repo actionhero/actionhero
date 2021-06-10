@@ -1,12 +1,12 @@
-import * as os from "os";
 import { api, log, Initializer } from "../index";
+import { ExceptionReporter } from "../classes/exceptionReporter";
 
 export interface ExceptionHandlerAPI {
-  reporters: Array<any>;
-  report: Function;
-  loader?: Function;
-  action?: Function;
-  task?: Function;
+  reporters: Array<ExceptionReporter>;
+  report: ExceptionReporter;
+  initializer?: (error: Error, filePath: string) => void;
+  action?: (error: Error, logLine: { [key: string]: any }) => void;
+  task?: (error: Error, queue: string, task: any, workerId: number) => void;
 }
 
 /**
@@ -16,37 +16,26 @@ export class Exceptions extends Initializer {
   constructor() {
     super();
     this.name = "exceptions";
-    this.loadPriority = 130;
-  }
-
-  relevantDetails() {
-    return ["action", "remoteIP", "type", "params", "room"];
+    this.loadPriority = 1;
   }
 
   async initialize(config) {
     api.exceptionHandlers = {
       reporters: [],
-      report: (error, type, name, objects, severity) => {
-        if (!severity) {
-          severity = "error";
-        }
-        for (const i in api.exceptionHandlers.reporters) {
-          api.exceptionHandlers.reporters[i](
-            error,
-            type,
-            name,
-            objects,
-            severity
-          );
+      report: (error, type, name, objects?, severity?) => {
+        if (!severity) severity = "error";
+
+        for (const reporter of api.exceptionHandlers.reporters) {
+          reporter(error, type, name, objects, severity);
         }
       },
     };
 
-    api.exceptionHandlers.loader = (fullFilePath, error) => {
-      const name = "loader:" + fullFilePath;
+    api.exceptionHandlers.initializer = (error, fullFilePath) => {
+      const name = "initializer:" + fullFilePath;
       api.exceptionHandlers.report(
         error,
-        "loader",
+        "initializer",
         name,
         { fullFilePath: fullFilePath },
         "alert"
@@ -83,16 +72,24 @@ export class Exceptions extends Initializer {
       );
     };
 
-    const consoleReporter = (error, type, name, objects, severity) => {
+    const consoleReporter: ExceptionReporter = (
+      error,
+      type,
+      name,
+      objects,
+      severity
+    ) => {
       let message = "";
-      const data = {};
+      const data = error["data"] ?? {};
 
-      if (type === "action") {
+      if (type === "uncaught") {
+        message = `Uncaught ${name}`;
+      } else if (type === "action") {
         // no need to log anything, it was handled already by the actionProcessor
-      } else if (type === "loader") {
-        message = `Failed to load ${objects.fullFilePath}`;
+      } else if (type === "initializer") {
+        message = `Error from Initializer`;
       } else if (type === "task") {
-        message = `error from task`;
+        message = `Error from Task`;
         data["name"] = name;
         data["queue"] = objects.queue;
         data["worker"] = objects.workerId;
@@ -110,9 +107,13 @@ export class Exceptions extends Initializer {
         data["data"] = objects;
       }
 
-      data["stacktrace"] = error?.stack;
+      data["stack"] = error?.stack;
 
-      if (message !== "") log(message, severity, data);
+      try {
+        if (message) log(message, severity, data);
+      } catch (e) {
+        console.log(message, data);
+      }
     };
 
     api.exceptionHandlers.reporters.push(consoleReporter);

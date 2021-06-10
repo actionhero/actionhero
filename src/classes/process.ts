@@ -153,22 +153,22 @@ export class Process {
           this.fatalError(error, file);
         }
 
+        function decorateInitError(error: Error, type: string) {
+          error["data"] = error["data"] ?? {};
+          error["data"].name = initializer.name;
+          error["data"].file = file;
+          error["data"].type = type;
+        }
+
         const initializeFunction = async () => {
           if (typeof initializer.initialize === "function") {
             log(`Loading initializer: ${initializer.name}`, "debug", file);
 
             try {
               await initializer.initialize(config);
-              try {
-                log(`Loaded initializer: ${initializer.name}`, "debug", file);
-              } catch (e) {}
+              log(`Loaded initializer: ${initializer.name}`, "debug", file);
             } catch (error) {
-              const message = `Exception occurred in initializer \`${initializer.name}\` during load`;
-              try {
-                log(message, "emerg", error.toString());
-              } catch (_error) {
-                console.error(message);
-              }
+              decorateInitError(error, "initialize");
               throw error;
             }
           }
@@ -182,11 +182,7 @@ export class Process {
               await initializer.start(config);
               log(`Started initializer: ${initializer.name}`, "debug", file);
             } catch (error) {
-              log(
-                `Exception occurred in initializer \`${initializer.name}\` during start`,
-                "emerg",
-                error.toString()
-              );
+              decorateInitError(error, "start");
               throw error;
             }
           }
@@ -200,23 +196,19 @@ export class Process {
               await initializer.stop(config);
               log(`Stopped initializer: ${initializer.name}`, "debug", file);
             } catch (error) {
-              log(
-                `Exception occurred in initializer \`${initializer.name}\` during stop`,
-                "emerg",
-                error.toString()
-              );
+              decorateInitError(error, "stop");
               throw error;
             }
           }
         };
 
-        if (loadInitializerRankings[initializer.loadPriority] === undefined) {
+        if (!loadInitializerRankings[initializer.loadPriority]) {
           loadInitializerRankings[initializer.loadPriority] = [];
         }
-        if (startInitializerRankings[initializer.startPriority] === undefined) {
+        if (!startInitializerRankings[initializer.startPriority]) {
           startInitializerRankings[initializer.startPriority] = [];
         }
-        if (stopInitializerRankings[initializer.stopPriority] === undefined) {
+        if (!stopInitializerRankings[initializer.stopPriority]) {
           stopInitializerRankings[initializer.stopPriority] = [];
         }
 
@@ -356,7 +348,7 @@ export class Process {
 
     // handle errors & rejections
     process.once("uncaughtException", async (error: Error) => {
-      log(`UNCAUGHT EXCEPTION: ` + error.stack, "fatal");
+      api.exceptionHandlers.report(error, "uncaught", "Exception", {}, "emerg");
       if (!this.shuttingDown === true) {
         let timer = awaitHardStop();
         await this.stop();
@@ -366,7 +358,13 @@ export class Process {
     });
 
     process.once("unhandledRejection", async (rejection: Error) => {
-      log(`UNHANDLED REJECTION: ` + rejection.stack, "fatal");
+      api.exceptionHandlers.report(
+        rejection,
+        "uncaught",
+        "Rejection",
+        {},
+        "emerg"
+      );
       if (!this.shuttingDown === true) {
         let timer = awaitHardStop();
         await this.stop();
@@ -409,21 +407,16 @@ export class Process {
     if (!(errors instanceof Array)) errors = [errors];
 
     if (errors) {
-      log(`Error with initializer step: ${JSON.stringify(type)}`, "emerg");
-
       const showStack = process.env.ACTIONHERO_FATAL_ERROR_STACK_DISPLAY
         ? process.env.ACTIONHERO_FATAL_ERROR_STACK_DISPLAY === "true"
         : true;
+
       errors.forEach((error) => {
-        log(
-          showStack
-            ? error.stack ?? error.toString()
-            : error.message ?? error.toString(),
-          "emerg"
-        );
+        if (!showStack) delete error.stack;
+        api.exceptionHandlers.report(error, "initializer", type);
       });
 
-      await this.stop(errors.map((e) => e.message ?? e.toString()));
+      await this.stop(errors.map((e) => e.message ?? e.toString())); // stop and set the stopReasons
 
       await utils.sleep(1000); // allow time for console.log to print
       process.exit(1);
@@ -433,10 +426,10 @@ export class Process {
   flattenOrderedInitializer(collection: any) {
     const output = [];
     const keys = [];
-    for (const key in collection) {
-      keys.push(parseInt(key));
-    }
+
+    for (const key in collection) keys.push(parseInt(key));
     keys.sort(sortNumber);
+
     keys.forEach((key) => {
       collection[key].forEach((d) => {
         output.push(d);
