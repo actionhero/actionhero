@@ -84,7 +84,7 @@ export class Actions extends Initializer {
         }
       } catch (error) {
         try {
-          api.exceptionHandlers.loader(fullFilePath, error);
+          api.exceptionHandlers.initializer(error, fullFilePath);
           delete api.actions.actions[action.name][action.version];
         } catch (_error) {
           throw error;
