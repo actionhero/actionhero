@@ -107,7 +107,11 @@ export class Exceptions extends Initializer {
         data["data"] = objects;
       }
 
-      data["stack"] = error?.stack;
+      if (error["stack"]) {
+        data["stack"] = error.stack;
+      } else {
+        data["stack"] = error.message ?? error.toString();
+      }
 
       try {
         if (message) log(message, severity, data);
