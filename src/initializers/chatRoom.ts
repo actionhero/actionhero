@@ -172,7 +172,7 @@ export class ChatRoom extends Initializer {
     if (config.general.startingChatRooms) {
       const rooms = Object.keys(config.general.startingChatRooms);
       for (const room of rooms) {
-        log(`ensuring the existence of the chatRoom: ${room}`);
+        log(`ensuring the existence of the chatRoom: ${room}`, "debug");
         try {
           await chatRoom.add(room);
         } catch (error) {
