@@ -2,7 +2,7 @@
   "author": "Evan Tahler <evantahler@gmail.com>",
   "name": "actionhero",
   "description": "The reusable, scalable, and quick node.js API server for stateless and stateful applications",
-  "version": "26.0.8",
+  "version": "26.0.9",
   "homepage": "http://www.actionherojs.com",
   "license": "Apache-2.0",
   "repository": {
