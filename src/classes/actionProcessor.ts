@@ -5,6 +5,17 @@ import { log } from "../modules/log";
 import { utils } from "../modules/utils";
 import * as dotProp from "dot-prop";
 import { api } from "../index";
+import { stat } from "fs";
+
+export type ErrorStatusMessage =
+  | "complete"
+  | "generic_error"
+  | "server_shutting_down"
+  | "too_many_requests"
+  | "unknown_action"
+  | "unsupported_server_type"
+  | "missing_params"
+  | "validator_errors";
 
 export class ActionProcessor<ActionClass extends Action> {
   connection: Connection;
@@ -27,7 +38,7 @@ export class ActionProcessor<ActionClass extends Action> {
     [key: string]: any;
   };
   duration: number;
-  actionStatus: string | Error;
+  actionStatus: ErrorStatusMessage;
 
   // allow for setting of any value via middleware
   session: any;
@@ -68,15 +79,17 @@ export class ActionProcessor<ActionClass extends Action> {
     return this.connection.pendingActions;
   }
 
-  private async completeAction(status?: string | Error) {
-    let error = null;
-    this.actionStatus = String(status);
+  private async completeAction(status: ErrorStatusMessage, _error?: Error) {
+    let error: Error = null;
+    this.actionStatus = status;
 
-    if (status instanceof Error) {
+    if (typeof _error === "string") _error = new Error(_error);
+
+    if (status === "generic_error") {
       error =
         typeof config.errors.genericError === "function"
-          ? await config.errors.genericError(this, status)
-          : status;
+          ? await config.errors.genericError(this, _error)
+          : _error;
     } else if (status === "server_shutting_down") {
       error = await config.errors.serverShuttingDown(this);
     } else if (status === "too_many_requests") {
@@ -90,15 +103,12 @@ export class ActionProcessor<ActionClass extends Action> {
     } else if (status === "validator_errors") {
       error = await config.errors.invalidParams(this, this.validatorErrors);
     } else if (status) {
-      error = status;
-    }
-
-    if (error && typeof error === "string") {
-      error = new Error(error);
+      error = _error;
     }
 
     if (error && (typeof this.response === "string" || !this.response.error)) {
       if (typeof this.response === "string" || Array.isArray(this.response)) {
+        //@ts-ignore
         this.response = error.toString();
       } else {
         this.response.error = error;
@@ -108,11 +118,14 @@ export class ActionProcessor<ActionClass extends Action> {
     this.incrementPendingActions(-1);
     this.duration = new Date().getTime() - this.actionStartTime;
     this.working = false;
-    this.logAndReportAction(error);
+    this.logAndReportAction(status, error);
+
     return this;
   }
 
-  private logAndReportAction(error) {
+  private logAndReportAction(status: ErrorStatusMessage, error: Error) {
+    const { type, rawConnection } = this.connection;
+
     let logLevel = "info";
     if (this.actionTemplate && this.actionTemplate.logLevel) {
       logLevel = this.actionTemplate.logLevel;
@@ -125,13 +138,15 @@ export class ActionProcessor<ActionClass extends Action> {
       params: JSON.stringify(filteredParams),
       duration: this.duration,
       error: "",
+      method: type === "web" ? rawConnection.method : undefined,
+      pathname: type === "web" ? rawConnection.parsedURL.pathname : undefined,
       response: undefined,
     };
 
-    let filteredResponse;
     if (config.general.enableResponseLogging) {
-      filteredResponse = utils.filterResponseForLogging(this.response);
-      logLine.response = JSON.stringify(filteredResponse);
+      logLine.response = JSON.stringify(
+        utils.filterResponseForLogging(this.response)
+      );
     }
 
     if (error) {
@@ -144,10 +159,13 @@ export class ActionProcessor<ActionClass extends Action> {
     }
 
     log(`[ action @ ${this.connection.type} ]`, logLevel, logLine);
-    if (error) api.exceptionHandlers.action(error, logLine);
+
+    if (error && status !== "unknown_action") {
+      api.exceptionHandlers.action(error, logLine);
+    }
   }
 
-  private applyDefaultErrorLogLineFormat(error) {
+  private applyDefaultErrorLogLineFormat(error: Error) {
     const errorFields: { error: string } = { error: null };
     if (error instanceof Error) {
       errorFields.error = error.toString();
@@ -393,7 +411,7 @@ export class ActionProcessor<ActionClass extends Action> {
       await this.validateParams();
       this.lockParams();
     } catch (error) {
-      return this.completeAction(error);
+      return this.completeAction("generic_error", error);
     }
 
     if (this.missingParams.length > 0) {
@@ -416,12 +434,12 @@ export class ActionProcessor<ActionClass extends Action> {
           Object.assign(this.response, postProcessResponse);
         }
 
-        return this.completeAction();
+        return this.completeAction("complete");
       } catch (error) {
-        return this.completeAction(error);
+        return this.completeAction("generic_error", error);
       }
     } else {
-      return this.completeAction();
+      return this.completeAction("complete");
     }
   }
 }
