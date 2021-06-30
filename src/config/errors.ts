@@ -3,6 +3,9 @@ export const DEFAULT = {
     return {
       _toExpand: false,
 
+      // Should error types of "unknownAction" be included to the Exception handlers?
+      reportUnknownActions: false,
+
       // ///////////////
       // SERIALIZERS //
       // ///////////////

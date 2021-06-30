@@ -160,7 +160,10 @@ export class ActionProcessor<ActionClass extends Action> {
 
     log(`[ action @ ${this.connection.type} ]`, logLevel, logLine);
 
-    if (error && status !== "unknown_action") {
+    if (
+      error &&
+      (status !== "unknown_action" || config.errors.reportUnknownActions)
+    ) {
       api.exceptionHandlers.action(error, logLine);
     }
   }
