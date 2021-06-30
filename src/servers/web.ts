@@ -11,6 +11,7 @@ import * as uuid from "uuid";
 import * as etag from "etag";
 import { BrowserFingerprint } from "browser_fingerprint";
 import { api, config, utils, Server, Connection } from "../index";
+import { ActionsStatus } from "../classes/actionProcessor";
 
 export class WebServer extends Server {
   server: http.Server | https.Server;
@@ -502,9 +503,9 @@ export class WebServer extends Server {
           customErrorCode >= 100 && customErrorCode < 600;
         if (isValidCustomResponseCode) {
           data.connection.rawConnection.responseHttpCode = customErrorCode;
-        } else if (data.actionStatus === "unknown_action") {
+        } else if (data.actionStatus === ActionsStatus.UnknownAction) {
           data.connection.rawConnection.responseHttpCode = 404;
-        } else if (data.actionStatus === "missing_params") {
+        } else if (data.actionStatus === ActionsStatus.MissingParams) {
           data.connection.rawConnection.responseHttpCode = 422;
         } else {
           data.connection.rawConnection.responseHttpCode =
