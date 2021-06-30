@@ -137,9 +137,9 @@ export class ActionProcessor<ActionClass extends Action> {
       action: this.action,
       params: JSON.stringify(filteredParams),
       duration: this.duration,
-      error: "",
       method: type === "web" ? rawConnection.method : undefined,
       pathname: type === "web" ? rawConnection.parsedURL.pathname : undefined,
+      error: "",
       response: undefined,
     };
 
