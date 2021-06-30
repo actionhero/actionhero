@@ -41,9 +41,7 @@ export const DEFAULT = {
 
       // When a params for an action is invalid
       invalidParams: (data, validationErrors) => {
-        if (validationErrors.length >= 0) {
-          return validationErrors[0];
-        }
+        if (validationErrors.length >= 0) return validationErrors[0];
         return data.connection.localize("actionhero.errors.invalidParams");
       },
 

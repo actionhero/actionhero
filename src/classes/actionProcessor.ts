@@ -83,8 +83,6 @@ export class ActionProcessor<ActionClass extends Action> {
     let error: Error = null;
     this.actionStatus = status;
 
-    if (typeof _error === "string") _error = new Error(_error);
-
     if (status === "generic_error") {
       error =
         typeof config.errors.genericError === "function"
@@ -105,6 +103,8 @@ export class ActionProcessor<ActionClass extends Action> {
     } else if (status) {
       error = _error;
     }
+
+    if (typeof error === "string") error = new Error(error);
 
     if (error && (typeof this.response === "string" || !this.response.error)) {
       if (typeof this.response === "string" || Array.isArray(this.response)) {
