@@ -6,15 +6,16 @@ import { utils } from "../modules/utils";
 import * as dotProp from "dot-prop";
 import { api } from "../index";
 
-export type ErrorStatusMessage =
-  | "complete"
-  | "generic_error"
-  | "server_shutting_down"
-  | "too_many_requests"
-  | "unknown_action"
-  | "unsupported_server_type"
-  | "missing_params"
-  | "validator_errors";
+export enum ErrorStatusMessage {
+  Complete,
+  GenericError,
+  ServerShuttingDown,
+  TooManyRequests,
+  UnknownAction,
+  UnsupportedServerType,
+  MissingParams,
+  ValidatorErrors,
+}
 
 export class ActionProcessor<ActionClass extends Action> {
   connection: Connection;
@@ -82,22 +83,22 @@ export class ActionProcessor<ActionClass extends Action> {
     let error: Error = null;
     this.actionStatus = status;
 
-    if (status === "generic_error") {
+    if (status === ErrorStatusMessage.GenericError) {
       error =
         typeof config.errors.genericError === "function"
           ? await config.errors.genericError(this, _error)
           : _error;
-    } else if (status === "server_shutting_down") {
+    } else if (status === ErrorStatusMessage.ServerShuttingDown) {
       error = await config.errors.serverShuttingDown(this);
-    } else if (status === "too_many_requests") {
+    } else if (status === ErrorStatusMessage.TooManyRequests) {
       error = await config.errors.tooManyPendingActions(this);
-    } else if (status === "unknown_action") {
+    } else if (status === ErrorStatusMessage.UnknownAction) {
       error = await config.errors.unknownAction(this);
-    } else if (status === "unsupported_server_type") {
+    } else if (status === ErrorStatusMessage.UnsupportedServerType) {
       error = await config.errors.unsupportedServerType(this);
-    } else if (status === "missing_params") {
+    } else if (status === ErrorStatusMessage.MissingParams) {
       error = await config.errors.missingParams(this, this.missingParams);
-    } else if (status === "validator_errors") {
+    } else if (status === ErrorStatusMessage.ValidatorErrors) {
       error = await config.errors.invalidParams(this, this.validatorErrors);
     } else if (status) {
       error = _error;
@@ -161,7 +162,8 @@ export class ActionProcessor<ActionClass extends Action> {
 
     if (
       error &&
-      (status !== "unknown_action" || config.errors.reportUnknownActions)
+      (status !== ErrorStatusMessage.UnknownAction ||
+        config.errors.reportUnknownActions)
     ) {
       api.exceptionHandlers.action(error, logLine);
     }
@@ -379,15 +381,15 @@ export class ActionProcessor<ActionClass extends Action> {
     }
 
     if (api.running !== true) {
-      return this.completeAction("server_shutting_down");
+      return this.completeAction(ErrorStatusMessage.ServerShuttingDown);
     }
 
     if (this.getPendingActionCount() > config.general.simultaneousActions) {
-      return this.completeAction("too_many_requests");
+      return this.completeAction(ErrorStatusMessage.TooManyRequests);
     }
 
     if (!this.action || !this.actionTemplate) {
-      return this.completeAction("unknown_action");
+      return this.completeAction(ErrorStatusMessage.UnknownAction);
     }
 
     if (
@@ -396,7 +398,7 @@ export class ActionProcessor<ActionClass extends Action> {
         this.connection.type
       ) >= 0
     ) {
-      return this.completeAction("unsupported_server_type");
+      return this.completeAction(ErrorStatusMessage.UnsupportedServerType);
     }
 
     return this.runAction();
@@ -413,15 +415,15 @@ export class ActionProcessor<ActionClass extends Action> {
       await this.validateParams();
       this.lockParams();
     } catch (error) {
-      return this.completeAction("generic_error", error);
+      return this.completeAction(ErrorStatusMessage.GenericError, error);
     }
 
     if (this.missingParams.length > 0) {
-      return this.completeAction("missing_params");
+      return this.completeAction(ErrorStatusMessage.MissingParams);
     }
 
     if (this.validatorErrors.length > 0) {
-      return this.completeAction("validator_errors");
+      return this.completeAction(ErrorStatusMessage.ValidatorErrors);
     }
 
     if (this.toProcess === true) {
@@ -436,12 +438,12 @@ export class ActionProcessor<ActionClass extends Action> {
           Object.assign(this.response, postProcessResponse);
         }
 
-        return this.completeAction("complete");
+        return this.completeAction(ErrorStatusMessage.Complete);
       } catch (error) {
-        return this.completeAction("generic_error", error);
+        return this.completeAction(ErrorStatusMessage.GenericError, error);
       }
     } else {
-      return this.completeAction("complete");
+      return this.completeAction(ErrorStatusMessage.Complete);
     }
   }
 }
