@@ -6,7 +6,7 @@ import { utils } from "../modules/utils";
 import * as dotProp from "dot-prop";
 import { api } from "../index";
 
-export enum ErrorStatusMessage {
+export enum ActionsStatus {
   Complete,
   GenericError,
   ServerShuttingDown,
@@ -38,7 +38,7 @@ export class ActionProcessor<ActionClass extends Action> {
     [key: string]: any;
   };
   duration: number;
-  actionStatus: ErrorStatusMessage;
+  actionStatus: ActionsStatus;
 
   // allow for setting of any value via middleware
   session: any;
@@ -79,26 +79,26 @@ export class ActionProcessor<ActionClass extends Action> {
     return this.connection.pendingActions;
   }
 
-  private async completeAction(status: ErrorStatusMessage, _error?: Error) {
+  private async completeAction(status: ActionsStatus, _error?: Error) {
     let error: Error = null;
     this.actionStatus = status;
 
-    if (status === ErrorStatusMessage.GenericError) {
+    if (status === ActionsStatus.GenericError) {
       error =
         typeof config.errors.genericError === "function"
           ? await config.errors.genericError(this, _error)
           : _error;
-    } else if (status === ErrorStatusMessage.ServerShuttingDown) {
+    } else if (status === ActionsStatus.ServerShuttingDown) {
       error = await config.errors.serverShuttingDown(this);
-    } else if (status === ErrorStatusMessage.TooManyRequests) {
+    } else if (status === ActionsStatus.TooManyRequests) {
       error = await config.errors.tooManyPendingActions(this);
-    } else if (status === ErrorStatusMessage.UnknownAction) {
+    } else if (status === ActionsStatus.UnknownAction) {
       error = await config.errors.unknownAction(this);
-    } else if (status === ErrorStatusMessage.UnsupportedServerType) {
+    } else if (status === ActionsStatus.UnsupportedServerType) {
       error = await config.errors.unsupportedServerType(this);
-    } else if (status === ErrorStatusMessage.MissingParams) {
+    } else if (status === ActionsStatus.MissingParams) {
       error = await config.errors.missingParams(this, this.missingParams);
-    } else if (status === ErrorStatusMessage.ValidatorErrors) {
+    } else if (status === ActionsStatus.ValidatorErrors) {
       error = await config.errors.invalidParams(this, this.validatorErrors);
     } else if (status) {
       error = _error;
@@ -123,7 +123,7 @@ export class ActionProcessor<ActionClass extends Action> {
     return this;
   }
 
-  private logAndReportAction(status: ErrorStatusMessage, error: Error) {
+  private logAndReportAction(status: ActionsStatus, error: Error) {
     const { type, rawConnection } = this.connection;
 
     let logLevel = "info";
@@ -162,7 +162,7 @@ export class ActionProcessor<ActionClass extends Action> {
 
     if (
       error &&
-      (status !== ErrorStatusMessage.UnknownAction ||
+      (status !== ActionsStatus.UnknownAction ||
         config.errors.reportUnknownActions)
     ) {
       api.exceptionHandlers.action(error, logLine);
@@ -381,15 +381,15 @@ export class ActionProcessor<ActionClass extends Action> {
     }
 
     if (api.running !== true) {
-      return this.completeAction(ErrorStatusMessage.ServerShuttingDown);
+      return this.completeAction(ActionsStatus.ServerShuttingDown);
     }
 
     if (this.getPendingActionCount() > config.general.simultaneousActions) {
-      return this.completeAction(ErrorStatusMessage.TooManyRequests);
+      return this.completeAction(ActionsStatus.TooManyRequests);
     }
 
     if (!this.action || !this.actionTemplate) {
-      return this.completeAction(ErrorStatusMessage.UnknownAction);
+      return this.completeAction(ActionsStatus.UnknownAction);
     }
 
     if (
@@ -398,7 +398,7 @@ export class ActionProcessor<ActionClass extends Action> {
         this.connection.type
       ) >= 0
     ) {
-      return this.completeAction(ErrorStatusMessage.UnsupportedServerType);
+      return this.completeAction(ActionsStatus.UnsupportedServerType);
     }
 
     return this.runAction();
@@ -415,15 +415,15 @@ export class ActionProcessor<ActionClass extends Action> {
       await this.validateParams();
       this.lockParams();
     } catch (error) {
-      return this.completeAction(ErrorStatusMessage.GenericError, error);
+      return this.completeAction(ActionsStatus.GenericError, error);
     }
 
     if (this.missingParams.length > 0) {
-      return this.completeAction(ErrorStatusMessage.MissingParams);
+      return this.completeAction(ActionsStatus.MissingParams);
     }
 
     if (this.validatorErrors.length > 0) {
-      return this.completeAction(ErrorStatusMessage.ValidatorErrors);
+      return this.completeAction(ActionsStatus.ValidatorErrors);
     }
 
     if (this.toProcess === true) {
@@ -438,12 +438,12 @@ export class ActionProcessor<ActionClass extends Action> {
           Object.assign(this.response, postProcessResponse);
         }
 
-        return this.completeAction(ErrorStatusMessage.Complete);
+        return this.completeAction(ActionsStatus.Complete);
       } catch (error) {
-        return this.completeAction(ErrorStatusMessage.GenericError, error);
+        return this.completeAction(ActionsStatus.GenericError, error);
       }
     } else {
-      return this.completeAction(ErrorStatusMessage.Complete);
+      return this.completeAction(ActionsStatus.Complete);
     }
   }
 }
