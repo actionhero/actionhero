@@ -5,7 +5,6 @@ import { log } from "../modules/log";
 import { utils } from "../modules/utils";
 import * as dotProp from "dot-prop";
 import { api } from "../index";
-import { stat } from "fs";
 
 export type ErrorStatusMessage =
   | "complete"
