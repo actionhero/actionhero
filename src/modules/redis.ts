@@ -25,14 +25,10 @@ export namespace redis {
     if (connection.status !== "close" && connection.status !== "end") {
       return connection.publish(channel, stringPayload);
     } else {
-      const errorMessage = `cannot send message, redis disconnected`;
-      if (env === "test") {
-        log(errorMessage, "error", { channel, payload });
-      } else {
-        throw new Error(
-          errorMessage + `: channel: ${channel}, payload: ${stringPayload}`
-        );
-      }
+      log(`cannot send message, redis disconnected`, "error", {
+        channel,
+        payload,
+      });
     }
   }
 
