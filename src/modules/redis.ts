@@ -1,5 +1,5 @@
 import * as uuid from "uuid";
-import { config, api, id, env, log } from "./../index";
+import { config, api, id, log } from "./../index";
 
 export namespace redis {
   export interface PubSubMessage {
