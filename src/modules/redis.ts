@@ -1,5 +1,5 @@
 import * as uuid from "uuid";
-import { config, api, id, log } from "./../index";
+import { config, api, id, env } from "./../index";
 
 export namespace redis {
   export interface PubSubMessage {
@@ -20,7 +20,18 @@ export namespace redis {
    */
   export async function publish(payload: object | Array<any>) {
     const channel = config.general.channel;
-    return api.redis.clients.client.publish(channel, JSON.stringify(payload));
+    const connection = api.redis.clients.client;
+    const stringPayload = JSON.stringify(payload);
+    if (connection.status !== "close" && connection.status !== "end") {
+      return connection.publish(channel, stringPayload);
+    } else if (env !== "test") {
+      const errorMessage = `cannot send message, redis disconnected: channel: ${channel}, payload: ${stringPayload}`;
+      if (env === "test") {
+        console.log(errorMessage);
+      } else {
+        throw new Error(errorMessage);
+      }
+    }
   }
 
   /**
