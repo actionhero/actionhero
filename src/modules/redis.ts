@@ -27,7 +27,7 @@ export namespace redis {
     } else if (env !== "test") {
       const errorMessage = `cannot send message, redis disconnected: channel: ${channel}, payload: ${stringPayload}`;
       if (env === "test") {
-        console.log(errorMessage);
+        console.error(errorMessage);
       } else {
         throw new Error(errorMessage);
       }
