@@ -15,6 +15,7 @@ export namespace redis {
    *   serverToken: api.config.general.serverToken,
    *   message: 'hello!'
    * }
+   *
    * await api.redis.publish(payload)
    * ```
    */
