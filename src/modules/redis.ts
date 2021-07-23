@@ -15,12 +15,22 @@ export namespace redis {
    *   serverToken: api.config.general.serverToken,
    *   message: 'hello!'
    * }
+   *
    * await api.redis.publish(payload)
    * ```
    */
   export async function publish(payload: object | Array<any>) {
     const channel = config.general.channel;
-    return api.redis.clients.client.publish(channel, JSON.stringify(payload));
+    const connection = api.redis.clients.client;
+    const stringPayload = JSON.stringify(payload);
+    if (connection.status !== "close" && connection.status !== "end") {
+      return connection.publish(channel, stringPayload);
+    } else {
+      log(`cannot send message, redis disconnected`, "error", {
+        channel,
+        payload,
+      });
+    }
   }
 
   /**
