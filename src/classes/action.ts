@@ -54,7 +54,7 @@ export abstract class Action {
   }
 
   /**
-   * The main "do something" method for this action.  It can be `async`.  Usually the goal of this run method is to set properties on `data.response`.  If error is thrown in this method, it will be logged, caught, and appended to `data.response.error`
+   * The main "do something" method for this action.  It can be `async`.  Usually the goal of this run method is to return the data that you want to be sent to API consumers.  If error is thrown in this method, it will be logged, caught, and returned to the client as `error`
    * @param data The data about this connection, response, and params.
    */
   abstract run(data: { [key: string]: any }): Promise<ActionResponse>;
