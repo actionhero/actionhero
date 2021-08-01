@@ -53,7 +53,7 @@
     "uglify-js": "^3.13.10",
     "uuid": "^8.3.2",
     "winston": "^3.3.3",
-    "ws": "^7.5.3"
+    "ws": "^8.0.0"
   },
   "devDependencies": {
     "@types/glob": "^7.1.4",
