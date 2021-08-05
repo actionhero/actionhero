@@ -2,9 +2,9 @@
  * Transform the cookie headers of a node HTTP `req` Object into a hash.
  */
 export function parseCookies(req: { headers: { [key: string]: any } }): object {
-  const cookies = {};
+  const cookies: { [key: string]: string } = {};
   if (req.headers.cookie) {
-    req.headers.cookie.split(";").forEach((cookie) => {
+    req.headers.cookie.split(";").forEach((cookie: string) => {
       const parts = cookie.split("=");
       cookies[parts[0].trim()] = (parts[1] || "").trim();
     });

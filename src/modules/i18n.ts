@@ -2,7 +2,6 @@ import * as I18n from "i18n";
 import * as path from "path";
 import { Connection } from "../classes/connection";
 import { config } from "./config";
-import { api } from "./../index";
 import * as dotProp from "dot-prop";
 
 const options = config.i18n;

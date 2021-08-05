@@ -9,9 +9,7 @@ config.general.paths.log.forEach((p: string) => {
   try {
     utils.fileUtils.createDirSafely(p);
   } catch (error) {
-    if (error.code !== "EEXIST") {
-      throw error;
-    }
+    if (error.code !== "EEXIST") throw error;
   }
 });
 
@@ -19,6 +17,16 @@ loggers = config.logger.loggers.map((loggerBuilder: Function) => {
   const resolvedLogger = loggerBuilder(config);
   return winston.createLogger(resolvedLogger);
 });
+
+export type ActionHeroLogLevel =
+  | "emerg"
+  | "alert"
+  | "crit"
+  | "error"
+  | "warning"
+  | "notice"
+  | "info"
+  | "debug";
 
 /**
  * Log a message, with optional metadata.  The message can be logged to a number of locations (stdio, files, etc) as configured via config/logger.js
@@ -31,17 +39,16 @@ loggers = config.logger.loggers.map((loggerBuilder: Function) => {
  * Logging levels in winston conform to the severity ordering specified by RFC5424: severity of all levels is assumed to be numerically ascending from most important to least important.
  * Learn more at https://github.com/winstonjs/winston
  */
-export function log(message: string, severity: string = "info", data?: any) {
+export function log(
+  message: string,
+  severity: ActionHeroLogLevel = "info",
+  data?: any
+) {
   loggers.map((logger) => {
-    if (logger.levels[severity] === undefined) {
-      severity = "info";
-    }
+    if (logger.levels[severity] === undefined) severity = "info";
 
     const args = [severity, message];
-
-    if (data !== null && data !== undefined) {
-      args.push(data);
-    }
+    if (data !== null && data !== undefined) args.push(data);
 
     return logger.log.apply(logger, args);
   });

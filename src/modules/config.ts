@@ -10,11 +10,12 @@ import { id } from "./../classes/process/id";
 import { actionheroVersion } from "./../classes/process/actionheroVersion";
 import { typescript } from "./../classes/process/typescript";
 import { projectRoot } from "./../classes/process/projectRoot";
+import { route } from "../modules/route";
 
 export interface ConfigInterface {
   [key: string]: any;
 }
-export const configPaths = [];
+export const configPaths: string[] = [];
 
 export function buildConfig(_startingParams: ConfigInterface = {}) {
   let config: ConfigInterface = {
@@ -129,7 +130,7 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
     );
 
     let loadRetries = 0;
-    let loadErrors = {};
+    let loadErrors: { [file: string]: { error: Error; msg: string } } = {};
     for (let i = 0, limit = configFiles.length; i < limit; i++) {
       const f = configFiles[i];
       try {
@@ -172,12 +173,12 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
     // Remove duplicate routes since we might be loading from multiple config directories, also we load every
     // config directory twice.
     if (config.routes) {
-      Object.keys(config.routes).forEach((v) => {
+      Object.keys(config.routes as route.RoutesConfig).forEach((v) => {
         config.routes[v] = config.routes[v].filter(
-          (route, index, self) =>
+          (route: route.RouteType, index: number, self: route.RouteType[]) =>
             index ===
             self.findIndex(
-              (r) =>
+              (r: route.RouteType) =>
                 r.path === route.path &&
                 r.action === route.action &&
                 r.apiVersion === route.apiVersion &&

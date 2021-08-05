@@ -6,13 +6,13 @@ import { isPlainObject } from "./isPlainObject";
  * Matching keys in B override A.
  */
 export function hashMerge(
-  a: object,
-  b: object,
-  arg?: object
+  a: { [key: string]: any },
+  b: { [key: string]: any },
+  arg?: { [key: string]: any }
 ): { [key: string]: any } {
-  const c = {};
+  const c: { [key: string]: any } = {};
   let i: string;
-  let response: object;
+  let response: { [key: string]: any };
 
   for (i in a) {
     if (isPlainObject(a[i])) {

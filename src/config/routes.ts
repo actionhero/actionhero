@@ -1,6 +1,8 @@
+import { RoutesConfig } from "../classes/routes";
+
 export const DEFAULT = {
-  routes: (config) => {
-    return {
+  routes: () => {
+    const routes: RoutesConfig = {
       get: [
         { path: "/status", action: "status" },
         { path: "/swagger", action: "swagger" },
@@ -30,5 +32,7 @@ export const DEFAULT = {
 
       ---------------------- */
     };
+
+    return routes;
   },
 };

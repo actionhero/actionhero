@@ -3,12 +3,11 @@ import { parseIPv6URI } from "./parseIPv6URI";
 /**
  * Return ip and port information if defined in the header
  */
-export function parseHeadersForClientAddress(headers: object): {
-  ip: string;
-  port: number;
-} {
-  let ip = null;
-  let port = null;
+export function parseHeadersForClientAddress(headers: {
+  [key: string]: string;
+}) {
+  let ip: string = null;
+  let port: number = null;
 
   if (headers["x-forwarded-for"]) {
     let parts;
@@ -24,7 +23,7 @@ export function parseHeadersForClientAddress(headers: object): {
         ip = parts[0];
       }
       if (parts[1]) {
-        port = parts[1];
+        port = parseInt(parts[1], 10);
       }
     } else {
       // IPv6
@@ -38,7 +37,7 @@ export function parseHeadersForClientAddress(headers: object): {
     }
   }
   if (headers["x-forwarded-port"]) {
-    port = headers["x-forwarded-port"];
+    port = parseInt(headers["x-forwarded-port"], 10);
   }
   if (headers["x-real-ip"]) {
     // https://distinctplace.com/2014/04/23/story-behind-x-forwarded-for-and-x-real-ip-headers/

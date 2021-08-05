@@ -39,10 +39,15 @@ import { Api } from "./classes/api";
 // backwards-compatibility for older versions of node.js
 // we can't use globalThis for node v8, v10
 
-// @ts-ignore
+declare global {
+  namespace NodeJS {
+    interface Global {
+      api: Api;
+    }
+  }
+}
+
 if (!global.api) {
-  // @ts-ignore
   global.api = new Api();
 }
-// @ts-ignore
 export const api: Api = global.api;

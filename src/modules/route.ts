@@ -1,6 +1,23 @@
 import { api } from "./../index";
 
 export namespace route {
+  export type RouteType = {
+    path: string;
+    action: string;
+    dir?: string;
+    matchTrailingPathParts?: boolean;
+    apiVersion?: number | string;
+  };
+
+  export type RoutesConfig = {
+    all?: RouteType[];
+    head?: RouteType[];
+    get?: RouteType[];
+    post?: RouteType[];
+    put?: RouteType[];
+    delete?: RouteType[];
+  };
+
   /**
    * Programmatically define a route, rather than using `config.routes`.  This is useful for plugins which may define routes as well.
    * You can use both `routes.registerRoute` and `config.routes` in the same project.

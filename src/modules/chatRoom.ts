@@ -154,7 +154,9 @@ export namespace chatRoom {
   /**
    * Configures what properties of connections in a room to return via `api.chatRoom.roomStatus`
    */
-  export async function sanitizeMemberDetails(memberData) {
+  export async function sanitizeMemberDetails(memberData: {
+    [key: string]: any;
+  }) {
     return {
       id: memberData.id,
       joinedAt: memberData.joinedAt,
@@ -175,12 +177,12 @@ export namespace chatRoom {
         const members = (await api.redis.clients.client.hgetall(key)) as {
           [key: string]: string;
         };
-        const cleanedMembers = {};
+        const cleanedMembers: { [key: string]: any } = {};
         let count = 0;
 
         for (const id in members) {
           const data = JSON.parse(members[id]);
-          cleanedMembers[id] = chatRoom.sanitizeMemberDetails(data);
+          cleanedMembers[id] = await chatRoom.sanitizeMemberDetails(data);
           count++;
         }
 

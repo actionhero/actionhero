@@ -3,6 +3,8 @@ import { Worker } from "node-resque";
 import { api, config, task, Task, Action } from "./../index";
 import { UnwrapPromise } from "./tsUtils/unwrapPromise";
 import { WebServer } from "../servers/web";
+import { Connection } from "../classes/connection";
+import { TaskInputs } from "../classes/task";
 
 export namespace specHelper {
   /**
@@ -17,12 +19,12 @@ export namespace specHelper {
    */
   export async function runAction<A extends Action>(
     actionName: string,
-    input: { [key: string]: any } = {}
+    input: Connection | { [key: string]: any } = {}
   ) {
-    let connection;
+    let connection: Connection;
 
     if (input.id && input.type === "testServer") {
-      connection = input;
+      connection = input as Connection;
     } else {
       connection = await specHelper.buildConnection();
       connection.params = input;
@@ -38,7 +40,8 @@ export namespace specHelper {
       serverInformation?: ReturnType<WebServer["buildServerInformation"]>;
     } = await new Promise((resolve) => {
       api.servers.servers.testServer.processAction(connection);
-      connection.actionCallbacks[connection.messageId] = resolve;
+      //@ts-ignore
+      connection["actionCallbacks"][connection.messageId] = resolve;
     });
 
     return response;
@@ -125,7 +128,7 @@ export namespace specHelper {
    * i.e. [ { class: 'regularTask', queue: 'testQueue', args: [ [Object] ] } ]
    */
   export async function findEnqueuedTasks(taskName: string) {
-    let found = [];
+    let found: TaskInputs[] = [];
 
     // normal queues
     const queues = await api.resque.queue.queues();

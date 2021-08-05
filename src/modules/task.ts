@@ -1,5 +1,6 @@
 import { api, config, utils, log } from "./../index";
 import { Task, TaskInputs } from "./../classes/task";
+import { ErrorPayload } from "node-resque";
 
 export namespace task {
   /**
@@ -295,7 +296,7 @@ export namespace task {
    * Remove a specific job from the failed queue.
    * Will throw an error if redis cannot be reached.
    */
-  export async function removeFailed(failedJob) {
+  export async function removeFailed(failedJob: ErrorPayload) {
     return api.resque.queue.removeFailed(failedJob);
   }
 
@@ -303,7 +304,7 @@ export namespace task {
    * Remove a specific job from the failed queue, and retry it by placing it back into its original queue.
    * Will throw an error if redis cannot be reached.
    */
-  export async function retryAndRemoveFailed(failedJob) {
+  export async function retryAndRemoveFailed(failedJob: ErrorPayload) {
     return api.resque.queue.retryAndRemoveFailed(failedJob);
   }
 
@@ -493,7 +494,7 @@ export namespace task {
     }
   }
 
-  function checkForRepeatRecurringTaskEnqueue(taskName, error: Error) {
+  function checkForRepeatRecurringTaskEnqueue(taskName: string, error: Error) {
     if (error.toString().match(/already enqueued at this time/)) {
       // this is OK, the job was enqueued by another process as this method was running
       log(
