@@ -1,19 +1,18 @@
 import { Process, specHelper } from "actionhero";
-const actionhero = new Process();
 
-describe("Action", () => {
-  describe("%%name%%", () => {
-    beforeAll(async () => {
-      await actionhero.start();
-    });
+describe("Action: %%name%%", () => {
+  const actionhero = new Process();
 
-    afterAll(async () => {
-      await actionhero.stop();
-    });
+  beforeAll(async () => {
+    await actionhero.start();
+  });
 
-    test("returns OK", async () => {
-      const { ok } = await specHelper.runAction("%%name%%");
-      expect(ok).toEqual(true);
-    });
+  afterAll(async () => {
+    await actionhero.stop();
+  });
+
+  test("returns OK", async () => {
+    const { ok } = await specHelper.runAction("%%name%%");
+    expect(ok).toEqual(true);
   });
 });

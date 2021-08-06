@@ -1,25 +1,25 @@
 import { Process, task, api, specHelper } from "actionhero";
-const actionhero = new Process();
 
-describe("Task", () => {
-  describe("%%name%%", () => {
-    beforeAll(async () => {
-      await actionhero.start();
-    });
+describe("Task: %%name%%", () => {
+  const actionhero = new Process();
 
-    afterAll(async () => {
-      await actionhero.stop();
-    });
+  beforeAll(async () => {
+    await actionhero.start();
+  });
 
-    beforeEach(async () => {
-      await api.resque.queue.connection.redis.flushdb();
-    });
+  afterAll(async () => {
+    await actionhero.stop();
+  });
 
-    test("can be enqueued", async () => {
-      await task.enqueue("%%name%%", {});
-      const found = await specHelper.findEnqueuedTasks("%%name%%");
-      expect(found.length).toEqual(1);
-      expect(found[0].timestamp).toBeNull();
-    });
+  beforeEach(async () => {
+    await api.resque.queue.connection.redis.flushdb();
+  });
+
+  test("can be enqueued", async () => {
+    await task.enqueue("%%name%%", {});
+    const found = await specHelper.findEnqueuedTasks("%%name%%");
+    expect(found.length).toEqual(1);
+    expect(found[0].timestamp).toBeNull();
   });
 });
+

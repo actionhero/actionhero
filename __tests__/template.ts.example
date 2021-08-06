@@ -1,10 +1,11 @@
 import { Process, env, id, specHelper } from "actionhero";
-const actionhero = new Process();
-let api;
+import { StatusActions } from "../../src/actions/status";
 
 describe("actionhero Tests", () => {
+  const actionhero = new Process();
+
   beforeAll(async () => {
-    api = await actionhero.start();
+    await actionhero.start();
   });
 
   afterAll(async () => {
@@ -18,7 +19,8 @@ describe("actionhero Tests", () => {
   });
 
   test("can retrieve server uptime via the status action", async () => {
-    const { uptime } = await specHelper.runAction("status");
+    const RunMethod = StatusActions.prototype.run;
+    const { uptime } = await specHelper.runAction<RunMethod>("status");
     expect(uptime).toBeGreaterThan(0);
   });
 });
