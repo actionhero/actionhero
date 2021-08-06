@@ -2,6 +2,10 @@ import { api, id, task, Action, actionheroVersion } from "./../index";
 import * as path from "path";
 import * as fs from "fs";
 
+// These values are probably good starting points, but you should expect to tweak them for your application
+const maxMemoryAlloted = process.env.maxMemoryAlloted || 500;
+const maxResqueQueueLength = process.env.maxResqueQueueLength || 1000;
+
 const packageJSON = JSON.parse(
   fs
     .readFileSync(
@@ -10,9 +14,6 @@ const packageJSON = JSON.parse(
     .toString()
 );
 
-// These values are probably good starting points, but you should expect to tweak them for your application
-const maxMemoryAlloted = process.env.maxMemoryAlloted || 500;
-const maxResqueQueueLength = process.env.maxResqueQueueLength || 1000;
 export class Status extends Action {
   constructor() {
     super();
@@ -62,9 +63,9 @@ export class Status extends Action {
     return {
       id: id,
       actionheroVersion: actionheroVersion,
-      name: packageJSON.name,
-      description: packageJSON.description,
-      version: packageJSON.version,
+      name: packageJSON.name as string,
+      description: packageJSON.description as string,
+      version: packageJSON.version as string,
       uptime: new Date().getTime() - api.bootTime,
       consumedMemoryMB,
       resqueTotalQueueLength,

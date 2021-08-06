@@ -81,7 +81,7 @@ describe("Core", () => {
     });
 
     test("will return an actions error", async () => {
-      const response = await specHelper.runAction("errorAction");
+      const response = await specHelper.runAction<any>("errorAction");
       expect(response.error).toEqual("Error: worst action ever!");
       expect(response.requestId).toBeUndefined();
     });
@@ -91,7 +91,7 @@ describe("Core", () => {
         data.response.requestId = "id-12345";
         return error;
       };
-      const response = await specHelper.runAction("errorAction");
+      const response = await specHelper.runAction<any>("errorAction");
       expect(response.error).toEqual("Error: worst action ever!");
       expect(response.requestId).toEqual("id-12345");
     });

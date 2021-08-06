@@ -475,13 +475,9 @@ export class WebServer extends Server {
       this.config.metadataOptions.serverInformation &&
       typeof data.response !== "string"
     ) {
-      const stopTime = new Date().getTime();
-      data.response.serverInformation = {
-        serverName: config.general.serverName,
-        apiVersion: config.general.apiVersion,
-        requestDuration: stopTime - data.connection.connectedAt,
-        currentTime: stopTime,
-      };
+      data.response.serverInformation = this.buildServerInformation(
+        data.connection.connectedAt
+      );
     }
 
     if (
@@ -789,13 +785,23 @@ export class WebServer extends Server {
     }, {});
   }
 
+  buildServerInformation(connectedAt: number) {
+    const stopTime = new Date().getTime();
+    return {
+      serverName: config.general.serverName,
+      apiVersion: config.general.apiVersion,
+      requestDuration: stopTime - connectedAt,
+      currentTime: stopTime,
+    };
+  }
+
   buildRequesterInformation(connection) {
     const requesterInformation = {
       id: connection.id,
       fingerprint: connection.fingerprint,
       messageId: connection.messageId,
       remoteIP: connection.remoteIP,
-      receivedParams: {},
+      receivedParams: {} as { [key: string]: any },
     };
 
     for (const p in connection.params) {

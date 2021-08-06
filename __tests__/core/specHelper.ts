@@ -1,17 +1,17 @@
 import { api, Process, specHelper, task } from "./../../src/index";
+import { RandomNumber } from "../../src/actions/randomNumber";
+import { SleepTest } from "../../src/actions/sleepTest";
 
 const actionhero = new Process();
 
 describe("Core: specHelper", () => {
-  beforeAll(async () => {
-    await actionhero.start();
-  });
-  afterAll(async () => {
-    await actionhero.stop();
-  });
+  beforeAll(async () => await actionhero.start());
+  afterAll(async () => await actionhero.stop());
 
   test("can make a request with just params", async () => {
-    const { randomNumber } = await specHelper.runAction("randomNumber");
+    const { randomNumber } = await specHelper.runAction<RandomNumber>(
+      "randomNumber"
+    );
     expect(randomNumber).toBeGreaterThanOrEqual(0);
     expect(randomNumber).toBeLessThan(1);
   });
@@ -102,7 +102,9 @@ describe("Core: specHelper", () => {
 
     describe("happy-path", () => {
       test("if the response payload is an object, it appends metadata", async () => {
-        const response = await specHelper.runAction("randomNumber");
+        const response = await specHelper.runAction<RandomNumber>(
+          "randomNumber"
+        );
         expect(response.error).toBeUndefined();
         expect(response.randomNumber).toBeTruthy();
         expect(response.messageId).toBeTruthy();
@@ -138,7 +140,9 @@ describe("Core: specHelper", () => {
       });
 
       test("if the response payload is an object, it should not append metadata", async () => {
-        const response = await specHelper.runAction("randomNumber");
+        const response = await specHelper.runAction<RandomNumber>(
+          "randomNumber"
+        );
         expect(response.error).toBeUndefined();
         expect(response.randomNumber).toBeTruthy();
         expect(response.messageId).toBeUndefined();
@@ -178,8 +182,9 @@ describe("Core: specHelper", () => {
 
   describe("test responses", () => {
     test("will not report a broken test as a broken action (sync)", async () => {
-      const response = await specHelper.runAction("randomNumber");
+      const response = await specHelper.runAction<RandomNumber>("randomNumber");
       try {
+        //@ts-ignore
         response.not.a.real.thing();
         throw new Error("should not get here");
       } catch (e) {
@@ -190,8 +195,9 @@ describe("Core: specHelper", () => {
     });
 
     test("will not report a broken test as a broken action (async)", async () => {
-      const response = await specHelper.runAction("sleepTest");
+      const response = await specHelper.runAction<SleepTest>("sleepTest");
       try {
+        //@ts-ignore
         response.not.a.real.thing();
         throw new Error("should not get here");
       } catch (e) {

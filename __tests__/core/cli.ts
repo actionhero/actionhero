@@ -231,7 +231,7 @@ describe("Core: CLI", () => {
         const testData = String(
           fs.readFileSync(`${testDir}/__tests__/actions/myAction.ts`)
         );
-        expect(testData).toMatch('describe("myAction"');
+        expect(testData).toMatch('describe("Action: myAction"');
       }, 20000);
 
       test("can generate a task", async () => {
@@ -249,7 +249,7 @@ describe("Core: CLI", () => {
         const testData = String(
           fs.readFileSync(`${testDir}/__tests__/tasks/myTask.ts`)
         );
-        expect(testData).toMatch('describe("myTask"');
+        expect(testData).toMatch('describe("Task: myTask"');
       }, 20000);
 
       test("can generate a CLI command", async () => {

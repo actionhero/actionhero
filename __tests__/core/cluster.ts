@@ -26,9 +26,7 @@ describe("Core: Action Cluster", () => {
     }
   });
 
-  afterAll(async () => {
-    await actionhero.stop();
-  });
+  afterAll(async () => await actionhero.stop());
 
   describe("RPC", () => {
     afterEach(() => {

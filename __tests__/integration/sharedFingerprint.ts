@@ -45,9 +45,7 @@ describe("Integration: Web Server + Websocket Socket shared fingerprint", () => 
     ); // eslint-disable-line
   });
 
-  afterAll(async () => {
-    await actionhero.stop();
-  });
+  afterAll(async () => await actionhero.stop());
 
   test("should exist when web server been called", async () => {
     const body = await request.get({

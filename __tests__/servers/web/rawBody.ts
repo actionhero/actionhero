@@ -47,9 +47,7 @@ describe("Server: Web", () => {
     url = "http://localhost:" + config.servers.web.port;
   });
 
-  afterAll(async () => {
-    await actionhero.stop();
-  });
+  afterAll(async () => await actionhero.stop());
 
   describe("connection.rawConnection.rawBody", () => {
     beforeAll(() => {

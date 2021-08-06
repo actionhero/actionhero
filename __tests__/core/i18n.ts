@@ -1,14 +1,8 @@
 import * as I18n from "i18n";
 import * as fs from "fs";
 import * as path from "path";
-import {
-  api,
-  Process,
-  config,
-  i18n,
-  utils,
-  specHelper,
-} from "./../../src/index";
+import { Process, config, i18n, utils, specHelper } from "./../../src/index";
+import { RandomNumber } from "../../src/actions/randomNumber";
 
 const actionhero = new Process();
 let originalDetermineConnectionLocale;
@@ -57,7 +51,9 @@ describe("Core", () => {
     });
 
     test("should create localization files by default, and strings from actions should be included", async () => {
-      const { randomNumber } = await specHelper.runAction("randomNumber");
+      const { randomNumber } = await specHelper.runAction<RandomNumber>(
+        "randomNumber"
+      );
       expect(randomNumber).toBeLessThan(1);
       expect(randomNumber).toBeGreaterThanOrEqual(0);
 
