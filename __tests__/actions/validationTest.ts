@@ -2,19 +2,12 @@ import { Process, specHelper } from "./../../src/index";
 import { ValidationTest } from "../../src/actions/validationTest";
 
 describe("Action: validationTest", () => {
-  const RunMethod = ValidationTest.prototype.run;
   const actionhero = new Process();
-
-  beforeAll(async () => {
-    await actionhero.start();
-  });
-
-  afterAll(async () => {
-    await actionhero.stop();
-  });
+  beforeAll(async () => await actionhero.start());
+  afterAll(async () => await actionhero.stop());
 
   test("fails with no params", async () => {
-    const { error } = await specHelper.runAction<typeof RunMethod>(
+    const { error } = await specHelper.runAction<ValidationTest>(
       "validationTest",
       {}
     );
@@ -24,7 +17,7 @@ describe("Action: validationTest", () => {
   });
 
   test("fails with a number", async () => {
-    const { error } = await specHelper.runAction<typeof RunMethod>(
+    const { error } = await specHelper.runAction<ValidationTest>(
       "validationTest",
       {
         string: 87,
@@ -36,7 +29,7 @@ describe("Action: validationTest", () => {
   });
 
   test("works with a string", async () => {
-    const { string } = await specHelper.runAction<typeof RunMethod>(
+    const { string } = await specHelper.runAction<ValidationTest>(
       "validationTest",
       {
         string: "hello",

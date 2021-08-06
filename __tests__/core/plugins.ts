@@ -40,7 +40,7 @@ describe("Core: Plugins", () => {
     });
 
     test("can load an action from a plugin", async () => {
-      const response = await specHelper.runAction("pluginAction");
+      const response = await specHelper.runAction<any>("pluginAction");
       expect(response.error).toBeUndefined();
       expect(response.cool).toEqual(true);
     });

@@ -3,15 +3,9 @@ import { Status } from "../../src/actions/status";
 
 describe("actionhero Tests", () => {
   const actionhero = new Process();
-  const RunMethod = Status.prototype.run;
 
-  beforeAll(async () => {
-    await actionhero.start();
-  });
-
-  afterAll(async () => {
-    await actionhero.stop();
-  });
+  beforeAll(async () => await actionhero.start());
+  afterAll(async () => await actionhero.stop());
 
   test("should have booted into the test env", () => {
     expect(process.env.NODE_ENV).toEqual("test");
@@ -20,7 +14,7 @@ describe("actionhero Tests", () => {
   });
 
   test("can retrieve server uptime via the status action", async () => {
-    const { uptime } = await specHelper.runAction<RunMethod>("status");
+    const { uptime } = await specHelper.runAction<Status>("status");
     expect(uptime).toBeGreaterThan(0);
   });
 });

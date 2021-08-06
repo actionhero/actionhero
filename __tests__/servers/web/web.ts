@@ -22,9 +22,7 @@ describe("Server: Web", () => {
     url = "http://localhost:" + config.servers.web.port;
   });
 
-  afterAll(async () => {
-    await actionhero.stop();
-  });
+  afterAll(async () => await actionhero.stop());
 
   test("should be up and return data", async () => {
     await request.get(url + "/api/randomNumber").then(toJson);

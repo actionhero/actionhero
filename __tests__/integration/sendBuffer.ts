@@ -12,9 +12,7 @@ describe("Server: sendBuffer", () => {
     url = "http://localhost:" + config.servers.web.port;
   });
 
-  afterAll(async () => {
-    await actionhero.stop();
-  });
+  afterAll(async () => await actionhero.stop());
 
   beforeAll(() => {
     api.actions.versions.sendBufferTest = [1];

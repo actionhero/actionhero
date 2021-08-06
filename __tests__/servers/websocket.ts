@@ -91,9 +91,7 @@ describe("Server: Web Socket", () => {
     await connectClients();
   });
 
-  afterAll(async () => {
-    await actionhero.stop();
-  });
+  afterAll(async () => await actionhero.stop());
 
   test("socket client connections should work: client 1", async () => {
     const data = await awaitMethod(clientA, "connect", true);

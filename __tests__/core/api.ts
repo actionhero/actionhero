@@ -310,7 +310,7 @@ describe("Core", () => {
       });
 
       test("will set a default when params are not provided", async () => {
-        const response = await specHelper.runAction("testAction", {
+        const response = await specHelper.runAction<any>("testAction", {
           requiredParam: true,
         });
         expect(response.params.fancyParam).toEqual("abc123");
@@ -454,7 +454,7 @@ describe("Core", () => {
       });
 
       test("will set a default when params are not provided", async () => {
-        const response = await specHelper.runAction("testAction", {
+        const response = await specHelper.runAction<any>("testAction", {
           schemaParam: { requiredParam: true },
         });
         expect(response.params.schemaParam.fancyParam).toEqual("abc123");
@@ -597,7 +597,9 @@ describe("Core", () => {
       });
 
       test("runs formatter arrays in the proper order", async () => {
-        const response = await specHelper.runAction("testAction", { a: 6 });
+        const response = await specHelper.runAction<any>("testAction", {
+          a: 6,
+        });
         expect(response.a).toEqual("~*6*~");
       });
     });
@@ -627,7 +629,7 @@ describe("Core", () => {
       });
 
       test("prevents data.params from being modified", async () => {
-        const response = await specHelper.runAction("testAction", {
+        const response = await specHelper.runAction<any>("testAction", {
           a: "original",
         });
         expect(response.a).toBeUndefined();

@@ -3,13 +3,8 @@ import { Process, task, api, specHelper } from "actionhero";
 describe("Task: %%name%%", () => {
   const actionhero = new Process();
 
-  beforeAll(async () => {
-    await actionhero.start();
-  });
-
-  afterAll(async () => {
-    await actionhero.stop();
-  });
+  beforeAll(async () => await actionhero.start());
+  afterAll(async () => await actionhero.stop());
 
   beforeEach(async () => {
     await api.resque.queue.connection.redis.flushdb();

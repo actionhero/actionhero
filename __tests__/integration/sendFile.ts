@@ -12,9 +12,7 @@ describe("Server: sendFile", () => {
     url = "http://localhost:" + config.servers.web.port;
   });
 
-  afterAll(async () => {
-    await actionhero.stop();
-  });
+  afterAll(async () => await actionhero.stop());
 
   test("Server should sendFile", async () => {
     const stats = fs.statSync(__dirname + "/../../public/logo/actionhero.png");

@@ -10,12 +10,8 @@ import {
 const actionhero = new Process();
 
 describe("Core: Middleware", () => {
-  beforeAll(async () => {
-    await actionhero.start();
-  });
-  afterAll(async () => {
-    await actionhero.stop();
-  });
+  beforeAll(async () => await actionhero.start());
+  afterAll(async () => await actionhero.stop());
 
   afterEach(() => {
     api.actions.middleware = {};
@@ -32,7 +28,7 @@ describe("Core: Middleware", () => {
         },
       });
 
-      const { _preProcessorNote, error } = await specHelper.runAction(
+      const { _preProcessorNote, error } = await specHelper.runAction<any>(
         "randomNumber"
       );
       expect(error).toBeUndefined();
@@ -51,7 +47,7 @@ describe("Core: Middleware", () => {
         },
       });
 
-      const { _preProcessorNote, error } = await specHelper.runAction(
+      const { _preProcessorNote, error } = await specHelper.runAction<any>(
         "randomNumber"
       );
       expect(error).toBeUndefined();
@@ -67,7 +63,7 @@ describe("Core: Middleware", () => {
         },
       });
 
-      const { _preProcessorNote, error } = await specHelper.runAction(
+      const { _preProcessorNote, error } = await specHelper.runAction<any>(
         "randomNumber"
       );
       expect(error).toBeUndefined();
@@ -112,10 +108,10 @@ describe("Core: Middleware", () => {
           },
         });
 
-        const randomResponse = await specHelper.runAction("randomNumber");
+        const randomResponse = await specHelper.runAction<any>("randomNumber");
         expect(randomResponse.authenticatedAction).toEqual(false);
 
-        const authResponse = await specHelper.runAction("authAction");
+        const authResponse = await specHelper.runAction<any>("authAction");
         expect(authResponse.authenticatedAction).toEqual(true);
       });
 
@@ -180,7 +176,7 @@ describe("Core: Middleware", () => {
         },
       });
 
-      const response = await specHelper.runAction("randomNumber");
+      const response = await specHelper.runAction<any>("randomNumber");
       expect(response._processorNoteFirst).toEqual("first");
       expect(response._processorNoteEarly).toEqual("early");
       expect(response._processorNoteDefault).toEqual("default");
@@ -206,7 +202,7 @@ describe("Core: Middleware", () => {
         },
       });
 
-      const response = await specHelper.runAction("randomNumber");
+      const response = await specHelper.runAction<any>("randomNumber");
       expect(response._processorNoteFirst).toEqual("first");
       expect(response._processorNoteSecond).toEqual("second");
     });
@@ -220,7 +216,7 @@ describe("Core: Middleware", () => {
         },
       });
 
-      const response = await specHelper.runAction("randomNumber");
+      const response = await specHelper.runAction<any>("randomNumber");
       expect(response._postProcessorNote).toEqual("note");
     });
 
@@ -270,7 +266,7 @@ describe("Core: Middleware", () => {
         },
       });
 
-      const response = await specHelper.runAction("randomNumber");
+      const response = await specHelper.runAction<any>("randomNumber");
       expect(response._processorNoteFirst).toEqual("first");
       expect(response._processorNoteEarly).toEqual("early");
       expect(response._processorNoteDefault).toEqual("default");
@@ -296,7 +292,7 @@ describe("Core: Middleware", () => {
         },
       });
 
-      const response = await specHelper.runAction("randomNumber");
+      const response = await specHelper.runAction<any>("randomNumber");
       expect(response._processorNoteFirst).toEqual("first");
       expect(response._processorNoteSecond).toEqual("second");
     });
@@ -310,7 +306,7 @@ describe("Core: Middleware", () => {
         },
       });
 
-      const { randomNumber, error } = await specHelper.runAction(
+      const { randomNumber, error } = await specHelper.runAction<any>(
         "randomNumber"
       );
       expect(error).toEqual("Error: BLOCKED");

@@ -2,21 +2,14 @@ import { Process, specHelper } from "./../../src/index";
 import { RandomNumber } from "../../src/actions/randomNumber";
 
 describe("Action: randomNumber", () => {
-  const RunMethod = RandomNumber.prototype.run;
   const actionhero = new Process();
-
-  beforeAll(async () => {
-    await actionhero.start();
-  });
-
-  afterAll(async () => {
-    await actionhero.stop();
-  });
+  beforeAll(async () => await actionhero.start());
+  afterAll(async () => await actionhero.stop());
 
   let firstNumber = null;
 
   test("generates random numbers", async () => {
-    const { randomNumber } = await specHelper.runAction<typeof RunMethod>(
+    const { randomNumber } = await specHelper.runAction<RandomNumber>(
       "randomNumber"
     );
     expect(randomNumber).toBeGreaterThan(0);
@@ -25,7 +18,7 @@ describe("Action: randomNumber", () => {
   });
 
   test("is unique / random", async () => {
-    const { randomNumber } = await specHelper.runAction<typeof RunMethod>(
+    const { randomNumber } = await specHelper.runAction<RandomNumber>(
       "randomNumber"
     );
     expect(randomNumber).toBeGreaterThan(0);

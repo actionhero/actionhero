@@ -2,30 +2,21 @@ import { Process, specHelper } from "./../../src/index";
 import { RunAction } from "../../src/tasks/runAction";
 
 describe("Test: RunAction", () => {
-  const RunMethod = RunAction.prototype.run;
   const actionhero = new Process();
 
-  beforeAll(async () => {
-    await actionhero.start();
-  });
-
-  afterAll(async () => {
-    await actionhero.stop();
-  });
+  beforeAll(async () => await actionhero.start());
+  afterAll(async () => await actionhero.stop());
 
   test("can run the task without params", async () => {
-    const { randomNumber } = await specHelper.runTask<typeof RunMethod>(
-      "runAction",
-      {
-        action: "randomNumber",
-      }
-    );
+    const { randomNumber } = await specHelper.runTask<RunAction>("runAction", {
+      action: "randomNumber",
+    });
     expect(randomNumber).toBeGreaterThanOrEqual(0);
     expect(randomNumber).toBeLessThan(1);
   });
 
   test("can run the task with params", async () => {
-    const { cacheTestResults } = await specHelper.runTask<typeof RunMethod>(
+    const { cacheTestResults } = await specHelper.runTask<RunAction>(
       "runAction",
       {
         action: "cacheTest",
@@ -38,7 +29,7 @@ describe("Test: RunAction", () => {
 
   test("will throw with errors", async () => {
     await expect(
-      specHelper.runTask<typeof RunMethod>("runAction", {
+      specHelper.runTask<RunAction>("runAction", {
         action: "cacheTest",
       })
     ).rejects.toThrow(/key is a required parameter for this action/);

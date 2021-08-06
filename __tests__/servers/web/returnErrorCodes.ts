@@ -45,9 +45,7 @@ describe("Server: Web", () => {
     url = "http://localhost:" + config.servers.web.port;
   });
 
-  afterAll(async () => {
-    await actionhero.stop();
-  });
+  afterAll(async () => await actionhero.stop());
 
   describe("errorCodes", () => {
     test("returnErrorCodes false should still have a status of 200", async () => {

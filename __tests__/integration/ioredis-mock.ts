@@ -70,9 +70,7 @@ describe("with ioredis-mock", () => {
     await api.redis.clients.client.flushdb();
   });
 
-  afterAll(async () => {
-    await actionhero.stop();
-  });
+  afterAll(async () => await actionhero.stop());
 
   test("basic redis operations work and data is shared between the connections", async () => {
     await api.redis.clients.client.set("__test", "abc");
