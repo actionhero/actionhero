@@ -33,7 +33,7 @@ export namespace specHelper {
     const response: (ActionRunMethod extends Action["run"]
       ? UnwrapPromise<ActionRunMethod>
       : any) & {
-      error: string;
+      error: Error | string;
     } = await new Promise((resolve) => {
       api.servers.servers.testServer.processAction(connection);
       connection.actionCallbacks[connection.messageId] = resolve;
@@ -73,7 +73,7 @@ export namespace specHelper {
     const result: (TaskRunMethod extends Task["run"]
       ? UnwrapPromise<TaskRunMethod>
       : any) & {
-      error: string;
+      error: Error | string;
     } = await api.tasks.tasks[taskName].run(params, undefined);
     return result;
   }

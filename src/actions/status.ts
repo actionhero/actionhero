@@ -63,9 +63,9 @@ export class Status extends Action {
     return {
       id: id,
       actionheroVersion: actionheroVersion,
-      name: packageJSON.name,
-      description: packageJSON.description,
-      version: packageJSON.version,
+      name: packageJSON.name as string,
+      description: packageJSON.description as string,
+      version: packageJSON.version as string,
       uptime: new Date().getTime() - api.bootTime,
       consumedMemoryMB,
       resqueTotalQueueLength,

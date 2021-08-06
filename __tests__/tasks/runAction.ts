@@ -1,10 +1,10 @@
 import { Process, specHelper } from "./../../src/index";
 import { RunAction } from "../../src/tasks/runAction";
 
-const RunMethod = RunAction.prototype.run;
-const actionhero = new Process();
-
 describe("Test: RunAction", () => {
+  const RunMethod = RunAction.prototype.run;
+  const actionhero = new Process();
+
   beforeAll(async () => {
     await actionhero.start();
   });

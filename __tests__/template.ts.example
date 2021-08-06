@@ -3,6 +3,7 @@ import { Status } from "../../src/actions/status";
 
 describe("actionhero Tests", () => {
   const actionhero = new Process();
+  const RunMethod = Status.prototype.run;
 
   beforeAll(async () => {
     await actionhero.start();
@@ -19,7 +20,6 @@ describe("actionhero Tests", () => {
   });
 
   test("can retrieve server uptime via the status action", async () => {
-    const RunMethod = Status.prototype.run;
     const { uptime } = await specHelper.runAction<RunMethod>("status");
     expect(uptime).toBeGreaterThan(0);
   });
