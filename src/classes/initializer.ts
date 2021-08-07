@@ -1,5 +1,3 @@
-import { ConfigInterface } from "./../modules/config";
-
 /**
  * Create a new Actionhero Initializer. The required properties of an initializer. These can be defined statically (this.name) or as methods which return a value.
  */
@@ -23,24 +21,29 @@ export abstract class Initializer {
   /**
    * Method run as part of the `initialize` lifecycle of your server.  Usually sets api['YourNamespace']
    */
-  async initialize?(config: ConfigInterface): Promise<void>;
+  async initialize?(): Promise<void>;
 
   /**
    * Method run as part of the `start` lifecycle of your server.  Usually connects to remote servers or processes..
    */
-  async start?(config: ConfigInterface): Promise<void>;
+  async start?(): Promise<void>;
 
   /**
    * Method run as part of the `initialize` lifecycle of your server.  Usually disconnects from remote servers or processes.
    */
-  async stop?(config: ConfigInterface): Promise<void>;
+  async stop?(): Promise<void>;
 
   validate() {
     if (!this.name) {
       throw new Error("name is required for this initializer");
     }
+    const priorities = [
+      "loadPriority",
+      "startPriority",
+      "stopPriority",
+    ] as const;
 
-    ["loadPriority", "startPriority", "stopPriority"].forEach((priority) => {
+    priorities.forEach((priority) => {
       if (
         !this[priority] ||
         typeof this[priority] !== "number" ||

@@ -1,5 +1,6 @@
 import { Inputs } from "./inputs";
-import { Plugin } from "node-resque";
+import { Plugin, Worker } from "node-resque";
+import { missing } from "../modules/utils/missing";
 
 /**
  * Create a new Actionhero Task. The required properties of an task. These can be defined statically (this.name) or as methods which return a value.
@@ -33,18 +34,21 @@ export abstract class Task {
   /**The Middleware specific to this Task (default: []).  Middleware is described by the string names of the middleware */
   middleware?: Array<string>;
   /**Plugins from node-resque to use on this task (default: []).  Plugins like `QueueLock can be applied` */
-  plugins?: Array<string | typeof Plugin>;
+  plugins?: Array<string | Plugin>;
   /**Options for the node-resque plugins. */
   pluginOptions?: { [key: string]: any };
   /**Re-enqueuing a periodic task in the case of an exception.  (default: false) */
   reEnqueuePeriodicTaskIfException?: boolean;
 
   constructor() {
-    const coreProperties = this.defaults();
-    for (const key in coreProperties) {
-      if (!this[key]) {
-        this[key] = coreProperties[key];
-      }
+    if (missing(this.description)) this.description = this.name;
+    if (missing(this.frequency)) this.frequency = 0;
+    if (missing(this.queue)) this.queue = "default";
+    if (missing(this.middleware)) this.middleware = [];
+    if (missing(this.plugins)) this.plugins = [];
+    if (missing(this.pluginOptions)) this.pluginOptions = {};
+    if (missing(this.reEnqueuePeriodicTaskIfException)) {
+      this.reEnqueuePeriodicTaskIfException = true;
     }
   }
 
@@ -57,20 +61,7 @@ export abstract class Task {
    * * data: The data about this instance of the task, specifically params.
    * * worker: Instance of a node-resque worker. You can inspect `worker.job` and set `worker.result` explicitly if your Task does not return a value.
    */
-  abstract run(data: TaskInputs, worker): Promise<any>;
-
-  private defaults?() {
-    return {
-      name: null,
-      description: this.name,
-      frequency: 0,
-      queue: "default",
-      middleware: [],
-      plugins: [],
-      pluginOptions: {},
-      reEnqueuePeriodicTaskIfException: true,
-    };
-  }
+  abstract run(data: TaskInputs, worker: Worker): Promise<any>;
 
   validate?() {
     if (!this.name) {
@@ -92,5 +83,6 @@ export abstract class Task {
 }
 
 export interface TaskInputs {
+  error?: Error | string | any;
   [key: string]: any;
 }

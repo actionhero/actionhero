@@ -20,10 +20,10 @@ export class Api {
   process?: Process;
 
   commands: {
-    initialize?: Function;
-    start?: Function;
-    stop?: Function;
-    restart?: Function;
+    initialize?: Process["initialize"];
+    start?: Process["start"];
+    stop?: Process["stop"];
+    restart?: Process["restart"];
   };
 
   connections: ConnectionsApi;
@@ -38,10 +38,6 @@ export class Api {
   routes: RoutesApi;
   exceptionHandlers: ExceptionHandlerAPI;
   specHelper: SpecHelperApi;
-
-  // this is left in as way for older methods to still extend the api object
-  // going forward, all interfaces should be exposed via export to be consumed directly
-  [key: string]: any;
 
   constructor() {
     this.bootTime = new Date().getTime();

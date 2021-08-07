@@ -1,3 +1,5 @@
+import { missing } from "../modules/utils/missing";
+
 /**
  * An Actionhero CLI Command.
  * For inputs, you can provide Options (--thing=stuff) with the "Inputs" object, or define Arguments in the name of the command (`greet [name]`)
@@ -29,15 +31,11 @@ export abstract class CLI {
   start: boolean;
 
   constructor() {
-    const defaults = this.getDefaults();
-    for (const key in defaults) {
-      if (!this[key]) {
-        this[key] = defaults[key];
-      }
-      if (typeof this[key] === "function") {
-        this[key] = this[key]();
-      }
-    }
+    if (missing(this.description)) this.description = this.name;
+    if (missing(this.example)) this.example = "";
+    if (missing(this.inputs)) this.inputs = {};
+    if (missing(this.initialize)) this.initialize = true;
+    if (missing(this.start)) this.start = true;
   }
 
   /**
@@ -51,17 +49,6 @@ export abstract class CLI {
    * An optional method to append additional information to the --help response for this CLI command
    */
   help() {}
-
-  private getDefaults() {
-    return {
-      name: null,
-      description: this.name,
-      example: "",
-      inputs: {},
-      initialize: true,
-      start: false,
-    };
-  }
 
   validate() {
     if (!this.name) {

@@ -8,6 +8,7 @@ import { filterResponseForLogging } from "./utils/filterResponseForLogging";
 import { getExternalIPAddress } from "./utils/getExternalIPAddress";
 import { hashMerge } from "./utils/hashMerge";
 import { isPlainObject } from "./utils/isPlainObject";
+import { missing } from "./utils/missing";
 import { parseHeadersForClientAddress } from "./utils/parseHeadersForClientAddress";
 import { parseCookies } from "./utils/parseCookies";
 import { parseIPv6URI } from "./utils/parseIPv6URI";
@@ -38,6 +39,7 @@ export const utils = {
   filterResponseForLogging,
   getExternalIPAddress,
   hashMerge,
+  missing,
   isPlainObject,
   parseHeadersForClientAddress,
   parseCookies,

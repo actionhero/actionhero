@@ -35,7 +35,6 @@ export namespace specHelper {
     connection.messageId = connection.params.messageId || uuid.v4();
     const response: (A extends Action ? UnwrapPromise<A["run"]> : any) & {
       messageId?: string;
-      error?: Error | string | any;
       requesterInformation?: ReturnType<WebServer["buildRequesterInformation"]>;
       serverInformation?: ReturnType<WebServer["buildServerInformation"]>;
     } = await new Promise((resolve) => {
@@ -69,15 +68,14 @@ export namespace specHelper {
    */
   export async function runTask<T extends Task>(
     taskName: string,
-    params: object | Array<any>
+    params: TaskInputs
   ) {
     if (!api.tasks.tasks[taskName]) {
       throw new Error(`task ${taskName} not found`);
     }
 
-    const result: (T extends Task ? UnwrapPromise<T["run"]> : any) & {
-      error?: Error | string;
-    } = await api.tasks.tasks[taskName].run(params, undefined);
+    const result: T extends Task ? UnwrapPromise<T["run"]> : any =
+      await api.tasks.tasks[taskName].run(params, undefined);
     return result;
   }
 

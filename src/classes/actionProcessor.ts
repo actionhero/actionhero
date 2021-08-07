@@ -1,10 +1,11 @@
 import { Connection } from "./connection";
-import { Action } from "./action";
+import { Action, ActionResponse } from "./action";
 import { config } from "./../modules/config";
-import { log } from "../modules/log";
+import { ActionHeroLogLevel, log } from "../modules/log";
 import { utils } from "../modules/utils";
 import * as dotProp from "dot-prop";
 import { api } from "../index";
+import { Input } from "./input";
 
 export enum ActionsStatus {
   Complete,
@@ -34,9 +35,7 @@ export class ActionProcessor<ActionClass extends Action> {
   actionStartTime: number;
   actionTemplate: ActionClass;
   working: boolean;
-  response: {
-    [key: string]: any;
-  };
+  response: ActionResponse;
   duration: number;
   actionStatus: ActionsStatus;
 
@@ -126,7 +125,7 @@ export class ActionProcessor<ActionClass extends Action> {
   private logAndReportAction(status: ActionsStatus, error: Error) {
     const { type, rawConnection } = this.connection;
 
-    let logLevel = "info";
+    let logLevel: ActionHeroLogLevel = "info";
     if (this.actionTemplate && this.actionTemplate.logLevel) {
       logLevel = this.actionTemplate.logLevel;
     }
@@ -137,10 +136,12 @@ export class ActionProcessor<ActionClass extends Action> {
       action: this.action,
       params: JSON.stringify(filteredParams),
       duration: this.duration,
-      method: type === "web" ? rawConnection.method : undefined,
-      pathname: type === "web" ? rawConnection.parsedURL.pathname : undefined,
+      method: (type === "web" ? rawConnection.method : undefined) as string,
+      pathname: (type === "web"
+        ? rawConnection.parsedURL.pathname
+        : undefined) as string,
       error: "",
-      response: undefined,
+      response: undefined as string,
     };
 
     if (config.general.enableResponseLogging) {
@@ -170,13 +171,14 @@ export class ActionProcessor<ActionClass extends Action> {
   }
 
   private applyDefaultErrorLogLineFormat(error: Error) {
-    const errorFields: { error: string } = { error: null };
+    const errorFields: { error: string; [k: string]: string } = { error: null };
     if (error instanceof Error) {
       errorFields.error = error.toString();
-      Object.getOwnPropertyNames(error)
-        .filter((prop) => prop !== "message")
-        .sort((a, b) => (a === "stack" || b === "stack" ? -1 : 1))
-        .forEach((prop) => (errorFields[prop] = error[prop]));
+      for (const [key, value] of Object.entries(error).sort((a, b) =>
+        a[0] === "stack" || b[0] === "stack" ? -1 : 1
+      )) {
+        errorFields[key] = value;
+      }
     } else {
       try {
         errorFields.error = JSON.stringify(error);
@@ -253,7 +255,12 @@ export class ActionProcessor<ActionClass extends Action> {
     return dotProp.get(api, cmdParts.join("."));
   }
 
-  private async validateParam(props, params, key, schemaKey) {
+  private async validateParam(
+    props: Input,
+    params: Action["inputs"],
+    key: string,
+    schemaKey: string
+  ) {
     // default
     if (params[key] === undefined && props.default !== undefined) {
       if (typeof props.default === "function") {
@@ -265,12 +272,14 @@ export class ActionProcessor<ActionClass extends Action> {
 
     // formatter
     if (params[key] !== undefined && props.formatter !== undefined) {
-      if (!Array.isArray(props.formatter)) {
+      if (
+        !Array.isArray(props.formatter) &&
+        typeof props.formatter === "string"
+      ) {
         props.formatter = [props.formatter];
       }
 
-      for (const i in props.formatter) {
-        const formatter = props.formatter[i];
+      for (const formatter of props.formatter as Array<string | Function>) {
         if (typeof formatter === "function") {
           params[key] = await formatter.call(api, params[key], this);
         } else {
@@ -282,12 +291,14 @@ export class ActionProcessor<ActionClass extends Action> {
 
     // validator
     if (params[key] !== undefined && props.validator !== undefined) {
-      if (!Array.isArray(props.validator)) {
+      if (
+        !Array.isArray(props.validator) &&
+        typeof props.validator === "string"
+      ) {
         props.validator = [props.validator];
       }
 
-      for (const j in props.validator) {
-        const validator = props.validator[j];
+      for (const validator of props.validator as Array<string | Function>) {
         let validatorResponse;
         try {
           if (typeof validator === "function") {
@@ -332,7 +343,7 @@ export class ActionProcessor<ActionClass extends Action> {
   }
 
   private async validateParams(schemaKey?: string) {
-    let inputs = this.actionTemplate.inputs || {};
+    let inputs = this.actionTemplate.inputs;
     let params = this.params;
 
     if (schemaKey) {

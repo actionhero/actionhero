@@ -210,7 +210,7 @@ export class Connection {
     delete api.connections.connections[this.id];
   }
 
-  private set(key, value) {
+  private set(key: string, value: any) {
     this[key] = value;
   }
 
