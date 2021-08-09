@@ -58,7 +58,7 @@
   "devDependencies": {
     "@types/glob": "^7.1.4",
     "@types/jest": "^26.0.24",
-    "@types/node": "^15.12.4",
+    "@types/node": "^16.4.13",
     "@types/primus": "^7.3.5",
     "@types/puppeteer": "^5.4.4",
     "@types/uuid": "^8.3.1",
