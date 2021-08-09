@@ -35,11 +35,11 @@ export class CacheTest extends Action {
     };
   }
 
-  stringFormatter(s) {
+  stringFormatter(s: any) {
     return String(s);
   }
 
-  stringValidator(s) {
+  stringValidator(s: string) {
     if (s.length < 3) {
       return "inputs should be at least 3 letters long";
     } else {

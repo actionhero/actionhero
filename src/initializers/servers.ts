@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as glob from "glob";
-import { api, log, utils, Initializer, Server } from "../index";
+import { api, config, log, utils, Initializer, Server } from "../index";
 
 export interface ServersApi {
   servers: {
@@ -20,21 +20,21 @@ export class Servers extends Initializer {
     this.stopPriority = 100;
   }
 
-  async initialize(config) {
+  async initialize() {
     api.servers = {
       servers: {},
     };
 
     const serverFolders = [path.resolve(path.join(__dirname, "..", "servers"))];
 
-    config.general.paths.server.forEach((p) => {
+    config.general.paths.server.forEach((p: string) => {
       p = path.resolve(p);
       if (serverFolders.indexOf(p) < 0) {
         serverFolders.push(p);
       }
     });
 
-    let files = [];
+    let files: string[] = [];
 
     for (const i in serverFolders) {
       const p = serverFolders[i];
@@ -95,7 +95,7 @@ export class Servers extends Initializer {
     }
   }
 
-  async start(config) {
+  async start() {
     const serverNames = Object.keys(api.servers.servers);
     for (const i in serverNames) {
       const serverName = serverNames[i];

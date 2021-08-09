@@ -21,7 +21,6 @@ export class WebSocketServer extends Server {
       verbs: [
         "quit",
         "exit",
-        "documentation",
         "roomAdd",
         "roomLeave",
         "roomView",

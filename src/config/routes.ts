@@ -1,4 +1,4 @@
-import { RoutesConfig } from "../classes/routes";
+import { RoutesConfig } from "../modules/route";
 
 export const DEFAULT = {
   routes: () => {

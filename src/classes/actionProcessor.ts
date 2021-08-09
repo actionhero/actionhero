@@ -24,12 +24,15 @@ export class ActionProcessor<ActionClass extends Action> {
   toProcess: boolean;
   toRender: boolean;
   messageId: number | string;
-  params: {
+  // params: {
+  //   action: string;
+  //   apiVersion: string | number;
+  //   [key: string]: any;
+  // };
+  params: ActionClass["inputs"] & {
     action: string;
     apiVersion: string | number;
-    [key: string]: any;
   };
-  // params: ActionClass["inputs"];
   missingParams: Array<string>;
   validatorErrors: Array<string | Error>;
   actionStartTime: number;
@@ -230,6 +233,7 @@ export class ActionProcessor<ActionClass extends Action> {
 
     if (schemaKey) {
       inputs = this.actionTemplate.inputs[schemaKey].schema;
+      // @ts-ignore
       params = this.params[schemaKey];
     }
 
@@ -348,6 +352,7 @@ export class ActionProcessor<ActionClass extends Action> {
 
     if (schemaKey) {
       inputs = this.actionTemplate.inputs[schemaKey].schema;
+      // @ts-ignore
       params = this.params[schemaKey];
     }
 

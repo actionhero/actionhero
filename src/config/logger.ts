@@ -1,4 +1,5 @@
 import * as winston from "winston";
+import { config } from "../";
 
 /*
 The loggers defined here will eventually be available via `import { loggers } from "actionhero"`
@@ -13,7 +14,7 @@ type ActionheroConfigLoggerBuilderArray = Array<
 >;
 
 export const DEFAULT = {
-  logger: (config) => {
+  logger: () => {
     const loggers: ActionheroConfigLoggerBuilderArray = [];
     loggers.push(buildConsoleLogger());
     config.general.paths.log.forEach((p) => {
@@ -29,10 +30,10 @@ export const DEFAULT = {
 };
 
 export const test = {
-  logger: (config) => {
+  logger: () => {
     const loggers: ActionheroConfigLoggerBuilderArray = [];
     loggers.push(buildConsoleLogger("crit"));
-    config.general.paths.log.forEach((p) => {
+    config.general.paths.log.forEach((p: string) => {
       loggers.push(buildFileLogger(p, "debug", 1));
     });
 
@@ -43,7 +44,7 @@ export const test = {
 // helpers for building the winston loggers
 
 function buildConsoleLogger(level = "info") {
-  return function (config) {
+  return function () {
     return winston.createLogger({
       format: winston.format.combine(
         winston.format.timestamp(),
@@ -79,8 +80,8 @@ function stringifyExtraMessagePropertiesForConsole(info) {
   return response;
 }
 
-function buildFileLogger(path, level = "info", maxFiles = undefined) {
-  return function (config) {
+function buildFileLogger(path: string, level = "info", maxFiles = undefined) {
+  return function () {
     const filename = `${path}/${config.process.id}-${config.process.env}.log`;
     return winston.createLogger({
       format: winston.format.combine(

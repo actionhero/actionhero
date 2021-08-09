@@ -2,6 +2,32 @@ import * as uuid from "uuid";
 import { api, chatRoom } from "./../index";
 import { config } from "./../modules/config";
 import { i18n } from "../modules/i18n";
+import { route, RouteType } from "../modules/route";
+import { missing } from "../modules/utils/missing";
+
+export type ConnectionData = {
+  id?: string;
+  type: string;
+  rawConnection: any;
+  remotePort: number;
+  remoteIP: string;
+};
+
+export const connectionVerbs = [
+  "quit",
+  "exit",
+  "paramAdd",
+  "paramDelete",
+  "paramView",
+  "paramsView",
+  "paramsDelete",
+  "roomAdd",
+  "roomLeave",
+  "roomView",
+  "detailsView",
+  "say",
+] as const;
+export type ConnectionVerbs = typeof connectionVerbs[number];
 
 /**
  * The generic representation of a connection for all server types is an Actionhero.Connection.  You will never be creating these yourself via an action or task, but you will find them in your Actions and Action Middleware.
@@ -47,33 +73,30 @@ export class Connection {
   //** for web connections */
   setHeader?: (key: string, value: string) => {};
   setStatusCode?: (code: number) => {};
-  matchedRoute?: string;
+  matchedRoute?: RouteType;
   pipe?: Function;
 
   /**
    * @param data The specifics of this connection
    * @param callCreateMethods The specifics of this connection will calls create methods in the constructor. This property will exist for backward compatibility. If you want to construct connection and call create methods within async, you can use `await Actionhero.Connection.createAsync(details)` for construction.
    */
-  constructor(data, callCreateMethods = true) {
+  constructor(data: ConnectionData, callCreateMethods = true) {
     this.setup(data);
-    if (callCreateMethods) {
-      Connection.callConnectionCreateMethods(this);
-    }
+    if (callCreateMethods) Connection.callConnectionCreateMethods(this);
     api.connections.connections[this.id] = this;
   }
 
   /**
    * @param data The specifics of this connection
    */
-  static async createAsync(data) {
+  static async createAsync(data: ConnectionData) {
     const connection = new this(data, false);
     await this.callConnectionCreateMethods(connection);
     return connection;
   }
 
   private static async callConnectionCreateMethods(connection: Connection) {
-    for (const i in api.connections.globalMiddleware) {
-      const middlewareName = api.connections.globalMiddleware[i];
+    for (const middlewareName of api.connections.globalMiddleware) {
       if (
         typeof api.connections.middleware[middlewareName].create === "function"
       ) {
@@ -82,63 +105,48 @@ export class Connection {
     }
   }
 
-  private setup(data) {
-    if (data.id) {
-      this.id = data.id;
-    } else {
-      this.id = this.generateID();
-    }
-    this.connectedAt = new Date().getTime();
-
-    ["type", "rawConnection"].forEach((req) => {
-      if (data[req] === null || data[req] === undefined) {
+  private setup(data: ConnectionData) {
+    (["type", "rawConnection"] as const).forEach((req) => {
+      if (missing(data[req])) {
         throw new Error(`${req} is required to create a new connection object`);
       }
-      this[req] = data[req];
     });
 
-    ["remotePort", "remoteIP"].forEach((req) => {
-      if (data[req] === null || data[req] === undefined) {
-        if (config.general.enforceConnectionProperties === true) {
-          throw new Error(
-            `${req} is required to create a new connection object`
-          );
-        } else {
-          data[req] = 0; // could be a random uuid as well?
-        }
-      }
-      this[req] = data[req];
-    });
-
-    const connectionDefaults = {
-      error: null,
-      fingerprint: this.id,
-      rooms: [],
-      params: {},
-      pendingActions: 0,
-      totalActions: 0,
-      messageId: 0,
-      canChat: false,
-      destroyed: false,
-    };
-
-    for (const i in connectionDefaults) {
-      if (this[i] === undefined && data[i] !== undefined) {
-        this[i] = data[i];
-      }
-      if (this[i] === undefined) {
-        this[i] = connectionDefaults[i];
-      }
+    if (config.general.enforceConnectionProperties === true) {
+      if (missing(data.remotePort))
+        throw new Error(
+          "remotePort is required to create a new connection object"
+        );
+      if (missing(data.remoteIP))
+        throw new Error(
+          "remoteIP is required to create a new connection object"
+        );
     }
 
-    const connection = this;
-    const server = api.servers.servers[connection.type];
+    this.type = data.type;
+    this.rawConnection = data.rawConnection;
+    this.id = data.id ?? this.generateID();
+    this.fingerprint = this.id;
+    this.connectedAt = new Date().getTime();
+    this.remotePort = data["remotePort"] ?? 0;
+    this.remoteIP = data["remoteIP"] ?? "0";
+    this.error = null;
+    this.rooms = [];
+    this.params = {};
+    this.pendingActions = 0;
+    this.totalActions = 0;
+    this.messageId = "0";
+    this.canChat = false;
+    this.destroyed = false;
+
+    const server = api.servers.servers[this.type];
     if (server && server.connectionCustomMethods) {
-      for (const name in server.connectionCustomMethods) {
-        connection[name] = async (...args) => {
-          args.unshift(connection);
+      for (const [name, f] of Object.entries(server.connectionCustomMethods)) {
+        //@ts-ignore
+        this.set(name, async (...args) => {
+          args.unshift(this);
           return server.connectionCustomMethods[name].apply(null, args);
-        };
+        });
       }
     }
 
@@ -211,6 +219,7 @@ export class Connection {
   }
 
   private set(key: string, value: any) {
+    //@ts-ignore
     this[key] = value;
   }
 
@@ -295,8 +304,6 @@ export class Connection {
             totalActions: this.totalActions,
             pendingActions: this.pendingActions,
           };
-        case "documentation":
-          return api.documentation.documentation;
         case "say":
           room = words.shift();
           await api.chatRoom.broadcast(this, room, words.join(" "));

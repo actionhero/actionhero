@@ -2,7 +2,8 @@ import { EventEmitter } from "events";
 import { Connection } from "./connection";
 import { ActionProcessor } from "./actionProcessor";
 import { api } from "../index";
-import { log } from "../modules/log";
+import { log, ActionHeroLogLevel } from "../modules/log";
+import { missing } from "../modules/utils/missing";
 
 interface ServerConfig {
   [key: string]: any;
@@ -47,15 +48,19 @@ export abstract class Server extends EventEmitter {
     this.attributes = {};
     this.config = {}; // will be applied by the initializer
     this.connectionCustomMethods = {};
-    const defaultAttributes = this.defaultAttributes();
-    for (const key in defaultAttributes) {
-      if (!this.attributes[key]) {
-        this.attributes[key] = defaultAttributes[key];
-      }
-      if (typeof this.attributes[key] === "function") {
-        this.attributes[key] = this[key]();
-      }
-    }
+
+    if (missing(this.canChat)) this.canChat = true;
+    if (missing(this.logExits)) this.logExits = true;
+    if (missing(this.sendWelcomeMessage)) this.sendWelcomeMessage = true;
+    if (missing(this.logConnections)) this.logConnections = true;
+    if (missing(this.verbs)) this.verbs = [];
+
+    // const defaultAttributes = this.defaultAttributes();
+    // for (const key in defaultAttributes) {
+    //   if (typeof this.attributes[key] === "function") {
+    //     this.attributes[key] = this[key]();
+    //   }
+    // }
   }
 
   /**
@@ -110,29 +115,20 @@ export abstract class Server extends EventEmitter {
   /**An optional message to send to clients when they disconnect */
   async goodbye?(connection: Connection): Promise<void>;
 
-  defaultAttributes() {
-    return {
-      type: null,
-      canChat: true,
-      logConnections: true,
-      logExits: true,
-      sendWelcomeMessage: true,
-      verbs: [],
-    };
-  }
-
   validate() {
     if (!this.type) {
       throw new Error("type is required for this server");
     }
 
-    [
-      "start",
-      "stop",
-      "sendFile", // connection, error, fileStream, mime, length, lastModified
-      "sendMessage", // connection, message
-      "goodbye",
-    ].forEach((method) => {
+    (
+      [
+        "start",
+        "stop",
+        "sendFile", // connection, error, fileStream, mime, length, lastModified
+        "sendMessage", // connection, message
+        "goodbye",
+      ] as const
+    ).forEach((method) => {
       if (!this[method] || typeof this[method] !== "function") {
         throw new Error(
           `${method} is a required method for the server \`${this.type}\``
@@ -170,8 +166,8 @@ export abstract class Server extends EventEmitter {
       remoteIP: data.remoteAddress,
       rawConnection: data.rawConnection,
       messageId: data.messageId,
-      canChat: null,
-      fingerprint: null,
+      canChat: null as boolean,
+      fingerprint: null as string,
     };
 
     if (this.attributes.canChat === true) {
@@ -235,12 +231,16 @@ export abstract class Server extends EventEmitter {
    */
   async processFile(connection: Connection) {
     const results = await api.staticFile.get(connection);
+
     this.sendFile(
       results.connection,
+      // @ts-ignore
       results.error,
+      // @ts-ignore
       results.fileStream,
       results.mime,
       results.length,
+      // @ts-ignore
       results.lastModified
     );
   }
@@ -264,7 +264,7 @@ export abstract class Server extends EventEmitter {
   /**
    * Log a message from this server type.  A wrapper around log() with a server prefix.
    */
-  log(message: string, severity?: string, data?: any) {
+  log(message: string, severity?: ActionHeroLogLevel, data?: any) {
     log(`[server: ${this.type}] ${message}`, severity, data);
   }
 }

@@ -1,16 +1,16 @@
-import { api, redis, Initializer, Connection } from "../index";
+import { api, config, redis, Initializer, Connection } from "../index";
 
 /**
  * ```js
  *var connectionMiddleware = {
- *name: 'connection middleware',
- *priority: 1000,
- *create: (connection) => {
- *  // do stuff
- *},
- *destroy:(connection) => {
- *  // do stuff
- *}
+ *  name: 'connection middleware',
+ *  priority: 1000,
+ *  create: (connection) => {
+ *    // do stuff
+ *  },
+ *  destroy:(connection) => {
+ *    // do stuff
+ *  }
  *}
  * ```
  */
@@ -33,113 +33,91 @@ export interface ConnectionsApi {
     [key: string]: ConnectionMiddleware;
   };
   globalMiddleware: Array<string>;
-  allowedVerbs: Array<string>;
-  cleanConnection: Function;
-  apply: (
-    connectionId: string,
-    method?: string,
-    args?: any
-  ) => Promise<Connection>;
-  addMiddleware: (ConnectionMiddleware) => void;
+  apply: ConnectionsInitializer["apply"];
+  applyResponder: ConnectionsInitializer["applyResponder"];
+  addMiddleware: ConnectionsInitializer["addMiddleware"];
+  cleanConnection: ConnectionsInitializer["cleanConnection"];
 }
 
-export class Connections extends Initializer {
+export class ConnectionsInitializer extends Initializer {
   constructor() {
     super();
     this.name = "connections";
     this.loadPriority = 400;
   }
 
-  async initialize(config) {
-    api.connections = <ConnectionsApi>{
+  apply = async (connectionId: string, method: string, args: any[]) => {
+    return redis.doCluster(
+      "api.connections.applyResponder",
+      [connectionId, method, args],
+      connectionId,
+      true
+    );
+  };
+
+  applyResponder = async (connectionId: string, method: string, args: any) => {
+    const connection: Connection = api.connections.connections[connectionId];
+    if (!connection) {
+      return;
+    }
+
+    if (method && args) {
+      if (method === "sendMessage" || method === "sendFile") {
+        await connection[method](args);
+      } else {
+        //@ts-ignore
+        await connection[method].apply(connection, args);
+      }
+    }
+    return api.connections.cleanConnection(connection);
+  };
+
+  addMiddleware = (data: ConnectionMiddleware) => {
+    if (!data.name) {
+      throw new Error("middleware.name is required");
+    }
+    if (!data.priority) {
+      data.priority = config.general.defaultMiddlewarePriority;
+    }
+    data.priority = Number(data.priority);
+    api.connections.middleware[data.name] = data;
+
+    api.connections.globalMiddleware.push(data.name);
+    api.connections.globalMiddleware.sort((a, b) => {
+      if (
+        api.connections.middleware[a].priority >
+        api.connections.middleware[b].priority
+      ) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
+  };
+
+  cleanConnection = (connection: Connection) => {
+    const clean: { [key: string]: any } = {};
+    for (const [key, value] of Object.entries(connection)) {
+      if (key !== "rawConnection" && key !== "api") {
+        try {
+          JSON.stringify(value);
+          clean[key] = value;
+        } catch (error) {}
+      }
+    }
+
+    return clean;
+  };
+
+  async initialize() {
+    api.connections = {
       connections: {},
       middleware: {},
       globalMiddleware: [],
-
-      allowedVerbs: [
-        "quit",
-        "exit",
-        "documentation",
-        "paramAdd",
-        "paramDelete",
-        "paramView",
-        "paramsView",
-        "paramsDelete",
-        "roomAdd",
-        "roomLeave",
-        "roomView",
-        "detailsView",
-        "say",
-      ],
-
-      /**
-       * Find a connection on any server in the cluster and call a method on it.
-       */
-      apply: async (connectionId: string, method: string, args: any) => {
-        return redis.doCluster(
-          "api.connections.applyResponder",
-          [connectionId, method, args],
-          connectionId,
-          true
-        );
-      },
-
-      applyResponder: async (connectionId, method, args) => {
-        const connection: Connection =
-          api.connections.connections[connectionId];
-        if (!connection) {
-          return;
-        }
-
-        if (method && args) {
-          if (method === "sendMessage" || method === "sendFile") {
-            await connection[method](args);
-          } else {
-            await connection[method].apply(connection, args);
-          }
-        }
-        return api.connections.cleanConnection(connection);
-      },
-
-      /**
-       * Add a middleware component to connection handling.
-       */
-      addMiddleware: (data: ConnectionMiddleware) => {
-        if (!data.name) {
-          throw new Error("middleware.name is required");
-        }
-        if (!data.priority) {
-          data.priority = config.general.defaultMiddlewarePriority;
-        }
-        data.priority = Number(data.priority);
-        api.connections.middleware[data.name] = data;
-
-        api.connections.globalMiddleware.push(data.name);
-        api.connections.globalMiddleware.sort((a, b) => {
-          if (
-            api.connections.middleware[a].priority >
-            api.connections.middleware[b].priority
-          ) {
-            return 1;
-          } else {
-            return -1;
-          }
-        });
-      },
-
-      cleanConnection: (connection: Connection) => {
-        const clean = {};
-        for (const i in connection) {
-          if (i !== "rawConnection" && i !== "api") {
-            try {
-              JSON.stringify(connection[i]);
-              clean[i] = connection[i];
-            } catch (error) {}
-          }
-        }
-
-        return clean;
-      },
+      apply: this.apply,
+      applyResponder: this.applyResponder,
+      addMiddleware: this.addMiddleware,
+      cleanConnection: this.cleanConnection,
     };
   }
 }

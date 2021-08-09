@@ -10,11 +10,11 @@ export interface ChatRoomApi {
   globalMiddleware: Array<string>;
   keys: { [keys: string]: string };
   messageChannel: string;
-  broadcast: ChatRoom["broadcast"];
-  generateMessagePayload: ChatRoom["generateMessagePayload"];
-  incomingMessage: ChatRoom["incomingMessage"];
-  incomingMessagePerConnection?: ChatRoom["incomingMessagePerConnection"];
-  runMiddleware?: ChatRoom["runMiddleware"];
+  broadcast: ChatRoomInitializer["broadcast"];
+  generateMessagePayload: ChatRoomInitializer["generateMessagePayload"];
+  incomingMessage: ChatRoomInitializer["incomingMessage"];
+  incomingMessagePerConnection?: ChatRoomInitializer["incomingMessagePerConnection"];
+  runMiddleware?: ChatRoomInitializer["runMiddleware"];
 }
 
 export type chatMiddlewareDirections =
@@ -30,7 +30,7 @@ export type MessagePayloadType = UnwrapPromise<
 /**
  * Chat & Realtime Communication Methods
  */
-export class ChatRoom extends Initializer {
+export class ChatRoomInitializer extends Initializer {
   constructor() {
     super();
     this.name = "chatRoom";

@@ -2,6 +2,7 @@ import { Inputs } from "./inputs";
 import { api } from "../index";
 import { ActionHeroLogLevel } from "../modules/log";
 import { missing } from "../modules/utils/missing";
+import { ConnectionVerbs, connectionVerbs } from "./connection";
 
 /**
  * Create a new Actionhero Action. The required properties of an action. These can be defined statically (this.name) or as methods which return a value.
@@ -77,7 +78,7 @@ export abstract class Action {
     }
     if (
       api.connections &&
-      api.connections.allowedVerbs.indexOf(this.name) >= 0
+      connectionVerbs.indexOf(this.name as ConnectionVerbs) >= 0
     ) {
       throw new Error(
         `action \`${this.name}\` is a reserved verb for connections. choose a new name`
