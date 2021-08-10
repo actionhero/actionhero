@@ -16,7 +16,7 @@ export class TaskEnqueue extends CLI {
     };
   }
 
-  async run({ params }) {
+  async run({ params }: { params: { name: string; args: string } }) {
     if (!api.tasks.tasks[params.name]) {
       throw new Error('Task "' + params.name + '" not found');
     }

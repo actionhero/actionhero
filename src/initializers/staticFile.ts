@@ -3,7 +3,6 @@ import * as path from "path";
 import * as Mime from "mime";
 import { api, config, log, Initializer } from "../index";
 import { Connection } from "./../classes/connection";
-import { UnwrapPromise } from "../modules/tsUtils";
 
 export interface StaticFileApi {
   searchLocations: Array<string>;

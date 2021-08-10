@@ -28,7 +28,16 @@ export class GenerateTask extends CLI {
     };
   }
 
-  async run({ params }) {
+  async run({
+    params,
+  }: {
+    params: {
+      name: string;
+      queue: string;
+      description: string;
+      frequency: string;
+    };
+  }) {
     let taskTemplateBuffer = fs.readFileSync(
       path.join(__dirname, "/../../../../templates/task.ts.template")
     );
@@ -39,7 +48,7 @@ export class GenerateTask extends CLI {
     );
     let testTemplate = String(testTemplateBuffer);
 
-    ["name", "description", "queue", "frequency"].forEach((v) => {
+    (["name", "description", "queue", "frequency"] as const).forEach((v) => {
       const regex = new RegExp("%%" + v + "%%", "g");
       taskTemplate = taskTemplate.replace(regex, params[v]);
       testTemplate = testTemplate.replace(regex, params[v]);

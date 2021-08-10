@@ -10,7 +10,7 @@ import { id } from "./../classes/process/id";
 import { actionheroVersion } from "./../classes/process/actionheroVersion";
 import { typescript } from "./../classes/process/typescript";
 import { projectRoot } from "./../classes/process/projectRoot";
-import { route } from "../modules/route";
+import { route, RoutesConfig, RouteType } from "../modules/route";
 
 export interface ConfigInterface {
   [key: string]: any;
@@ -173,12 +173,12 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
     // Remove duplicate routes since we might be loading from multiple config directories, also we load every
     // config directory twice.
     if (config.routes) {
-      Object.keys(config.routes as route.RoutesConfig).forEach((v) => {
+      Object.keys(config.routes as RoutesConfig).forEach((v) => {
         config.routes[v] = config.routes[v].filter(
-          (route: route.RouteType, index: number, self: route.RouteType[]) =>
+          (route: RouteType, index: number, self: RouteType[]) =>
             index ===
             self.findIndex(
-              (r: route.RouteType) =>
+              (r: RouteType) =>
                 r.path === route.path &&
                 r.action === route.action &&
                 r.apiVersion === route.apiVersion &&

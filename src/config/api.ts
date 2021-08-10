@@ -2,7 +2,7 @@ import * as path from "path";
 import * as fs from "fs";
 
 export const DEFAULT = {
-  general: (config) => {
+  general: () => {
     const packageJSON = JSON.parse(
       fs
         .readFileSync(path.join(__dirname, "..", "..", "package.json"))
@@ -29,9 +29,9 @@ export const DEFAULT = {
       // enable action response to logger
       enableResponseLogging: false,
       // params you would like hidden from any logs. Can be an array of strings or a method that returns an array of strings.
-      filteredParams: [],
+      filteredParams: [] as string[],
       // responses you would like hidden from any logs. Can be an array of strings or a method that returns an array of strings.
-      filteredResponse: [],
+      filteredResponse: [] as string[],
       // values that signify missing params
       missingParamChecks: [null, "", undefined],
       // The default filetype to server when a user requests a directory
@@ -74,7 +74,7 @@ export const DEFAULT = {
 };
 
 export const test = {
-  general: (config) => {
+  general: () => {
     return {
       serverToken: `serverToken-${process.env.JEST_WORKER_ID || 0}`,
       startingChatRooms: {
@@ -90,7 +90,7 @@ export const test = {
 };
 
 export const production = {
-  general: (config) => {
+  general: () => {
     return {
       fileRequestLogLevel: "debug",
     };

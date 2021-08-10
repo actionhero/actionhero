@@ -1,10 +1,10 @@
 import * as uuid from "uuid";
 import { Worker } from "node-resque";
 import { api, config, task, Task, Action } from "./../index";
-import { UnwrapPromise } from "./tsUtils/unwrapPromise";
 import { WebServer } from "../servers/web";
 import { Connection } from "../classes/connection";
 import { TaskInputs } from "../classes/task";
+import { AsyncReturnType } from "type-fest";
 
 export namespace specHelper {
   /**
@@ -33,7 +33,7 @@ export namespace specHelper {
     connection.params.action = actionName;
 
     connection.messageId = connection.params.messageId || uuid.v4();
-    const response: (A extends Action ? UnwrapPromise<A["run"]> : any) & {
+    const response: (A extends Action ? AsyncReturnType<A["run"]> : any) & {
       messageId?: string;
       requesterInformation?: ReturnType<WebServer["buildRequesterInformation"]>;
       serverInformation?: ReturnType<WebServer["buildServerInformation"]>;
@@ -74,7 +74,7 @@ export namespace specHelper {
       throw new Error(`task ${taskName} not found`);
     }
 
-    const result: T extends Task ? UnwrapPromise<T["run"]> : any =
+    const result: T extends Task ? AsyncReturnType<T["run"]> : any =
       await api.tasks.tasks[taskName].run(params, undefined);
     return result;
   }
@@ -103,7 +103,7 @@ export namespace specHelper {
 
     try {
       await worker.connect();
-      const result: (T extends Task ? UnwrapPromise<T["run"]> : any) & {
+      const result: (T extends Task ? AsyncReturnType<T["run"]> : any) & {
         error?: string;
       } = await worker.performInline(
         taskName,

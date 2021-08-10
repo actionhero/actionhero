@@ -1,12 +1,5 @@
-import {
-  config,
-  api,
-  Process,
-  Action,
-  specHelper,
-  UnwrapPromise,
-  AssertEqualType,
-} from "./../../src/index";
+import { AsyncReturnType } from "type-fest";
+import { config, api, Process, Action, specHelper } from "./../../src/index";
 
 const actionhero = new Process();
 
@@ -214,7 +207,7 @@ describe("Core", () => {
 
       test("the return types of actions can be imported", async () => {
         const { RandomNumber } = await import("../../src/actions/randomNumber");
-        type ResponseType = UnwrapPromise<typeof RandomNumber.prototype.run>;
+        type ResponseType = AsyncReturnType<typeof RandomNumber.prototype.run>;
 
         // now that we know the types, we can enforce that new objects match the type
         const responsePayload: ResponseType = {
@@ -224,11 +217,6 @@ describe("Core", () => {
 
         const responsePartial: ResponseType["randomNumber"] = 2;
 
-        // <AssertEqualType> will fail compilation if the types are not equal
-        const typeMatch: AssertEqualType<typeof responsePayload, ResponseType> =
-          true;
-
-        expect(typeMatch).toBe(true);
         expect(responsePartial).toBe(2);
       });
     });

@@ -1,5 +1,7 @@
+import { MultiWorker, Queue, Scheduler } from "node-resque";
+
 export const DEFAULT = {
-  tasks: (config) => {
+  tasks: () => {
     return {
       _toExpand: false,
 
@@ -51,9 +53,9 @@ export const DEFAULT = {
       retryStuckJobs: false,
       // Customize Resque primitives, replace null with required replacement.
       resque_overrides: {
-        queue: null,
-        multiWorker: null,
-        scheduler: null,
+        queue: null as Queue,
+        multiWorker: null as MultiWorker,
+        scheduler: null as Scheduler,
       },
       connectionOptions: {
         tasks: {},
@@ -63,7 +65,7 @@ export const DEFAULT = {
 };
 
 export const test = {
-  tasks: (config) => {
+  tasks: () => {
     return {
       timeout: 100,
       checkTimeout: 50,

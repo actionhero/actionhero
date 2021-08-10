@@ -32,13 +32,24 @@ export class GenerateInitializer extends CLI {
     };
   }
 
-  async run({ params }) {
+  async run({
+    params,
+  }: {
+    params: {
+      name: string;
+      loadPriority: string;
+      startPriority: string;
+      stopPriority: string;
+    };
+  }) {
     let templateBuffer = fs.readFileSync(
       path.join(__dirname, "/../../../../templates/initializer.ts.template")
     );
     let template = String(templateBuffer);
 
-    ["name", "loadPriority", "startPriority", "stopPriority"].forEach((v) => {
+    (
+      ["name", "loadPriority", "startPriority", "stopPriority"] as const
+    ).forEach((v) => {
       const regex = new RegExp("%%" + v + "%%", "g");
       template = template.replace(regex, params[v]);
     });

@@ -1,7 +1,7 @@
 import { Action, config, api } from "./../index";
 import * as fs from "fs";
 import * as path from "path";
-import { route } from "../modules/route";
+import { route, RouteMethod, RouteType } from "../modules/route";
 
 const SWAGGER_VERSION = "2.0";
 const API_VERSION = ""; // if you need a prefix to your API routes, like `v1`
@@ -35,7 +35,7 @@ export class Swagger extends Action {
     this.outputExample = {};
   }
 
-  getLatestAction(route: route.RouteType) {
+  getLatestAction(route: RouteType) {
     let matchedAction: Action;
     Object.keys(api.actions.actions).forEach((actionName) => {
       Object.keys(api.actions.actions[actionName]).forEach((version) => {
@@ -71,7 +71,7 @@ export class Swagger extends Action {
     } = {};
     const tags: string[] = [];
 
-    Object.keys(api.routes.routes).map((method: route.RouteMethod) => {
+    Object.keys(api.routes.routes).map((method: RouteMethod) => {
       api.routes.routes[method].map((route) => {
         const action = this.getLatestAction(route);
         if (!action) return;

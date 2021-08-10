@@ -18,21 +18,27 @@ export enum ActionsStatus {
   ValidatorErrors,
 }
 
+// export type RunParams<T> = { [Property in keyof T]: string };
+
 export class ActionProcessor<ActionClass extends Action> {
   connection: Connection;
   action: ActionClass["name"];
   toProcess: boolean;
   toRender: boolean;
   messageId: number | string;
-  // params: {
+  params: {
+    action?: string;
+    apiVersion?: string | number;
+    [key: string]: any;
+  };
+  // params: ActionClass["inputs"] & {
   //   action: string;
   //   apiVersion: string | number;
-  //   [key: string]: any;
   // };
-  params: ActionClass["inputs"] & {
-    action: string;
-    apiVersion: string | number;
-  };
+  // params: RunParams<ActionClass["inputs"]> & {
+  //   action: string;
+  //   apiVersion: string | number;
+  // };
   missingParams: Array<string>;
   validatorErrors: Array<string | Error>;
   actionStartTime: number;
@@ -52,8 +58,8 @@ export class ActionProcessor<ActionClass extends Action> {
     this.toRender = true;
     this.messageId = connection.messageId || 0;
     this.params = Object.assign(
-      { action: null, apiVersion: null },
-      connection.params
+      { action: null, apiVersion: null }
+      // connection.params
     );
     this.missingParams = [];
     this.validatorErrors = [];

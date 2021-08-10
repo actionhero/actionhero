@@ -1,7 +1,6 @@
 import { api, id, config, log, chatRoom, redis, Initializer } from "../index";
 import { Connection } from "../classes/connection";
 import * as ChatModule from "./../modules/chatRoom";
-import { UnwrapPromise } from "../modules/tsUtils";
 
 export interface ChatRoomApi {
   middleware: {
@@ -23,7 +22,7 @@ export type chatMiddlewareDirections =
   | "onSayReceive"
   | "say";
 
-export type MessagePayloadType = UnwrapPromise<
+export type MessagePayloadType = ReturnType<
   typeof api.chatRoom.generateMessagePayload
 >;
 

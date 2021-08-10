@@ -26,14 +26,18 @@ export class GenerateCLI extends CLI {
     };
   }
 
-  async run({ params }) {
+  async run({
+    params,
+  }: {
+    params: { name: string; description: string; example: string };
+  }) {
     let templateBuffer = fs.readFileSync(
       path.join(__dirname, "/../../../../templates/cli.ts.template")
     );
 
     let template = templateBuffer.toString();
 
-    ["name", "description", "example"].forEach((v) => {
+    (["name", "description", "example"] as const).forEach((v) => {
       const regex = new RegExp("%%" + v + "%%", "g");
       template = template.replace(regex, params[v]);
     });

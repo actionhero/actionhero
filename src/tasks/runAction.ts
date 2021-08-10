@@ -10,7 +10,7 @@ export class RunAction extends Task {
     this.middleware = [];
   }
 
-  async run(params) {
+  async run(params: { [key: string]: any }) {
     if (!params) params = {};
 
     const response = await action.run(

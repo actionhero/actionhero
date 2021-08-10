@@ -37,7 +37,6 @@ export class Generate extends CLI {
       configTasksJs: "/src/config/tasks.ts",
       configErrorsJs: "/src/config/errors.ts",
       configPluginsJs: "/src/config/plugins.ts",
-      configI18nJs: "/src/config/i18n.ts",
       configRoutesJs: "/src/config/routes.ts",
       configWebJs: "/src/config/servers/web.ts",
       configWebsocketJs: "/src/config/servers/websocket.ts",
@@ -55,8 +54,7 @@ export class Generate extends CLI {
       gitignore: "/templates/gitignore.template",
     };
 
-    for (const name in oldFileMap) {
-      const localPath = oldFileMap[name];
+    for (const [name, localPath] of Object.entries(oldFileMap)) {
       const source = path.join(__dirname, "/../../../", localPath);
       const extension = localPath.split(".")[1];
       documents[name] = fs.readFileSync(source);
@@ -127,7 +125,6 @@ export class Generate extends CLI {
       "/src/config/tasks.ts": "configTasksJs",
       "/src/config/errors.ts": "configErrorsJs",
       "/src/config/plugins.ts": "configPluginsJs",
-      "/src/config/i18n.ts": "configI18nJs",
       "/src/config/routes.ts": "configRoutesJs",
       "/src/config/servers/web.ts": "configWebJs",
       "/src/config/servers/websocket.ts": "configWebsocketJs",
@@ -146,12 +143,9 @@ export class Generate extends CLI {
       "/.gitignore": "gitignore",
     };
 
-    for (const file in newFileMap) {
+    for (const [file, mapKey] of Object.entries(newFileMap)) {
       try {
-        const message = createFileSafely(
-          projectRoot + file,
-          documents[newFileMap[file]]
-        );
+        const message = createFileSafely(projectRoot + file, documents[mapKey]);
         console.log(message);
       } catch (error) {
         console.log(error.toString());
@@ -167,7 +161,7 @@ export class Generate extends CLI {
     documents.projectMap
       .toString()
       .split("\n")
-      .forEach(function (line) {
+      .forEach((line: string) => {
         console.log(line);
       });
 

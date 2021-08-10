@@ -2,7 +2,8 @@ import { Inputs } from "./inputs";
 import { api } from "../index";
 import { ActionHeroLogLevel } from "../modules/log";
 import { missing } from "../modules/utils/missing";
-import { ConnectionVerbs, connectionVerbs } from "./connection";
+import { ConnectionVerb, connectionVerbs } from "./connection";
+import { ActionProcessor } from "./actionProcessor";
 
 /**
  * Create a new Actionhero Action. The required properties of an action. These can be defined statically (this.name) or as methods which return a value.
@@ -62,7 +63,10 @@ export abstract class Action {
    * The main "do something" method for this action.  It can be `async`.  Usually the goal of this run method is to return the data that you want to be sent to API consumers.  If error is thrown in this method, it will be logged, caught, and returned to the client as `error`
    * @param data The data about this connection, response, and params.
    */
-  abstract run(data: { [key: string]: any }): Promise<ActionResponse>;
+  abstract run(
+    data: Partial<ActionProcessor<this>>
+  ): Promise<ActionResponse | void>;
+  // run = (data: ActionProcessor<this>): Promise<ActionResponse> => null;
 
   validate() {
     if (!this.name) {
@@ -78,7 +82,7 @@ export abstract class Action {
     }
     if (
       api.connections &&
-      connectionVerbs.indexOf(this.name as ConnectionVerbs) >= 0
+      connectionVerbs.indexOf(this.name as ConnectionVerb) >= 0
     ) {
       throw new Error(
         `action \`${this.name}\` is a reserved verb for connections. choose a new name`

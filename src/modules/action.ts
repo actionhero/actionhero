@@ -63,7 +63,7 @@ export namespace action {
   ) {
     const connection = new Connection({
       type: "in-line-action",
-      remotePort: "0",
+      remotePort: 0,
       remoteIP: "0",
       rawConnection: {},
     });

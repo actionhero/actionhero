@@ -16,13 +16,13 @@ export class GenerateServer extends CLI {
     };
   }
 
-  async run({ params }) {
+  async run({ params }: { params: { name: string } }) {
     let templateBuffer = fs.readFileSync(
       path.join(__dirname, "/../../../../templates/server.ts.template")
     );
     let template = String(templateBuffer);
 
-    ["name"].forEach((v) => {
+    (["name"] as const).forEach((v) => {
       const regex = new RegExp("%%" + v + "%%", "g");
       template = template.replace(regex, params[v]);
     });

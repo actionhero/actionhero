@@ -4,6 +4,7 @@ import * as path from "path";
 import * as fs from "fs";
 import * as glob from "glob";
 import { program } from "commander";
+import { PackageJson } from "type-fest";
 import { typescript } from "../classes/process/typescript";
 import { projectRoot } from "../classes/process/projectRoot";
 import { ensureNoTsHeaderFiles } from "../modules/utils/ensureNoTsHeaderFiles";
@@ -79,7 +80,7 @@ export namespace ActionheroCLIRunner {
     }
   }
 
-  export async function convertCLIToCommanderAction(cli) {
+  export async function convertCLIToCommanderAction(cli: new () => CLI) {
     if (
       Object.getPrototypeOf(cli?.prototype?.constructor || {}).name !== "CLI"
     ) {
@@ -129,8 +130,8 @@ export namespace ActionheroCLIRunner {
   ) {
     let toStop = false;
 
-    let _arguments = [];
-    let params = {};
+    let _arguments: string[] = [];
+    let params: { [key: string]: any } = {};
     [_arg1, _arg2, _arg3, _arg4, _arg5].forEach((arg) => {
       if (typeof arg?.opts === "function") {
         params = arg.opts();
@@ -163,11 +164,11 @@ export namespace ActionheroCLIRunner {
     }
   }
 
-  export function readPackageJSON(file) {
-    return JSON.parse(fs.readFileSync(file).toString());
+  export function readPackageJSON(file: string) {
+    return JSON.parse(fs.readFileSync(file).toString()) as PackageJson;
   }
 
-  export function getVersion(): string {
+  export function getVersion() {
     const parentPackageJSON = path.join(projectRoot, "package.json");
 
     if (fs.existsSync(parentPackageJSON)) {

@@ -17,7 +17,7 @@ export const DEFAULT = {
   logger: () => {
     const loggers: ActionheroConfigLoggerBuilderArray = [];
     loggers.push(buildConsoleLogger());
-    config.general.paths.log.forEach((p) => {
+    config.general.paths.log.forEach((p: string) => {
       loggers.push(buildFileLogger(p));
     });
 
@@ -62,12 +62,13 @@ function buildConsoleLogger(level = "info") {
   };
 }
 
-function stringifyExtraMessagePropertiesForConsole(info) {
+function stringifyExtraMessagePropertiesForConsole(info: {
+  [key: string]: any;
+}) {
   const skippedProperties = ["message", "timestamp", "level"];
   let response = "";
 
-  for (const key in info) {
-    const value = info[key];
+  for (const [key, value] of Object.entries(info)) {
     if (skippedProperties.includes(key)) {
       continue;
     }
@@ -80,7 +81,7 @@ function stringifyExtraMessagePropertiesForConsole(info) {
   return response;
 }
 
-function buildFileLogger(path: string, level = "info", maxFiles = undefined) {
+function buildFileLogger(path: string, level = "info", maxFiles?: number) {
   return function () {
     const filename = `${path}/${config.process.id}-${config.process.env}.log`;
     return winston.createLogger({

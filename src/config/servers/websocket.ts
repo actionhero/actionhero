@@ -1,8 +1,10 @@
+import { config } from "../..";
+
 // Note that to use the websocket server, you also need the web server enabled
 
 export const DEFAULT = {
   servers: {
-    websocket: (config) => {
+    websocket: () => {
       return {
         enabled: true,
         // you can pass a FQDN (like https://company.com) here or 'window.location.origin'

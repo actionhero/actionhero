@@ -11,7 +11,7 @@ import * as uuid from "uuid";
 import * as etag from "etag";
 import { BrowserFingerprint } from "browser_fingerprint";
 import { api, config, utils, Server, Connection } from "../index";
-import { ActionsStatus } from "../classes/actionProcessor";
+import { ActionProcessor, ActionsStatus } from "../classes/actionProcessor";
 
 export class WebServer extends Server {
   server: http.Server | https.Server;
@@ -32,15 +32,19 @@ export class WebServer extends Server {
     };
 
     this.connectionCustomMethods = {
-      setHeader: (connection: Connection, key, value) => {
+      setHeader: (connection: Connection, key: string, value: string) => {
         connection.rawConnection.res.setHeader(key, value);
       },
 
-      setStatusCode: (connection: Connection, value) => {
+      setStatusCode: (connection: Connection, value: number) => {
         connection.rawConnection.responseHttpCode = value;
       },
 
-      pipe: (connection: Connection, buffer, headers) => {
+      pipe: (
+        connection: Connection,
+        buffer: Buffer,
+        headers: { [key: string]: string }
+      ) => {
         for (const k in headers) {
           //@ts-ignore
           connection.setHeader(k, headers[k]);
@@ -145,7 +149,7 @@ export class WebServer extends Server {
     });
   }
 
-  async sendMessage(connection: Connection, message) {
+  async sendMessage(connection: Connection, message: any) {
     let stringResponse = "";
     if (connection.rawConnection.method !== "HEAD") {
       stringResponse = String(message);
@@ -176,11 +180,13 @@ export class WebServer extends Server {
     let foundCacheControl = false;
     let ifModifiedSince;
 
-    connection.rawConnection.responseHeaders.forEach((pair) => {
-      if (pair[0].toLowerCase() === "cache-control") {
-        foundCacheControl = true;
+    connection.rawConnection.responseHeaders.forEach(
+      (pair: [string, string]) => {
+        if (pair[0].toLowerCase() === "cache-control") {
+          foundCacheControl = true;
+        }
       }
-    });
+    );
 
     connection.rawConnection.responseHeaders.push(["Content-Type", mime]);
 
@@ -255,7 +261,7 @@ export class WebServer extends Server {
     }
 
     if (this.config.enableEtag && fileStream && fileStream.path) {
-      const filestats = await new Promise((resolve) => {
+      const filestats: fs.Stats = await new Promise((resolve) => {
         fs.stat(fileStream.path, (error, filestats) => {
           if (error || !filestats) {
             this.log(
@@ -267,27 +273,25 @@ export class WebServer extends Server {
         });
       });
 
-      if (!filestats) {
-        return sendRequestResult();
-      }
+      if (!filestats) return sendRequestResult();
 
       const fileEtag = etag(filestats, { weak: true });
       connection.rawConnection.responseHeaders.push(["ETag", fileEtag]);
-      let noneMatchHeader = reqHeaders["if-none-match"];
+      let noneMatchHeader: string | string[] = reqHeaders["if-none-match"];
       const cacheCtrlHeader = reqHeaders["cache-control"];
       let noCache = false;
-      let etagMatches;
+      let etagMatches: boolean;
       // check for no-cache cache request directive
       if (cacheCtrlHeader && cacheCtrlHeader.indexOf("no-cache") !== -1) {
         noCache = true;
       }
       // parse if-none-match
-      if (noneMatchHeader) {
+      if (noneMatchHeader && noneMatchHeader instanceof String) {
         noneMatchHeader = noneMatchHeader.split(/ *, */);
       }
       // if-none-match
       if (noneMatchHeader) {
-        etagMatches = noneMatchHeader.some((match) => {
+        etagMatches = (noneMatchHeader as String[]).some((match) => {
           return (
             match === "*" || match === fileEtag || match === "W/" + fileEtag
           );
@@ -305,7 +309,7 @@ export class WebServer extends Server {
   sendWithCompression(
     connection: Connection,
     responseHttpCode: number,
-    headers: Array<object>,
+    headers: [string, string][],
     stringResponse: string,
     fileStream?: any,
     fileLength?: number
@@ -360,7 +364,7 @@ export class WebServer extends Server {
         fileStream.pipe(compressor).pipe(connection.rawConnection.res);
       } else {
         if (fileLength) {
-          headers.push(["Content-Length", fileLength]);
+          headers.push(["Content-Length", fileLength.toString()]);
         }
         connection.rawConnection.res.writeHead(
           responseHttpCode,
@@ -374,7 +378,7 @@ export class WebServer extends Server {
           if (error) {
             console.error(error);
           }
-          headers.push(["Content-Length", zippedString.length]);
+          headers.push(["Content-Length", zippedString.length.toString()]);
           connection.rawConnection.res.writeHead(
             responseHttpCode,
             this.transformHeaders(headers)
@@ -382,7 +386,10 @@ export class WebServer extends Server {
           connection.rawConnection.res.end(zippedString);
         });
       } else {
-        headers.push(["Content-Length", Buffer.byteLength(stringResponse)]);
+        headers.push([
+          "Content-Length",
+          Buffer.byteLength(stringResponse).toString(),
+        ]);
         connection.rawConnection.res.writeHead(
           responseHttpCode,
           this.transformHeaders(headers)
@@ -392,7 +399,7 @@ export class WebServer extends Server {
     }
   }
 
-  handleRequest(req, res) {
+  handleRequest(req: http.IncomingMessage, res: http.ServerResponse) {
     const { fingerprint, headersHash } = this.fingerPrinter.fingerprint(req);
     const responseHeaders = [];
     const cookies = utils.parseCookies(req);
@@ -402,18 +409,16 @@ export class WebServer extends Server {
     // waiting until URL() can handle relative paths
     // https://github.com/nodejs/node/issues/12682
     const parsedURL = url.parse(req.url, true);
-    let i;
-    for (i in headersHash) {
+    for (const i in headersHash) {
+      //@ts-ignore
       responseHeaders.push([i, headersHash[i]]);
     }
 
     // https://github.com/actionhero/actionhero/issues/189
     responseHeaders.push(["Content-Type", "application/json; charset=utf-8"]);
 
-    for (i in this.config.httpHeaders) {
-      if (this.config.httpHeaders[i]) {
-        responseHeaders.push([i, this.config.httpHeaders[i]]);
-      }
+    for (const [key, value] of Object.entries(this.config.httpHeaders)) {
+      responseHeaders.push([key, value.toString()]);
     }
 
     // check if this request (http://other-host.com) is in allowedRequestHosts ([https://host.com])
@@ -455,7 +460,7 @@ export class WebServer extends Server {
     });
   }
 
-  async completeResponse(data) {
+  async completeResponse(data: ActionProcessor<any>) {
     if (data.toRender !== true) {
       if (data.connection.rawConnection.res.finished) {
         data.connection.destroy();
@@ -549,7 +554,7 @@ export class WebServer extends Server {
           ");";
       }
     } else {
-      stringResponse = data.response;
+      stringResponse = data.response.toString();
     }
 
     this.sendMessage(data.connection, stringResponse);
@@ -694,7 +699,7 @@ export class WebServer extends Server {
           rawBody = new Promise((resolve, reject) => {
             let fullBody = Buffer.alloc(0);
             connection.rawConnection.req
-              .on("data", (chunk) => {
+              .on("data", (chunk: Uint8Array) => {
                 fullBody = Buffer.concat([fullBody, chunk]);
               })
               .on("end", () => {
@@ -706,7 +711,7 @@ export class WebServer extends Server {
         const { fields, files } = await new Promise((resolve) => {
           connection.rawConnection.form.parse(
             connection.rawConnection.req,
-            (error, fields, files) => {
+            (error: Error, fields: string[], files: string[]) => {
               if (error) {
                 this.log("error processing form: " + String(error), "error");
                 connection.error = new Error(
@@ -755,7 +760,10 @@ export class WebServer extends Server {
     }
   }
 
-  fillParamsFromWebRequest(connection, varsHash) {
+  fillParamsFromWebRequest(
+    connection: Connection,
+    varsHash: { [key: string]: any }
+  ) {
     // helper for JSON posts
     const collapsedVarsHash = utils.collapseObjectToArray(varsHash);
     if (collapsedVarsHash !== false) {
@@ -767,7 +775,7 @@ export class WebServer extends Server {
     }
   }
 
-  transformHeaders(headersArray) {
+  transformHeaders(headersArray: [string, string][]) {
     return headersArray.reduce((headers, currentHeader) => {
       const currentHeaderKey = currentHeader[0].toLowerCase();
       // we have a set-cookie, let's see what we have to do
@@ -782,7 +790,7 @@ export class WebServer extends Server {
       }
 
       return headers;
-    }, {});
+    }, {} as { [key: string]: any });
   }
 
   buildServerInformation(connectedAt: number) {
@@ -795,7 +803,7 @@ export class WebServer extends Server {
     };
   }
 
-  buildRequesterInformation(connection) {
+  buildRequesterInformation(connection: Connection) {
     const requesterInformation = {
       id: connection.id,
       fingerprint: connection.fingerprint,
@@ -816,7 +824,7 @@ export class WebServer extends Server {
     return requesterInformation;
   }
 
-  cleanHeaders(connection) {
+  cleanHeaders(connection: Connection) {
     const originalHeaders = connection.rawConnection.responseHeaders.reverse();
     const foundHeaders = [];
     const cleanedHeaders = [];
@@ -841,7 +849,7 @@ export class WebServer extends Server {
     connection.rawConnection.responseHeaders = cleanedHeaders;
   }
 
-  cleanSocket(bindIP, port) {
+  cleanSocket(bindIP: string, port: number | string) {
     if (!bindIP && typeof port === "string" && port.indexOf("/") >= 0) {
       fs.unlink(port, (error) => {
         if (error) {
@@ -853,13 +861,13 @@ export class WebServer extends Server {
     }
   }
 
-  chmodSocket(bindIP, port) {
+  chmodSocket(bindIP: string, port: number | string) {
     if (!bindIP && typeof port === "string" && port.indexOf("/") >= 0) {
       fs.chmodSync(port, "0777");
     }
   }
 
-  callbackHtmlEscape(str) {
+  callbackHtmlEscape(str: string) {
     return str
       .replace(/&/g, "&amp;")
       .replace(/"/g, "&quot;")

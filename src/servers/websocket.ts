@@ -1,5 +1,4 @@
 import * as Primus from "primus";
-import * as UglifyJS from "uglify-js";
 import * as fs from "fs";
 import * as path from "path";
 import * as util from "util";
@@ -54,7 +53,7 @@ export class WebSocketServer extends Server {
     );
 
     this.on("connection", (connection: Connection) => {
-      connection.rawConnection.on("data", (data) => {
+      connection.rawConnection.on("data", (data: any) => {
         this.handleData(connection, data);
       });
     });
@@ -80,7 +79,11 @@ export class WebSocketServer extends Server {
     this.server.destroy();
   }
 
-  async sendMessage(connection: Connection, message, messageId: string) {
+  async sendMessage(
+    connection: Connection,
+    message: { [key: string]: any },
+    messageId: string
+  ) {
     if (message.error) {
       message.error = config.errors.serializers.servers.websocket(
         message.error
@@ -111,7 +114,7 @@ export class WebSocketServer extends Server {
     let content = "";
     const response = {
       error: error,
-      content: null,
+      content: null as string,
       mime: mime,
       length: length,
       lastModified: lastModified,
@@ -119,9 +122,7 @@ export class WebSocketServer extends Server {
 
     try {
       if (!error) {
-        fileStream.on("data", (d) => {
-          content += d;
-        });
+        fileStream.on("data", (d: string) => (content += d));
         fileStream.on("end", () => {
           response.content = content;
           this.sendMessage(connection, response, messageId);
@@ -170,10 +171,7 @@ export class WebSocketServer extends Server {
     return ahClientSource;
   }
 
-  renderClientJS(minimize) {
-    if (!minimize) {
-      minimize = false;
-    }
+  renderClientJS() {
     const libSource = api.servers.servers.websocket.server.library();
     let ahClientSource = this.compileActionheroWebsocketClientJS();
     ahClientSource =
@@ -185,11 +183,7 @@ export class WebSocketServer extends Server {
       "exports.ActionheroWebsocketClient = ActionheroWebsocketClient; \r\n" +
       "})(typeof exports === 'undefined' ? window : exports);";
 
-    if (minimize) {
-      return UglifyJS.minify(libSource + "\r\n\r\n\r\n" + ahClientSource).code;
-    } else {
-      return libSource + "\r\n\r\n\r\n" + ahClientSource;
-    }
+    return libSource + "\r\n\r\n\r\n" + ahClientSource;
   }
 
   writeClientJS() {
@@ -213,13 +207,8 @@ export class WebSocketServer extends Server {
         if (!fs.existsSync(clientJSPath)) {
           fs.mkdirSync(clientJSPath);
         }
-        fs.writeFileSync(clientJSFullPath + ".js", this.renderClientJS(false));
+        fs.writeFileSync(clientJSFullPath + ".js", this.renderClientJS());
         log(`wrote ${clientJSFullPath}.js`, "debug");
-        fs.writeFileSync(
-          clientJSFullPath + ".min.js",
-          this.renderClientJS(true)
-        );
-        log(`wrote ${clientJSFullPath}.min.js`, "debug");
       } catch (e) {
         log("Cannot write client-side JS for websocket server:", "alert", e);
         throw e;
@@ -227,7 +216,7 @@ export class WebSocketServer extends Server {
     }
   }
 
-  handleConnection(rawConnection) {
+  handleConnection(rawConnection: Primus.Spark) {
     const fingerprint =
       rawConnection.query[config.servers.web.fingerprintOptions.cookieKey];
     const { ip, port } = utils.parseHeadersForClientAddress(
@@ -242,7 +231,7 @@ export class WebSocketServer extends Server {
     });
   }
 
-  handleDisconnection(rawConnection) {
+  handleDisconnection(rawConnection: Primus.Spark) {
     const connections = this.connections();
     for (const i in connections) {
       if (
@@ -255,7 +244,7 @@ export class WebSocketServer extends Server {
     }
   }
 
-  async handleData(connection, data) {
+  async handleData(connection: Connection, data: any) {
     const verb = data.event;
     delete data.event;
 
@@ -268,7 +257,7 @@ export class WebSocketServer extends Server {
         connection.params[v] = data.params[v];
       }
       connection.error = null;
-      connection.response = {};
+      // connection.response = {};
       return this.processAction(connection);
     }
 

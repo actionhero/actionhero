@@ -1,3 +1,4 @@
+import { ActionProcessor } from "../classes/actionProcessor";
 import { chatRoom, Action } from "./../index";
 
 export class CreateChatRoom extends Action {

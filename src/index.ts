@@ -19,7 +19,6 @@ export { task } from "./modules/task";
 export { cache } from "./modules/cache";
 export { chatRoom } from "./modules/chatRoom";
 export { redis } from "./modules/redis";
-export { i18n } from "./modules/i18n";
 export { route } from "./modules/route";
 export { specHelper } from "./modules/specHelper";
 
@@ -29,9 +28,6 @@ export { actionheroVersion } from "./classes/process/actionheroVersion";
 export { projectRoot } from "./classes/process/projectRoot";
 export { typescript } from "./classes/process/typescript";
 export { id } from "./classes/process/id";
-
-// export typescript helpers
-export { UnwrapPromise, AssertEqualType } from "./modules/tsUtils";
 
 // API object to hold connections, actions, tasks, initializers, and servers
 import { Api } from "./classes/api";

@@ -9,6 +9,8 @@ interface ServerConfig {
   [key: string]: any;
 }
 
+const welcomeMessage = "Hello! Welcome to the actionhero api";
+
 /**
  * Create a new Actionhero Server. The required properties of an server. These can be defined statically (this.name) or as methods which return a value.
  */
@@ -197,7 +199,7 @@ export abstract class Server extends EventEmitter {
 
     if (this.attributes.sendWelcomeMessage === true) {
       connection.sendMessage({
-        welcome: connection.localize("actionhero.welcomeMessage"),
+        welcome: welcomeMessage,
         context: "api",
       });
     }
@@ -206,7 +208,7 @@ export abstract class Server extends EventEmitter {
       setTimeout(() => {
         try {
           connection.sendMessage({
-            welcome: connection.localize("actionhero.welcomeMessage"),
+            welcome: welcomeMessage,
             context: "api",
           });
         } catch (e) {

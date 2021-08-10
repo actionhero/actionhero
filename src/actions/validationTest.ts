@@ -8,7 +8,7 @@ export class ValidationTest extends Action {
     this.inputs = {
       string: {
         required: true,
-        validator: (param) => {
+        validator: (param: any) => {
           return typeof param === "string";
         },
       },

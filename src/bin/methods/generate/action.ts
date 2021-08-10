@@ -22,7 +22,7 @@ export class GenerateAction extends CLI {
     };
   }
 
-  async run({ params }) {
+  async run({ params }: { params: { name: string; description: string } }) {
     let actionTemplateBuffer = fs.readFileSync(
       path.join(__dirname, "../../../../templates/action.ts.template")
     );
@@ -33,7 +33,7 @@ export class GenerateAction extends CLI {
     );
     let testTemplate = testTemplateBuffer.toString();
 
-    ["name", "description"].forEach((v) => {
+    (["name", "description"] as const).forEach((v) => {
       const regex = new RegExp("%%" + v + "%%", "g");
       actionTemplate = actionTemplate.replace(regex, params[v]);
       testTemplate = testTemplate.replace(regex, params[v]);
