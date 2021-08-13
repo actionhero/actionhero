@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as glob from "glob";
-import { argv } from "optimist";
 import { utils } from "./utils";
 import { ensureNoTsHeaderFiles } from "./utils/ensureNoTsHeaderFiles";
 
@@ -61,9 +60,11 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
     }
   }
 
-  [argv.config, process.env.ACTIONHERO_CONFIG].map((entry) => {
-    addConfigPath(entry, false);
-  });
+  [utils.argv.config?.toString(), process.env.ACTIONHERO_CONFIG].map(
+    (entry) => {
+      addConfigPath(entry, false);
+    }
+  );
 
   if (configPaths.length < 1 && typescript) {
     addConfigPath("src/config", false);
@@ -204,8 +205,11 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
     config = utils.hashMerge(config, JSON.parse(process.env.configChanges));
   }
 
-  if (argv.configChanges) {
-    config = utils.hashMerge(config, JSON.parse(argv.configChanges));
+  if (utils.argv.configChanges) {
+    config = utils.hashMerge(
+      config,
+      JSON.parse(utils.argv.configChanges.toString())
+    );
   }
 
   return config;
