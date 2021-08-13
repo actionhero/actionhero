@@ -377,6 +377,7 @@ describe("Core: Tasks", () => {
     const timestampsDeleted = await task.delDelayed(queue, "regularTask", {
       word: "first",
     });
+
     expect(timestampsDeleted).toHaveLength(1);
     expect(timestampsDeleted).toEqual(timestamps);
 
