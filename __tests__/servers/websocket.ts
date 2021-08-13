@@ -259,7 +259,7 @@ describe("Server: Web Socket", () => {
 
       test("missing files", async () => {
         const data = await awaitFile(clientA, "missing.html");
-        expect(data.error).toEqual("That file is not found");
+        expect(data.error).toEqual("that file is not found");
         expect(data.mime).toEqual("text/html");
         expect(data.content).toBeNull();
       });

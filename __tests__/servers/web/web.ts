@@ -785,7 +785,7 @@ describe("Server: Web", () => {
         throw new Error("should not get here");
       } catch (error) {
         expect(error.statusCode).toEqual(404);
-        expect(error.response.body).toEqual("That file is not found");
+        expect(error.response.body).toEqual("that file is not found");
       }
     });
 
@@ -795,7 +795,7 @@ describe("Server: Web", () => {
         throw new Error("should not get here");
       } catch (error) {
         expect(error.statusCode).toEqual(404);
-        expect(error.response.body).toEqual("That file is not found");
+        expect(error.response.body).toEqual("that file is not found");
       }
     });
 
@@ -864,7 +864,7 @@ describe("Server: Web", () => {
           await request.get(url + "/my/public/route/fileNotFound.html");
         } catch (error) {
           expect(error.statusCode).toEqual(404);
-          expect(error.response.body).toEqual("That file is not found");
+          expect(error.response.body).toEqual("that file is not found");
         }
       });
 
@@ -875,7 +875,7 @@ describe("Server: Web", () => {
           );
         } catch (error) {
           expect(error.statusCode).toEqual(404);
-          expect(error.response.body).toEqual("That file is not found");
+          expect(error.response.body).toEqual("that file is not found");
         }
       });
     });

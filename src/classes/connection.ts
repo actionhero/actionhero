@@ -1,7 +1,6 @@
 import * as uuid from "uuid";
 import { api, chatRoom } from "./../index";
 import { config } from "./../modules/config";
-import { i18n } from "../modules/i18n";
 
 /**
  * The generic representation of a connection for all server types is an Actionhero.Connection.  You will never be creating these yourself via an action or task, but you will find them in your Actions and Action Middleware.
@@ -141,16 +140,6 @@ export class Connection {
         };
       }
     }
-
-    i18n.invokeConnectionLocale(this);
-  }
-
-  /**
-   * Localize a key for this connection's locale.  Keys usually look like `messages.errors.notFound`, and are defined in your locales directory.  Strings can be interpolated as well, connection.localize('the count was {{count}}', {count: 4})
-   */
-  localize(message: string | string[]) {
-    // this.locale will be sourced automatically
-    return i18n.localize(message, this);
   }
 
   /**

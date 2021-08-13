@@ -1,7 +1,13 @@
 import * as fs from "fs";
-import { api, id, utils, config, i18n } from "../index";
+import { api, id, utils, config } from "../index";
 
 export namespace cache {
+  export enum CacheErrorMessages {
+    locked = "Object locked",
+    notFound = "Object not found",
+    expired = "Object expired",
+  }
+
   export interface CacheObject {
     key: string;
     value: any;
@@ -178,24 +184,20 @@ export namespace cache {
     let cacheObj: CacheObject;
 
     let lockOk = await cache.checkLock(key, options.retry);
-    if (lockOk !== true) {
-      throw new Error(i18n.localize("actionhero.cache.objectLocked"));
-    }
+    if (lockOk !== true) throw new Error(CacheErrorMessages.locked);
 
     let cachedStringifiedObjet = await client().get(`${redisPrefix}${key}`);
     try {
       cacheObj = JSON.parse(cachedStringifiedObjet);
     } catch (e) {}
 
-    if (!cacheObj) {
-      throw new Error(i18n.localize("actionhero.cache.objectNotFound"));
-    }
+    if (!cacheObj) throw new Error(CacheErrorMessages.notFound);
 
     if (
       cacheObj.expireTimestamp &&
       cacheObj.expireTimestamp < new Date().getTime()
     ) {
-      throw new Error(i18n.localize("actionhero.cache.objectExpired"));
+      throw new Error(CacheErrorMessages.expired);
     }
 
     const lastReadAt = cacheObj.readAt;
@@ -214,9 +216,7 @@ export namespace cache {
     }
 
     lockOk = await cache.checkLock(key, options.retry);
-    if (lockOk !== true) {
-      throw new Error(i18n.localize("actionhero.cache.objectLocked"));
-    }
+    if (lockOk !== true) throw new Error(CacheErrorMessages.locked);
 
     await client().set(redisPrefix + key, JSON.stringify(cacheObj));
     if (expireTimeSeconds) {
@@ -245,9 +245,8 @@ export namespace cache {
    */
   export async function destroy(key: string): Promise<boolean> {
     const lockOk = await cache.checkLock(key, null);
-    if (!lockOk) {
-      throw new Error(i18n.localize("actionhero.cache.objectLocked"));
-    }
+    if (!lockOk) throw new Error(CacheErrorMessages.locked);
+
     const count = await client().del(redisPrefix + key);
     let response = true;
     if (count !== 1) {
@@ -280,9 +279,8 @@ export namespace cache {
     };
 
     const lockOk = await cache.checkLock(key, null);
-    if (!lockOk) {
-      throw new Error(i18n.localize("actionhero.cache.objectLocked"));
-    }
+    if (!lockOk) throw new Error(CacheErrorMessages.locked);
+
     await client().set(redisPrefix + key, JSON.stringify(cacheObj));
     if (expireTimeSeconds) {
       await client().expire(redisPrefix + key, expireTimeSeconds);

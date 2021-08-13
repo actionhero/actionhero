@@ -39,13 +39,13 @@ describe("Core", () => {
 
     test("file: 404 pages", async () => {
       const response = await specHelper.getStaticFile("someRandomFile");
-      expect(response.error).toEqual("That file is not found");
+      expect(response.error).toEqual("that file is not found");
       expect(response.content).toBeNull();
     });
 
     test("I should not see files outside of the public dir", async () => {
       const response = await specHelper.getStaticFile("../config/config.json");
-      expect(response.error).toEqual("That file is not found");
+      expect(response.error).toEqual("that file is not found");
       expect(response.content).toBeNull();
     });
 

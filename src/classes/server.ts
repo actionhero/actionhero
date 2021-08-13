@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import { Connection } from "./connection";
 import { ActionProcessor } from "./actionProcessor";
-import { api } from "../index";
+import { api, config } from "../index";
 import { log } from "../modules/log";
 
 interface ServerConfig {
@@ -201,7 +201,7 @@ export abstract class Server extends EventEmitter {
 
     if (this.attributes.sendWelcomeMessage === true) {
       connection.sendMessage({
-        welcome: connection.localize("actionhero.welcomeMessage"),
+        welcome: config.general.welcomeMessage,
         context: "api",
       });
     }
@@ -210,7 +210,7 @@ export abstract class Server extends EventEmitter {
       setTimeout(() => {
         try {
           connection.sendMessage({
-            welcome: connection.localize("actionhero.welcomeMessage"),
+            welcome: config.general.welcomeMessage,
             context: "api",
           });
         } catch (e) {
