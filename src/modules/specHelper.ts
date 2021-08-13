@@ -96,7 +96,7 @@ export namespace specHelper {
               ? "ioredis-mock"
               : "ioredis",
         },
-        queues: config.tasks.queues || ["default"],
+        queues: config.get<string[]>("tasks", "queues") || ["default"],
       },
       api.tasks.jobs
     );

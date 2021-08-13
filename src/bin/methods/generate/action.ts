@@ -39,17 +39,17 @@ export class GenerateAction extends CLI {
       testTemplate = testTemplate.replace(regex, params[v]);
     });
 
+    const actionsPath = config.get<string[]>("general", "paths", "action");
+    const testPaths = config.get<string[]>("general", "paths", "test");
+
     let message = utils.fileUtils.createFileSafely(
-      utils.replaceDistWithSrc(config.general.paths.action[0]) +
-        "/" +
-        params.name +
-        ".ts",
+      utils.replaceDistWithSrc(actionsPath[0]) + "/" + params.name + ".ts",
       actionTemplate
     );
     console.info(message);
 
     message = utils.fileUtils.createFileSafely(
-      config.general.paths.test[0] + "/actions/" + params.name + ".ts",
+      testPaths[0] + "/actions/" + params.name + ".ts",
       testTemplate
     );
     console.info(message);

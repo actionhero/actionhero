@@ -1,5 +1,6 @@
 import * as winston from "winston";
 import { config } from "../";
+import { ActionHeroLogLevel } from "../modules/log";
 
 /*
 The loggers defined here will eventually be available via `import { loggers } from "actionhero"`
@@ -17,7 +18,7 @@ export const DEFAULT = {
   logger: () => {
     const loggers: ActionheroConfigLoggerBuilderArray = [];
     loggers.push(buildConsoleLogger());
-    config.general.paths.log.forEach((p: string) => {
+    config.get<string[]>("general", "paths", "log").forEach((p: string) => {
       loggers.push(buildFileLogger(p));
     });
 
@@ -33,7 +34,7 @@ export const test = {
   logger: () => {
     const loggers: ActionheroConfigLoggerBuilderArray = [];
     loggers.push(buildConsoleLogger("crit"));
-    config.general.paths.log.forEach((p: string) => {
+    config.get<string[]>("general", "paths", "log").forEach((p: string) => {
       loggers.push(buildFileLogger(p, "debug", 1));
     });
 
@@ -43,7 +44,7 @@ export const test = {
 
 // helpers for building the winston loggers
 
-function buildConsoleLogger(level = "info") {
+function buildConsoleLogger(level: ActionHeroLogLevel = "info") {
   return function () {
     return winston.createLogger({
       format: winston.format.combine(
@@ -81,9 +82,16 @@ function stringifyExtraMessagePropertiesForConsole(info: {
   return response;
 }
 
-function buildFileLogger(path: string, level = "info", maxFiles?: number) {
+function buildFileLogger(
+  path: string,
+  level: ActionHeroLogLevel = "info",
+  maxFiles?: number
+) {
   return function () {
-    const filename = `${path}/${config.process.id}-${config.process.env}.log`;
+    const filename = `${path}/${config.get<string>(
+      "process",
+      "id"
+    )}-${config.get<string>("process", "env")}.log`;
     return winston.createLogger({
       format: winston.format.combine(
         winston.format.timestamp(),

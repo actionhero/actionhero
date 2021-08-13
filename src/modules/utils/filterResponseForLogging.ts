@@ -1,5 +1,5 @@
 import { isPlainObject } from "./isPlainObject";
-import { config } from "../config";
+import { config } from "../..";
 import * as dotProp from "dot-prop";
 
 /**
@@ -19,7 +19,7 @@ export function filterResponseForLogging(response: { [key: string]: any }): {
     } else if (typeof response[i] === "string") {
       sanitizedResponse[i] = response[i].substring(
         0,
-        config.logger.maxLogStringLength
+        config.get<number>("logger", "maxLogStringLength")
       );
     } else if (response[i] instanceof Error) {
       sanitizedResponse[i] = response[i].message ?? String(response[i]);
@@ -28,13 +28,7 @@ export function filterResponseForLogging(response: { [key: string]: any }): {
     }
   }
 
-  let filteredResponse: string[];
-  if (typeof config.general.filteredResponse === "function") {
-    filteredResponse = config.general.filteredResponse();
-  } else {
-    filteredResponse = config.general.filteredResponse;
-  }
-
+  const filteredResponse = config.get<string[]>("general", "filteredResponse");
   filteredResponse.forEach((configParam) => {
     if (dotProp.get(response, configParam) !== undefined) {
       dotProp.set(sanitizedResponse, configParam, "[FILTERED]");

@@ -9,6 +9,7 @@ import { typescript } from "../classes/process/typescript";
 import { projectRoot } from "../classes/process/projectRoot";
 import { ensureNoTsHeaderFiles } from "../modules/utils/ensureNoTsHeaderFiles";
 import { CLI } from "../classes/cli";
+import { PluginConfig } from "../classes/config";
 
 export namespace ActionheroCLIRunner {
   export async function run() {
@@ -18,33 +19,27 @@ export namespace ActionheroCLIRunner {
     let pathsLoaded: string[] = [];
     try {
       const { config } = await import("../index");
+      const cliPaths = config.get<string[]>("general", "paths", "cli");
+      const cliIncludeInternal = config.get<boolean>(
+        "general",
+        "cliIncludeInternal"
+      );
 
       // this project
-      for (const i in config.general.paths.cli) {
-        await loadDirectory(
-          path.join(config.general.paths.cli[i]),
-          pathsLoaded
-        );
+      for (const cliPath of cliPaths) {
+        await loadDirectory(path.join(cliPath), pathsLoaded);
       }
 
       // plugins
-      for (const pluginName in config.plugins) {
-        if (config.plugins[pluginName].cli !== false) {
-          // old plugins
-          await loadDirectory(
-            path.join(config.plugins[pluginName].path, "bin"),
-            pathsLoaded
-          );
-          // new plugins
-          await loadDirectory(
-            path.join(config.plugins[pluginName].path, "dist", "bin"),
-            pathsLoaded
-          );
-        }
+      for (const [pluginName, plugin] of Object.entries(
+        config.get<PluginConfig>("plugins")
+      )) {
+        await loadDirectory(path.join(plugin.path, "bin"), pathsLoaded); // old plugins
+        await loadDirectory(path.join(plugin.path, "dist", "bin"), pathsLoaded); // new plugins
       }
 
       // core
-      if (config.general.cliIncludeInternal !== false) {
+      if (cliIncludeInternal !== false) {
         await loadDirectory(__dirname, pathsLoaded);
       }
     } catch (e) {

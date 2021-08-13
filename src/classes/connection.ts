@@ -1,6 +1,6 @@
 import * as uuid from "uuid";
 import { api, chatRoom } from "./../index";
-import { config } from "./../modules/config";
+import { config } from "..";
 import { RouteType } from "../modules/route";
 import { missing } from "../modules/utils/missing";
 
@@ -111,7 +111,9 @@ export class Connection {
       }
     });
 
-    if (config.general.enforceConnectionProperties === true) {
+    if (
+      config.get<boolean>("general", "enforceConnectionProperties") === true
+    ) {
       if (missing(data.remotePort))
         throw new Error(
           "remotePort is required to create a new connection object"
@@ -249,7 +251,7 @@ export class Connection {
           }
 
           if (
-            config.general.disableParamScrubbing ||
+            config.get<boolean>("general", "disableParamScrubbing") ||
             api.params.postVariables.indexOf(key) >= 0
           ) {
             this.params[key] = value;
@@ -280,7 +282,12 @@ export class Connection {
           if (this.rooms.indexOf(room) >= 0) {
             return chatRoom.roomStatus(room);
           }
-          throw new Error(await config.errors.connectionNotInRoom(this, room));
+          throw new Error(
+            await config.get<Function>("errors", "connectionNotInRoom")(
+              this,
+              room
+            )
+          );
         case "detailsView":
           return {
             id: this.id,
@@ -299,10 +306,14 @@ export class Connection {
           return;
       }
 
-      const error = new Error(await config.errors.verbNotFound(this, verb));
+      const error = new Error(
+        await config.get<Function>("errors", "verbNotFound")(this, verb)
+      );
       throw error;
     } else {
-      const error = new Error(await config.errors.verbNotAllowed(this, verb));
+      const error = new Error(
+        await config.get<Function>("errors", "verbNotAllowed")(this, verb)
+      );
       throw error;
     }
   }

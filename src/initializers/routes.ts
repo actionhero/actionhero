@@ -169,7 +169,7 @@ export class RoutesInitializer extends Initializer {
     //   api.routes.routes[verb] = api.routes.routes[verb] || [];
     // });
 
-    if (!rawRoutes) if (config.routes) rawRoutes = config.routes;
+    if (!rawRoutes) if (config.get("routes")) rawRoutes = config.get("routes");
 
     for (const [method, collection] of Object.entries(rawRoutes)) {
       for (const configRoute of collection) {
@@ -201,22 +201,24 @@ export class RoutesInitializer extends Initializer {
     api.params.postVariables = utils.arrayUnique(api.params.postVariables);
 
     if (
-      config.servers.web &&
-      Array.isArray(config.servers.web.automaticRoutes)
+      config.get("servers", "web") &&
+      Array.isArray(config.get("servers", "web", "automaticRoutes"))
     ) {
-      config.servers.web.automaticRoutes.forEach((verb: RouteMethod) => {
-        if (!routerMethods.includes(verb)) {
-          throw new Error(`${verb} is not an HTTP verb`);
-        }
+      config
+        .get<string[]>("servers", "web", "automaticRoutes")
+        .forEach((verb: RouteMethod) => {
+          if (!routerMethods.includes(verb)) {
+            throw new Error(`${verb} is not an HTTP verb`);
+          }
 
-        log(
-          `creating routes automatically for all actions to ${verb} HTTP verb`
-        );
+          log(
+            `creating routes automatically for all actions to ${verb} HTTP verb`
+          );
 
-        for (const action in api.actions.actions) {
-          route.registerRoute(verb, "/" + action, action, null);
-        }
-      });
+          for (const action in api.actions.actions) {
+            route.registerRoute(verb, "/" + action, action, null);
+          }
+        });
     }
 
     log("routes:", "debug", api.routes.routes);

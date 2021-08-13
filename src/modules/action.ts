@@ -39,7 +39,10 @@ export namespace action {
       throw new Error("middleware.name is required");
     }
     if (!data.priority) {
-      data.priority = config.general.defaultMiddlewarePriority;
+      data.priority = config.get<number>(
+        "general",
+        "defaultMiddlewarePriority"
+      );
     }
     data.priority = Number(data.priority);
     api.actions.middleware[data.name] = data;

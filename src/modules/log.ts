@@ -1,11 +1,11 @@
 import * as winston from "winston";
-import { config } from "./config";
+import { config } from "..";
 import { utils } from "./utils";
 
 // exported as `import { loggers } from "actionhero"`
 export let loggers: winston.Logger[] = [];
 
-config.general.paths.log.forEach((p: string) => {
+config.get<string[]>("general", "paths", "log").forEach((p: string) => {
   try {
     utils.fileUtils.createDirSafely(p);
   } catch (error) {
@@ -13,7 +13,7 @@ config.general.paths.log.forEach((p: string) => {
   }
 });
 
-loggers = config.logger.loggers.map((loggerBuilder: Function) => {
+loggers = config.get<Function[]>("logger", "loggers").map((loggerBuilder) => {
   const resolvedLogger = loggerBuilder(config);
   return winston.createLogger(resolvedLogger);
 });

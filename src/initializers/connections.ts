@@ -77,7 +77,10 @@ export class ConnectionsInitializer extends Initializer {
       throw new Error("middleware.name is required");
     }
     if (!data.priority) {
-      data.priority = config.general.defaultMiddlewarePriority;
+      data.priority = config.get<number>(
+        "general",
+        "defaultMiddlewarePriority"
+      );
     }
     data.priority = Number(data.priority);
     api.connections.middleware[data.name] = data;

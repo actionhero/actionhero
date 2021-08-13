@@ -75,7 +75,10 @@ export namespace chatRoom {
       throw new Error("middleware.name is required");
     }
     if (!data.priority) {
-      data.priority = config.general.defaultMiddlewarePriority;
+      data.priority = config.get<number>(
+        "general",
+        "defaultMiddlewarePriority"
+      );
     }
     data.priority = Number(data.priority);
     api.chatRoom.middleware[data.name] = data;
@@ -108,7 +111,9 @@ export namespace chatRoom {
     if (found === false) {
       return client().sadd(api.chatRoom.keys.rooms, room);
     } else {
-      throw new Error(await config.errors.connectionRoomExists(room));
+      throw new Error(
+        await config.get<Function>("errors", "connectionRoomExists")(room)
+      );
     }
   }
 
@@ -121,7 +126,10 @@ export namespace chatRoom {
       await api.chatRoom.broadcast(
         {},
         room,
-        await config.errors.connectionRoomHasBeenDeleted(room)
+        await config.get<Function>(
+          "errors",
+          "connectionRoomHasBeenDeleted"
+        )(room)
       );
       const membersHash = await client().hgetall(
         api.chatRoom.keys.members + room
@@ -134,7 +142,9 @@ export namespace chatRoom {
       await client().srem(api.chatRoom.keys.rooms, room);
       await client().del(api.chatRoom.keys.members + room);
     } else {
-      throw new Error(await config.errors.connectionRoomNotExist(room));
+      throw new Error(
+        await config.get<Function>("errors", "connectionRoomNotExist")(room)
+      );
     }
   }
 
@@ -192,10 +202,14 @@ export namespace chatRoom {
           membersCount: count,
         };
       } else {
-        throw new Error(await config.errors.connectionRoomNotExist(room));
+        throw new Error(
+          await config.get<Function>("errors", "connectionRoomNotExist")(room)
+        );
       }
     } else {
-      throw new Error(await config.errors.connectionRoomRequired());
+      throw new Error(
+        await config.get<Function>("errors", "connectionRoomRequired")()
+      );
     }
   }
 
@@ -229,14 +243,19 @@ export namespace chatRoom {
 
     if (connection.rooms.indexOf(room) >= 0) {
       throw new Error(
-        await config.errors.connectionAlreadyInRoom(connection, room)
+        await config.get<Function>("errors", "connectionAlreadyInRoom")(
+          connection,
+          room
+        )
       );
     }
 
     if (connection.rooms.indexOf(room) < 0) {
       const found = await chatRoom.exists(room);
       if (!found) {
-        throw new Error(await config.errors.connectionRoomNotExist(room));
+        throw new Error(
+          await config.get<Function>("errors", "connectionRoomNotExist")(room)
+        );
       }
     }
 
@@ -278,14 +297,19 @@ export namespace chatRoom {
 
     if (connection.rooms.indexOf(room) < 0) {
       throw new Error(
-        await config.errors.connectionNotInRoom(connection, room)
+        await config.get<Function>("errors", "connectionNotInRoom")(
+          connection,
+          room
+        )
       );
     }
 
     if (connection.rooms.indexOf(room) >= 0) {
       const found = await chatRoom.exists(room);
       if (!found) {
-        throw new Error(await config.errors.connectionRoomNotExist(room));
+        throw new Error(
+          await config.get<Function>("errors", "connectionRoomNotExist")(room)
+        );
       }
     }
 

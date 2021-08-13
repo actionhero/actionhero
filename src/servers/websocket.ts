@@ -85,9 +85,12 @@ export class WebSocketServer extends Server {
     messageId: string
   ) {
     if (message.error) {
-      message.error = config.errors.serializers.servers.websocket(
-        message.error
-      );
+      message.error = config.get<Function>(
+        "errors",
+        "serializers",
+        "servers",
+        "websocket"
+      )(message.error);
     }
 
     if (!message.context) {
@@ -188,15 +191,15 @@ export class WebSocketServer extends Server {
 
   writeClientJS() {
     if (
-      !config.general.paths.public ||
-      config.general.paths.public.length === 0
+      !config.get<string[]>("general", "paths", "public") ||
+      config.get<string[]>("general", "paths", "public").length === 0
     ) {
       return;
     }
 
     if (this.config.clientJsPath && this.config.clientJsName) {
       const clientJSPath = path.normalize(
-        config.general.paths.public[0] +
+        config.get<string[]>("general", "paths", "public")[0] +
           path.sep +
           this.config.clientJsPath +
           path.sep
@@ -217,8 +220,13 @@ export class WebSocketServer extends Server {
   }
 
   handleConnection(rawConnection: Primus.Spark) {
-    const fingerprint =
-      rawConnection.query[config.servers.web.fingerprintOptions.cookieKey];
+    const fingerprint = config.get<string>(
+      "servers",
+      "web",
+      "fingerprintOptions",
+      "cookieKey"
+    );
+
     const { ip, port } = utils.parseHeadersForClientAddress(
       rawConnection.headers
     );

@@ -1,5 +1,9 @@
+import { PluginConfig } from "../classes/config";
+
 export const DEFAULT = {
   plugins: () => {
+    const plugins: PluginConfig = {};
+
     /*
     If you want to use plugins in your application, include them here:
 

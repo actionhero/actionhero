@@ -1,4 +1,4 @@
-import { MultiWorker, Queue, Scheduler } from "node-resque";
+import { ActionHeroLogLevel } from "../modules/log";
 
 export const DEFAULT = {
   tasks: () => {
@@ -15,26 +15,26 @@ export const DEFAULT = {
 
       // Logging levels of task workers
       workerLogging: {
-        failure: "error", // task failure
-        success: "info", // task success
-        start: "info",
-        end: "info",
-        cleaning_worker: "info",
-        poll: "debug",
-        job: "debug",
-        pause: "debug",
-        internalError: "error",
-        multiWorkerAction: "debug",
+        failure: "error" as ActionHeroLogLevel, // task failure
+        success: "info" as ActionHeroLogLevel, // task success
+        start: "info" as ActionHeroLogLevel,
+        end: "info" as ActionHeroLogLevel,
+        cleaning_worker: "info" as ActionHeroLogLevel,
+        poll: "debug" as ActionHeroLogLevel,
+        job: "debug" as ActionHeroLogLevel,
+        pause: "debug" as ActionHeroLogLevel,
+        internalError: "error" as ActionHeroLogLevel,
+        multiWorkerAction: "debug" as ActionHeroLogLevel,
       },
       // Logging levels of the task scheduler
       schedulerLogging: {
-        start: "info",
-        end: "info",
-        poll: "debug",
-        enqueue: "debug",
-        reEnqueue: "debug",
-        working_timestamp: "debug",
-        transferred_job: "debug",
+        start: "info" as ActionHeroLogLevel,
+        end: "info" as ActionHeroLogLevel,
+        poll: "debug" as ActionHeroLogLevel,
+        enqueue: "debug" as ActionHeroLogLevel,
+        reEnqueue: "debug" as ActionHeroLogLevel,
+        working_timestamp: "debug" as ActionHeroLogLevel,
+        transferred_job: "debug" as ActionHeroLogLevel,
       },
       // how long to sleep between jobs / scheduler checks
       timeout: 5000,
@@ -51,12 +51,6 @@ export const DEFAULT = {
       stuckWorkerTimeout: 1000 * 60 * 60,
       // should the scheduler automatically try to retry failed tasks which were failed due to being 'stuck'?
       retryStuckJobs: false,
-      // Customize Resque primitives, replace null with required replacement.
-      resque_overrides: {
-        queue: null as Queue,
-        multiWorker: null as MultiWorker,
-        scheduler: null as Scheduler,
-      },
       connectionOptions: {
         tasks: {},
       },

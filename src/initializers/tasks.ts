@@ -4,6 +4,7 @@ import { Plugin } from "node-resque";
 import * as TaskModule from "./../modules/task";
 import { api, config, log, utils, task, Initializer } from "../index";
 import { Task } from "../classes/task";
+import { PluginConfig } from "../classes/config";
 
 const taskModule = task;
 
@@ -130,8 +131,7 @@ export class TasksInitializer extends Initializer {
   };
 
   loadTasks = async (reload: boolean) => {
-    for (const i in config.general.paths.task) {
-      const p = config.general.paths.task[i];
+    for (const p of config.get<string[]>("general", "paths", "task")) {
       await Promise.all(
         utils
           .ensureNoTsHeaderFiles(
@@ -141,21 +141,19 @@ export class TasksInitializer extends Initializer {
       );
     }
 
-    for (const pluginName in config.plugins) {
-      if (config.plugins[pluginName].tasks !== false) {
-        const pluginPath = config.plugins[pluginName].path;
+    for (const [pluginName, plugin] of Object.entries(
+      config.get<PluginConfig>("plugins")
+    )) {
+      // old style at the root of the project
+      let files = glob.sync(path.join(plugin.path, "tasks", "**", "*.js"));
 
-        // old style at the root of the project
-        let files = glob.sync(path.join(pluginPath, "tasks", "**", "*.js"));
+      files = files.concat(
+        glob.sync(path.join(plugin.path, "dist", "tasks", "**", "*.js"))
+      );
 
-        files = files.concat(
-          glob.sync(path.join(pluginPath, "dist", "tasks", "**", "*.js"))
-        );
-
-        utils.ensureNoTsHeaderFiles(files).forEach((f) => {
-          api.tasks.loadFile(f, reload);
-        });
-      }
+      utils.ensureNoTsHeaderFiles(files).forEach((f) => {
+        api.tasks.loadFile(f, reload);
+      });
     }
   };
 
@@ -177,7 +175,7 @@ export class TasksInitializer extends Initializer {
   }
 
   async start() {
-    if (config.tasks.scheduler === true) {
+    if (config.get<boolean>("tasks", "scheduler") === true) {
       await taskModule.enqueueAllRecurrentTasks();
     }
   }

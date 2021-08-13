@@ -1,6 +1,7 @@
 import * as path from "path";
 import * as glob from "glob";
 import { api, config, log, utils, Initializer, Server } from "../index";
+import { PluginConfig } from "../classes/config";
 
 export interface ServersApi {
   servers: {
@@ -27,7 +28,7 @@ export class Servers extends Initializer {
 
     const serverFolders = [path.resolve(path.join(__dirname, "..", "servers"))];
 
-    config.general.paths.server.forEach((p: string) => {
+    config.get<string[]>("general", "paths", "server").forEach((p: string) => {
       p = path.resolve(p);
       if (serverFolders.indexOf(p) < 0) {
         serverFolders.push(p);
@@ -41,18 +42,17 @@ export class Servers extends Initializer {
       files = files.concat(glob.sync(path.join(p, "**", "**/*(*.js|*.ts)")));
     }
 
-    for (const pluginName in config.plugins) {
-      if (config.plugins[pluginName].servers !== false) {
-        const pluginPath = config.plugins[pluginName].path;
-        // old style at the root of the project
-        files = files.concat(
-          glob.sync(path.join(pluginPath, "servers", "**", "*.js"))
-        );
+    for (const [pluginName, plugin] of Object.entries(
+      config.get<PluginConfig>("plugins")
+    )) {
+      // old style at the root of the project
+      files = files.concat(
+        glob.sync(path.join(plugin.path, "servers", "**", "*.js"))
+      );
 
-        files = files.concat(
-          glob.sync(path.join(pluginPath, "dist", "servers", "**", "*.js"))
-        );
-      }
+      files = files.concat(
+        glob.sync(path.join(plugin.path, "dist", "servers", "**", "*.js"))
+      );
     }
 
     files = utils.ensureNoTsHeaderFiles(files);
@@ -78,7 +78,7 @@ export class Servers extends Initializer {
         server = new ExportedClasses();
       }
 
-      server.config = config.servers[server.type]; // for shorthand access
+      server.config = config.get("servers", server.type); // for shorthand access
       if (server.config && server.config.enabled === true) {
         await server.initialize();
 
@@ -99,16 +99,21 @@ export class Servers extends Initializer {
     const serverNames = Object.keys(api.servers.servers);
     for (const i in serverNames) {
       const serverName = serverNames[i];
+      const bindIp = config.get<{ [key: string]: string }>(
+        "servers",
+        serverName
+      )?.bindIP;
+      const port = config.get<{ [key: string]: string }>(
+        "servers",
+        serverName
+      )?.port;
+
       const server = api.servers.servers[serverName];
       if (server && server.config.enabled === true) {
         const message = `Starting server: \`${serverName}\` ${
-          config.servers[serverName].bindIP
-            ? `@ ${serverName === "web" ? "http://" : ""}${
-                config.servers[serverName].bindIP
-              }${
-                config.servers[serverName].port
-                  ? `:${config.servers[serverName].port}`
-                  : ""
+          bindIp
+            ? `@ ${serverName === "web" ? "http://" : ""}${bindIp}${
+                port ? `:${port}` : ""
               }`
             : ""
         }`;

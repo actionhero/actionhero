@@ -1,5 +1,5 @@
 import { isPlainObject } from "./isPlainObject";
-import { config } from "../config";
+import { config } from "../..";
 import * as dotProp from "dot-prop";
 
 /**
@@ -16,7 +16,8 @@ export function filterObjectForLogging(params: { [key: string]: any }): {
   for (const i in params) {
     if (
       Array.isArray(params[i]) &&
-      params[i].length > (config.logger?.maxLogArrayLength ?? 10)
+      params[i].length >
+        (config.get<{ [key: string]: any }>("logger")?.maxLogArrayLength ?? 10)
     ) {
       params[i] = `${params[i].length} items`;
     }
@@ -26,20 +27,14 @@ export function filterObjectForLogging(params: { [key: string]: any }): {
     } else if (typeof params[i] === "string") {
       sanitizedParams[i] = params[i].substring(
         0,
-        config.logger.maxLogStringLength
+        config.get<number>("logger", "maxLogStringLength")
       );
     } else {
       sanitizedParams[i] = params[i];
     }
   }
 
-  let filteredParams: string[];
-  if (typeof config.general.filteredParams === "function") {
-    filteredParams = config.general.filteredParams();
-  } else {
-    filteredParams = config.general.filteredParams;
-  }
-
+  const filteredParams = config.get<string[]>("general", "filteredParams");
   filteredParams.forEach((configParam) => {
     if (dotProp.get(params, configParam) !== undefined) {
       dotProp.set(sanitizedParams, configParam, "[FILTERED]");

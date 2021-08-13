@@ -1,5 +1,6 @@
 import * as glob from "glob";
 import * as path from "path";
+import { PluginConfig } from "../classes/config";
 import { api, log, config, utils, Initializer, Action } from "../index";
 import * as ActionModule from "./../modules/action";
 
@@ -92,7 +93,7 @@ export class Actions extends Initializer {
       }
     };
 
-    for (const p of config.general.paths.action) {
+    for (const p of config.get<string[]>("general", "paths", "action")) {
       let files = glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"));
       files = utils.ensureNoTsHeaderFiles(files);
       for (const j in files) {
@@ -100,20 +101,19 @@ export class Actions extends Initializer {
       }
     }
 
-    for (const pluginName in config.plugins) {
-      if (config.plugins[pluginName].actions !== false) {
-        const pluginPath = config.plugins[pluginName].path;
-        // old style at the root of the project
-        let files = glob.sync(path.join(pluginPath, "actions", "**", "*.js"));
+    for (const [pluginName, plugin] of Object.entries(
+      config.get<PluginConfig>("plugins")
+    )) {
+      // old style at the root of the project
+      let files = glob.sync(path.join(plugin.path, "actions", "**", "*.js"));
 
-        files = files.concat(
-          glob.sync(path.join(pluginPath, "dist", "actions", "**", "*.js"))
-        );
+      files = files.concat(
+        glob.sync(path.join(plugin.path, "dist", "actions", "**", "*.js"))
+      );
 
-        utils
-          .ensureNoTsHeaderFiles(files)
-          .forEach((f) => api.actions.loadFile(f));
-      }
+      utils
+        .ensureNoTsHeaderFiles(files)
+        .forEach((f) => api.actions.loadFile(f));
     }
 
     // now that the actions are loaded, we can add all the inputs to api.params

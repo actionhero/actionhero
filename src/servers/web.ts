@@ -533,9 +533,12 @@ export class WebServer extends Server {
     }
 
     if (data.response.error) {
-      data.response.error = await config.errors.serializers.servers.web(
-        data.response.error
-      );
+      data.response.error = await config.get<Function>(
+        "errors",
+        "serializers",
+        "servers",
+        "web"
+      )(data.response.error);
     }
 
     let stringResponse = "";
@@ -749,7 +752,8 @@ export class WebServer extends Server {
         connection.params.file[connection.params.file.length - 1] === "/"
       ) {
         connection.params.file =
-          connection.params.file + config.general.directoryFileType;
+          connection.params.file +
+          config.get<string>("config", "general", "directoryFileType");
       }
       try {
         connection.params.file = decodeURIComponent(connection.params.file);
@@ -796,8 +800,8 @@ export class WebServer extends Server {
   buildServerInformation(connectedAt: number) {
     const stopTime = new Date().getTime();
     return {
-      serverName: config.general.serverName,
-      apiVersion: config.general.apiVersion,
+      serverName: config.get<string>("config", "general", "serverName"),
+      apiVersion: config.get<string>("config", "general", "apiVersion"),
       requestDuration: stopTime - connectedAt,
       currentTime: stopTime,
     };
@@ -814,7 +818,7 @@ export class WebServer extends Server {
 
     for (const p in connection.params) {
       if (
-        config.general.disableParamScrubbing === true ||
+        config.get<boolean>("general", "disableParamScrubbing") === true ||
         api.params.postVariables.indexOf(p) >= 0
       ) {
         requesterInformation.receivedParams[p] = connection.params[p];

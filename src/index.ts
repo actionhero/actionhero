@@ -1,5 +1,11 @@
 // export classes (capitalized)
 export { Api } from "./classes/api";
+export {
+  Config,
+  ConfigLoader,
+  PluginConfigRecord,
+  PluginConfig,
+} from "./classes/config";
 export { Process } from "./classes/process";
 export { Initializer } from "./classes/initializer";
 export { Connection } from "./classes/connection";
@@ -12,7 +18,6 @@ export { ActionProcessor } from "./classes/actionProcessor";
 
 // export modules (lower case)
 export { utils } from "./modules/utils";
-export { config } from "./modules/config";
 export { log, loggers } from "./modules/log";
 export { action } from "./modules/action";
 export { task } from "./modules/task";
@@ -31,19 +36,19 @@ export { id } from "./classes/process/id";
 
 // API object to hold connections, actions, tasks, initializers, and servers
 import { Api } from "./classes/api";
-
-// backwards-compatibility for older versions of node.js
-// we can't use globalThis for node v8, v10
+import { Config } from "./classes/config";
 
 declare global {
   namespace NodeJS {
     interface Global {
       api: Api;
+      config: Config;
     }
   }
 }
 
-if (!global.api) {
-  global.api = new Api();
-}
+if (!global.api) global.api = new Api();
+if (!global.config) global.config = new Config();
+
 export const api: Api = global.api;
+export const config: Config = global.config;

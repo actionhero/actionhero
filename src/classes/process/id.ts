@@ -1,6 +1,6 @@
 import { argv } from "optimist";
 import * as cluster from "cluster";
-import { config } from "./../../modules/config";
+import { config } from "./../..";
 import { utils } from "./../../modules/utils";
 
 /**
@@ -15,7 +15,7 @@ function determineId() {
     id = process.env.ACTIONHERO_TITLE;
   } else if (process.env.JEST_WORKER_ID) {
     id = `test-server-${process.env.JEST_WORKER_ID || 0}`;
-  } else if (!config || !config.general.id) {
+  } else if (!config || !config.get<string>("general", "id")) {
     let externalIP = utils.getExternalIPAddress();
     if (!externalIP) {
       externalIP = "actionhero";
@@ -26,7 +26,7 @@ function determineId() {
       id += ":" + process.pid;
     }
   } else {
-    id = config.general.id;
+    id = config.get<string>("general", "id");
   }
 
   return id;

@@ -43,14 +43,16 @@ export class ChatRoomInitializer extends Initializer {
     message: object | Array<any> | string
   ) => {
     if (!room || !message) {
-      throw new Error(config.errors.connectionRoomAndMessage(connection));
+      throw new Error(
+        config.get<Function>("errors", "connectionRoomAndMessage")(connection)
+      );
     } else if (
       connection instanceof Connection &&
       (connection.rooms === undefined || connection.rooms.indexOf(room) > -1)
     ) {
       const payload: ChatModule.chatRoom.ChatPubSubMessage = {
         messageType: "chat",
-        serverToken: config.general.serverToken,
+        serverToken: config.get<string>("general", "serverToken"),
         serverId: id,
         message: message,
         sentAt: new Date().getTime(),
@@ -69,7 +71,7 @@ export class ChatRoomInitializer extends Initializer {
       );
       const payloadToSend: ChatModule.chatRoom.ChatPubSubMessage = {
         messageType: "chat",
-        serverToken: config.general.serverToken,
+        serverToken: config.get<string>("general", "serverToken"),
         serverId: id,
         message: newPayload.message,
         sentAt: newPayload.sentAt,
@@ -81,7 +83,9 @@ export class ChatRoomInitializer extends Initializer {
 
       await redis.publish(payloadToSend);
     } else {
-      throw new Error(config.errors.connectionNotInRoom(connection, room));
+      throw new Error(
+        config.get<Function>("errors", "connectionNotInRoom")(connection, room)
+      );
     }
   };
 
@@ -177,20 +181,24 @@ export class ChatRoomInitializer extends Initializer {
       }
     };
 
-    if (config.general.startingChatRooms) {
-      const rooms = Object.keys(config.general.startingChatRooms);
-      for (const room of rooms) {
-        log(`ensuring the existence of the chatRoom: ${room}`, "debug");
-        try {
-          await chatRoom.add(room);
-        } catch (error) {
-          if (
-            !error
-              .toString()
-              .match(await config.errors.connectionRoomExists(room))
-          ) {
-            throw error;
-          }
+    for (const [room, options] of Object.keys(
+      config.get<{ [key: string]: { [key: string]: any } }>(
+        "general",
+        "startingChatRooms"
+      )
+    )) {
+      log(`ensuring the existence of the chatRoom: ${room}`, "debug");
+      try {
+        await chatRoom.add(room);
+      } catch (error) {
+        if (
+          !error
+            .toString()
+            .match(
+              await config.get<Function>("errors", "connectionRoomExists")(room)
+            )
+        ) {
+          throw error;
         }
       }
     }

@@ -42,10 +42,9 @@ export class GenerateCLI extends CLI {
       template = template.replace(regex, params[v]);
     });
 
+    const cliPaths = config.get<string[]>("general", "paths", "cli");
     const message = utils.fileUtils.createFileSafely(
-      utils.replaceDistWithSrc(
-        config.general.paths.cli[0] + "/" + params.name + ".ts"
-      ),
+      utils.replaceDistWithSrc(cliPaths[0] + "/" + params.name + ".ts"),
       template
     );
     console.log(message);

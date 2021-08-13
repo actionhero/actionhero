@@ -130,6 +130,9 @@ export class Swagger extends Action {
 
   async run() {
     const { swaggerPaths, tags } = this.buildSwaggerPaths();
+    const allowedRequestHosts =
+      config.get<string[]>("servers", "web", "allowedRequestHosts") ?? [];
+    const port = config.get<number | string>("servers", "web", "port");
 
     return {
       swagger: SWAGGER_VERSION,
@@ -139,18 +142,14 @@ export class Swagger extends Action {
         title: parentPackageJSON.name,
         license: { name: parentPackageJSON.license },
       },
-      host: (config.servers.web.allowedRequestHosts[0]
-        ? config.servers.web.allowedRequestHosts[0]
-            .replace("https://", "")
-            .replace("http://", "")
-        : `localhost:${config.servers.web.port}`) as string,
+      host: allowedRequestHosts[0]
+        ? allowedRequestHosts[0].replace("https://", "").replace("http://", "")
+        : `localhost:${port}`,
       basePath: `/api/${API_VERSION}`,
       // tags: tags.map((tag) => {
       //   return { name: tag, description: `topic: ${tag}` };
       // }),
-      schemes: config.servers.web.allowedRequestHosts[0]
-        ? ["https", "http"]
-        : ["http"],
+      schemes: allowedRequestHosts[0] ? ["https", "http"] : ["http"],
       paths: swaggerPaths,
 
       securityDefinitions: {

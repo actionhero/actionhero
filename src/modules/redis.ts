@@ -20,7 +20,7 @@ export namespace redis {
    * ```
    */
   export async function publish(payload: object | Array<any>) {
-    const channel = config.general.channel;
+    const channel = config.get<string>("general", "channel");
     const connection = api.redis.clients.client;
     const stringPayload = JSON.stringify(payload);
     if (connection.status !== "close" && connection.status !== "end") {
@@ -46,7 +46,7 @@ export namespace redis {
     const payload = {
       messageType: "do",
       serverId: id,
-      serverToken: config.general.serverToken,
+      serverToken: config.get<string>("general", "serverToken"),
       messageId: messageId,
       method: method,
       connectionId: connectionId,
@@ -60,7 +60,7 @@ export namespace redis {
       return new Promise(async (resolve, reject) => {
         const timer = setTimeout(
           () => reject(new Error("RPC Timeout")),
-          config.general.rpcTimeout
+          config.get<number>("general", "rpcTimeout")
         );
         api.redis.rpcCallbacks[messageId] = { timer, resolve, reject };
         try {
@@ -83,7 +83,7 @@ export namespace redis {
     const payload = {
       messageType: "doResponse",
       serverId: id,
-      serverToken: config.general.serverToken,
+      serverToken: config.get<string>("general", "serverToken"),
       messageId: messageId,
       response: response, // args to pass back, including error
     };

@@ -54,10 +54,13 @@ export class GenerateInitializer extends CLI {
       template = template.replace(regex, params[v]);
     });
 
+    const initializerPaths = config.get<string[]>(
+      "general",
+      "paths",
+      "initializer"
+    );
     const message = utils.fileUtils.createFileSafely(
-      utils.replaceDistWithSrc(
-        config.general.paths.initializer[0] + "/" + params.name + ".ts"
-      ),
+      utils.replaceDistWithSrc(initializerPaths[0] + "/" + params.name + ".ts"),
       template
     );
     console.log(message);

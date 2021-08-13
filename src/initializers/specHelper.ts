@@ -128,18 +128,20 @@ export class SpecHelper extends Initializer {
           // nothing to do...
         } else {
           if (data.response.error) {
-            data.response.error =
-              await config.errors.serializers.servers.specHelper(
-                data.response.error
-              );
+            data.response.error = await config.get<Function>(
+              "errors",
+              "serializers",
+              "servers",
+              "specHelper"
+            )(data.response.error);
           }
 
           if (api.specHelper.returnMetadata) {
             data.response.messageId = data.messageId;
 
             data.response.serverInformation = {
-              serverName: config.general.serverName,
-              apiVersion: config.general.apiVersion,
+              serverName: config.get<string>("general", "serverName"),
+              apiVersion: config.get<string>("general", "apiVersion"),
             };
 
             data.response.requesterInformation = {

@@ -85,16 +85,12 @@ export class RedisInitializer extends Initializer {
       }
     };
 
-    const connectionNames = ["client", "subscriber", "tasks"];
-    for (var i in connectionNames) {
-      const r = connectionNames[i];
-      if (config.redis[r].buildNew === true) {
-        const args = config.redis[r].args;
-        api.redis.clients[r] = new config.redis[r].konstructor(
-          args[0],
-          args[1],
-          args[2]
-        );
+    const connectionNames = ["client", "subscriber", "tasks"] as const;
+    for (const r of connectionNames) {
+      if (config.get<boolean>("redis", r, "buildNew") === true) {
+        const args = config.get<any[]>("redis", r, "args");
+        const constructorMethod = config.get<any>("redis", r, "konstructor");
+        api.redis.clients[r] = new constructorMethod(args[0], args[1], args[2]);
 
         api.redis.clients[r].on("error", (error) => {
           log(`Redis connection \`${r}\` error`, "alert", error);
@@ -120,8 +116,9 @@ export class RedisInitializer extends Initializer {
           log(`Redis connection \`${r}\` reconnecting`, "info");
         });
       } else {
-        api.redis.clients[r] = config.redis[r].konstructor(
-          config.redis[r].args
+        const constructorMethod = config.get<any>("redis", r, "konstructor");
+        api.redis.clients[r] = constructorMethod(
+          config.get<any[]>("redis", r, "args")
         );
         api.redis.clients[r].on("error", (error) => {
           log(`Redis connection \`${r}\` error`, "alert", error);
@@ -133,7 +130,9 @@ export class RedisInitializer extends Initializer {
     }
 
     if (!api.redis.status.subscribed) {
-      await api.redis.clients.subscriber.subscribe(config.general.channel);
+      await api.redis.clients.subscriber.subscribe(
+        config.get<string>("general", "channel")
+      );
       api.redis.status.subscribed = true;
 
       const messageHandler = async (
@@ -148,8 +147,8 @@ export class RedisInitializer extends Initializer {
         }
 
         if (
-          messageChannel === config.general.channel &&
-          message.serverToken === config.general.serverToken
+          messageChannel === config.get<string>("general", "channel") &&
+          message.serverToken === config.get<string>("general", "serverToken")
         ) {
           if (api.redis.subscriptionHandlers[message.messageType]) {
             await api.redis.subscriptionHandlers[message.messageType](message);

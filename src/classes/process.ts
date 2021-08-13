@@ -1,19 +1,18 @@
 import * as path from "path";
 import * as glob from "glob";
 import * as fs from "fs";
-import { buildConfig, ConfigInterface } from "./../modules/config";
+import { config } from "..";
+// import { buildConfig, ConfigInterface } from "./../modules/config";
 import { log } from "../modules/log";
 import { Initializer } from "./initializer";
 import { Initializers } from "./initializers";
 import { utils } from "../modules/utils";
-
 import { id } from "./process/id";
 import { env } from "./process/env";
 import { writePidFile, clearPidFile } from "./process/pid";
-
 import { api } from "../index";
-
-let config: ConfigInterface = {};
+import { loadConfig } from "../modules/config";
+import { PluginConfig } from "./config";
 
 export class Process {
   running: boolean;
@@ -28,9 +27,6 @@ export class Process {
   loadInitializers: Initializer["initialize"][];
   startInitializers: Initializer["start"][];
   stopInitializers: Initializer["stop"][];
-  _startingParams: {
-    [key: string]: any;
-  };
 
   constructor() {
     this.initialized = false;
@@ -51,9 +47,7 @@ export class Process {
     api.commands.restart = this.restart;
   }
 
-  async initialize(params: object = {}) {
-    this._startingParams = params;
-
+  async initialize() {
     const loadInitializerRankings: {
       [rank: number]: Initializer["initialize"][];
     } = {};
@@ -65,8 +59,8 @@ export class Process {
     } = {};
     let initializerFiles: Array<string> = [];
 
-    // rebuild config with startingParams
-    config = buildConfig(this._startingParams);
+    // load config
+    await loadConfig();
 
     // load initializers from core
     initializerFiles = initializerFiles.concat(
@@ -76,33 +70,35 @@ export class Process {
     );
 
     // load initializers from project
-    config.general.paths.initializer.forEach((startPath: string) => {
-      initializerFiles = initializerFiles.concat(
-        glob.sync(path.join(startPath, "**", "**/*(*.js|*.ts)"))
-      );
-    });
+    config
+      .get<string[]>("general", "paths", "initializer")
+      .forEach((startPath: string) => {
+        initializerFiles = initializerFiles.concat(
+          glob.sync(path.join(startPath, "**", "**/*(*.js|*.ts)"))
+        );
+      });
 
     // load initializers from plugins
-    for (const pluginName in config.plugins) {
-      if (config.plugins[pluginName] !== false) {
-        const pluginPath: string = path.normalize(
-          config.plugins[pluginName].path
-        );
+    for (const [pluginName, plugin] of Object.entries(
+      config.get<PluginConfig>("plugins")
+    )) {
+      const pluginPath: string = path.normalize(plugin.path);
 
-        if (!fs.existsSync(pluginPath)) {
-          throw new Error(`plugin path does not exist: ${pluginPath}`);
-        }
-
-        // old style at the root of the project
-        initializerFiles = initializerFiles.concat(
-          glob.sync(path.join(pluginPath, "initializers", "**", "*.js"))
-        );
-
-        // new TS dist files
-        initializerFiles = initializerFiles.concat(
-          glob.sync(path.join(pluginPath, "dist", "initializers", "**", "*.js"))
+      if (!fs.existsSync(pluginPath)) {
+        throw new Error(
+          `plugin path does not exist for plugin ${pluginName}: ${pluginPath}`
         );
       }
+
+      // old style at the root of the project
+      initializerFiles = initializerFiles.concat(
+        glob.sync(path.join(pluginPath, "initializers", "**", "*.js"))
+      );
+
+      // new TS dist files
+      initializerFiles = initializerFiles.concat(
+        glob.sync(path.join(pluginPath, "dist", "initializers", "**", "*.js"))
+      );
     }
 
     initializerFiles = utils.arrayUnique(initializerFiles);
@@ -245,23 +241,24 @@ export class Process {
     this.initialized = true;
   }
 
-  async start(params = {}) {
-    if (this.initialized !== true) await this.initialize(params);
+  async start() {
+    if (this.initialized !== true) await this.initialize();
+    const serverName = config.get<string>("general", "serverName");
 
     writePidFile();
     this.running = true;
     api.running = true;
     log(`environment: ${env}`, "notice");
-    log(`*** Starting ${config.general.serverName} ***`, "info");
+    log(`*** Starting ${serverName} ***`, "info");
 
     this.startInitializers.push(async () => {
       this.bootTime = new Date().getTime();
       if (this.startCount === 0) {
         log(`server ID: ${id}`, "notice");
-        log(`*** ${config.general.serverName} Started ***`, "notice");
+        log(`*** ${serverName} Started ***`, "notice");
         this.startCount++;
       } else {
-        log(`*** ${config.general.serverName} Restarted ***`, "notice");
+        log(`*** ${serverName} Restarted ***`, "notice");
       }
     });
 
@@ -275,6 +272,8 @@ export class Process {
   }
 
   async stop(stopReasons: string | string[] = []) {
+    const serverName = config.get<string>("general", "serverName");
+
     if (this.running) {
       this.shuttingDown = true;
       this.running = false;
@@ -293,7 +292,7 @@ export class Process {
 
       this.stopInitializers.push(async () => {
         clearPidFile();
-        log(`*** ${config.general.serverName} Stopped ***`, "notice");
+        log(`*** ${serverName} Stopped ***`, "notice");
         delete this.shuttingDown;
         // reset initializers to prevent duplicate check on restart
         this.initializers = {};
@@ -311,7 +310,7 @@ export class Process {
     } else if (this.shuttingDown === true) {
       // double sigterm; ignore it
     } else {
-      const message = `Cannot shut down ${config.general.serverName}, not running`;
+      const message = `Cannot shut down ${serverName}, not running`;
       log(message, "crit");
     }
   }
@@ -319,9 +318,9 @@ export class Process {
   async restart() {
     if (this.running === true) {
       await this.stop();
-      await this.start(this._startingParams);
+      await this.start();
     } else {
-      await this.start(this._startingParams);
+      await this.start();
     }
   }
 

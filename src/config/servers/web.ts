@@ -22,7 +22,7 @@ export const DEFAULT = {
         bindIP: "0.0.0.0",
         // Any additional headers you want actionhero to respond with
         httpHeaders: {
-          "X-Powered-By": config.general.serverName,
+          "X-Powered-By": config.get<string>("general", "serverName"),
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Methods":
             "HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE",

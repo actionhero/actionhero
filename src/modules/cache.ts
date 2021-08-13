@@ -16,10 +16,10 @@ export namespace cache {
     retry?: boolean | number;
   }
 
-  export const redisPrefix: string = config.general.cachePrefix;
-  export const lockPrefix: string = config.general.lockPrefix;
-  export const lockDuration: number = config.general.lockDuration;
-  export const scanCount: number = config.redis.scanCount || 1000;
+  export const redisPrefix = config.get<string>("general", "cachePrefix");
+  export const lockPrefix = config.get<string>("general", "lockPrefix");
+  export const lockDuration = config.get<number>("general", "lockDuration");
+  export const scanCount = config.get<number>("redis", "redis") || 1000;
   export const lockRetry: number = 100;
 
   export function client() {

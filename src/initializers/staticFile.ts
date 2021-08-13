@@ -3,6 +3,8 @@ import * as path from "path";
 import * as Mime from "mime";
 import { api, config, log, Initializer } from "../index";
 import { Connection } from "./../classes/connection";
+import { ActionHeroLogLevel } from "../modules/log";
+import { PluginConfig } from "../classes/config";
 
 export interface StaticFileApi {
   searchLocations: Array<string>;
@@ -53,7 +55,7 @@ export class StaticFileInitializer extends Initializer {
     if (!connection.params.file || !api.staticFile.searchPath(counter)) {
       return api.staticFile.sendFileNotFound(
         connection,
-        await config.errors.fileNotProvided(connection)
+        await config.get<Function>("errors", "fileNotProvided")(connection)
       );
     }
 
@@ -113,7 +115,10 @@ export class StaticFileInitializer extends Initializer {
     } catch (error) {
       return api.staticFile.sendFileNotFound(
         connection,
-        await config.errors.fileReadError(connection, String(error))
+        await config.get<Function>("errors", "fileReadError")(
+          connection,
+          String(error)
+        )
       );
     }
   };
@@ -140,9 +145,10 @@ export class StaticFileInitializer extends Initializer {
     api.staticFile.logRequest("{not found}", connection, null, null, false);
     return {
       connection,
-      error: await config.errors.fileNotFound(connection),
+      error: await config.get<Function>("errors", "fileNotFound")(connection),
       mime: "text/html",
-      length: await config.errors.fileNotFound(connection).length,
+      length: await config.get<Function>("errors", "fileNotFound")(connection)
+        .length,
     };
   };
 
@@ -153,7 +159,8 @@ export class StaticFileInitializer extends Initializer {
       const stats = await asyncStats(file);
 
       if (stats.isDirectory()) {
-        const indexPath = file + "/" + config.general.directoryFileType;
+        const indexPath =
+          file + "/" + config.get<Function>("general", "directoryFileType");
         return api.staticFile.checkExistence(indexPath);
       }
 
@@ -180,14 +187,18 @@ export class StaticFileInitializer extends Initializer {
     duration: number,
     success: boolean
   ) => {
-    log(`[ file @ ${connection.type} ]`, config.general.fileRequestLogLevel, {
-      to: connection.remoteIP,
-      file: file,
-      requestedFile: connection.params.file,
-      size: length,
-      duration: duration,
-      success: success,
-    });
+    log(
+      `[ file @ ${connection.type} ]`,
+      config.get<ActionHeroLogLevel>("general", "fileRequestLogLevel"),
+      {
+        to: connection.remoteIP,
+        file: file,
+        requestedFile: connection.params.file,
+        size: length,
+        duration: duration,
+        success: success,
+      }
+    );
   };
 
   async initialize() {
@@ -203,25 +214,24 @@ export class StaticFileInitializer extends Initializer {
     };
 
     // load in the explicit public paths first
-    if (config.general.paths !== undefined) {
-      config.general.paths.public.forEach(function (p: string) {
-        api.staticFile.searchLocations.push(path.normalize(p));
-      });
+    if (config.get("general", "paths")) {
+      config
+        .get<string[]>("general", "paths", "public")
+        .forEach(function (p: string) {
+          api.staticFile.searchLocations.push(path.normalize(p));
+        });
     }
 
     // source the public directories from plugins
-    for (const pluginName in config.plugins) {
-      if (config.plugins[pluginName].public !== false) {
-        const pluginPublicPath = path.join(
-          config.plugins[pluginName].path,
-          "public"
-        );
-        if (
-          fs.existsSync(pluginPublicPath) &&
-          api.staticFile.searchLocations.indexOf(pluginPublicPath) < 0
-        ) {
-          api.staticFile.searchLocations.push(pluginPublicPath);
-        }
+    for (const [pluginName, plugin] of Object.entries(
+      config.get<PluginConfig>("plugins")
+    )) {
+      const pluginPublicPath = path.join(plugin.path, "public");
+      if (
+        fs.existsSync(pluginPublicPath) &&
+        api.staticFile.searchLocations.indexOf(pluginPublicPath) < 0
+      ) {
+        api.staticFile.searchLocations.push(pluginPublicPath);
       }
     }
 

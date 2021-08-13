@@ -54,16 +54,17 @@ export class GenerateTask extends CLI {
       testTemplate = testTemplate.replace(regex, params[v]);
     });
 
+    const taskPaths = config.get<string[]>("general", "paths", "task");
+    const testPaths = config.get<string[]>("general", "paths", "test");
+
     let message = utils.fileUtils.createFileSafely(
-      utils.replaceDistWithSrc(
-        config.general.paths.task[0] + "/" + params.name + ".ts"
-      ),
+      utils.replaceDistWithSrc(taskPaths[0] + "/" + params.name + ".ts"),
       taskTemplate
     );
     console.info(message);
 
     message = utils.fileUtils.createFileSafely(
-      config.general.paths.test[0] + "/tasks/" + params.name + ".ts",
+      testPaths[0] + "/tasks/" + params.name + ".ts",
       testTemplate
     );
     console.info(message);

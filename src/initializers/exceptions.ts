@@ -77,7 +77,7 @@ export class ExceptionsInitializer extends Initializer {
       "task",
       name,
       { task: task, queue: queue, workerId: workerId },
-      config.tasks.workerLogging.failure
+      config.get<ActionHeroLogLevel>("tasks", "workerLogging", "failure")
     );
   };
 

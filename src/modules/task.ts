@@ -1,6 +1,7 @@
 import { api, config, utils, log } from "./../index";
 import { Task, TaskInputs } from "./../classes/task";
 import { ErrorPayload } from "node-resque";
+import { ActionHeroLogLevel } from "./log";
 
 export namespace task {
   /**
@@ -333,7 +334,7 @@ export namespace task {
       await task.enqueueIn(thisTask.frequency, taskName, {}, undefined, true);
       log(
         `re-enqueued recurrent job ${taskName}`,
-        config.tasks.schedulerLogging.reEnqueue
+        config.get<ActionHeroLogLevel>("tasks", "schedulerLogging", "reEnqueue")
       );
     }
   }
@@ -352,7 +353,11 @@ export namespace task {
           if (toRun === true) {
             log(
               `enqueuing periodic task: ${thisTask.name}`,
-              config.tasks.schedulerLogging.enqueue
+              config.get<ActionHeroLogLevel>(
+                "tasks",
+                "schedulerLogging",
+                "enqueue"
+              )
             );
             enqueuedTasks.push(thisTask.name);
           }
@@ -418,7 +423,10 @@ export namespace task {
       throw new Error("middleware.name is required");
     }
     if (!middleware.priority) {
-      middleware.priority = config.general.defaultMiddlewarePriority;
+      middleware.priority = config.get<number>(
+        "general",
+        "defaultMiddlewarePriority"
+      );
     }
     middleware.priority = Number(middleware.priority);
     api.tasks.middleware[middleware.name] = middleware;
@@ -487,7 +495,11 @@ export namespace task {
 
       // required
       if (task.inputs[key].required === true) {
-        if (config.general.missingParamChecks.indexOf(inputs[key]) >= 0) {
+        if (
+          config
+            .get<string[]>("general", "missingParamChecks")
+            .includes(inputs[key])
+        ) {
           throw new Error(`${key} is a required input for task ${taskName}`);
         }
       }

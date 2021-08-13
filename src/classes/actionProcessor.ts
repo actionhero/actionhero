@@ -1,6 +1,6 @@
 import { Connection } from "./connection";
 import { Action, ActionResponse } from "./action";
-import { config } from "./../modules/config";
+import { config } from "..";
 import { ActionHeroLogLevel, log } from "../modules/log";
 import { utils } from "../modules/utils";
 import * as dotProp from "dot-prop";
@@ -91,23 +91,25 @@ export class ActionProcessor<ActionClass extends Action> {
     let error: Error = null;
     this.actionStatus = status;
 
+    const errorMethods = config.get<{ [key: string]: Function }>("errors");
+
     if (status === ActionsStatus.GenericError) {
       error =
-        typeof config.errors.genericError === "function"
-          ? await config.errors.genericError(this, _error)
+        typeof errorMethods.genericError === "function"
+          ? await errorMethods.genericError(this, _error)
           : _error;
     } else if (status === ActionsStatus.ServerShuttingDown) {
-      error = await config.errors.serverShuttingDown(this);
+      error = await errorMethods.serverShuttingDown(this);
     } else if (status === ActionsStatus.TooManyRequests) {
-      error = await config.errors.tooManyPendingActions(this);
+      error = await errorMethods.tooManyPendingActions(this);
     } else if (status === ActionsStatus.UnknownAction) {
-      error = await config.errors.unknownAction(this);
+      error = await errorMethods.unknownAction(this);
     } else if (status === ActionsStatus.UnsupportedServerType) {
-      error = await config.errors.unsupportedServerType(this);
+      error = await errorMethods.unsupportedServerType(this);
     } else if (status === ActionsStatus.MissingParams) {
-      error = await config.errors.missingParams(this, this.missingParams);
+      error = await errorMethods.missingParams(this, this.missingParams);
     } else if (status === ActionsStatus.ValidatorErrors) {
-      error = await config.errors.invalidParams(this, this.validatorErrors);
+      error = await errorMethods.invalidParams(this, this.validatorErrors);
     } else if (status) {
       error = _error;
     }
@@ -153,7 +155,7 @@ export class ActionProcessor<ActionClass extends Action> {
       response: undefined as string,
     };
 
-    if (config.general.enableResponseLogging) {
+    if (config.get<boolean>("general", "enableResponseLogging")) {
       logLine.response = JSON.stringify(
         utils.filterResponseForLogging(this.response)
       );
@@ -162,7 +164,7 @@ export class ActionProcessor<ActionClass extends Action> {
     if (error) {
       let errorFields;
       const formatErrorLogLine =
-        config.errors.serializers.actionProcessor ||
+        config.get<Function>("errors", "serializers", "actionProcessor") ||
         this.applyDefaultErrorLogLineFormat;
       ({ logLevel = "error", errorFields } = formatErrorLogLine(error));
       logLine = { ...logLine, ...errorFields };
@@ -173,7 +175,7 @@ export class ActionProcessor<ActionClass extends Action> {
     if (
       error &&
       (status !== ActionsStatus.UnknownAction ||
-        config.errors.reportUnknownActions)
+        config.get<boolean>("errors", "reportUnknownActions"))
     ) {
       api.exceptionHandlers.action(error, logLine);
     }
@@ -244,7 +246,7 @@ export class ActionProcessor<ActionClass extends Action> {
     }
 
     const inputNames = Object.keys(inputs) || [];
-    if (config.general.disableParamScrubbing !== true) {
+    if (config.get<boolean>("general", "disableParamScrubbing") !== true) {
       for (const p in params) {
         if (
           api.params.globalSafeParams.indexOf(p) < 0 &&
@@ -342,7 +344,7 @@ export class ActionProcessor<ActionClass extends Action> {
 
     // required
     if (props.required === true) {
-      if (config.general.missingParamChecks.indexOf(params[key]) >= 0) {
+      if (config.get<string[]>("general", "missingParamChecks").includes(key)) {
         let missingKey = key;
         if (schemaKey) {
           missingKey = `${schemaKey}.${missingKey}`;
@@ -406,7 +408,10 @@ export class ActionProcessor<ActionClass extends Action> {
       return this.completeAction(ActionsStatus.ServerShuttingDown);
     }
 
-    if (this.getPendingActionCount() > config.general.simultaneousActions) {
+    if (
+      this.getPendingActionCount() >
+      config.get<number>("general", "simultaneousActions")
+    ) {
       return this.completeAction(ActionsStatus.TooManyRequests);
     }
 

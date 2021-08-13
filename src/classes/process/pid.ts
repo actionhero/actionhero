@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import { log } from "../../modules/log";
-import { config } from "./../../modules/config";
+import { config } from "./../..";
 import { id } from "./id";
 
 function sanitizeId() {
@@ -12,7 +12,8 @@ function sanitizeId() {
 }
 
 export const pid = process.pid;
-const path = config.general.paths.pid[0]; // it would be silly to have more than one pi
+const pidPaths = config.get<string[]>("general", "paths", "pid");
+const path = pidPaths[0]; // it would be silly to have more than one pidfile
 let title = `actionhero-${sanitizeId()}`;
 
 try {

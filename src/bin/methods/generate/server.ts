@@ -27,10 +27,9 @@ export class GenerateServer extends CLI {
       template = template.replace(regex, params[v]);
     });
 
+    const serverPaths = config.get<string[]>("general", "paths", "server");
     const message = utils.fileUtils.createFileSafely(
-      utils.replaceDistWithSrc(
-        config.general.paths.server[0] + "/" + params.name + ".ts"
-      ),
+      utils.replaceDistWithSrc(serverPaths[0] + "/" + params.name + ".ts"),
       template
     );
     console.log(message);
