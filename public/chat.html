@@ -9,7 +9,7 @@
 
     <script
       type="text/javascript"
-      src="/public/javascript/ActionheroWebsocketClient.min.js"
+      src="/public/javascript/ActionheroWebsocketClient.js"
     ></script>
   </head>
 
@@ -113,20 +113,22 @@
         if (error) {
           console.error(error);
         } else {
-          client.action("createChatRoom", { name: "defaultRoom" }, function (
-            data
-          ) {
-            if (data.error) console.error(data.error);
-            client.roomAdd("defaultRoom");
-            document.getElementById("name").innerHTML =
-              '<span style="color:#' +
-              intToARGB(hashCode(client.id)) +
-              '">' +
-              client.id +
-              "</span>";
-            document.getElementById("fingerprint").innerHTML =
-              client.fingerprint;
-          });
+          client.action(
+            "createChatRoom",
+            { name: "defaultRoom" },
+            function (data) {
+              if (data.error) console.error(data.error);
+              client.roomAdd("defaultRoom");
+              document.getElementById("name").innerHTML =
+                '<span style="color:#' +
+                intToARGB(hashCode(client.id)) +
+                '">' +
+                client.id +
+                "</span>";
+              document.getElementById("fingerprint").innerHTML =
+                client.fingerprint;
+            }
+          );
         }
       });
     };

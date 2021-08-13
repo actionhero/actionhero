@@ -1,28 +1,32 @@
 <html>
   <head>
-    <script src="/public/javascript/ActionheroWebsocketClient.min.js"></script>
+    <script src="/public/javascript/ActionheroWebsocketClient.js"></script>
     <script type="text/javascript">
-
       //////////
       // MAIN //
       //////////
 
-      function main(){
+      function main() {
         // start with no sesionId
         deleteAllCookies();
         // make any api call to get a new sessionId
-        actionWeb({action: 'status'}, function(error, data){
-          var cookieSessionId = document.cookie.split(";")[0].split('=')[1];
+        actionWeb({ action: "status" }, function (error, data) {
+          var cookieSessionId = document.cookie.split(";")[0].split("=")[1];
           console.log("cookie sessionId: " + cookieSessionId);
-          console.log("Web sessionId: "    + data.requesterInformation.id);
-          console.log("Web fingerprint: "  + data.requesterInformation.fingerprint);
+          console.log("Web sessionId: " + data.requesterInformation.id);
+          console.log(
+            "Web fingerprint: " + data.requesterInformation.fingerprint
+          );
           // start the websocket client
-          client = new ActionheroWebsocketClient;
-          client.connect(function(error, details){
+          client = new ActionheroWebsocketClient();
+          client.connect(function (error, details) {
             console.log("WebSocket cleintId: " + client.id);
             console.log("WebSocket fingerprint: " + client.fingerprint);
             // There should be a 3-way match
-            console.log(data.requesterInformation.fingerprint === cookieSessionId && client.fingerprint === cookieSessionId)
+            console.log(
+              data.requesterInformation.fingerprint === cookieSessionId &&
+                client.fingerprint === cookieSessionId
+            );
           });
         });
       }
@@ -31,9 +35,9 @@
       // HELPERS //
       /////////////
 
-      var url = window.location.origin + '/api'
+      var url = window.location.origin + "/api";
 
-      var deleteAllCookies = function(){
+      var deleteAllCookies = function () {
         // http://stackoverflow.com/questions/179355/clearing-all-cookies-with-javascript
         var cookies = document.cookie.split(";");
         for (var i = 0; i < cookies.length; i++) {
@@ -42,33 +46,32 @@
           var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
           document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
         }
-      }
+      };
 
-      var actionWeb = function(params, callback){
+      var actionWeb = function (params, callback) {
         // dupliace of ActionheroWebsocketClient.actionWeb, but listed here for simplicity
         var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function(){
-          if(xmlhttp.readyState == 4){
-            if(xmlhttp.status == 200){
+        xmlhttp.onreadystatechange = function () {
+          if (xmlhttp.readyState == 4) {
+            if (xmlhttp.status == 200) {
               var response = JSON.parse(xmlhttp.responseText);
               callback(null, response);
-            }else{
+            } else {
               callback(xmlhttp.statusText, xmlhttp.responseText);
             }
           }
-        }
-        var qs = "?"
-        for(var i in params){
+        };
+        var qs = "?";
+        for (var i in params) {
           qs += i + "=" + params[i] + "&";
         }
-        var method = 'GET';
-        if(params.httpMethod != null){
+        var method = "GET";
+        if (params.httpMethod != null) {
           method = params.httpMethod;
         }
         xmlhttp.open(method, url + qs, true);
         xmlhttp.send();
-      }
-
+      };
     </script>
   </head>
   <body onload="main()">
