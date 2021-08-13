@@ -1,3 +1,4 @@
+import { argv } from "./utils/argv";
 import { arrayStartingMatch } from "./utils/arrayStartingMatch";
 import { arrayUnique } from "./utils/arrayUnique";
 import { collapseObjectToArray } from "./utils/collapseObjectToArray";
@@ -29,6 +30,7 @@ import {
  * Utility functions for Actionhero
  */
 export const utils = {
+  argv,
   arrayStartingMatch,
   arrayUnique,
   collapseObjectToArray,

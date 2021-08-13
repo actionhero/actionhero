@@ -47,13 +47,13 @@
     "is-running": "^2.1.0",
     "mime": "^2.5.2",
     "node-resque": "^9.0.4",
-    "optimist": "^0.6.1",
     "primus": "^8.0.4",
     "qs": "^6.10.1",
     "uglify-js": "^3.13.10",
     "uuid": "^8.3.2",
     "winston": "^3.3.3",
-    "ws": "^8.0.0"
+    "ws": "^8.0.0",
+    "yargs": "^17.1.0"
   },
   "devDependencies": {
     "@types/glob": "^7.1.4",

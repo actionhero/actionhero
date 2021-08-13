@@ -1,7 +1,6 @@
-import { argv } from "optimist";
 import * as cluster from "cluster";
 import { config } from "./../../modules/config";
-import { utils } from "./../../modules/utils";
+import { utils } from "../../modules/utils";
 
 /**
  * I build this server's ID from the external IP address of this server and pid.
@@ -9,8 +8,8 @@ import { utils } from "./../../modules/utils";
 function determineId() {
   let id = "";
 
-  if (argv.title) {
-    id = argv.title;
+  if (utils.argv.title) {
+    id = utils.argv.title.toString();
   } else if (process.env.ACTIONHERO_TITLE) {
     id = process.env.ACTIONHERO_TITLE;
   } else if (process.env.JEST_WORKER_ID) {

@@ -1,10 +1,10 @@
-import { argv } from "optimist";
+import { utils } from "../../modules/utils";
 
 function determineNodeEnv(): string {
   let env = "development";
 
-  if (argv.NODE_ENV) {
-    env = argv.NODE_ENV;
+  if (utils.argv.NODE_ENV) {
+    env = utils.argv.NODE_ENV.toString();
   } else if (process.env.NODE_ENV) {
     env = process.env.NODE_ENV;
   }
