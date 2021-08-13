@@ -1,5 +1,4 @@
 import * as Primus from "primus";
-import * as UglifyJS from "uglify-js";
 import * as fs from "fs";
 import * as path from "path";
 import * as util from "util";
@@ -171,10 +170,7 @@ export class WebSocketServer extends Server {
     return ahClientSource;
   }
 
-  renderClientJS(minimize) {
-    if (!minimize) {
-      minimize = false;
-    }
+  renderClientJS() {
     const libSource = api.servers.servers.websocket.server.library();
     let ahClientSource = this.compileActionheroWebsocketClientJS();
     ahClientSource =
@@ -186,11 +182,7 @@ export class WebSocketServer extends Server {
       "exports.ActionheroWebsocketClient = ActionheroWebsocketClient; \r\n" +
       "})(typeof exports === 'undefined' ? window : exports);";
 
-    if (minimize) {
-      return UglifyJS.minify(libSource + "\r\n\r\n\r\n" + ahClientSource).code;
-    } else {
-      return libSource + "\r\n\r\n\r\n" + ahClientSource;
-    }
+    return libSource + "\r\n\r\n\r\n" + ahClientSource;
   }
 
   writeClientJS() {
@@ -214,13 +206,8 @@ export class WebSocketServer extends Server {
         if (!fs.existsSync(clientJSPath)) {
           fs.mkdirSync(clientJSPath);
         }
-        fs.writeFileSync(clientJSFullPath + ".js", this.renderClientJS(false));
+        fs.writeFileSync(clientJSFullPath + ".js", this.renderClientJS());
         log(`wrote ${clientJSFullPath}.js`, "debug");
-        fs.writeFileSync(
-          clientJSFullPath + ".min.js",
-          this.renderClientJS(true)
-        );
-        log(`wrote ${clientJSFullPath}.min.js`, "debug");
       } catch (e) {
         log("Cannot write client-side JS for websocket server:", "alert", e);
         throw e;

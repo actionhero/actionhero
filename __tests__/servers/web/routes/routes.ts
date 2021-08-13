@@ -446,7 +446,7 @@ describe("Server: Web", () => {
         } catch (error) {
           expect(error.statusCode).toEqual(404);
           expect(typeof error.response.body).toEqual("string");
-          expect(error.response.body).toMatch(/^That file is not found/);
+          expect(error.response.body).toMatch(/^that file is not found/);
         }
       });
     });

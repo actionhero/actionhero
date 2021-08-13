@@ -7,7 +7,6 @@ coverage/*
 node_modules/*
 locales/test-env-*
 public/javascript/ActionheroWebsocketClient.js
-public/javascript/ActionheroWebsocketClient.min.js
 dist
 
 # Node / NPM

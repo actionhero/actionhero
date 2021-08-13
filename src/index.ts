@@ -19,7 +19,6 @@ export { task } from "./modules/task";
 export { cache } from "./modules/cache";
 export { chatRoom } from "./modules/chatRoom";
 export { redis } from "./modules/redis";
-export { i18n } from "./modules/i18n";
 export { route } from "./modules/route";
 export { specHelper } from "./modules/specHelper";
 

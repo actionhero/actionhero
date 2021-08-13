@@ -51,7 +51,6 @@ export class Generate extends CLI {
       publicLogo: "/public/logo/actionhero.png",
       publicCss: "/public/css/cosmo.css",
       exampleTest: "/__tests__/template.ts.example",
-      enLocale: "/locales/en.json",
       gitignore: "/templates/gitignore.template",
     };
 
@@ -101,7 +100,6 @@ export class Generate extends CLI {
       "/src/bin",
       "/log",
       "/pids",
-      "/locales",
       "/public",
       "/public/javascript",
       "/public/css",
@@ -142,7 +140,6 @@ export class Generate extends CLI {
       "/public/logo/actionhero.png": "publicLogo",
       "/README.md": "readmeMd",
       "/__tests__/actions/status.ts": "exampleTest",
-      "/locales/en.json": "enLocale",
       "/.gitignore": "gitignore",
     };
 

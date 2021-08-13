@@ -5,16 +5,15 @@ export class RandomNumber extends Action {
     super();
     this.name = "randomNumber";
     this.description = "I am an API method which will generate a random number";
-    this.outputExample = { randomNumber: 0.123 };
+    this.outputExample = {
+      randomNumber: 0.123,
+      stringRandomNumber: "Your random number is 0.123",
+    };
   }
 
-  async run({ connection }) {
+  async run() {
     const randomNumber = Math.random();
-    const stringRandomNumber: string = connection.localize([
-      "Your random number is {{randomNumber}}",
-      // @ts-ignore
-      { randomNumber },
-    ]);
+    const stringRandomNumber = `Your random number is ${randomNumber}`;
 
     return { randomNumber, stringRandomNumber };
   }

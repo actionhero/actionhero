@@ -160,7 +160,6 @@ describe("Core: CLI", () => {
         "public/css/cosmo.css",
         "public/javascript",
         "public/logo/actionhero.png",
-        "locales/en.json",
         "__tests__",
         "__tests__/actions/status.ts",
         ".gitignore",
