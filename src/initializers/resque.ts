@@ -1,4 +1,4 @@
-import { Queue, Scheduler, MultiWorker, JobEmit } from "node-resque";
+import { Queue, Scheduler, MultiWorker, ParsedJob } from "node-resque";
 import { api, log, utils, Initializer } from "../index";
 
 export interface ResqueApi {
@@ -173,7 +173,7 @@ export class Resque extends Initializer {
             workerId,
           });
         });
-        api.resque.multiWorker.on("job", (workerId, queue, job: JobEmit) => {
+        api.resque.multiWorker.on("job", (workerId, queue, job: ParsedJob) => {
           log(`[ worker ] working job ${queue}`, api.resque.workerLogging.job, {
             workerId,
             class: job.class,
@@ -183,7 +183,7 @@ export class Resque extends Initializer {
         });
         api.resque.multiWorker.on(
           "reEnqueue",
-          (workerId, queue, job: JobEmit, plugin) => {
+          (workerId, queue, job: ParsedJob, plugin) => {
             log(
               "[ worker ] reEnqueue task",
               api.resque.workerLogging.reEnqueue,
@@ -214,7 +214,7 @@ export class Resque extends Initializer {
 
         api.resque.multiWorker.on(
           "success",
-          (workerId, queue, job: JobEmit, result, duration) => {
+          (workerId, queue, job: ParsedJob, result, duration) => {
             const payload = {
               workerId,
               class: job.class,
