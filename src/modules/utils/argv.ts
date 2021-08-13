@@ -1,3 +1,3 @@
-import yargs from "yargs";
-import { hideBin } from "yargs/helpers";
-export const argv = yargs(hideBin(process.argv)).argv;
+const yargs = require("yargs/yargs"); // cannot be partially imported
+const { hideBin } = require("yargs/helpers");
+export const argv: { [key: string]: string } = yargs(hideBin(process.argv));
