@@ -25,11 +25,16 @@ export class Config {
   get<T>(namespace: string, ...args: string[]) {
     let data = this.data[namespace];
     for (const k of args) {
-      if (data[k] && typeof data[k] === "object")
+      if (
+        data !== undefined &&
+        data !== null &&
+        data[k] &&
+        typeof data[k] === "object"
+      )
         data = data[k] as ConfigNamespaceData;
       else {
         throw new Error(
-          `config not found for ${namespace}${args ? args.join(", ") : ""}`
+          `config not found for \`${namespace}.${args ? args.join(".") : ""}\``
         );
       }
     }

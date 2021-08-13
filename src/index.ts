@@ -1,3 +1,22 @@
+// API object to hold connections, actions, tasks, initializers, and servers
+import { Api } from "./classes/api";
+import { Config } from "./classes/config";
+
+declare global {
+  namespace NodeJS {
+    interface Global {
+      api: Api;
+      config: Config;
+    }
+  }
+}
+
+if (!global.api) global.api = new Api();
+if (!global.config) global.config = new Config();
+
+export const api: Api = global.api;
+export const config: Config = global.config;
+
 // export classes (capitalized)
 export { Api } from "./classes/api";
 export {
@@ -33,22 +52,3 @@ export { actionheroVersion } from "./classes/process/actionheroVersion";
 export { projectRoot } from "./classes/process/projectRoot";
 export { typescript } from "./classes/process/typescript";
 export { id } from "./classes/process/id";
-
-// API object to hold connections, actions, tasks, initializers, and servers
-import { Api } from "./classes/api";
-import { Config } from "./classes/config";
-
-declare global {
-  namespace NodeJS {
-    interface Global {
-      api: Api;
-      config: Config;
-    }
-  }
-}
-
-if (!global.api) global.api = new Api();
-if (!global.config) global.config = new Config();
-
-export const api: Api = global.api;
-export const config: Config = global.config;
