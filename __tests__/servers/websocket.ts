@@ -97,27 +97,21 @@ describe("Server: Web Socket", () => {
     const data = await awaitMethod(clientA, "connect", true);
     expect(data.context).toEqual("response");
     expect(data.data.totalActions).toEqual(0);
-    expect(clientA.welcomeMessage).toEqual(
-      "Hello! Welcome to the actionhero api"
-    );
+    expect(clientA.welcomeMessage).toEqual("Welcome to the actionhero api");
   });
 
   test("socket client connections should work: client 2", async () => {
     const data = await awaitMethod(clientB, "connect", true);
     expect(data.context).toEqual("response");
     expect(data.data.totalActions).toEqual(0);
-    expect(clientB.welcomeMessage).toEqual(
-      "Hello! Welcome to the actionhero api"
-    );
+    expect(clientB.welcomeMessage).toEqual("Welcome to the actionhero api");
   });
 
   test("socket client connections should work: client 3", async () => {
     const data = await awaitMethod(clientC, "connect", true);
     expect(data.context).toEqual("response");
     expect(data.data.totalActions).toEqual(0);
-    expect(clientC.welcomeMessage).toEqual(
-      "Hello! Welcome to the actionhero api"
-    );
+    expect(clientC.welcomeMessage).toEqual("Welcome to the actionhero api");
   });
 
   describe("with connection", () => {

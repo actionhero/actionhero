@@ -22,7 +22,7 @@ describe("Core: specHelper", () => {
     const { error } = await specHelper.runAction("x", connection);
     expect(connection.messages).toHaveLength(2);
     expect(connection.messages[0].welcome).toEqual(
-      "Hello! Welcome to the actionhero api"
+      "Welcome to the actionhero api"
     );
     expect(connection.messages[1].error).toEqual(
       "Error: unknown action or invalid apiVersion"

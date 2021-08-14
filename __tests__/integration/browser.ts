@@ -99,7 +99,7 @@ describe("browser integration tests", () => {
         await page.goto(url);
         await utils.sleep(2000);
         const chat = await page.$eval("#chatBox", (e) => e.textContent);
-        expect(chat).toContain("Hello! Welcome to the actionhero api");
+        expect(chat).toContain("Welcome to the actionhero api");
       });
 
       test("can chat", async () => {
