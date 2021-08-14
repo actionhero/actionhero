@@ -12,7 +12,7 @@ export const DEFAULT = {
     return {
       apiVersion: packageJSON.version,
       serverName: packageJSON.name,
-      welcomeMessage: "Hello! Welcome to the actionhero api",
+      welcomeMessage: `Welcome to the ${packageJSON.name} api`,
       // A unique token to your application that servers will use to authenticate to each other
       serverToken: "change-me",
       // the redis prefix for Actionhero cache objects
