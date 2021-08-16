@@ -234,6 +234,13 @@ export class Resque extends Initializer {
 
         // multiWorker emitters
         api.resque.multiWorker.on("multiWorkerAction", (verb, delay) => {
+          if (
+            config.tasks.minTaskProcessors === config.tasks.maxTaskProcessors
+          ) {
+            // if we aren't trying to autoscale the workers, no need to log
+            return;
+          }
+
           log(
             `[ multiworker ] checked for worker status: ${verb} (event loop delay: ${delay}ms)`,
             api.resque.workerLogging.multiWorkerAction
