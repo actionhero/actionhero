@@ -365,6 +365,17 @@ describe("Core: Tasks", () => {
     expect(lengthAgain).toEqual(0);
   });
 
+  test("I can remove enqueued jobs by name", async () => {
+    await task.enqueue("regularTask", { word: "first" });
+    const length = await api.resque.queue.length(queue);
+    expect(length).toEqual(1);
+
+    await task.delByFunction(queue, "regularTask");
+
+    const lengthAgain = await api.resque.queue.length(queue);
+    expect(lengthAgain).toEqual(0);
+  });
+
   test("I can remove a delayed job", async () => {
     await task.enqueueIn(1000, "regularTask", { word: "first" });
     const timestamps = await api.resque.queue.scheduledAt(
