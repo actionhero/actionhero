@@ -135,6 +135,26 @@ export namespace task {
   }
 
   /**
+   * * will delete all jobs in the given queue of the named function/class
+   * * will not prevent new jobs from being added as this method is running
+   * * will not delete jobs in the delayed queues
+   *
+   * Inputs:
+   * * q: Which queue/priority is to run on?
+   * * taskName: The name of the job, likely to be the same name as a tak.
+   * * start? - starting position of task count to remove
+   * * stop? - stop position of task count to remove
+   */
+  export async function delByFunction(
+    q: string,
+    taskName: string,
+    start?: number,
+    stop?: number
+  ) {
+    return api.resque.queue.delByFunction(q, taskName, start, stop);
+  }
+
+  /**
    * Delete all previously enqueued tasks, which haven't been run yet, from all possible delayed timestamps.
    * Will throw an error if redis cannot be reached.
    *
