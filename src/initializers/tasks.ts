@@ -39,6 +39,9 @@ export class Tasks extends Initializer {
     api.tasks.loadFile = async (fullFilePath: string, reload = false) => {
       let task;
       let collection = await import(fullFilePath);
+      if (typeof collection === "function") {
+        collection = [collection];
+      }
       for (const i in collection) {
         const TaskClass = collection[i];
         task = new TaskClass();
