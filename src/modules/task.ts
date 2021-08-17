@@ -21,8 +21,7 @@ export namespace task {
  *     log(worker.job.class + ' done in ' + seconds + ' s and ' + millis + ' ms.', 'info')
  *   },
  *   preEnqueue: async function () {
- *     const arg = this.args[0]
- *     return (arg === 'ok') // returning `false` will prevent the task from enqueueing
+ *     return true // returning `false` will prevent the task from enqueueing
  *   },
  *   postEnqueue: async function () {
  *     log("Task successfully enqueued!")
@@ -43,7 +42,7 @@ export namespace task {
     /**Called after the task runs.*/
     postProcessor?: Function;
     /**Called before a task using this middleware is enqueued. */
-    preEnqueue?: Function;
+    preEnqueue?: (any) => Promise<boolean>;
     /**Called after a task using this middleware is enqueued. */
     postEnqueue?: Function;
   }
