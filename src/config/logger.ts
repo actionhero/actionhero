@@ -63,24 +63,6 @@ function buildConsoleLogger(level = "info") {
   };
 }
 
-function stringifyExtraMessagePropertiesForConsole(info) {
-  const skippedProperties = ["message", "timestamp", "level"];
-  let response = "";
-
-  for (const key in info) {
-    const value = info[key];
-    if (skippedProperties.includes(key)) {
-      continue;
-    }
-    if (value === undefined || value === null || value === "") {
-      continue;
-    }
-    response += `${key}=${value} `;
-  }
-
-  return response;
-}
-
 function buildFileLogger(path, level = "info", maxFiles = undefined) {
   return function (config) {
     const filename = `${path}/${config.process.id}-${config.process.env}.log`;
@@ -99,4 +81,22 @@ function buildFileLogger(path, level = "info", maxFiles = undefined) {
       ],
     });
   };
+}
+
+function stringifyExtraMessagePropertiesForConsole(info) {
+  const skippedProperties = ["message", "timestamp", "level"];
+  let response = "";
+
+  for (const key in info) {
+    const value = info[key];
+    if (skippedProperties.includes(key)) {
+      continue;
+    }
+    if (value === undefined || value === null || value === "") {
+      continue;
+    }
+    response += `${key}=${value} `;
+  }
+
+  return response;
 }
