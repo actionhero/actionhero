@@ -3,6 +3,8 @@ import * as winston from "winston";
 /*
 The loggers defined here will eventually be available via `import { loggers } from "actionhero"`
 
+You may want to customize how Actionhero sets the log level.  By default, you can use `process.env.LOG_LEVEL` to change each logger's level (default: 'info')
+
 learn more about winston v3 loggers @
  - https://github.com/winstonjs/winston
  - https://github.com/winstonjs/winston/blob/master/docs/transports.md
@@ -15,9 +17,9 @@ type ActionheroConfigLoggerBuilderArray = Array<
 export const DEFAULT = {
   logger: (config) => {
     const loggers: ActionheroConfigLoggerBuilderArray = [];
-    loggers.push(buildConsoleLogger());
+    loggers.push(buildConsoleLogger(process.env.LOG_LEVEL));
     config.general.paths.log.forEach((p) => {
-      loggers.push(buildFileLogger(p));
+      loggers.push(buildFileLogger(p, process.env.LOG_LEVEL));
     });
 
     return {
