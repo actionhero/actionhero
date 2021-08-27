@@ -11,14 +11,18 @@ assignees: ''
 
 Description of Issue
 
-- Actionhero Version: `x.x.x`
-- Node.js Version: `x.x.x`
+- Actionhero Version: `x.x.x` (look in your package.json)
+- Node.js Version: `x.x.x` (`node --version`)
+- NPM (or yarn) version: `x.x.x` (`npm --version`)
 - Operating System: `(OSX, Ubuntu 14, Windows 10, etc)`
 
 # Steps to reproduce your error
 
 - Make a new actionhero project with `npx actionhero generate`
-- create an action with the following content...
+- Create an action with the following content...
+
+
+Note: That without a way to reproduce your issue, we probably will be unable to help you and the issue will be closed.
 
 ---
 
