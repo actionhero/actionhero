@@ -348,8 +348,18 @@ export class Process {
 
     // handle errors & rejections
     process.once("uncaughtException", async (error: Error) => {
-      api.exceptionHandlers.report(error, "uncaught", "Exception", {}, "emerg");
-      if (!this.shuttingDown === true) {
+      if (api.exceptionHandlers) {
+        api.exceptionHandlers.report(
+          error,
+          "uncaught",
+          "Exception",
+          {},
+          "emerg"
+        );
+      } else {
+        console.error(error);
+      }
+      if (this.shuttingDown !== true) {
         let timer = awaitHardStop();
         await this.stop();
         clearTimeout(timer);
@@ -358,14 +368,19 @@ export class Process {
     });
 
     process.once("unhandledRejection", async (rejection: Error) => {
-      api.exceptionHandlers.report(
-        rejection,
-        "uncaught",
-        "Rejection",
-        {},
-        "emerg"
-      );
-      if (!this.shuttingDown === true) {
+      if (api.exceptionHandlers) {
+        api.exceptionHandlers.report(
+          rejection,
+          "uncaught",
+          "Rejection",
+          {},
+          "emerg"
+        );
+      } else {
+        console.error(rejection);
+      }
+
+      if (this.shuttingDown !== true) {
         let timer = awaitHardStop();
         await this.stop();
         clearTimeout(timer);
