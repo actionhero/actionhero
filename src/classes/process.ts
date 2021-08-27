@@ -359,6 +359,7 @@ export class Process {
       } else {
         console.error(error);
       }
+
       if (this.shuttingDown !== true) {
         let timer = awaitHardStop();
         await this.stop();
