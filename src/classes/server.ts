@@ -31,7 +31,7 @@ export abstract class Server extends EventEmitter {
   logConnections: boolean;
   /**Should we log when a connection disconnects/exits? */
   logExits: boolean;
-  /**Should every new connection of this server type receive the welcome message (defined in locales, `actionhero.welcomeMessage`) */
+  /**Should every new connection of this server type receive the welcome message */
   sendWelcomeMessage: boolean;
   /**Methods described by the server to apply to each connection (like connection.setHeader for web connections) */
   connectionCustomMethods: {
