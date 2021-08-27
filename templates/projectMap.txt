@@ -20,9 +20,6 @@
 |  - bin
 |    -- (your custom CLI commands)
 |
-|- locales
-|-- (translation files)
-|
 |- __tests__
 |-- (tests for your API)
 |
