@@ -4,7 +4,6 @@ about: Create a report to help us improve
 title: ''
 labels: bug
 assignees: ''
-
 ---
 
 # Name of Issue
@@ -19,10 +18,13 @@ Description of Issue
 # Steps to reproduce your error
 
 - Make a new actionhero project with `npx actionhero generate`
+- Run `npm install`
 - Create an action with the following content...
 
 
-Note: That without a way to reproduce your issue, we probably will be unable to help you and the issue will be closed.
+*Note: That without a way to reproduce your issue, we probably will be unable to help you and the issue will be closed.*
+
+## Logs or Test that confirm the issue
 
 ---
 
