@@ -142,7 +142,6 @@ describe("Core: CLI", () => {
         "src/config",
         "src/config/api.ts",
         "src/config/errors.ts",
-        "src/config/i18n.ts",
         "src/config/plugins.ts",
         "src/config/logger.ts",
         "src/config/redis.ts",
