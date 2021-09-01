@@ -1,5 +1,6 @@
-import { Inputs } from "./inputs";
 import { api } from "../index";
+import type { LogLevels } from "../modules/log";
+import { Inputs } from "./inputs";
 
 /**
  * Create a new Actionhero Action. The required properties of an action. These can be defined statically (this.name) or as methods which return a value.
@@ -35,7 +36,7 @@ export abstract class Action {
   /**Are there connections from any servers which cannot use this Action (default: [])? */
   blockedConnectionTypes?: Array<string>;
   /**Under what level should connections to this Action be logged (default 'info')? */
-  logLevel?: string;
+  logLevel?: LogLevels;
   /**If this Action is responding to a `web` request, and that request has a file extension like *.jpg, should Actionhero set the response headers to match that extension (default: true)? */
   matchExtensionMimeType?: boolean;
   /**Should this Action appear in api.documentation.documentation? (default: true)? */

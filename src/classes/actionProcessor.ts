@@ -1,10 +1,10 @@
-import { Connection } from "./connection";
-import { Action } from "./action";
-import { config } from "./../modules/config";
-import { log } from "../modules/log";
-import { utils } from "../modules/utils";
 import * as dotProp from "dot-prop";
 import { api } from "../index";
+import { log, LogLevels } from "../modules/log";
+import { utils } from "../modules/utils";
+import { config } from "./../modules/config";
+import { Action } from "./action";
+import { Connection } from "./connection";
 
 export enum ActionsStatus {
   Complete,
@@ -126,7 +126,7 @@ export class ActionProcessor<ActionClass extends Action> {
   private logAndReportAction(status: ActionsStatus, error: Error) {
     const { type, rawConnection } = this.connection;
 
-    let logLevel = "info";
+    let logLevel: LogLevels = "info";
     if (this.actionTemplate && this.actionTemplate.logLevel) {
       logLevel = this.actionTemplate.logLevel;
     }
