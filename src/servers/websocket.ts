@@ -1,12 +1,13 @@
-import * as Primus from "primus";
+// import * as Primus from "primus";
 import * as fs from "fs";
 import * as path from "path";
 import * as util from "util";
 import * as uuid from "uuid";
+import ws from "ws";
 import { api, config, utils, log, Server, Connection } from "../index";
 
 export class WebSocketServer extends Server {
-  server: Primus;
+  server: ws.server;
 
   constructor() {
     super();
@@ -36,9 +37,11 @@ export class WebSocketServer extends Server {
 
   async start() {
     const webserver = api.servers.servers.web;
-    this.server = new Primus(webserver.server, this.config.server);
+    // this.server = new Primus(webserver.server, this.config.server);
+    this.server = new WebSocketServer();
+    this.server.mo;
 
-    this.writeClientJS();
+    // this.writeClientJS();
 
     this.server.on("connection", (rawConnection) => {
       this.handleConnection(rawConnection);
@@ -77,7 +80,7 @@ export class WebSocketServer extends Server {
     }
 
     //@ts-ignore
-    this.server.destroy();
+    this.server.stop();
   }
 
   async sendMessage(connection: Connection, message, messageId: string) {
@@ -140,80 +143,80 @@ export class WebSocketServer extends Server {
     connection.rawConnection.end();
   }
 
-  compileActionheroWebsocketClientJS() {
-    let ahClientSource = fs
-      .readFileSync(
-        path.join(__dirname, "/../../client/ActionheroWebsocketClient.js")
-      )
-      .toString();
-    const url = this.config.clientUrl;
-    ahClientSource = ahClientSource.replace(/%%URL%%/g, url);
-    const defaults: {
-      [key: string]: any;
-    } = {};
+  // compileActionheroWebsocketClientJS() {
+  //   let ahClientSource = fs
+  //     .readFileSync(
+  //       path.join(__dirname, "/../../client/ActionheroWebsocketClient.js")
+  //     )
+  //     .toString();
+  //   const url = this.config.clientUrl;
+  //   ahClientSource = ahClientSource.replace(/%%URL%%/g, url);
+  //   const defaults: {
+  //     [key: string]: any;
+  //   } = {};
 
-    for (const i in this.config.client) {
-      defaults[i] = this.config.client[i];
-    }
+  //   for (const i in this.config.client) {
+  //     defaults[i] = this.config.client[i];
+  //   }
 
-    defaults.url = url;
-    let defaultsString = util.inspect(defaults);
-    defaultsString = defaultsString.replace(
-      "'window.location.origin'",
-      "window.location.origin"
-    );
-    ahClientSource = ahClientSource.replace(
-      "%%DEFAULTS%%",
-      "return " + defaultsString
-    );
+  //   defaults.url = url;
+  //   let defaultsString = util.inspect(defaults);
+  //   defaultsString = defaultsString.replace(
+  //     "'window.location.origin'",
+  //     "window.location.origin"
+  //   );
+  //   ahClientSource = ahClientSource.replace(
+  //     "%%DEFAULTS%%",
+  //     "return " + defaultsString
+  //   );
 
-    return ahClientSource;
-  }
+  //   return ahClientSource;
+  // }
 
-  renderClientJS() {
-    const libSource = api.servers.servers.websocket.server.library();
-    let ahClientSource = this.compileActionheroWebsocketClientJS();
-    ahClientSource =
-      ";;;\r\n" +
-      "(function(exports){ \r\n" +
-      ahClientSource +
-      "\r\n" +
-      "exports.ActionheroWebsocketClient = ActionheroWebsocketClient; \r\n" +
-      "exports.ActionheroWebsocketClient = ActionheroWebsocketClient; \r\n" +
-      "})(typeof exports === 'undefined' ? window : exports);";
+  // renderClientJS() {
+  //   const libSource = api.servers.servers.websocket.server.library();
+  //   let ahClientSource = this.compileActionheroWebsocketClientJS();
+  //   ahClientSource =
+  //     ";;;\r\n" +
+  //     "(function(exports){ \r\n" +
+  //     ahClientSource +
+  //     "\r\n" +
+  //     "exports.ActionheroWebsocketClient = ActionheroWebsocketClient; \r\n" +
+  //     "exports.ActionheroWebsocketClient = ActionheroWebsocketClient; \r\n" +
+  //     "})(typeof exports === 'undefined' ? window : exports);";
 
-    return libSource + "\r\n\r\n\r\n" + ahClientSource;
-  }
+  //   return libSource + "\r\n\r\n\r\n" + ahClientSource;
+  // }
 
-  writeClientJS() {
-    if (
-      !config.general.paths.public ||
-      config.general.paths.public.length === 0
-    ) {
-      return;
-    }
+  // writeClientJS() {
+  //   if (
+  //     !config.general.paths.public ||
+  //     config.general.paths.public.length === 0
+  //   ) {
+  //     return;
+  //   }
 
-    if (this.config.clientJsPath && this.config.clientJsName) {
-      const clientJSPath = path.normalize(
-        config.general.paths.public[0] +
-          path.sep +
-          this.config.clientJsPath +
-          path.sep
-      );
-      const clientJSName = this.config.clientJsName;
-      const clientJSFullPath = clientJSPath + clientJSName;
-      try {
-        if (!fs.existsSync(clientJSPath)) {
-          fs.mkdirSync(clientJSPath);
-        }
-        fs.writeFileSync(clientJSFullPath + ".js", this.renderClientJS());
-        log(`wrote ${clientJSFullPath}.js`, "debug");
-      } catch (e) {
-        log("Cannot write client-side JS for websocket server:", "alert", e);
-        throw e;
-      }
-    }
-  }
+  //   if (this.config.clientJsPath && this.config.clientJsName) {
+  //     const clientJSPath = path.normalize(
+  //       config.general.paths.public[0] +
+  //         path.sep +
+  //         this.config.clientJsPath +
+  //         path.sep
+  //     );
+  //     const clientJSName = this.config.clientJsName;
+  //     const clientJSFullPath = clientJSPath + clientJSName;
+  //     try {
+  //       if (!fs.existsSync(clientJSPath)) {
+  //         fs.mkdirSync(clientJSPath);
+  //       }
+  //       fs.writeFileSync(clientJSFullPath + ".js", this.renderClientJS());
+  //       log(`wrote ${clientJSFullPath}.js`, "debug");
+  //     } catch (e) {
+  //       log("Cannot write client-side JS for websocket server:", "alert", e);
+  //       throw e;
+  //     }
+  //   }
+  // }
 
   handleConnection(rawConnection) {
     const fingerprint =

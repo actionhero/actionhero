@@ -272,6 +272,4 @@ ActionheroWebsocketClient.prototype.disconnect = function () {
   this.emit('disconnected')
 }
 
-// depreciated lowercase name
-var ActionheroWebsocketClient = ActionheroWebsocketClient;
-ActionheroWebsocketClient;
+
