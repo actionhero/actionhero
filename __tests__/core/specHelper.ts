@@ -188,7 +188,7 @@ describe("Core: specHelper", () => {
         response.not.a.real.thing();
         throw new Error("should not get here");
       } catch (e) {
-        expect(String(e)).toEqual("TypeError: Cannot read");
+        expect(String(e)).toContain("TypeError: Cannot read");
       }
     });
 
@@ -199,7 +199,7 @@ describe("Core: specHelper", () => {
         response.not.a.real.thing();
         throw new Error("should not get here");
       } catch (e) {
-        expect(String(e)).toEqual("TypeError: Cannot read");
+        expect(String(e)).toContain("TypeError: Cannot read");
       }
     });
 
