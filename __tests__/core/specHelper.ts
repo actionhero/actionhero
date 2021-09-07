@@ -188,9 +188,7 @@ describe("Core: specHelper", () => {
         response.not.a.real.thing();
         throw new Error("should not get here");
       } catch (e) {
-        expect(String(e)).toEqual(
-          "TypeError: Cannot read property 'a' of undefined"
-        );
+        expect(String(e)).toEqual("TypeError: Cannot read");
       }
     });
 
@@ -201,9 +199,7 @@ describe("Core: specHelper", () => {
         response.not.a.real.thing();
         throw new Error("should not get here");
       } catch (e) {
-        expect(String(e)).toEqual(
-          "TypeError: Cannot read property 'a' of undefined"
-        );
+        expect(String(e)).toEqual("TypeError: Cannot read");
       }
     });
 
