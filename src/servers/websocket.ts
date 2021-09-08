@@ -1,13 +1,13 @@
-// import * as Primus from "primus";
-import * as fs from "fs";
-import * as path from "path";
-import * as util from "util";
+import { IncomingMessage } from "http";
 import * as uuid from "uuid";
-import ws from "ws";
-import { api, config, utils, log, Server, Connection } from "../index";
+import * as WebSocket from "ws";
+import { api, config, utils, Server, Connection } from "../index";
 
-export class WebSocketServer extends Server {
-  server: ws.server;
+const pingSleep = 15 * 1000;
+
+export class ActionHeroWebSocketServer extends Server {
+  server: WebSocket.Server;
+  pingTimer: NodeJS.Timeout;
 
   constructor() {
     super();
@@ -38,18 +38,15 @@ export class WebSocketServer extends Server {
   async start() {
     const webserver = api.servers.servers.web;
     // this.server = new Primus(webserver.server, this.config.server);
-    this.server = new WebSocketServer();
-    this.server.mo;
+    this.server = new WebSocket.Server({ server: webserver.server });
 
-    // this.writeClientJS();
-
-    this.server.on("connection", (rawConnection) => {
-      this.handleConnection(rawConnection);
+    this.server.on("connection", (ws: WebSocket, req: IncomingMessage) => {
+      this.handleConnection(ws, req);
     });
 
-    this.server.on("disconnection", (rawConnection) => {
-      this.handleDisconnection(rawConnection);
-    });
+    // this.server.on("disconnection", (rawConnection: WebSocket) => {
+    //   this.handleDisconnection(rawConnection);
+    // });
 
     this.log(
       `webSockets bound to ${webserver.options.bindIP}: ${webserver.options.port}`,
@@ -57,9 +54,19 @@ export class WebSocketServer extends Server {
     );
 
     this.on("connection", (connection: Connection) => {
-      connection.rawConnection.on("data", (data) => {
-        this.handleData(connection, data);
+      connection.rawConnection.ws.on("message", (message: string) => {
+        try {
+          const data = JSON.parse(message);
+          this.handleData(connection, data);
+        } catch (error) {
+          this.log(`cannot parse client message`, "error", message);
+        }
       });
+
+      connection.rawConnection.ws.on("close", () => connection.destroy());
+
+      connection.rawConnection.ws.isAlive = true;
+      connection.rawConnection.ws.on("pong", heartbeat);
     });
 
     this.on("actionComplete", (data) => {
@@ -68,38 +75,47 @@ export class WebSocketServer extends Server {
         this.sendMessage(data.connection, data.response, data.messageId);
       }
     });
+
+    this.pingTimer = setInterval(() => {
+      this.connections().forEach((connection: Connection) => {
+        if (connection.rawConnection.ws.isAlive === false) {
+          return connection.rawConnection.ws.terminate();
+        }
+
+        connection.rawConnection.ws.isAlive = false;
+        connection.rawConnection.ws.ping(noop);
+      });
+    }, pingSleep);
   }
 
   async stop() {
     if (!this.server) return;
+    clearInterval(this.pingTimer);
 
     if (this.config.destroyClientsOnShutdown === true) {
       this.connections().forEach((connection: Connection) => {
         connection.destroy();
       });
     }
-
-    //@ts-ignore
-    this.server.stop();
   }
 
-  async sendMessage(connection: Connection, message, messageId: string) {
+  async sendMessage(
+    connection: Connection,
+    message: Record<string, any>,
+    messageId: string
+  ) {
     if (message.error) {
       message.error = config.errors.serializers.servers.websocket(
         message.error
       );
     }
 
-    if (!message.context) {
-      message.context = "response";
-    }
-    if (!messageId) {
-      messageId = connection.messageId;
-    }
-    if (message.context === "response" && !message.messageId) {
+    if (!message.context) message.context = "response";
+    if (!messageId) messageId = connection.messageId;
+    if (message.context === "response" && !message.messageId)
       message.messageId = messageId;
-    }
-    connection.rawConnection.write(message);
+
+    connection.rawConnection.ws.send(JSON.stringify(message));
   }
 
   async sendFile(
@@ -122,9 +138,7 @@ export class WebSocketServer extends Server {
 
     try {
       if (!error) {
-        fileStream.on("data", (d) => {
-          content += d;
-        });
+        fileStream.on("data", (d) => (content += d));
         fileStream.on("end", () => {
           response.content = content;
           this.sendMessage(connection, response, messageId);
@@ -138,115 +152,24 @@ export class WebSocketServer extends Server {
     }
   }
 
-  //@ts-ignore
-  goodbye(connection: Connection) {
-    connection.rawConnection.end();
+  async goodbye(connection: Connection) {
+    connection.rawConnection.ws.terminate();
   }
 
-  // compileActionheroWebsocketClientJS() {
-  //   let ahClientSource = fs
-  //     .readFileSync(
-  //       path.join(__dirname, "/../../client/ActionheroWebsocketClient.js")
-  //     )
-  //     .toString();
-  //   const url = this.config.clientUrl;
-  //   ahClientSource = ahClientSource.replace(/%%URL%%/g, url);
-  //   const defaults: {
-  //     [key: string]: any;
-  //   } = {};
-
-  //   for (const i in this.config.client) {
-  //     defaults[i] = this.config.client[i];
-  //   }
-
-  //   defaults.url = url;
-  //   let defaultsString = util.inspect(defaults);
-  //   defaultsString = defaultsString.replace(
-  //     "'window.location.origin'",
-  //     "window.location.origin"
-  //   );
-  //   ahClientSource = ahClientSource.replace(
-  //     "%%DEFAULTS%%",
-  //     "return " + defaultsString
-  //   );
-
-  //   return ahClientSource;
-  // }
-
-  // renderClientJS() {
-  //   const libSource = api.servers.servers.websocket.server.library();
-  //   let ahClientSource = this.compileActionheroWebsocketClientJS();
-  //   ahClientSource =
-  //     ";;;\r\n" +
-  //     "(function(exports){ \r\n" +
-  //     ahClientSource +
-  //     "\r\n" +
-  //     "exports.ActionheroWebsocketClient = ActionheroWebsocketClient; \r\n" +
-  //     "exports.ActionheroWebsocketClient = ActionheroWebsocketClient; \r\n" +
-  //     "})(typeof exports === 'undefined' ? window : exports);";
-
-  //   return libSource + "\r\n\r\n\r\n" + ahClientSource;
-  // }
-
-  // writeClientJS() {
-  //   if (
-  //     !config.general.paths.public ||
-  //     config.general.paths.public.length === 0
-  //   ) {
-  //     return;
-  //   }
-
-  //   if (this.config.clientJsPath && this.config.clientJsName) {
-  //     const clientJSPath = path.normalize(
-  //       config.general.paths.public[0] +
-  //         path.sep +
-  //         this.config.clientJsPath +
-  //         path.sep
-  //     );
-  //     const clientJSName = this.config.clientJsName;
-  //     const clientJSFullPath = clientJSPath + clientJSName;
-  //     try {
-  //       if (!fs.existsSync(clientJSPath)) {
-  //         fs.mkdirSync(clientJSPath);
-  //       }
-  //       fs.writeFileSync(clientJSFullPath + ".js", this.renderClientJS());
-  //       log(`wrote ${clientJSFullPath}.js`, "debug");
-  //     } catch (e) {
-  //       log("Cannot write client-side JS for websocket server:", "alert", e);
-  //       throw e;
-  //     }
-  //   }
-  // }
-
-  handleConnection(rawConnection) {
-    const fingerprint =
-      rawConnection.query[config.servers.web.fingerprintOptions.cookieKey];
-    const { ip, port } = utils.parseHeadersForClientAddress(
-      rawConnection.headers
-    );
+  handleConnection(ws: WebSocket, req: IncomingMessage) {
+    const webserver = api.servers.servers.web;
+    const { fingerprint } = webserver["fingerPrinter"].fingerprint(req);
+    const { ip, port } = utils.parseHeadersForClientAddress(req.headers);
 
     this.buildConnection({
-      rawConnection: rawConnection,
-      remoteAddress: ip || rawConnection.address.ip,
-      remotePort: port || rawConnection.address.port,
+      rawConnection: { ws, req },
+      remoteAddress: ip || req.connection.remoteAddress || "0.0.0.0",
+      remotePort: port || req.connection.remotePort || "0",
       fingerprint: fingerprint,
     });
   }
 
-  handleDisconnection(rawConnection) {
-    const connections = this.connections();
-    for (const i in connections) {
-      if (
-        connections[i] &&
-        rawConnection.id === connections[i].rawConnection.id
-      ) {
-        connections[i].destroy();
-        break;
-      }
-    }
-  }
-
-  async handleData(connection, data) {
+  async handleData(connection: Connection, data: Record<string, any>) {
     const verb = data.event;
     delete data.event;
 
@@ -259,7 +182,7 @@ export class WebSocketServer extends Server {
         connection.params[v] = data.params[v];
       }
       connection.error = null;
-      connection.response = {};
+      connection["response"] = {};
       return this.processAction(connection);
     }
 
@@ -295,4 +218,10 @@ export class WebSocketServer extends Server {
       return this.sendMessage(connection, message, messageId);
     }
   }
+}
+
+function noop() {}
+
+function heartbeat() {
+  this.isAlive = true;
 }
