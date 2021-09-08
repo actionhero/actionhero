@@ -2,6 +2,23 @@ import * as uuid from "uuid";
 import { api, chatRoom } from "./../index";
 import { config } from "./../modules/config";
 
+export const ConnectionVerbs = [
+  "quit",
+  "exit",
+  "paramAdd",
+  "paramDelete",
+  "paramView",
+  "paramsView",
+  "paramsDelete",
+  "roomAdd",
+  "roomLeave",
+  "roomView",
+  "detailsView",
+  "documentation",
+  "say",
+] as const;
+export type ConnectionVerb = typeof ConnectionVerbs[number];
+
 /**
  * The generic representation of a connection for all server types is an Actionhero.Connection.  You will never be creating these yourself via an action or task, but you will find them in your Actions and Action Middleware.
  */
@@ -153,7 +170,10 @@ export class Connection {
   /**
    * Send a message to a connection.  Uses Server#sendMessage.
    */
-  async sendMessage(message: string | object | Array<any>, verb?: string) {
+  async sendMessage(
+    message: string | object | Array<any>,
+    verb?: ConnectionVerb
+  ) {
     throw new Error("not implemented");
   }
 
@@ -199,14 +219,10 @@ export class Connection {
     delete api.connections.connections[this.id];
   }
 
-  private set(key, value) {
-    this[key] = value;
-  }
-
   /**
    * Try to run a verb command for a connection
    */
-  private async verbs(verb: string, words: Array<string>) {
+  async verbs(verb: ConnectionVerb, words: Array<string>) {
     let key: string;
     let value: string;
     let room: string;
@@ -298,6 +314,10 @@ export class Connection {
       const error = new Error(await config.errors.verbNotAllowed(this, verb));
       throw error;
     }
+  }
+
+  private set(key: string, value: any) {
+    this[key] = value;
   }
 }
 

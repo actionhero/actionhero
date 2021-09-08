@@ -1,4 +1,5 @@
 import * as uuid from "uuid";
+import { ConnectionVerbs } from "../classes/connection";
 import { api, log, env, Initializer, Server, Connection } from "../index";
 
 export interface SpecHelperApi {
@@ -41,7 +42,7 @@ export class SpecHelper extends Initializer {
           logConnections: false,
           logExits: false,
           sendWelcomeMessage: true,
-          verbs: api.connections.allowedVerbs,
+          verbs: [...ConnectionVerbs],
         };
       }
 

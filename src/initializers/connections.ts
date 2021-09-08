@@ -1,4 +1,11 @@
-import { api, redis, Initializer, Connection } from "../index";
+import {
+  api,
+  redis,
+  Initializer,
+  Connection,
+  ConnectionVerbs,
+  ConnectionVerb,
+} from "../index";
 
 /**
  * ```js
@@ -33,7 +40,7 @@ export interface ConnectionsApi {
     [key: string]: ConnectionMiddleware;
   };
   globalMiddleware: Array<string>;
-  allowedVerbs: Array<string>;
+  allowedVerbs: ConnectionVerb[];
   cleanConnection: Function;
   apply: (
     connectionId: string,
@@ -55,22 +62,7 @@ export class Connections extends Initializer {
       connections: {},
       middleware: {},
       globalMiddleware: [],
-
-      allowedVerbs: [
-        "quit",
-        "exit",
-        "documentation",
-        "paramAdd",
-        "paramDelete",
-        "paramView",
-        "paramsView",
-        "paramsDelete",
-        "roomAdd",
-        "roomLeave",
-        "roomView",
-        "detailsView",
-        "say",
-      ],
+      allowedVerbs: [...ConnectionVerbs],
 
       /**
        * Find a connection on any server in the cluster and call a method on it.

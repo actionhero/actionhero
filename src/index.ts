@@ -2,7 +2,11 @@
 export { Api } from "./classes/api";
 export { Process } from "./classes/process";
 export { Initializer } from "./classes/initializer";
-export { Connection } from "./classes/connection";
+export {
+  Connection,
+  ConnectionVerb,
+  ConnectionVerbs,
+} from "./classes/connection";
 export { ExceptionReporter } from "./classes/exceptionReporter";
 export { Action } from "./classes/action";
 export { Task } from "./classes/task";
