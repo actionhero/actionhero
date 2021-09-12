@@ -93,7 +93,7 @@
     "debug": "tsc && ts-node-dev --transpile-only --no-deps --inspect -- ./src/server ",
     "start": "node ./dist/server.js",
     "build": "rm -rf dist && ./node_modules/.bin/tsc --sourceMap false --declaration",
-    "build-clients": "rm -rf public/clients && ./node_modules/.bin/tsc --project clients.tsconfig.json",
+    "build-clients": "rm -rf public/clients && ./node_modules/.bin/tsc --declaration --project clients.tsconfig.json",
     "watch": "rm -rf dist && ./node_modules/.bin/tsc --sourceMap false --declaration --watch",
     "docs": "typedoc --out docs --theme default src/index.ts",
     "lint": "prettier --check src __tests__",

@@ -1,4 +1,6 @@
 import { IncomingMessage } from "http";
+import * as fs from "fs";
+import * as path from "path";
 import * as uuid from "uuid";
 import * as WebSocket from "ws";
 import { api, config, utils, Server, Connection } from "../index";
@@ -37,16 +39,11 @@ export class ActionHeroWebSocketServer extends Server {
 
   async start() {
     const webserver = api.servers.servers.web;
-    // this.server = new Primus(webserver.server, this.config.server);
     this.server = new WebSocket.Server({ server: webserver.server });
 
     this.server.on("connection", (ws: WebSocket, req: IncomingMessage) => {
       this.handleConnection(ws, req);
     });
-
-    // this.server.on("disconnection", (rawConnection: WebSocket) => {
-    //   this.handleDisconnection(rawConnection);
-    // });
 
     this.log(
       `webSockets bound to ${webserver.options.bindIP}: ${webserver.options.port}`,
@@ -86,6 +83,8 @@ export class ActionHeroWebSocketServer extends Server {
         connection.rawConnection.ws.ping(noop);
       });
     }, pingSleep);
+
+    this.copyClientLib();
   }
 
   async stop() {
@@ -216,6 +215,17 @@ export class ActionHeroWebSocketServer extends Server {
         data: data,
       };
       return this.sendMessage(connection, message, messageId);
+    }
+  }
+
+  copyClientLib() {
+    const files = ["websocket.d.ts", "websocket.js", "websocket.js.map"];
+    const src = path.join(__dirname, "..", "..", "public", "clients");
+    for (const p of config.general.paths.public) {
+      fs.mkdirSync(path.join(p, "clients"), { recursive: true });
+      for (const f of files) {
+        fs.copyFileSync(path.join(src, f), path.join(p, "clients", f));
+      }
     }
   }
 }
