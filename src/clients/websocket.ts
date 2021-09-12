@@ -9,7 +9,7 @@ export class ActionheroWebsocketClient {
   rooms: string[];
   state: WebsocketClientState;
   messageId: number;
-  pingTimeout: NodeJS.Timeout;
+  pingTimeout: ReturnType<typeof setTimeout>;
   connection: WebSocket; // built-in type
 
   /**
