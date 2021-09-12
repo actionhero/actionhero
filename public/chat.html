@@ -58,65 +58,48 @@
   <script type="module">
     import { ActionheroWebsocketClient } from "../clients/websocket.js";
 
-    const client = new ActionheroWebsocketClient();
+    const url = window.location.origin
+      .replace("https://", "wss://")
+      .replace("http://", "ws://");
 
-    client.on("connected", function () {
-      console.log("connected!");
-    });
-    client.on("disconnected", function () {
-      console.log("disconnected :(");
-    });
-
-    client.on("error", function (error) {
-      console.log("error", error.stack);
-    });
-    client.on("reconnect", function () {
-      console.log("reconnect");
-    });
-    client.on("reconnecting", function () {
-      console.log("reconnecting");
+    const client = new ActionheroWebsocketClient(url, {
+      cookieKey: "sessionID",
     });
 
-    // client.on('message',      function(message){ console.log(message) })
+    client.onConnect = () => {
+      console.log("Connected!");
+    };
 
-    client.on("alert", function (message) {
-      alert(JSON.stringify(message));
-    });
-    client.on("api", function (message) {
-      alert(JSON.stringify(message));
-    });
+    client.onDisconnect = () => {
+      console.log("Disconnected!");
+    };
 
-    client.on("welcome", function (message) {
+    client.onSay = (message) => {
       appendMessage(message);
-    });
-    client.on("say", function (message) {
+    };
+
+    client.onWelcome = (message) => {
       appendMessage(message);
-    });
+    };
 
-    client.connect(function (error, details) {
-      if (error) {
-        console.error(error);
-      } else {
-        client.action(
-          "createChatRoom",
-          { name: "defaultRoom" },
-          function (data) {
-            if (data.error) console.error(data.error);
-            client.roomAdd("defaultRoom");
-            document.getElementById("name").innerHTML =
-              '<span style="color:#' +
-              intToARGB(hashCode(client.id)) +
-              '">' +
-              client.id +
-              "</span>";
-            document.getElementById("fingerprint").innerHTML =
-              client.fingerprint;
-          }
-        );
-      }
-    });
+    await client.connect();
 
-    const appendMessage = function (message) {
+    try {
+      await client.action("createChatRoom", { name: "defaultRoom" });
+    } catch (error) {
+      if (error.message !== "room exists") throw error;
+    }
+
+    await client.roomAdd("defaultRoom");
+    document.getElementById("name").innerHTML =
+      '<span style="color:#' +
+      intToARGB(hashCode(client.id)) +
+      '">' +
+      client.id +
+      "</span>";
+    document.getElementById("fingerprint").innerHTML = client.fingerprint;
+
+    function appendMessage(message) {
       let s = "";
 
       if (message.welcome != null) {
@@ -142,18 +125,18 @@
 
       const div = document.getElementById("chatBox");
       div.innerHTML = s + div.innerHTML;
-    };
+    }
 
-    const sendMessage = function () {
+    function sendMessage() {
       var div = document.getElementById("message");
       var message = div.value;
       div.value = "";
       client.say(client.rooms[0], message);
-    };
+    }
 
-    const formatTime = function (timestamp) {
+    function formatTime(timestamp) {
       return new Date(timestamp).toLocaleTimeString();
-    };
+    }
 
     function hashCode(str) {
       // java String#hashCode
