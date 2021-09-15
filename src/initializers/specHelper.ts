@@ -1,5 +1,19 @@
+import { EventEmitter } from "stream";
 import * as uuid from "uuid";
-import { api, log, env, Initializer, Server, Connection } from "../index";
+import { ActionProcessor } from "../classes/actionProcessor";
+import {
+  api,
+  config,
+  log,
+  env,
+  Initializer,
+  Server,
+  Connection,
+} from "../index";
+
+export type SpecHelperConnection = Connection & {
+  actionCallbacks?: { [key: string]: Function };
+};
 
 export interface SpecHelperApi {
   returnMetadata?: boolean;
@@ -22,14 +36,9 @@ export class SpecHelper extends Initializer {
     this.enabled = false;
   }
 
-  async initialize(config) {
-    if (env === "test" || String(process.env.SPECHELPER) === "true") {
-      this.enabled = true;
-    }
-
-    if (!this.enabled) {
-      return;
-    }
+  async initialize() {
+    if (env === "test") this.enabled = true;
+    if (!this.enabled) return;
 
     class TestServer extends Server {
       constructor() {
@@ -41,7 +50,6 @@ export class SpecHelper extends Initializer {
           logConnections: false,
           logExits: false,
           sendWelcomeMessage: true,
-          verbs: api.connections.allowedVerbs,
         };
       }
 
@@ -59,7 +67,11 @@ export class SpecHelper extends Initializer {
 
       async stop() {}
 
-      async sendMessage(connection, message, messageId) {
+      async sendMessage(
+        connection: SpecHelperConnection,
+        message: any,
+        messageId: string | number
+      ) {
         process.nextTick(() => {
           connection.messages.push(message);
           if (typeof connection.actionCallbacks[messageId] === "function") {
@@ -69,14 +81,20 @@ export class SpecHelper extends Initializer {
         });
       }
 
-      async sendFile(connection, error, fileStream, mime, length) {
+      async sendFile(
+        connection: Connection,
+        error: Error,
+        fileStream: EventEmitter,
+        mime: string,
+        length: number
+      ) {
         let content = "";
         const messageId = connection.messageId;
         const response = {
-          content: null,
+          content: null as string,
           mime: mime,
           length: length,
-          error: undefined,
+          error: undefined as Error,
         };
 
         if (error) {
@@ -85,9 +103,7 @@ export class SpecHelper extends Initializer {
 
         try {
           if (!error) {
-            fileStream.on("data", (d) => {
-              content += d;
-            });
+            fileStream.on("data", (d) => (content += d));
             fileStream.on("end", () => {
               response.content = content;
               this.sendMessage(connection, response, messageId);
@@ -101,22 +117,19 @@ export class SpecHelper extends Initializer {
         }
       }
 
-      handleConnection(connection) {
+      handleConnection(connection: SpecHelperConnection) {
         connection.messages = [];
         connection.actionCallbacks = {};
       }
 
-      async actionComplete(data) {
+      async actionComplete(data: ActionProcessor<any>) {
+        data.response.error;
         if (typeof data.response === "string" || Array.isArray(data.response)) {
-          if (data.response.error) {
-            data.response = await config.errors.serializers.servers.specHelper(
-              data.response.error
-            );
-          }
+          // nothing to do...
         } else {
           if (data.response.error) {
             data.response.error =
-              await config.errors.serializers.servers.specHelper(
+              await config.get.errors.serializers.servers.specHelper(
                 data.response.error
               );
           }
@@ -157,7 +170,7 @@ export class SpecHelper extends Initializer {
      * A special connection usable in tests.  Create via `await api.specHelper.Connection.createAsync()`
      */
     api.specHelper.Connection = class {
-      static async createAsync(data) {
+      static async createAsync() {
         const id = uuid.v4();
 
         await api.servers.servers.testServer.buildConnection({
@@ -173,9 +186,7 @@ export class SpecHelper extends Initializer {
   }
 
   async start() {
-    if (!this.enabled) {
-      return;
-    }
+    if (!this.enabled) return;
 
     const server = new api.specHelper.Server();
     server.config = { enabled: true };

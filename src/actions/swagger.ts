@@ -1,10 +1,11 @@
-import { Action, config, api } from "./../index";
+import { Action, config, api, RouteType } from "./../index";
 import * as fs from "fs";
 import * as path from "path";
+import { PackageJson } from "type-fest";
 
 const SWAGGER_VERSION = "2.0";
 const API_VERSION = ""; // if you need a prefix to your API routes, like `v1`
-const parentPackageJSON = JSON.parse(
+const parentPackageJSON: PackageJson = JSON.parse(
   fs.readFileSync(path.join(__dirname, "..", "..", "package.json")).toString()
 );
 
@@ -34,8 +35,8 @@ export class Swagger extends Action {
     this.outputExample = {};
   }
 
-  getLatestAction(route) {
-    let matchedAction;
+  getLatestAction(route: RouteType) {
+    let matchedAction: Action;
     Object.keys(api.actions.actions).forEach((actionName) => {
       Object.keys(api.actions.actions[actionName]).forEach((version) => {
         const action = api.actions.actions[actionName][version];
@@ -68,14 +69,12 @@ export class Swagger extends Action {
         };
       };
     } = {};
-    const tags = [];
+    const tags: string[] = [];
 
-    Object.keys(api.routes.routes).map((method) => {
-      api.routes.routes[method].map((route) => {
+    for (const [method, routes] of Object.entries(api.routes.routes)) {
+      routes.map((route) => {
         const action = this.getLatestAction(route);
-        if (!action) {
-          return;
-        }
+        if (!action) return;
 
         const tag = action.name.split(":")[0];
         const formattedPath = route.path
@@ -124,7 +123,7 @@ export class Swagger extends Action {
           tags.push(tag);
         }
       });
-    });
+    }
 
     return { swaggerPaths, tags };
   }

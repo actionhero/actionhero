@@ -1,5 +1,27 @@
 import { api } from "./../index";
 
+export const routerMethods = [
+  "all",
+  "head",
+  "get",
+  "post",
+  "put",
+  "delete",
+] as const;
+export type RouteMethod = typeof routerMethods[number];
+
+export type RouteType = {
+  path: string;
+  action: string;
+  dir?: string;
+  matchTrailingPathParts?: boolean;
+  apiVersion?: number;
+};
+
+export type RoutesConfig = Partial<
+  Record<typeof routerMethods[number], RouteType[]>
+>;
+
 export namespace route {
   /**
    * Programmatically define a route, rather than using `config.routes`.  This is useful for plugins which may define routes as well.
@@ -20,7 +42,8 @@ export namespace route {
     matchTrailingPathParts: boolean = false,
     dir?: string
   ) {
-    const verbs = method === "all" ? api.routes.verbs : [method];
+    const verbs =
+      method === "all" ? routerMethods : ([method] as [RouteMethod]);
     for (const vi in verbs) {
       const verb = verbs[vi];
       api.routes.routes[verb].push({

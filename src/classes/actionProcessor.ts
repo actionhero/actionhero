@@ -5,6 +5,7 @@ import { utils } from "../modules/utils";
 import { config } from "./../modules/config";
 import { Action } from "./action";
 import { Connection } from "./connection";
+import { Input } from "./input";
 
 export enum ActionsStatus {
   Complete,
@@ -24,8 +25,8 @@ export class ActionProcessor<ActionClass extends Action> {
   toRender: boolean;
   messageId: number | string;
   params: {
-    action: string;
-    apiVersion: string | number;
+    action?: string;
+    apiVersion?: string | number;
     [key: string]: any;
   };
   // params: ActionClass["inputs"];
@@ -140,7 +141,7 @@ export class ActionProcessor<ActionClass extends Action> {
       method: type === "web" ? rawConnection.method : undefined,
       pathname: type === "web" ? rawConnection.parsedURL.pathname : undefined,
       error: "",
-      response: undefined,
+      response: undefined as string,
     };
 
     if (config.general.enableResponseLogging) {
@@ -176,6 +177,7 @@ export class ActionProcessor<ActionClass extends Action> {
       Object.getOwnPropertyNames(error)
         .filter((prop) => prop !== "message")
         .sort((a, b) => (a === "stack" || b === "stack" ? -1 : 1))
+        //@ts-ignore
         .forEach((prop) => (errorFields[prop] = error[prop]));
     } else {
       try {
@@ -253,7 +255,12 @@ export class ActionProcessor<ActionClass extends Action> {
     return dotProp.get(api, cmdParts.join("."));
   }
 
-  private async validateParam(props, params, key, schemaKey) {
+  private async validateParam(
+    props: Input,
+    params: ActionProcessor<any>["params"],
+    key: string,
+    schemaKey: string
+  ) {
     // default
     if (params[key] === undefined && props.default !== undefined) {
       if (typeof props.default === "function") {

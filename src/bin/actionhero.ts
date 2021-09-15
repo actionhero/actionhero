@@ -8,6 +8,7 @@ import { typescript } from "../classes/process/typescript";
 import { projectRoot } from "../classes/process/projectRoot";
 import { ensureNoTsHeaderFiles } from "../modules/utils/ensureNoTsHeaderFiles";
 import { CLI } from "../classes/cli";
+import { PackageJson } from "type-fest";
 
 export namespace ActionheroCLIRunner {
   export async function run() {
@@ -176,10 +177,10 @@ export namespace ActionheroCLIRunner {
     const parentPackageJSON = path.join(projectRoot, "package.json");
 
     if (fs.existsSync(parentPackageJSON)) {
-      const pkg = readPackageJSON(parentPackageJSON);
+      const pkg: PackageJson = readPackageJSON(parentPackageJSON);
       return pkg.version;
     } else {
-      const pkg = readPackageJSON(
+      const pkg: PackageJson = readPackageJSON(
         path.join(__dirname, "..", "..", "package.json")
       );
       return pkg.version;
