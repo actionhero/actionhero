@@ -14,7 +14,7 @@ export class SleepTest extends Action {
     this.inputs = {
       sleepDuration: {
         required: true,
-        formatter: (n) => {
+        formatter: (n: string) => {
           return parseInt(n);
         },
         default: () => {

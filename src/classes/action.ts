@@ -1,5 +1,8 @@
 import { api } from "../index";
 import type { ActionheroLogLevel } from "../modules/log";
+import { missing } from "../modules/utils/missing";
+import { ActionProcessor } from "./actionProcessor";
+import { connectionVerbs } from "./connection";
 import { Inputs } from "./inputs";
 
 /**
@@ -43,14 +46,16 @@ export abstract class Action {
   toDocument?: boolean;
 
   constructor() {
-    const coreProperties = this.defaults();
-    for (const key in coreProperties) {
-      if (!this[key]) {
-        this[key] = coreProperties[key];
-      }
-      if (typeof this[key] === "function") {
-        this[key] = this[key]();
-      }
+    if (missing(this.version)) this.version = 1;
+    if (missing(this.description)) this.description = this.name;
+    if (missing(this.inputs)) this.inputs = {};
+    if (missing(this.outputExample)) this.outputExample = {};
+    if (missing(this.middleware)) this.middleware = [];
+    if (missing(this.blockedConnectionTypes)) this.blockedConnectionTypes = [];
+    if (missing(this.logLevel)) this.logLevel = "info";
+    if (missing(this.toDocument)) this.toDocument = true;
+    if (missing(this.matchExtensionMimeType)) {
+      this.matchExtensionMimeType = true;
     }
   }
 
@@ -58,22 +63,9 @@ export abstract class Action {
    * The main "do something" method for this action.  It can be `async`.  Usually the goal of this run method is to return the data that you want to be sent to API consumers.  If error is thrown in this method, it will be logged, caught, and returned to the client as `error`
    * @param data The data about this connection, response, and params.
    */
-  abstract run(data: { [key: string]: any }): Promise<ActionResponse>;
-
-  private defaults() {
-    return {
-      name: null,
-      version: 1,
-      description: this.name,
-      outputExample: {},
-      inputs: {},
-      middleware: [],
-      blockedConnectionTypes: [],
-      logLevel: "info",
-      matchExtensionMimeType: true,
-      toDocument: true,
-    };
-  }
+  abstract run(
+    data: Partial<ActionProcessor<Action>>
+  ): Promise<ActionResponse | void>;
 
   validate() {
     if (!this.name) {
@@ -87,17 +79,14 @@ export abstract class Action {
     if (!this.run || typeof this.run !== "function") {
       throw new Error(`action \`${this.name}\` has no run method`);
     }
-    if (
-      api.connections &&
-      api.connections.allowedVerbs.indexOf(this.name) >= 0
-    ) {
+    if (api.connections && connectionVerbs.includes(this.name as any)) {
       throw new Error(
         `action \`${this.name}\` is a reserved verb for connections. choose a new name`
       );
     }
 
     Object.keys(this.inputs).forEach((input) => {
-      if (api.params.globalSafeParams.indexOf(input) >= 0) {
+      if (api.params.globalSafeParams.includes(input)) {
         throw new Error(
           `input \`${input}\` in action \`${this.name}\` is a reserved param`
         );

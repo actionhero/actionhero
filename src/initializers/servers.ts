@@ -1,6 +1,7 @@
 import * as path from "path";
 import * as glob from "glob";
-import { api, log, utils, Initializer, Server } from "../index";
+import { api, config, log, utils, Initializer, Server } from "../index";
+import { PluginConfig } from "../classes/config";
 
 export interface ServersApi {
   servers: {
@@ -20,39 +21,36 @@ export class Servers extends Initializer {
     this.stopPriority = 100;
   }
 
-  async initialize(config) {
+  async initialize() {
     api.servers = {
       servers: {},
     };
 
     const serverFolders = [path.resolve(path.join(__dirname, "..", "servers"))];
 
-    config.general.paths.server.forEach((p) => {
+    config.general.paths.server.forEach((p: string) => {
       p = path.resolve(p);
       if (serverFolders.indexOf(p) < 0) {
         serverFolders.push(p);
       }
     });
 
-    let files = [];
+    let files: string[] = [];
 
     for (const i in serverFolders) {
       const p = serverFolders[i];
       files = files.concat(glob.sync(path.join(p, "**", "**/*(*.js|*.ts)")));
     }
 
-    for (const pluginName in config.plugins) {
-      if (config.plugins[pluginName].servers !== false) {
-        const pluginPath = config.plugins[pluginName].path;
-        // old style at the root of the project
-        files = files.concat(
-          glob.sync(path.join(pluginPath, "servers", "**", "*.js"))
-        );
+    for (const [_, plugin] of Object.entries(config.plugins as PluginConfig)) {
+      // old style at the root of the project
+      files = files.concat(
+        glob.sync(path.join(plugin.path, "servers", "**", "*.js"))
+      );
 
-        files = files.concat(
-          glob.sync(path.join(pluginPath, "dist", "servers", "**", "*.js"))
-        );
-      }
+      files = files.concat(
+        glob.sync(path.join(plugin.path, "dist", "servers", "**", "*.js"))
+      );
     }
 
     files = utils.ensureNoTsHeaderFiles(files);
@@ -95,20 +93,19 @@ export class Servers extends Initializer {
     }
   }
 
-  async start(config) {
+  async start() {
     const serverNames = Object.keys(api.servers.servers);
     for (const i in serverNames) {
       const serverName = serverNames[i];
+      const bindIp = config.servers[serverName].bindIP;
+      const port = config.servers[serverName].port;
+
       const server = api.servers.servers[serverName];
       if (server && server.config.enabled === true) {
         const message = `Starting server: \`${serverName}\` ${
-          config.servers[serverName].bindIP
-            ? `@ ${serverName === "web" ? "http://" : ""}${
-                config.servers[serverName].bindIP
-              }${
-                config.servers[serverName].port
-                  ? `:${config.servers[serverName].port}`
-                  : ""
+          bindIp
+            ? `@ ${serverName === "web" ? "http://" : ""}${bindIp}${
+                port ? `:${port}` : ""
               }`
             : ""
         }`;

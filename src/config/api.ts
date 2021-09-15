@@ -1,9 +1,10 @@
 import * as path from "path";
 import * as fs from "fs";
+import { PackageJson } from "type-fest";
 
 export const DEFAULT = {
-  general: (config) => {
-    const packageJSON = JSON.parse(
+  general: () => {
+    const packageJSON: PackageJson = JSON.parse(
       fs
         .readFileSync(path.join(__dirname, "..", "..", "package.json"))
         .toString()

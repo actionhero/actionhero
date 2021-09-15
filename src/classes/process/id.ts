@@ -21,6 +21,7 @@ function determineId() {
     }
 
     id = externalIP;
+    // @ts-ignore cluster.isWorker is real!
     if (cluster["isWorker"]) id += `:${process.pid}`;
   } else {
     id = config.general.id;

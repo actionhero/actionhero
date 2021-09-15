@@ -26,6 +26,8 @@ function isTypescript(): boolean {
      * Are we running in typescript at the moment?
      * see https://github.com/TypeStrong/ts-node/pull/858 for more details
      */
+
+    // @ts-ignore
     return process[Symbol.for("ts-node.register.instance")] ||
       (process.env.NODE_ENV === "test" &&
         process.env.ACTIONHERO_TYPESCRIPT_MODE?.toLowerCase() !== "false")

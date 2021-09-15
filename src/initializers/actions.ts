@@ -1,6 +1,6 @@
 import * as glob from "glob";
 import * as path from "path";
-import { api, log, utils, Initializer, Action } from "../index";
+import { api, config, log, utils, Initializer, Action } from "../index";
 import * as ActionModule from "./../modules/action";
 
 export interface ActionsApi {
@@ -19,14 +19,14 @@ export interface ActionsApi {
   loadFile?: Function;
 }
 
-export class Actions extends Initializer {
+export class ActionsInitializer extends Initializer {
   constructor() {
     super();
     this.name = "actions";
     this.loadPriority = 410;
   }
 
-  async initialize(config) {
+  async initialize() {
     api.actions = {
       actions: {},
       versions: {},
@@ -38,7 +38,7 @@ export class Actions extends Initializer {
       fullFilePath: string,
       reload: boolean = false
     ) => {
-      const loadMessage = (action) => {
+      const loadMessage = (action: Action) => {
         if (reload) {
           log(
             `action reloaded: ${action.name} @ v${action.version}, ${fullFilePath}`,

@@ -1,4 +1,5 @@
 import { api, id, task, Action, actionheroVersion } from "./../index";
+import { PackageJson } from "type-fest";
 import * as path from "path";
 import * as fs from "fs";
 
@@ -11,7 +12,7 @@ enum StatusMessages {
   unhealthy = "Node Unhealthy",
 }
 
-const packageJSON = JSON.parse(
+const packageJSON: PackageJson = JSON.parse(
   fs
     .readFileSync(
       path.normalize(path.join(__dirname, "..", "..", "package.json"))

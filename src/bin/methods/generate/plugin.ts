@@ -1,8 +1,9 @@
 import * as fs from "fs";
 import * as path from "path";
+import { PackageJson } from "type-fest";
 import { CLI, utils } from "./../../../index";
 
-const PackageJSON = JSON.parse(
+const PackageJSON: PackageJson = JSON.parse(
   fs
     .readFileSync(path.join(__dirname, "..", "..", "..", "..", "package.json"))
     .toString()
