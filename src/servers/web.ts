@@ -392,7 +392,7 @@ export class WebServer extends Server {
     }
   }
 
-  handleRequest(req, res) {
+  handleRequest(req: http.IncomingMessage, res: http.ServerResponse) {
     const { fingerprint, headersHash } = this.fingerPrinter.fingerprint(req);
     const responseHeaders = [];
     const cookies = utils.parseCookies(req);

@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import { api, config } from "../index";
 import { log, LogLevels } from "../modules/log";
 import { ActionProcessor } from "./actionProcessor";
-import { Connection } from "./connection";
+import { Connection, ConnectionVerb } from "./connection";
 
 interface ServerConfig {
   [key: string]: any;
@@ -15,7 +15,7 @@ export abstract class Server extends EventEmitter {
   /**The name & type of the server. */
   type: string;
   /**What connection verbs can connections of this type use? */
-  verbs?: Array<string>;
+  verbs?: ConnectionVerb[];
   /**Shorthand for `api.config.servers[this.type]` */
   config?: ServerConfig;
   options?: {
@@ -23,6 +23,7 @@ export abstract class Server extends EventEmitter {
   };
   /** attributes of the server */
   attributes: {
+    verbs?: ConnectionVerb[];
     [key: string]: any;
   };
   /**Can connections of this server use the chat system? */

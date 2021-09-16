@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "outDir": "./public/clients",
+    "allowJs": true,
+    "target": "es2020",
+    "lib": ["es2020", "DOM"],
+    "module": "ES2020",
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "types": []
+  },
+  "include": ["./src/clients/**/*"]
+}
