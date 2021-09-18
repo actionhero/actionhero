@@ -1,8 +1,9 @@
 import * as uuid from "uuid";
-import { Worker } from "node-resque";
+import { Connection, Worker } from "node-resque";
 import { api, config, task, Task, Action } from "./../index";
-import { UnwrapPromise } from "./tsUtils/unwrapPromise";
 import { WebServer } from "../servers/web";
+import { AsyncReturnType } from "type-fest";
+import { TaskInputs } from "../classes/task";
 
 export namespace specHelper {
   /**
@@ -17,9 +18,9 @@ export namespace specHelper {
    */
   export async function runAction<A extends Action | void = void>(
     actionName: string,
-    input: { [key: string]: any } = {}
+    input: Record<string, any> = {}
   ) {
-    let connection;
+    let connection: Record<string, any>;
 
     if (input.id && input.type === "testServer") {
       connection = input;
@@ -31,14 +32,16 @@ export namespace specHelper {
     connection.params.action = actionName;
 
     connection.messageId = connection.params.messageId || uuid.v4();
+
     const response: (A extends Action
-      ? UnwrapPromise<A["run"]>
+      ? AsyncReturnType<A["run"]>
       : { [key: string]: any }) & {
       messageId?: string;
       error?: Error | string | any;
       requesterInformation?: ReturnType<WebServer["buildRequesterInformation"]>;
       serverInformation?: ReturnType<WebServer["buildServerInformation"]>;
     } = await new Promise((resolve) => {
+      //@ts-ignore
       api.servers.servers.testServer.processAction(connection);
       connection.actionCallbacks[connection.messageId] = resolve;
     });
@@ -75,7 +78,7 @@ export namespace specHelper {
     }
 
     const result: (T extends Task
-      ? UnwrapPromise<T["run"]>
+      ? AsyncReturnType<T["run"]>
       : { [key: string]: any }) & {
       error?: Error | string;
     } = await api.tasks.tasks[taskName].run(params, undefined);
@@ -99,15 +102,18 @@ export namespace specHelper {
               ? "ioredis-mock"
               : "ioredis",
         },
-        queues: config.tasks.queues || ["default"],
+        queues: (Array.isArray(config.tasks.queues)
+          ? config.tasks.queues
+          : await config.tasks.queues()) || ["default"],
       },
       api.tasks.jobs
     );
 
     try {
       await worker.connect();
+
       const result: (T extends Task
-        ? UnwrapPromise<T["run"]>
+        ? AsyncReturnType<T["run"]>
         : { [key: string]: any }) & {
         error?: string;
       } = await worker.performInline(
@@ -131,7 +137,7 @@ export namespace specHelper {
    * i.e. [ { class: 'regularTask', queue: 'testQueue', args: [ [Object] ] } ]
    */
   export async function findEnqueuedTasks(taskName: string) {
-    let found = [];
+    let found: TaskInputs[] = [];
 
     // normal queues
     const queues = await api.resque.queue.queues();

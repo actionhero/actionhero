@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { config, utils, CLI } from "./../../../index";
 
-export class GenerateAction extends CLI {
+export class GenerateActionCLI extends CLI {
   constructor() {
     super();
     this.name = "generate-action";
@@ -24,7 +24,7 @@ export class GenerateAction extends CLI {
     };
   }
 
-  async run({ params }) {
+  async run({ params }: { params: { name: string; description?: string } }) {
     let actionTemplateBuffer = fs.readFileSync(
       path.join(__dirname, "../../../../templates/action.ts.template")
     );
@@ -35,11 +35,11 @@ export class GenerateAction extends CLI {
     );
     let testTemplate = testTemplateBuffer.toString();
 
-    ["name", "description"].forEach((v) => {
-      const regex = new RegExp("%%" + v + "%%", "g");
-      actionTemplate = actionTemplate.replace(regex, params[v]);
-      testTemplate = testTemplate.replace(regex, params[v]);
-    });
+    for (const [k, v] of Object.entries(params)) {
+      const regex = new RegExp("%%" + k + "%%", "g");
+      actionTemplate = actionTemplate.replace(regex, v);
+      testTemplate = testTemplate.replace(regex, v);
+    }
 
     let message = utils.fileUtils.createFileSafely(
       utils.replaceDistWithSrc(config.general.paths.action[0]) +

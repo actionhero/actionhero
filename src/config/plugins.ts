@@ -1,5 +1,15 @@
+import { PluginConfig } from "../classes/config";
+
+const namespace = "plugins";
+
+declare module ".." {
+  export interface ActionheroConfigInterface {
+    [namespace]: ReturnType<typeof DEFAULT[typeof namespace]>;
+  }
+}
+
 export const DEFAULT = {
-  plugins: (config) => {
+  [namespace]: () => {
     /*
     If you want to use plugins in your application, include them here:
 
@@ -22,6 +32,6 @@ export const DEFAULT = {
     }
     */
 
-    return {};
+    return {} as PluginConfig;
   },
 };

@@ -80,14 +80,15 @@ export namespace ActionheroCLIRunner {
     }
   }
 
-  export async function convertCLIToCommanderAction(cli) {
+  export async function convertCLIToCommanderAction(cliConstructor: any) {
     if (
-      Object.getPrototypeOf(cli?.prototype?.constructor || {}).name !== "CLI"
+      Object.getPrototypeOf(cliConstructor?.prototype?.constructor || {})
+        .name !== "CLI"
     ) {
       return;
     }
 
-    const instance: CLI = new cli();
+    const instance: CLI = new cliConstructor();
     const command = program
       .command(instance.name)
       .description(instance.description)
@@ -135,8 +136,8 @@ export namespace ActionheroCLIRunner {
   ) {
     let toStop = false;
 
-    let _arguments = [];
-    let params = {};
+    let _arguments: string[] = [];
+    let params: Record<string, string[]> = {};
     [_arg1, _arg2, _arg3, _arg4, _arg5].forEach((arg) => {
       if (typeof arg?.opts === "function") {
         params = arg.opts();
@@ -169,7 +170,7 @@ export namespace ActionheroCLIRunner {
     }
   }
 
-  export function readPackageJSON(file) {
+  export function readPackageJSON(file: string) {
     return JSON.parse(fs.readFileSync(file).toString());
   }
 

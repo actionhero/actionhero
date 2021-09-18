@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { config, utils, CLI } from "./../../../index";
 
-export class GenerateTask extends CLI {
+export class GenerateTaskCLI extends CLI {
   constructor() {
     super();
     this.name = "generate-task";
@@ -35,7 +35,16 @@ export class GenerateTask extends CLI {
     };
   }
 
-  async run({ params }) {
+  async run({
+    params,
+  }: {
+    params: {
+      name: string;
+      queue?: string;
+      description?: string;
+      frequency?: string;
+    };
+  }) {
     let taskTemplateBuffer = fs.readFileSync(
       path.join(__dirname, "/../../../../templates/task.ts.template")
     );
@@ -46,11 +55,11 @@ export class GenerateTask extends CLI {
     );
     let testTemplate = String(testTemplateBuffer);
 
-    ["name", "description", "queue", "frequency"].forEach((v) => {
-      const regex = new RegExp("%%" + v + "%%", "g");
-      taskTemplate = taskTemplate.replace(regex, params[v]);
-      testTemplate = testTemplate.replace(regex, params[v]);
-    });
+    for (const [k, v] of Object.entries(params)) {
+      const regex = new RegExp("%%" + k + "%%", "g");
+      taskTemplate = taskTemplate.replace(regex, v);
+      testTemplate = testTemplate.replace(regex, v);
+    }
 
     let message = utils.fileUtils.createFileSafely(
       utils.replaceDistWithSrc(

@@ -1,6 +1,6 @@
 import { api, CLI } from "./../../../index";
 
-export class ActionsList extends CLI {
+export class ActionsListCLI extends CLI {
   constructor() {
     super();
     this.name = "actions-list";

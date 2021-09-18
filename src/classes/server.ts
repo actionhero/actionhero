@@ -224,12 +224,16 @@ export abstract class Server extends EventEmitter {
    */
   async processFile(connection: Connection) {
     const results = await api.staticFile.get(connection);
+
     this.sendFile(
       results.connection,
+      //@ts-ignore
       results.error,
+      //@ts-ignore
       results.fileStream,
       results.mime,
       results.length,
+      //@ts-ignore
       results.lastModified
     );
   }

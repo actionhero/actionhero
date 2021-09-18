@@ -36,11 +36,9 @@ export namespace cache {
     }
   }
 
-  let lockNameOverride;
+  let lockNameOverride: string;
   export function lockName() {
-    if (lockNameOverride) {
-      return lockNameOverride;
-    }
+    if (lockNameOverride) return lockNameOverride;
     return id;
   }
 
@@ -55,7 +53,7 @@ export namespace cache {
   export async function getKeys(
     pattern: string,
     count: number = scanCount,
-    keysAry = [],
+    keysAry: string[] = [],
     cursor = 0
   ): Promise<Array<string>> {
     // return client().keys(redisPrefix + "*");
@@ -108,7 +106,7 @@ export namespace cache {
   export async function clear(pattern = redisPrefix + "*") {
     const keys = await cache.getKeys(pattern);
 
-    const pipelineArgs = [];
+    const pipelineArgs: Array<[string, string]> = [];
     keys.forEach((key: string) => {
       pipelineArgs.push(["del", key]);
     });
@@ -122,8 +120,8 @@ export namespace cache {
    * Write the current concents of redis (only the keys in Actionhero's namespace) to a file.
    */
   export async function dumpWrite(file: string) {
-    const data = {};
-    const jobs = [];
+    const data: Record<string, any> = {};
+    const jobs: Array<Promise<void>> = [];
     const keys = await cache.keys();
 
     keys.forEach((key: string) => {
@@ -147,7 +145,7 @@ export namespace cache {
    * Warning! Any existing keys in redis (under this Actionhero namespace) will be removed.
    */
   export async function dumpRead(file: string) {
-    const jobs = [];
+    const jobs: Array<Promise<void>> = [];
     await cache.clear();
     const fileData = fs.readFileSync(file).toString();
     const data = JSON.parse(fileData);
@@ -275,7 +273,7 @@ export namespace cache {
       value: value,
       expireTimestamp: expireTimestamp,
       createdAt: new Date().getTime(),
-      readAt: null,
+      readAt: null as number,
     };
 
     const lockOk = await cache.checkLock(key, null);
@@ -358,7 +356,7 @@ export namespace cache {
     key: string,
     retry: boolean | number = false,
     startTime: number = new Date().getTime()
-  ) {
+  ): Promise<boolean> {
     const lockedBy = await client().get(lockPrefix + key);
     if (lockedBy === lockName() || lockedBy === null) {
       return true;

@@ -9,14 +9,16 @@ import { id } from "./../classes/process/id";
 import { actionheroVersion } from "./../classes/process/actionheroVersion";
 import { typescript } from "./../classes/process/typescript";
 import { projectRoot } from "./../classes/process/projectRoot";
+import { RouteMethod, RoutesConfig, RouteType } from "..";
 
-export interface ConfigInterface {
+export interface ActionheroConfigInterface {
   [key: string]: any;
 }
-export const configPaths = [];
 
-export function buildConfig(_startingParams: ConfigInterface = {}) {
-  let config: ConfigInterface = {
+export const configPaths: string[] = [];
+
+export function buildConfig(_startingParams: Record<string, any> = {}) {
+  let config: Partial<ActionheroConfigInterface> = {
     process: {
       env,
       id,
@@ -92,24 +94,23 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
         return;
       }
 
-      let localRoutes: { [key: string]: any } = { routes: {} };
+      let localRoutes: { routes: Partial<RoutesConfig> } = { routes: {} };
 
       if (localConfig.DEFAULT) {
+        // @ts-ignore
         localRoutes = utils.hashMerge(localRoutes, localConfig.DEFAULT, config);
       }
 
       if (localConfig[env]) {
+        // @ts-ignore
         localRoutes = utils.hashMerge(localRoutes, localConfig[env], config);
       }
 
-      Object.keys(localRoutes.routes).forEach((v) => {
+      (Object.keys(localRoutes.routes) as RouteMethod[]).forEach((v) => {
         if (config.routes && config.routes[v]) {
           config.routes[v].push(...localRoutes.routes[v]);
         } else {
-          if (!config.routes) {
-            config.routes = {};
-          }
-
+          if (!config.routes) config.routes = {};
           config.routes[v] = localRoutes.routes[v];
         }
       });
@@ -130,7 +131,7 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
     );
 
     let loadRetries = 0;
-    let loadErrors = {};
+    let loadErrors: Record<string, { error: Error; msg: string }> = {};
     for (let i = 0, limit = configFiles.length; i < limit; i++) {
       const f = configFiles[i];
       try {
@@ -173,9 +174,9 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
     // Remove duplicate routes since we might be loading from multiple config directories, also we load every
     // config directory twice.
     if (config.routes) {
-      Object.keys(config.routes).forEach((v) => {
+      (Object.keys(config.routes) as RouteMethod[]).forEach((v) => {
         config.routes[v] = config.routes[v].filter(
-          (route, index, self) =>
+          (route: RouteType, index: number, self: RouteType[]) =>
             index ===
             self.findIndex(
               (r) =>

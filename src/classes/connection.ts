@@ -8,7 +8,7 @@ export type ConnectionData = {
   id?: string;
   type: string;
   rawConnection: any;
-  remotePort: number;
+  remotePort: number | string;
   remoteIP: string;
 };
 
@@ -55,7 +55,7 @@ export class Connection {
   /**The remote connection's IP address (as best as we can tell).  May be either IPv4 or IPv6. */
   remoteIP: string;
   /**The remote connection's port. Related to connection.remoteIP */
-  remotePort: number;
+  remotePort: string | number;
   /**Any connection-specific properties.  For, example, the HTTP res and req objects for `web` connections are here */
   rawConnection: any;
   /**If there's a local error */
@@ -63,6 +63,8 @@ export class Connection {
   /**If there's a local extension to the request*/
   extension?: string;
   destroyed: boolean;
+  /** storage for a response payload */
+  response?: Record<string, any>;
 
   // --- custom methods ---
 
@@ -220,7 +222,7 @@ export class Connection {
   /**
    * Try to run a verb command for a connection
    */
-  private async verbs(verb: string, words: Array<string>) {
+  async verbs(verb: string, words: Array<string>) {
     let key: string;
     let value: string;
     let room: string;

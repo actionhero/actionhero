@@ -1,9 +1,18 @@
 import * as path from "path";
 import * as fs from "fs";
 import { PackageJson } from "type-fest";
+import { ActionheroLogLevel } from "..";
+
+const namespace = "general";
+
+declare module ".." {
+  export interface ActionheroConfigInterface {
+    [namespace]: ReturnType<typeof DEFAULT[typeof namespace]>;
+  }
+}
 
 export const DEFAULT = {
-  general: () => {
+  [namespace]: () => {
     const packageJSON: PackageJson = JSON.parse(
       fs
         .readFileSync(path.join(__dirname, "..", "..", "package.json"))
@@ -13,6 +22,8 @@ export const DEFAULT = {
     return {
       apiVersion: packageJSON.version,
       serverName: packageJSON.name,
+      // you can manually set the server id (not recommended)
+      id: undefined as string,
       welcomeMessage: `Welcome to the ${packageJSON.name} api`,
       // A unique token to your application that servers will use to authenticate to each other
       serverToken: "change-me",
@@ -31,15 +42,15 @@ export const DEFAULT = {
       // enable action response to logger
       enableResponseLogging: false,
       // params you would like hidden from any logs. Can be an array of strings or a method that returns an array of strings.
-      filteredParams: [],
+      filteredParams: [] as string[] | (() => string[]),
       // responses you would like hidden from any logs. Can be an array of strings or a method that returns an array of strings.
-      filteredResponse: [],
+      filteredResponse: [] as string[] | (() => string[]),
       // values that signify missing params
       missingParamChecks: [null, "", undefined],
       // The default filetype to server when a user requests a directory
       directoryFileType: "index.html",
       // What log-level should we use for file requests?
-      fileRequestLogLevel: "info",
+      fileRequestLogLevel: "info" as ActionheroLogLevel,
       // The default priority level given to middleware of all types (action, connection, say, and task)
       defaultMiddlewarePriority: 100,
       // Which channel to use on redis pub/sub for RPC communication
@@ -75,7 +86,7 @@ export const DEFAULT = {
 };
 
 export const test = {
-  general: (config) => {
+  [namespace]: () => {
     return {
       serverToken: `serverToken-${process.env.JEST_WORKER_ID || 0}`,
       startingChatRooms: {
@@ -88,7 +99,7 @@ export const test = {
 };
 
 export const production = {
-  general: (config) => {
+  [namespace]: () => {
     return {
       fileRequestLogLevel: "debug",
     };

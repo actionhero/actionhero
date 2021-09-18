@@ -114,7 +114,7 @@ export class StaticFileInitializer extends Initializer {
     } catch (error) {
       return api.staticFile.sendFileNotFound(
         connection,
-        await config.errors.fileReadError(connection, String(error))
+        await config.errors.fileReadError(connection, error)
       );
     }
   };

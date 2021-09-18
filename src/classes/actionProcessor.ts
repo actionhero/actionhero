@@ -81,7 +81,7 @@ export class ActionProcessor<ActionClass extends Action> {
   }
 
   private async completeAction(status: ActionsStatus, _error?: Error) {
-    let error: Error = null;
+    let error: Error | string = null;
     this.actionStatus = status;
 
     if (status === ActionsStatus.GenericError) {
@@ -170,7 +170,8 @@ export class ActionProcessor<ActionClass extends Action> {
     }
   }
 
-  private applyDefaultErrorLogLineFormat(error: Error) {
+  applyDefaultErrorLogLineFormat(error: Error) {
+    const logLevel = "error" as ActionheroLogLevel;
     const errorFields: { error: string } = { error: null };
     if (error instanceof Error) {
       errorFields.error = error.toString();
@@ -187,7 +188,7 @@ export class ActionProcessor<ActionClass extends Action> {
       }
     }
 
-    return { errorFields };
+    return { errorFields, logLevel };
   }
 
   private async preProcessAction() {
