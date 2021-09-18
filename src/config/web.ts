@@ -1,9 +1,9 @@
 import * as os from "os";
-import { ActionheroConfigInterface } from "../..";
+import { ActionheroConfigInterface } from "..";
 
-const namespace = "webServer";
+const namespace = "web";
 
-declare module "../.." {
+declare module ".." {
   export interface ActionheroConfigInterface {
     [namespace]: ReturnType<typeof DEFAULT[typeof namespace]>;
   }

@@ -182,7 +182,7 @@ export class ChatRoomInitializer extends Initializer {
     };
 
     for (const [room, options] of Object.keys(
-      config.genera.startingChatRooms
+      config.general.startingChatRooms
     )) {
       log(`ensuring the existence of the chatRoom: ${room}`, "debug");
       try {

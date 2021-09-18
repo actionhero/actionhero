@@ -22,7 +22,7 @@ const connectClients = async () => {
   ); // eslint-disable-line
 
   const S = api.servers.servers.websocket.server.Socket;
-  url = "http://localhost:" + config.servers.web.port;
+  url = "http://localhost:" + config.web.port;
   const clientAsocket = new S(url);
   const clientBsocket = new S(url);
   const clientCsocket = new S(url);
@@ -86,8 +86,8 @@ describe("Server: Web Socket", () => {
     await chatRoom.add("defaultRoom");
     await chatRoom.add("otherRoom");
 
-    url = "http://localhost:" + config.servers.web.port;
-    config.servers.websocket.clientUrl = url;
+    url = "http://localhost:" + config.web.port;
+    config.websocket.clientUrl = url;
     await connectClients();
   });
 

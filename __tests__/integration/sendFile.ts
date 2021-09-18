@@ -9,7 +9,7 @@ describe("Server: sendFile", () => {
   beforeAll(async () => {
     process.env.AUTOMATIC_ROUTES = "get";
     await actionhero.start();
-    url = "http://localhost:" + config.servers.web.port;
+    url = "http://localhost:" + config.web.port;
   });
 
   afterAll(async () => await actionhero.stop());

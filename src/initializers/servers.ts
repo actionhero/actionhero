@@ -76,7 +76,7 @@ export class Servers extends Initializer {
         server = new ExportedClasses();
       }
 
-      server.config = config.servers[server.type]; // for shorthand access
+      server.config = config[server.type]; // for shorthand access
       if (server.config && server.config.enabled === true) {
         await server.initialize();
 
@@ -97,8 +97,8 @@ export class Servers extends Initializer {
     const serverNames = Object.keys(api.servers.servers);
     for (const i in serverNames) {
       const serverName = serverNames[i];
-      const bindIp = config.servers[serverName].bindIP;
-      const port = config.servers[serverName].port;
+      const bindIp = config[serverName].bindIP;
+      const port = config[serverName].port;
 
       const server = api.servers.servers[serverName];
       if (server && server.config.enabled === true) {

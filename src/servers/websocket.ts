@@ -221,7 +221,7 @@ export class WebSocketServer extends Server {
 
   handleConnection(rawConnection: Primus.Spark) {
     const fingerprint =
-      rawConnection.query[config.servers.web.fingerprintOptions.cookieKey];
+      rawConnection.query[config.web.fingerprintOptions.cookieKey];
     const { ip, port } = utils.parseHeadersForClientAddress(
       rawConnection.headers
     );

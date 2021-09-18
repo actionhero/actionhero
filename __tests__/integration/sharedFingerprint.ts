@@ -16,9 +16,7 @@ let url;
 
 const connectClient = async (query = ""): Promise<any> => {
   const S = _Primus.createSocket(undefined);
-  const clientSocket = new S(
-    `http://localhost:${config.servers.web.port}?${query}`
-  );
+  const clientSocket = new S(`http://localhost:${config.web.port}?${query}`);
 
   let client = new ActionheroWebsocketClient({}, clientSocket); // eslint-disable-line
   const connectResponse = await new Promise((resolve, reject) => {
@@ -38,7 +36,7 @@ describe("Integration: Web Server + Websocket Socket shared fingerprint", () => 
     process.env.AUTOMATIC_ROUTES = "get";
     await actionhero.start();
     await api.redis.clients.client.flushdb();
-    url = "http://localhost:" + config.servers.web.port;
+    url = "http://localhost:" + config.web.port;
     ActionheroWebsocketClient = eval(
       // @ts-ignore
       api.servers.servers.websocket.compileActionheroWebsocketClientJS()
@@ -53,7 +51,7 @@ describe("Integration: Web Server + Websocket Socket shared fingerprint", () => 
       json: true,
     });
     fingerprint = body.requesterInformation.fingerprint;
-    const query = `${config.servers.web.fingerprintOptions.cookieKey}=${fingerprint}`;
+    const query = `${config.web.fingerprintOptions.cookieKey}=${fingerprint}`;
     const { client, connectResponse } = await connectClient(query);
     expect(connectResponse.status).toEqual("OK");
     expect(connectResponse.data.id).toBeTruthy();
@@ -74,7 +72,7 @@ describe("Integration: Web Server + Websocket Socket shared fingerprint", () => 
   });
 
   test("should exist as long as cookie is passed", async () => {
-    const query = `${config.servers.web.fingerprintOptions.cookieKey}=dummyValue`;
+    const query = `${config.web.fingerprintOptions.cookieKey}=dummyValue`;
     const { client, connectResponse } = await connectClient(query);
     expect(connectResponse.status).toEqual("OK");
     expect(connectResponse.data.id).toBeTruthy();

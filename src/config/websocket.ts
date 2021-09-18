@@ -1,10 +1,10 @@
 // Note that to use the websocket server, you also need the web server enabled
 
-import { ActionheroConfigInterface } from "../..";
+import { ActionheroConfigInterface } from "..";
 
-const namespace = "websocketSever";
+const namespace = "websocket";
 
-declare module "../.." {
+declare module ".." {
   export interface ActionheroConfigInterface {
     [namespace]: ReturnType<typeof DEFAULT[typeof namespace]>;
   }
@@ -45,7 +45,7 @@ export const DEFAULT = {
       client: {
         apiPath: "/api", // the api base endpoint on your actionhero server
         // the cookie name we should use for shared authentication between WS and web connections
-        cookieKey: config.servers.web.fingerprintOptions.cookieKey,
+        cookieKey: config.web.fingerprintOptions.cookieKey,
         // reconnect:        {},
         // timeout:          10000,
         // ping:             25000,

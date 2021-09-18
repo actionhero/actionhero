@@ -35,7 +35,7 @@ jest.mock("./../../../src/config/servers/web.ts", () => ({
 describe("Server: Web", () => {
   beforeAll(async () => {
     await actionhero.start();
-    url = "http://localhost:" + config.servers.web.port;
+    url = "http://localhost:" + config.web.port;
   });
 
   afterAll(async () => await actionhero.stop());

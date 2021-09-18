@@ -42,14 +42,14 @@ jest.mock("./../../../src/config/servers/web.ts", () => ({
 describe("Server: Web", () => {
   beforeAll(async () => {
     await actionhero.start();
-    url = "http://localhost:" + config.servers.web.port;
+    url = "http://localhost:" + config.web.port;
   });
 
   afterAll(async () => await actionhero.stop());
 
   describe("errorCodes", () => {
     test("returnErrorCodes false should still have a status of 200", async () => {
-      config.servers.web.returnErrorCodes = false;
+      config.web.returnErrorCodes = false;
       const response = await request.del(url + "/api/", {
         resolveWithFullResponse: true,
       });
