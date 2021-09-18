@@ -66,6 +66,7 @@ export namespace action {
       remotePort: "0",
       remoteIP: "0",
       rawConnection: {},
+      canChat: false,
     });
 
     connection.params = params;
