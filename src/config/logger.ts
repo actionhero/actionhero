@@ -1,4 +1,13 @@
 import * as winston from "winston";
+import { ActionheroConfigInterface } from "..";
+
+const namespace = "logger";
+
+declare module ".." {
+  export interface ActionheroConfigInterface {
+    [namespace]: ReturnType<typeof DEFAULT[typeof namespace]>;
+  }
+}
 
 /*
 The loggers defined here will eventually be available via `import { loggers } from "actionhero"`
@@ -15,10 +24,10 @@ type ActionheroConfigLoggerBuilderArray = Array<
 >;
 
 export const DEFAULT = {
-  logger: (config) => {
+  [namespace]: (config: ActionheroConfigInterface) => {
     const loggers: ActionheroConfigLoggerBuilderArray = [];
     loggers.push(buildConsoleLogger(process.env.LOG_LEVEL));
-    config.general.paths.log.forEach((p) => {
+    config.general.paths.log.forEach((p: string) => {
       loggers.push(buildFileLogger(p, process.env.LOG_LEVEL));
     });
 
@@ -31,10 +40,10 @@ export const DEFAULT = {
 };
 
 export const test = {
-  logger: (config) => {
+  [namespace]: (config: ActionheroConfigInterface) => {
     const loggers: ActionheroConfigLoggerBuilderArray = [];
     loggers.push(buildConsoleLogger("crit"));
-    config.general.paths.log.forEach((p) => {
+    config.general.paths.log.forEach((p: string) => {
       loggers.push(buildFileLogger(p, "debug", 1));
     });
 
@@ -45,7 +54,7 @@ export const test = {
 // helpers for building the winston loggers
 
 function buildConsoleLogger(level = "info") {
-  return function (config) {
+  return function (config: ActionheroConfigInterface) {
     return winston.createLogger({
       format: winston.format.combine(
         winston.format.timestamp(),
@@ -63,8 +72,12 @@ function buildConsoleLogger(level = "info") {
   };
 }
 
-function buildFileLogger(path, level = "info", maxFiles = undefined) {
-  return function (config) {
+function buildFileLogger(
+  path: string,
+  level = "info",
+  maxFiles: number = undefined
+) {
+  return function (config: ActionheroConfigInterface) {
     const filename = `${path}/${config.process.id}-${config.process.env}.log`;
     return winston.createLogger({
       format: winston.format.combine(
@@ -83,7 +96,9 @@ function buildFileLogger(path, level = "info", maxFiles = undefined) {
   };
 }
 
-function stringifyExtraMessagePropertiesForConsole(info) {
+function stringifyExtraMessagePropertiesForConsole(
+  info: winston.Logform.TransformableInfo
+) {
   const skippedProperties = ["message", "timestamp", "level"];
   let response = "";
 

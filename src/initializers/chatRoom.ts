@@ -43,7 +43,9 @@ export class ChatRoomInitializer extends Initializer {
     message: object | Array<any> | string
   ) => {
     if (!room || !message) {
-      throw new Error(config.errors.connectionRoomAndMessage(connection));
+      throw new Error(
+        config.errors.connectionRoomAndMessage(connection as Connection)
+      );
     } else if (
       connection instanceof Connection &&
       (connection.rooms === undefined || connection.rooms.indexOf(room) > -1)
@@ -81,7 +83,9 @@ export class ChatRoomInitializer extends Initializer {
 
       await redis.publish(payloadToSend);
     } else {
-      throw new Error(config.errors.connectionNotInRoom(connection, room));
+      throw new Error(
+        config.errors.connectionNotInRoom(connection as Connection, room)
+      );
     }
   };
 

@@ -9,7 +9,7 @@ export function sourceRelativeLinkPath(
   const pathParts = linkfile.split(path.sep);
   const name = pathParts[pathParts.length - 1].split(".")[0];
   const pathsToTry = pluginPaths.slice(0);
-  let pluginRoot;
+  let pluginRoot: string;
 
   pathsToTry.forEach((pluginPath) => {
     const pluginPathAttempt = path.normalize(pluginPath + path.sep + name);

@@ -1,7 +1,7 @@
 import { api, config, log, Initializer } from "../index";
 import { ExceptionReporter } from "../classes/exceptionReporter";
 import { ParsedJob } from "node-resque";
-import { LogLevels } from "../modules/log";
+import { ActionheroLogLevel } from "../modules/log";
 
 export interface ExceptionHandlerAPI {
   reporters: Array<ExceptionReporter>;
@@ -26,7 +26,7 @@ export class ExceptionsInitializer extends Initializer {
     type: string,
     name: string,
     objects?: any,
-    severity?: LogLevels
+    severity?: ActionheroLogLevel
   ) => {
     if (!severity) severity = "error";
 

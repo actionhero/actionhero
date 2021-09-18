@@ -1,6 +1,6 @@
 import { api, log, task, CLI } from "./../../../index";
 
-export class TaskEnqueue extends CLI {
+export class TaskEnqueueCLI extends CLI {
   constructor() {
     super();
     this.name = "task-enqueue";
@@ -16,7 +16,7 @@ export class TaskEnqueue extends CLI {
     };
   }
 
-  async run({ params }) {
+  async run({ params }: { params: { name: string; args: string } }) {
     if (!api.tasks.tasks[params.name]) {
       throw new Error('Task "' + params.name + '" not found');
     }

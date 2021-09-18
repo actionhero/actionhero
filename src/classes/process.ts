@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as glob from "glob";
 import * as fs from "fs";
-import { buildConfig, ConfigInterface } from "./../modules/config";
+import { buildConfig, ActionheroConfigInterface } from "./../modules/config";
 import { log } from "../modules/log";
 import { Initializer } from "./initializer";
 import { Initializers } from "./initializers";
@@ -15,7 +15,7 @@ import { api } from "../index";
 
 const fatalErrorCode = "FATAL_ACTIONHERO_ERROR";
 
-let config: ConfigInterface = {};
+let config: Partial<ActionheroConfigInterface>;
 
 export class Process {
   running: boolean;
@@ -54,7 +54,7 @@ export class Process {
     api.commands.restart = this.restart;
   }
 
-  async initialize(params: object = {}) {
+  async initialize(params: Record<string, any> = {}) {
     this._startingParams = params;
 
     const loadInitializerRankings: {
@@ -88,25 +88,23 @@ export class Process {
 
     // load initializers from plugins
     for (const pluginName in config.plugins) {
-      if (config.plugins[pluginName] !== false) {
-        const pluginPath: string = path.normalize(
-          config.plugins[pluginName].path
-        );
+      const pluginPath: string = path.normalize(
+        config.plugins[pluginName].path
+      );
 
-        if (!fs.existsSync(pluginPath)) {
-          throw new Error(`plugin path does not exist: ${pluginPath}`);
-        }
-
-        // old style at the root of the project
-        initializerFiles = initializerFiles.concat(
-          glob.sync(path.join(pluginPath, "initializers", "**", "*.js"))
-        );
-
-        // new TS dist files
-        initializerFiles = initializerFiles.concat(
-          glob.sync(path.join(pluginPath, "dist", "initializers", "**", "*.js"))
-        );
+      if (!fs.existsSync(pluginPath)) {
+        throw new Error(`plugin path does not exist: ${pluginPath}`);
       }
+
+      // old style at the root of the project
+      initializerFiles = initializerFiles.concat(
+        glob.sync(path.join(pluginPath, "initializers", "**", "*.js"))
+      );
+
+      // new TS dist files
+      initializerFiles = initializerFiles.concat(
+        glob.sync(path.join(pluginPath, "dist", "initializers", "**", "*.js"))
+      );
     }
 
     initializerFiles = utils.arrayUnique(initializerFiles);

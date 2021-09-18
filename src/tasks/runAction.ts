@@ -1,3 +1,4 @@
+import { Action } from "../classes/action";
 import { log, Task, action } from "./../index";
 
 export class RunAction extends Task {
@@ -10,7 +11,7 @@ export class RunAction extends Task {
     this.middleware = [];
   }
 
-  async run(params) {
+  async run(params: Record<string, any>) {
     if (!params) params = {};
 
     const response = await action.run(

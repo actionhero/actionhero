@@ -1,5 +1,15 @@
+import { RoutesConfig } from "..";
+
+const namespace = "routes";
+
+declare module ".." {
+  export interface ActionheroConfigInterface {
+    [namespace]: ReturnType<typeof DEFAULT[typeof namespace]>;
+  }
+}
+
 export const DEFAULT = {
-  routes: (config) => {
+  [namespace]: () => {
     return {
       get: [
         { path: "/status", action: "status" },
@@ -29,6 +39,6 @@ export const DEFAULT = {
       ]
 
       ---------------------- */
-    };
+    } as RoutesConfig;
   },
 };

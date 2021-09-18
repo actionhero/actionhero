@@ -10,7 +10,7 @@ import {
   createFileSafely,
 } from "../../modules/utils/fileUtils";
 
-export class Generate extends CLI {
+export class GenerateCLI extends CLI {
   constructor() {
     super();
     this.name = "generate";
@@ -53,8 +53,7 @@ export class Generate extends CLI {
       gitignore: "/templates/gitignore.template",
     };
 
-    for (const name in oldFileMap) {
-      const localPath = oldFileMap[name];
+    for (const [name, localPath] of Object.entries(oldFileMap)) {
       const source = path.join(__dirname, "/../../../", localPath);
       const extension = localPath.split(".")[1];
       documents[name] = fs.readFileSync(source);
@@ -141,12 +140,9 @@ export class Generate extends CLI {
       "/.gitignore": "gitignore",
     };
 
-    for (const file in newFileMap) {
+    for (const [file, name] of Object.entries(newFileMap)) {
       try {
-        const message = createFileSafely(
-          projectRoot + file,
-          documents[newFileMap[file]]
-        );
+        const message = createFileSafely(projectRoot + file, documents[name]);
         console.log(message);
       } catch (error) {
         console.log(error.toString());
@@ -159,12 +155,9 @@ export class Generate extends CLI {
     );
 
     console.log("");
-    documents.projectMap
-      .toString()
-      .split("\n")
-      .forEach(function (line) {
-        console.log(line);
-      });
+    (documents.projectMap.toString() as string).split("\n").forEach((line) => {
+      console.log(line);
+    });
 
     console.log(
       `

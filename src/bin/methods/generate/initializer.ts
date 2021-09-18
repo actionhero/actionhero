@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { config, utils, CLI } from "./../../../index";
 
-export class GenerateInitializer extends CLI {
+export class GenerateInitializerCLI extends CLI {
   constructor() {
     super();
     this.name = "generate-initializer";
@@ -32,16 +32,25 @@ export class GenerateInitializer extends CLI {
     };
   }
 
-  async run({ params }) {
+  async run({
+    params,
+  }: {
+    params: {
+      name: string;
+      loadPriority?: string;
+      startPriority?: string;
+      stopPriority?: string;
+    };
+  }) {
     let templateBuffer = fs.readFileSync(
       path.join(__dirname, "/../../../../templates/initializer.ts.template")
     );
     let template = String(templateBuffer);
 
-    ["name", "loadPriority", "startPriority", "stopPriority"].forEach((v) => {
-      const regex = new RegExp("%%" + v + "%%", "g");
-      template = template.replace(regex, params[v]);
-    });
+    for (const [k, v] of Object.entries(params)) {
+      const regex = new RegExp("%%" + k + "%%", "g");
+      template = template.replace(regex, v);
+    }
 
     const message = utils.fileUtils.createFileSafely(
       utils.replaceDistWithSrc(

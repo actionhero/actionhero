@@ -1,7 +1,7 @@
 import * as REPL from "repl";
 import { api, env, CLI } from "./../../index";
 
-export class Console extends CLI {
+export class ConsoleCLI extends CLI {
   constructor() {
     super();
     this.name = "console";

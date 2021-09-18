@@ -9,10 +9,11 @@ export { Task } from "./classes/task";
 export { Server } from "./classes/server";
 export { CLI } from "./classes/cli";
 export { ActionProcessor } from "./classes/actionProcessor";
+export { PluginConfig } from "./classes/config";
 
 // export modules (lower case)
 export { utils } from "./modules/utils";
-export { config } from "./modules/config";
+export { config, ActionheroConfigInterface } from "./modules/config";
 export { log, loggers, ActionheroLogLevel } from "./modules/log";
 export { action } from "./modules/action";
 export { task } from "./modules/task";

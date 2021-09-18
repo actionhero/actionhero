@@ -9,7 +9,7 @@ const PackageJSON: PackageJson = JSON.parse(
     .toString()
 );
 
-export class GeneratePlugin extends CLI {
+export class GeneratePluginCLI extends CLI {
   constructor() {
     super();
     this.name = "generate-plugin";
