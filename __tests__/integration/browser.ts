@@ -30,7 +30,7 @@ describe("browser integration tests", () => {
 
   describe("default index page", () => {
     beforeAll(() => {
-      url = `http://${host}:${config.servers.web.port}`;
+      url = `http://${host}:${config.web.port}`;
     });
 
     test("loads the page", async () => {
@@ -56,7 +56,7 @@ describe("browser integration tests", () => {
 
   describe("swagger page", () => {
     beforeAll(() => {
-      url = `http://${host}:${config.servers.web.port}/swagger.html`;
+      url = `http://${host}:${config.web.port}/swagger.html`;
     });
 
     test("loads the page", async () => {
@@ -92,7 +92,7 @@ describe("browser integration tests", () => {
 
     describe("on the chat page", () => {
       beforeAll(() => {
-        url = `http://${host}:${config.servers.web.port}/chat.html`;
+        url = `http://${host}:${config.web.port}/chat.html`;
       });
 
       test("can connect", async () => {

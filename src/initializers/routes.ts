@@ -193,11 +193,8 @@ export class RoutesInitializer extends Initializer {
 
     api.params.postVariables = utils.arrayUnique(api.params.postVariables);
 
-    if (
-      config.servers.web &&
-      Array.isArray(config.servers.web.automaticRoutes)
-    ) {
-      config.servers.web.automaticRoutes.forEach((verb: RouteMethod) => {
+    if (config.webServer && Array.isArray(config.web.automaticRoutes)) {
+      config.web.automaticRoutes.forEach((verb: RouteMethod) => {
         if (!routerMethods.includes(verb)) {
           throw new Error(`${verb} is not an HTTP verb`);
         }

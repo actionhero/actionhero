@@ -205,7 +205,7 @@ export class StaticFileInitializer extends Initializer {
     };
 
     // load in the explicit public paths first
-    if (config.get("general", "paths")) {
+    if (config.general.paths) {
       config.general.paths.public.forEach(function (p: string) {
         api.staticFile.searchLocations.push(path.normalize(p));
       });

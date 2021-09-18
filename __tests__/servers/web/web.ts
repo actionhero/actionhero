@@ -19,7 +19,7 @@ describe("Server: Web", () => {
   beforeAll(async () => {
     process.env.AUTOMATIC_ROUTES = "head,get,post,put,delete";
     await actionhero.start();
-    url = "http://localhost:" + config.servers.web.port;
+    url = "http://localhost:" + config.web.port;
   });
 
   afterAll(async () => await actionhero.stop());
@@ -72,7 +72,7 @@ describe("Server: Web", () => {
 
   describe("will properly destroy connections", () => {
     beforeAll(() => {
-      config.servers.web.returnErrorCodes = true;
+      config.web.returnErrorCodes = true;
       api.actions.versions.customRender = [1];
       api.actions.actions.customRender = {
         // @ts-ignore
@@ -396,7 +396,7 @@ describe("Server: Web", () => {
     });
 
     test(".rawBody can be disabled", async () => {
-      config.servers.web.saveRawBody = false;
+      config.web.saveRawBody = false;
       const requestBody = '{"key":      "value"}';
       const body = await request
         .post(url + "/api/paramTestAction", {

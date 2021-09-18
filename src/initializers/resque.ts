@@ -211,7 +211,7 @@ export class ResqueInitializer extends Initializer {
       scheduler: null,
       connectionDetails: Object.assign(
         {},
-        config.get("tasks", "connectionOptions", "tasks"),
+        config.tasks.connectionOptions.tasks,
         {
           redis: api.redis.clients.tasks,
           pkg:

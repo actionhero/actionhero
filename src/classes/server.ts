@@ -17,7 +17,7 @@ export abstract class Server extends EventEmitter {
   type: string;
   /**What connection verbs can connections of this type use? */
   verbs?: Array<string>;
-  /**Shorthand for `api.config.servers[this.type]` */
+  /**Shorthand for `api.config[this.type]` */
   config?: ServerConfig;
   options?: {
     [key: string]: any;
