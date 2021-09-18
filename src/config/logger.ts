@@ -42,7 +42,7 @@ export const DEFAULT = {
 export const test = {
   [namespace]: (config: ActionheroConfigInterface) => {
     const loggers: ActionheroConfigLoggerBuilderArray = [];
-    loggers.push(buildConsoleLogger("crit"));
+    loggers.push(buildConsoleLogger(process.env.LOG_LEVEL ?? "crit"));
     config.general.paths.log.forEach((p: string) => {
       loggers.push(buildFileLogger(p, "debug", 1));
     });
