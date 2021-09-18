@@ -10,6 +10,7 @@ export type ConnectionData = {
   rawConnection: any;
   remotePort: number | string;
   remoteIP: string;
+  canChat: boolean;
 };
 
 export const connectionVerbs = [
@@ -139,7 +140,7 @@ export class Connection {
       this.pendingActions = 0;
       this.totalActions = 0;
       this.messageId = "0";
-      this.canChat = false;
+      this.canChat = data["canChat"];
       this.destroyed = false;
 
       const server = api.servers.servers[this.type];
