@@ -13,6 +13,8 @@ import { writePidFile, clearPidFile } from "./process/pid";
 
 import { api } from "../index";
 
+const fatalErrorCode = "FATAL_ACTIONHERO_ERROR";
+
 let config: ConfigInterface = {};
 
 export class Process {
@@ -348,42 +350,46 @@ export class Process {
 
     // handle errors & rejections
     process.once("uncaughtException", async (error: Error) => {
-      if (api.exceptionHandlers) {
-        api.exceptionHandlers.report(
-          error,
-          "uncaught",
-          "Exception",
-          {},
-          "emerg"
-        );
-      } else {
-        console.error(error);
+      if (error["code"] !== fatalErrorCode) {
+        if (api.exceptionHandlers) {
+          api.exceptionHandlers.report(
+            error,
+            "uncaught",
+            "Exception",
+            {},
+            "emerg"
+          );
+        } else {
+          console.error(error);
+        }
       }
 
       if (this.shuttingDown !== true) {
         let timer = awaitHardStop();
-        await this.stop();
+        if (this.running) await this.stop();
         clearTimeout(timer);
         stopCallback(1);
       }
     });
 
     process.once("unhandledRejection", async (rejection: Error) => {
-      if (api.exceptionHandlers) {
-        api.exceptionHandlers.report(
-          rejection,
-          "uncaught",
-          "Rejection",
-          {},
-          "emerg"
-        );
-      } else {
-        console.error(rejection);
+      if (rejection["code"] !== fatalErrorCode) {
+        if (api.exceptionHandlers) {
+          api.exceptionHandlers.report(
+            rejection,
+            "uncaught",
+            "Rejection",
+            {},
+            "emerg"
+          );
+        } else {
+          console.error(rejection);
+        }
       }
 
       if (this.shuttingDown !== true) {
         let timer = awaitHardStop();
-        await this.stop();
+        if (this.running) await this.stop();
         clearTimeout(timer);
         stopCallback(1);
       }
@@ -393,7 +399,7 @@ export class Process {
     process.on("SIGINT", async () => {
       log(`[ SIGNAL ] - SIGINT`, "notice");
       let timer = awaitHardStop();
-      await this.stop();
+      if (this.running) await this.stop();
       if (!this.shuttingDown) {
         clearTimeout(timer);
         stopCallback(0);
@@ -403,7 +409,7 @@ export class Process {
     process.on("SIGTERM", async () => {
       log(`[ SIGNAL ] - SIGTERM`, "notice");
       let timer = awaitHardStop();
-      await this.stop();
+      if (this.running) await this.stop();
       if (!this.shuttingDown) {
         clearTimeout(timer);
         stopCallback(0);
@@ -429,13 +435,20 @@ export class Process {
 
       errors.forEach((error) => {
         if (!showStack) delete error.stack;
-        api.exceptionHandlers.report(error, "initializer", type);
+        if (api.exceptionHandlers) {
+          api.exceptionHandlers.report(error, "initializer", type);
+        } else {
+          console.error(error);
+        }
       });
 
-      await this.stop(errors.map((e) => e.message ?? e.toString())); // stop and set the stopReasons
+      if (this.running) {
+        await this.stop(errors.map((e) => e.message ?? e.toString())); // stop and set the stopReasons
+      }
+      await utils.sleep(100); // allow time for console.log to print
 
-      await utils.sleep(1000); // allow time for console.log to print
-      process.exit(1);
+      if (!errors[0]["code"]) errors[0]["code"] = fatalErrorCode;
+      throw errors[0];
     }
   }
 
