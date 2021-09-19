@@ -1,6 +1,6 @@
 import * as dotProp from "dot-prop";
 import { api } from "../index";
-import { log, LogLevels } from "../modules/log";
+import { log, ActionheroLogLevel } from "../modules/log";
 import { utils } from "../modules/utils";
 import { config } from "./../modules/config";
 import { Action } from "./action";
@@ -126,7 +126,7 @@ export class ActionProcessor<ActionClass extends Action> {
   private logAndReportAction(status: ActionsStatus, error: Error) {
     const { type, rawConnection } = this.connection;
 
-    let logLevel: LogLevels = "info";
+    let logLevel: ActionheroLogLevel = "info";
     if (this.actionTemplate && this.actionTemplate.logLevel) {
       logLevel = this.actionTemplate.logLevel;
     }

@@ -1,5 +1,5 @@
 import { api } from "../index";
-import type { LogLevels } from "../modules/log";
+import type { ActionheroLogLevel } from "../modules/log";
 import { Inputs } from "./inputs";
 
 /**
@@ -36,7 +36,7 @@ export abstract class Action {
   /**Are there connections from any servers which cannot use this Action (default: [])? */
   blockedConnectionTypes?: Array<string>;
   /**Under what level should connections to this Action be logged (default 'info')? */
-  logLevel?: LogLevels;
+  logLevel?: ActionheroLogLevel;
   /**If this Action is responding to a `web` request, and that request has a file extension like *.jpg, should Actionhero set the response headers to match that extension (default: true)? */
   matchExtensionMimeType?: boolean;
   /**Should this Action appear in api.documentation.documentation? (default: true)? */

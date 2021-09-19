@@ -1,6 +1,6 @@
 import { EventEmitter } from "events";
 import { api, config } from "../index";
-import { log, LogLevels } from "../modules/log";
+import { log, ActionheroLogLevel } from "../modules/log";
 import { ActionProcessor } from "./actionProcessor";
 import { Connection } from "./connection";
 
@@ -264,7 +264,7 @@ export abstract class Server extends EventEmitter {
   /**
    * Log a message from this server type.  A wrapper around log() with a server prefix.
    */
-  log(message: string, severity?: LogLevels, data?: any) {
+  log(message: string, severity?: ActionheroLogLevel, data?: any) {
     log(`[server: ${this.type}] ${message}`, severity, data);
   }
 }
