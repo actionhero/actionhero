@@ -1,6 +1,7 @@
 // export classes (capitalized)
 export { Api } from "./classes/api";
 export { Process } from "./classes/process";
+export { ActionheroConfigInterface } from "./classes/config";
 export { Initializer } from "./classes/initializer";
 export { Connection } from "./classes/connection";
 export { ExceptionReporter } from "./classes/exceptionReporter";
@@ -13,7 +14,7 @@ export { PluginConfig } from "./classes/config";
 
 // export modules (lower case)
 export { utils } from "./modules/utils";
-export { config, ActionheroConfigInterface } from "./modules/config";
+export { config } from "./modules/config";
 export { log, loggers, ActionheroLogLevel } from "./modules/log";
 export { action } from "./modules/action";
 export { task } from "./modules/task";
