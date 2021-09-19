@@ -165,6 +165,7 @@
       var div = document.getElementById("message");
       var message = div.value;
       div.value = "";
+      if (client.rooms.length === 0) return alert("not a member of chat room");
       client.say(client.rooms[0], message);
     };
 

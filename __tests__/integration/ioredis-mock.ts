@@ -14,23 +14,26 @@ jest.mock("./../../src/config/redis.ts", () => ({
   __esModule: true,
   test: {
     redis: () => {
+      //@ts-ignore
       const baseRedis = new MockIORedis();
       return {
         _toExpand: false,
         scanCount: 1000,
         client: {
           konstructor: () => baseRedis,
-          args: [],
+          args: [] as string[],
           buildNew: false,
         },
         subscriber: {
+          //@ts-ignore
           konstructor: () => baseRedis.createConnectedClient(),
-          args: [],
+          args: [] as string[],
           buildNew: false,
         },
         tasks: {
+          //@ts-ignore
           konstructor: () => baseRedis.createConnectedClient(),
-          args: [],
+          args: [] as string[],
           buildNew: false,
         },
       };
@@ -122,7 +125,7 @@ describe("with ioredis-mock", () => {
   });
 
   describe("tasks", () => {
-    let taskOutput = [];
+    let taskOutput: string[] = [];
 
     beforeAll(async () => {
       class RegularTask extends Task {
@@ -134,7 +137,7 @@ describe("with ioredis-mock", () => {
           this.frequency = 0;
         }
 
-        run(params) {
+        async run(params: { word: string }) {
           taskOutput.push(params.word);
           return params.word;
         }

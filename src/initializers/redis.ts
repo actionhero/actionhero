@@ -1,6 +1,6 @@
 import * as IORedis from "ioredis";
 import * as dotProp from "dot-prop";
-import { api, config, id, log, Initializer, redis } from "../index";
+import { api, config, id, log, Initializer, redis, utils } from "../index";
 import * as RedisModule from "./../modules/redis";
 
 export interface RedisApi {
@@ -173,6 +173,8 @@ export class RedisInitializer extends Initializer {
       `actionhero member ${id} has left the cluster`,
     ]);
 
+    await utils.sleep(100); // allow some time for the goodbye message to propagate
+
     const keys = Object.keys(api.redis.clients);
     for (const i in keys) {
       const client = api.redis.clients[keys[i]];
@@ -186,5 +188,7 @@ export class RedisInitializer extends Initializer {
         await client.disconnect();
       }
     }
+
+    await utils.sleep(100); // allow some time for the connection to close
   }
 }

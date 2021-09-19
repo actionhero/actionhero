@@ -1,6 +1,7 @@
 import { EventEmitter } from "stream";
 import * as uuid from "uuid";
 import { ActionProcessor } from "../classes/actionProcessor";
+import { connectionVerbs } from "../classes/connection";
 import {
   api,
   config,
@@ -50,6 +51,7 @@ export class SpecHelper extends Initializer {
           logConnections: false,
           logExits: false,
           sendWelcomeMessage: true,
+          verbs: connectionVerbs,
         };
       }
 

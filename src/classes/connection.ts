@@ -6,6 +6,7 @@ import { config } from "./../modules/config";
 
 export type ConnectionData = {
   id?: string;
+  fingerprint?: string;
   type: string;
   rawConnection: any;
   remotePort: number | string;
@@ -84,9 +85,7 @@ export class Connection {
    */
   constructor(data: ConnectionData, callCreateMethods = true) {
     this.setup(data);
-    if (callCreateMethods) {
-      Connection.callConnectionCreateMethods(this);
-    }
+    if (callCreateMethods) Connection.callConnectionCreateMethods(this);
     api.connections.connections[this.id] = this;
   }
 
@@ -130,10 +129,11 @@ export class Connection {
       this.type = data.type;
       this.rawConnection = data.rawConnection;
       this.id = data.id ?? this.generateID();
-      this.fingerprint = this.id;
+      this.fingerprint = data.fingerprint ?? this.id;
+      this.remotePort = data.remotePort ?? 0;
+      this.remoteIP = data.remoteIP ?? "0";
+
       this.connectedAt = new Date().getTime();
-      this.remotePort = data["remotePort"] ?? 0;
-      this.remoteIP = data["remoteIP"] ?? "0";
       this.error = null;
       this.rooms = [];
       this.params = {};
@@ -145,9 +145,7 @@ export class Connection {
 
       const server = api.servers.servers[this.type];
       if (server && server.connectionCustomMethods) {
-        for (const [name, f] of Object.entries(
-          server.connectionCustomMethods
-        )) {
+        for (const [name] of Object.entries(server.connectionCustomMethods)) {
           //@ts-ignore
           this.set(name, async (...args) => {
             args.unshift(this);

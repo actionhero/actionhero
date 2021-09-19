@@ -1,5 +1,5 @@
 import * as uuid from "uuid";
-import { Connection, Worker } from "node-resque";
+import { Worker } from "node-resque";
 import { api, config, task, Task, Action } from "./../index";
 import { WebServer } from "../servers/web";
 import { AsyncReturnType } from "type-fest";

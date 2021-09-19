@@ -159,17 +159,9 @@ export abstract class Server extends EventEmitter {
       remoteIP: data.remoteAddress,
       rawConnection: data.rawConnection,
       messageId: data.messageId,
-      canChat: null as boolean,
-      fingerprint: null as string,
+      canChat: this.attributes.canChat ?? null,
+      fingerprint: data.fingerprint ?? null,
     };
-
-    if (this.attributes.canChat === true) {
-      details.canChat = true;
-    }
-
-    if (data.fingerprint) {
-      details.fingerprint = data.fingerprint;
-    }
 
     const connection = await Connection.createAsync(details);
 

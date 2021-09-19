@@ -5,14 +5,16 @@
 "use strict";
 // we need to use 'use strict' here because we are loading a variable from a remote host
 
+process.env.AUTOMATIC_ROUTES = "get";
+
 import * as _Primus from "primus";
 import * as request from "request-promise-native";
 import { api, Process, config } from "./../../src/index";
 
 const actionhero = new Process();
-let ActionheroWebsocketClient;
-let fingerprint;
-let url;
+let ActionheroWebsocketClient: any;
+let fingerprint: string;
+let url: string;
 
 const connectClient = async (query = ""): Promise<any> => {
   const S = _Primus.createSocket(undefined);
@@ -20,7 +22,7 @@ const connectClient = async (query = ""): Promise<any> => {
 
   let client = new ActionheroWebsocketClient({}, clientSocket); // eslint-disable-line
   const connectResponse = await new Promise((resolve, reject) => {
-    client.connect((error, connectResponse) => {
+    client.connect((error: Error, connectResponse: Record<string, any>) => {
       if (error) {
         return reject(error);
       }
@@ -33,7 +35,6 @@ const connectClient = async (query = ""): Promise<any> => {
 
 describe("Integration: Web Server + Websocket Socket shared fingerprint", () => {
   beforeAll(async () => {
-    process.env.AUTOMATIC_ROUTES = "get";
     await actionhero.start();
     await api.redis.clients.client.flushdb();
     url = "http://localhost:" + config.web.port;

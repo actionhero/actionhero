@@ -15,7 +15,7 @@ export class CreateChatRoom extends Action {
   async run({ params }: { params: { name: string } }) {
     let didCreate = false;
 
-    if (!chatRoom.exists(params.name)) {
+    if (!(await chatRoom.exists(params.name))) {
       await chatRoom.add(params.name);
       didCreate = true;
     }
