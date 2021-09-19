@@ -1,12 +1,5 @@
-export interface ConfigNamespaceData {
-  [key: string]:
-    | number
-    | string
-    | boolean
-    | number[]
-    | string[]
-    | boolean[]
-    | ConfigNamespaceData;
+export interface ActionheroConfigInterface {
+  [key: string]: any;
 }
 
 export type PluginConfigRecord = {

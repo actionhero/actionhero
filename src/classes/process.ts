@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as glob from "glob";
 import * as fs from "fs";
-import { buildConfig, ActionheroConfigInterface } from "./../modules/config";
+import { config } from "..";
 import { log } from "../modules/log";
 import { Initializer } from "./initializer";
 import { Initializers } from "./initializers";
@@ -14,8 +14,6 @@ import { writePidFile, clearPidFile } from "./process/pid";
 import { api } from "../index";
 
 const fatalErrorCode = "FATAL_ACTIONHERO_ERROR";
-
-let config: Partial<ActionheroConfigInterface>;
 
 export class Process {
   running: boolean;
@@ -30,9 +28,6 @@ export class Process {
   loadInitializers: Initializer["initialize"][];
   startInitializers: Initializer["start"][];
   stopInitializers: Initializer["stop"][];
-  _startingParams: {
-    [key: string]: any;
-  };
 
   constructor() {
     this.initialized = false;
@@ -54,9 +49,7 @@ export class Process {
     api.commands.restart = this.restart;
   }
 
-  async initialize(params: Record<string, any> = {}) {
-    this._startingParams = params;
-
+  async initialize() {
     const loadInitializerRankings: {
       [rank: number]: Initializer["initialize"][];
     } = {};
@@ -68,9 +61,6 @@ export class Process {
     } = {};
 
     let initializerFiles: Array<string> = [];
-
-    // rebuild config with startingParams
-    config = buildConfig(this._startingParams);
 
     // load initializers from core
     initializerFiles = initializerFiles.concat(
@@ -247,8 +237,8 @@ export class Process {
     this.initialized = true;
   }
 
-  async start(params = {}) {
-    if (this.initialized !== true) await this.initialize(params);
+  async start() {
+    if (this.initialized !== true) await this.initialize();
     const serverName = config.general.serverName;
 
     writePidFile();
@@ -324,9 +314,9 @@ export class Process {
   async restart() {
     if (this.running === true) {
       await this.stop();
-      await this.start(this._startingParams);
+      await this.start();
     } else {
-      await this.start(this._startingParams);
+      await this.start();
     }
   }
 

@@ -10,14 +10,11 @@ import { actionheroVersion } from "./../classes/process/actionheroVersion";
 import { typescript } from "./../classes/process/typescript";
 import { projectRoot } from "./../classes/process/projectRoot";
 import { RouteMethod, RoutesConfig, RouteType } from "..";
-
-export interface ActionheroConfigInterface {
-  [key: string]: any;
-}
-
-export const configPaths: string[] = [];
+import { ActionheroConfigInterface } from "../classes/config";
 
 export function buildConfig(_startingParams: Record<string, any> = {}) {
+  const configPaths: string[] = [];
+
   let config: Partial<ActionheroConfigInterface> = {
     process: {
       env,
