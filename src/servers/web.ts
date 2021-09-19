@@ -255,23 +255,21 @@ export class WebServer extends Server {
     }
 
     if (this.config.enableEtag && fileStream && fileStream.path) {
-      const filestats = await new Promise((resolve) => {
-        fs.stat(fileStream.path, (error, filestats) => {
-          if (error || !filestats) {
+      const fileStats: fs.Stats = await new Promise((resolve) => {
+        fs.stat(fileStream.path, (error, fileStats) => {
+          if (error || !fileStats) {
             this.log(
               "Error receving file statistics: " + String(error),
               "error"
             );
           }
-          return resolve(filestats);
+          return resolve(fileStats);
         });
       });
 
-      if (!filestats) {
-        return sendRequestResult();
-      }
+      if (!fileStats) return sendRequestResult();
 
-      const fileEtag = etag(filestats, { weak: true });
+      const fileEtag = etag(fileStats, { weak: true });
       connection.rawConnection.responseHeaders.push(["ETag", fileEtag]);
       let noneMatchHeader = reqHeaders["if-none-match"];
       const cacheCtrlHeader = reqHeaders["cache-control"];
