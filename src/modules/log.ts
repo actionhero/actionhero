@@ -20,7 +20,7 @@ loggers = config.logger.loggers.map((loggerBuilder: Function) => {
   return winston.createLogger(resolvedLogger);
 });
 
-export type LogLevels =
+export type ActionheroLogLevel =
   | "emerg"
   | "alert"
   | "crit"
@@ -41,7 +41,11 @@ export type LogLevels =
  * Logging levels in winston conform to the severity ordering specified by RFC5424: severity of all levels is assumed to be numerically ascending from most important to least important.
  * Learn more at https://github.com/winstonjs/winston
  */
-export function log(message: string, severity: LogLevels = "info", data?: any) {
+export function log(
+  message: string,
+  severity: ActionheroLogLevel = "info",
+  data?: any
+) {
   loggers.map((logger) => {
     if (logger.levels[severity] === undefined) {
       severity = "info";

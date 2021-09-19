@@ -13,7 +13,7 @@ export { ActionProcessor } from "./classes/actionProcessor";
 // export modules (lower case)
 export { utils } from "./modules/utils";
 export { config } from "./modules/config";
-export { log, loggers } from "./modules/log";
+export { log, loggers, ActionheroLogLevel } from "./modules/log";
 export { action } from "./modules/action";
 export { task } from "./modules/task";
 export { cache } from "./modules/cache";
