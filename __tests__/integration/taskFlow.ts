@@ -1,7 +1,3 @@
-import * as path from "path";
-import * as fs from "fs";
-import { api } from "../../";
-
 jest.mock("./../../src/config/tasks.ts", () => ({
   __esModule: true,
   test: {
@@ -37,11 +33,7 @@ jest.mock("./../../src/config/tasks.ts", () => ({
         checkTimeout: 500,
         maxEventLoopDelay: 5,
         stuckWorkerTimeout: 1000 * 60 * 60,
-        resque_overrides: {
-          queue: null,
-          multiWorker: null,
-          scheduler: null,
-        },
+        resque_overrides: {},
         connectionOptions: {
           tasks: {},
         },
@@ -50,7 +42,9 @@ jest.mock("./../../src/config/tasks.ts", () => ({
   },
 }));
 
-import { Process, utils } from "./../../src/index";
+import * as path from "path";
+import * as fs from "fs";
+import { api, Process, utils } from "../../src";
 
 const testTaskPath = path.join(__dirname, "./../../src/tasks/test-task.ts");
 fs.writeFileSync(
@@ -85,7 +79,7 @@ describe("task integration tests", () => {
   });
 
   describe("with a running server", () => {
-    let actionhero;
+    let actionhero: Process;
 
     beforeAll(async () => {
       actionhero = new Process();

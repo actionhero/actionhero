@@ -36,6 +36,10 @@ export class WebSocketServer extends Server {
 
   async start() {
     const webserver = api.servers.servers.web;
+    if (!webserver) {
+      throw new Error(`websocket server requires web server to be enabled`);
+    }
+
     this.server = new Primus(webserver.server, this.config.server);
 
     this.writeClientJS();
@@ -100,6 +104,7 @@ export class WebSocketServer extends Server {
     if (message.context === "response" && !message.messageId) {
       message.messageId = messageId;
     }
+
     connection.rawConnection.write(message);
   }
 

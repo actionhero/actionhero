@@ -145,10 +145,7 @@ export namespace chatRoom {
   export async function exists(room: string): Promise<boolean> {
     const bool = await client().sismember(api.chatRoom.keys.rooms, room);
     let found = false;
-    // @ts-ignore
-    if (bool === 1 || bool === true) {
-      found = true;
-    }
+    if (bool === 1 || bool.toString() === "true") found = true;
     return found;
   }
 
