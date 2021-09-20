@@ -1,6 +1,6 @@
+import { AsyncReturnType } from "type-fest";
 import { api, config, id, redis, Connection } from "./../index";
 import * as RedisModule from "../modules/redis";
-import { UnwrapPromise } from "./tsUtils";
 
 export namespace chatRoom {
   /**
@@ -170,7 +170,7 @@ export namespace chatRoom {
   export async function roomStatus(room: string): Promise<{
     room: string;
     membersCount: number;
-    members: Record<string, UnwrapPromise<typeof sanitizeMemberDetails>>;
+    members: Record<string, AsyncReturnType<typeof sanitizeMemberDetails>>;
   }> {
     if (room) {
       const found = await chatRoom.exists(room);
