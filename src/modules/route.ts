@@ -15,7 +15,7 @@ export type RouteType = {
   action: string;
   dir?: string;
   matchTrailingPathParts?: boolean;
-  apiVersion?: number;
+  apiVersion?: number | string;
 };
 
 export type RoutesConfig = Partial<

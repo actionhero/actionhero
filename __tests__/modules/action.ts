@@ -1,4 +1,10 @@
-import { action, Process, api } from "./../../src/index";
+import {
+  action,
+  Process,
+  api,
+  Connection,
+  ActionProcessor,
+} from "./../../src/index";
 
 const actionhero = new Process();
 
@@ -43,7 +49,7 @@ describe("Modules", () => {
         action.addMiddleware({
           name: "test middleware",
           global: true,
-          preProcessor: (data) => {
+          preProcessor: (data: ActionProcessor<any>) => {
             data.response._preProcessorNote = "note";
           },
         });
@@ -76,7 +82,7 @@ describe("Modules", () => {
         action.addMiddleware({
           name: "test middleware",
           global: true,
-          preProcessor: ({ connection }) => {
+          preProcessor: ({ connection }: { connection: Connection }) => {
             if (!connection?.session?.userId) throw new Error("not logged in");
           },
         });
