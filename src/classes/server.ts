@@ -98,7 +98,7 @@ export abstract class Server extends EventEmitter {
    */
   abstract sendFile(
     connection: Connection,
-    error: Error,
+    error: NodeJS.ErrnoException,
     fileStream: any,
     mime: string,
     length: number,

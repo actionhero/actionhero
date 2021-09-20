@@ -61,7 +61,7 @@ export class Connection {
   /**Any connection-specific properties.  For, example, the HTTP res and req objects for `web` connections are here */
   rawConnection: any;
   /**If there's a local error */
-  error?: Error;
+  error?: NodeJS.ErrnoException;
   /**If there's a local extension to the request*/
   extension?: string;
   destroyed: boolean;

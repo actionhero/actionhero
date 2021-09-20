@@ -34,7 +34,7 @@ export namespace specHelper {
     connection.messageId = connection.params.messageId || uuid.v4();
     const response: (A extends Action ? AsyncReturnType<A["run"]> : any) & {
       messageId?: string;
-      error?: Error | string | any;
+      error?: NodeJS.ErrnoException | string | any;
       requesterInformation?: ReturnType<WebServer["buildRequesterInformation"]>;
       serverInformation?: ReturnType<WebServer["buildServerInformation"]>;
     } = await new Promise((resolve) => {
@@ -75,7 +75,7 @@ export namespace specHelper {
     }
 
     const result: (T extends Task ? AsyncReturnType<T["run"]> : any) & {
-      error?: Error | string;
+      error?: NodeJS.ErrnoException | string;
     } = await api.tasks.tasks[taskName].run(params, undefined);
     return result;
   }

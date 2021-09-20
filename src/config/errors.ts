@@ -22,21 +22,21 @@ export const DEFAULT = {
 
       serializers: {
         servers: {
-          web: (error: Error) => {
+          web: (error: NodeJS.ErrnoException) => {
             if (error.message) {
               return String(error.message);
             } else {
               return error;
             }
           },
-          websocket: (error: Error) => {
+          websocket: (error: NodeJS.ErrnoException) => {
             if (error.message) {
               return String(error.message);
             } else {
               return error;
             }
           },
-          specHelper: (error: Error) => {
+          specHelper: (error: NodeJS.ErrnoException) => {
             if (error.message) {
               return "Error: " + String(error.message);
             } else {
@@ -91,7 +91,10 @@ export const DEFAULT = {
       // Decorate your response based on Error here.
       // Any action that throws an Error will pass through this method before returning
       //   an error to the client. Response can be edited here, status codes changed, etc.
-      async genericError(data: ActionProcessor<any>, error: Error) {
+      async genericError(
+        data: ActionProcessor<any>,
+        error: NodeJS.ErrnoException
+      ) {
         return error;
       },
 
@@ -111,7 +114,7 @@ export const DEFAULT = {
       },
 
       // something went wrong trying to read the file
-      fileReadError: (connection: Connection, error: Error) => {
+      fileReadError: (connection: Connection, error: NodeJS.ErrnoException) => {
         return `error reading file: ${error?.message ?? error}`;
       },
 

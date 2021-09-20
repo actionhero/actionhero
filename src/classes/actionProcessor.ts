@@ -80,8 +80,11 @@ export class ActionProcessor<ActionClass extends Action> {
     return this.connection.pendingActions;
   }
 
-  private async completeAction(status: ActionsStatus, _error?: Error) {
-    let error: Error | string = null;
+  private async completeAction(
+    status: ActionsStatus,
+    _error?: NodeJS.ErrnoException
+  ) {
+    let error: NodeJS.ErrnoException | string = null;
     this.actionStatus = status;
 
     if (status === ActionsStatus.GenericError) {
@@ -124,7 +127,10 @@ export class ActionProcessor<ActionClass extends Action> {
     return this;
   }
 
-  private logAndReportAction(status: ActionsStatus, error: Error) {
+  private logAndReportAction(
+    status: ActionsStatus,
+    error: NodeJS.ErrnoException
+  ) {
     const { type, rawConnection } = this.connection;
 
     let logLevel: ActionheroLogLevel = "info";
@@ -170,7 +176,7 @@ export class ActionProcessor<ActionClass extends Action> {
     }
   }
 
-  applyDefaultErrorLogLineFormat(error: Error) {
+  applyDefaultErrorLogLineFormat(error: NodeJS.ErrnoException) {
     const logLevel = "error" as ActionheroLogLevel;
     const errorFields: { error: string } = { error: null };
     if (error instanceof Error) {

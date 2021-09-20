@@ -22,12 +22,14 @@ const connectClient = async (query = ""): Promise<any> => {
 
   let client = new ActionheroWebsocketClient({}, clientSocket); // eslint-disable-line
   const connectResponse = await new Promise((resolve, reject) => {
-    client.connect((error: Error, connectResponse: Record<string, any>) => {
-      if (error) {
-        return reject(error);
+    client.connect(
+      (error: NodeJS.ErrnoException, connectResponse: Record<string, any>) => {
+        if (error) {
+          return reject(error);
+        }
+        resolve(connectResponse);
       }
-      resolve(connectResponse);
-    });
+    );
   });
 
   return { client, connectResponse };

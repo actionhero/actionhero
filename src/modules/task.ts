@@ -513,7 +513,10 @@ export namespace task {
     }
   }
 
-  function checkForRepeatRecurringTaskEnqueue(taskName: string, error: Error) {
+  function checkForRepeatRecurringTaskEnqueue(
+    taskName: string,
+    error: NodeJS.ErrnoException
+  ) {
     if (error.toString().match(/already enqueued at this time/)) {
       // this is OK, the job was enqueued by another process as this method was running
       log(

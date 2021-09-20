@@ -110,7 +110,7 @@ export class WebSocketServer extends Server {
 
   async sendFile(
     connection: Connection,
-    error: Error,
+    error: NodeJS.ErrnoException,
     fileStream: any,
     mime: string,
     length: number,

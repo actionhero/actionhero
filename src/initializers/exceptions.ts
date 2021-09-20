@@ -22,7 +22,7 @@ export class ExceptionsInitializer extends Initializer {
   }
 
   report = (
-    error: Error,
+    error: NodeJS.ErrnoException,
     type: string,
     name: string,
     objects?: any,
@@ -35,7 +35,7 @@ export class ExceptionsInitializer extends Initializer {
     }
   };
 
-  initializer = (error: Error, fullFilePath: string) => {
+  initializer = (error: NodeJS.ErrnoException, fullFilePath: string) => {
     const name = "initializer:" + fullFilePath;
     api.exceptionHandlers.report(
       error,
@@ -47,7 +47,7 @@ export class ExceptionsInitializer extends Initializer {
   };
 
   action = (
-    error: Error,
+    error: NodeJS.ErrnoException,
     { to, action, params, duration, response }: { [key: string]: any }
   ) => {
     api.exceptionHandlers.report(
@@ -60,7 +60,7 @@ export class ExceptionsInitializer extends Initializer {
   };
 
   task = (
-    error: Error,
+    error: NodeJS.ErrnoException,
     queue: string,
     task: ParsedJob,
     workerId: string | number
@@ -95,7 +95,7 @@ export class ExceptionsInitializer extends Initializer {
 }
 
 const consoleReporter: ExceptionReporter = (
-  error: Error & { [key: string]: any },
+  error: NodeJS.ErrnoException & { [key: string]: any },
   type,
   name,
   objects,
