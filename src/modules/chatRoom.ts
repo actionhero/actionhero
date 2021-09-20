@@ -1,5 +1,6 @@
 import { api, config, id, redis, Connection } from "./../index";
 import * as RedisModule from "../modules/redis";
+import { UnwrapPromise } from "./tsUtils";
 
 export namespace chatRoom {
   /**
@@ -165,9 +166,11 @@ export namespace chatRoom {
    * Learn about the connections in the room.
    * Returns a hash of the form { room: room, members: cleanedMembers, membersCount: count }.  Members is an array of connections in the room sanitized via `api.chatRoom.sanitizeMemberDetails`
    */
-  export async function roomStatus(
-    room: string
-  ): Promise<{ [key: string]: any }> {
+  export async function roomStatus(room: string): Promise<{
+    room: string;
+    membersCount: number;
+    members: Record<string, UnwrapPromise<typeof sanitizeMemberDetails>>;
+  }> {
     if (room) {
       const found = await chatRoom.exists(room);
       if (found === true) {
@@ -180,7 +183,7 @@ export namespace chatRoom {
 
         for (const id in members) {
           const data = JSON.parse(members[id]);
-          cleanedMembers[id] = chatRoom.sanitizeMemberDetails(data);
+          cleanedMembers[id] = await chatRoom.sanitizeMemberDetails(data);
           count++;
         }
 
@@ -225,26 +228,25 @@ export namespace chatRoom {
       );
     }
 
-    if (connection.rooms.indexOf(room) >= 0) {
+    if (connection.rooms.includes(room)) {
       throw new Error(
         await config.errors.connectionAlreadyInRoom(connection, room)
       );
     }
 
-    if (connection.rooms.indexOf(room) < 0) {
+    if (!connection.rooms.includes(room)) {
       const found = await chatRoom.exists(room);
       if (!found) {
         throw new Error(await config.errors.connectionRoomNotExist(room));
       }
-    }
 
-    if (connection.rooms.indexOf(room) < 0) {
       await api.chatRoom.runMiddleware(connection, room, "join");
-    }
 
-    if (connection.rooms.indexOf(room) < 0) {
-      const memberDetails = chatRoom.generateMemberDetails(connection);
-      connection.rooms.push(room);
+      if (!connection.rooms.includes(room)) {
+        connection.rooms.push(room);
+      }
+
+      const memberDetails = await chatRoom.generateMemberDetails(connection);
       await client().hset(
         api.chatRoom.keys.members + room,
         connection.id,
@@ -274,26 +276,25 @@ export namespace chatRoom {
       );
     }
 
-    if (connection.rooms.indexOf(room) < 0) {
+    if (!connection.rooms.includes(room)) {
       throw new Error(
         await config.errors.connectionNotInRoom(connection, room)
       );
     }
 
-    if (connection.rooms.indexOf(room) >= 0) {
+    if (connection.rooms.includes(room)) {
       const found = await chatRoom.exists(room);
       if (!found) {
         throw new Error(await config.errors.connectionRoomNotExist(room));
       }
-    }
 
-    if (connection.rooms.indexOf(room) >= 0) {
       await api.chatRoom.runMiddleware(connection, room, "leave");
-    }
 
-    if (connection.rooms.indexOf(room) >= 0) {
-      const index = connection.rooms.indexOf(room);
-      connection.rooms.splice(index, 1);
+      if (connection.rooms.includes(room)) {
+        const index = connection.rooms.indexOf(room);
+        connection.rooms.splice(index, 1);
+      }
+
       await client().hdel(api.chatRoom.keys.members + room, connection.id);
     }
 
