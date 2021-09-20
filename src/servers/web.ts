@@ -174,7 +174,7 @@ export class WebServer extends Server {
 
   async sendFile(
     connection: Connection,
-    error: Error,
+    error: NodeJS.ErrnoException,
     fileStream: any,
     mime: string,
     length: number,
@@ -716,7 +716,11 @@ export class WebServer extends Server {
         const { fields, files } = await new Promise((resolve) => {
           connection.rawConnection.form.parse(
             connection.rawConnection.req,
-            (error: Error, fields: string[], files: string[]) => {
+            (
+              error: NodeJS.ErrnoException,
+              fields: string[],
+              files: string[]
+            ) => {
               if (error) {
                 this.log("error processing form: " + String(error), "error");
                 connection.error = new Error(

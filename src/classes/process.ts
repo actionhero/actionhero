@@ -140,7 +140,7 @@ export class Process {
         }
 
         function decorateInitError(
-          error: Error & Record<string, any>,
+          error: NodeJS.ErrnoException & Record<string, any>,
           type: string
         ) {
           error["data"] = error["data"] ?? {};
@@ -339,8 +339,8 @@ export class Process {
     }
 
     // handle errors & rejections
-    process.once("uncaughtException", async (error: Error) => {
-      if (error["code"] !== fatalErrorCode) {
+    process.once("uncaughtException", async (error: NodeJS.ErrnoException) => {
+      if (error.code !== fatalErrorCode) {
         if (api.exceptionHandlers) {
           api.exceptionHandlers.report(
             error,
@@ -362,28 +362,31 @@ export class Process {
       }
     });
 
-    process.once("unhandledRejection", async (rejection: Error) => {
-      if (rejection["code"] !== fatalErrorCode) {
-        if (api.exceptionHandlers) {
-          api.exceptionHandlers.report(
-            rejection,
-            "uncaught",
-            "Rejection",
-            {},
-            "emerg"
-          );
-        } else {
-          console.error(rejection);
+    process.once(
+      "unhandledRejection",
+      async (rejection: NodeJS.ErrnoException) => {
+        if (rejection.code !== fatalErrorCode) {
+          if (api.exceptionHandlers) {
+            api.exceptionHandlers.report(
+              rejection,
+              "uncaught",
+              "Rejection",
+              {},
+              "emerg"
+            );
+          } else {
+            console.error(rejection);
+          }
+        }
+
+        if (this.shuttingDown !== true) {
+          let timer = awaitHardStop();
+          if (this.running) await this.stop();
+          clearTimeout(timer);
+          stopCallback(1);
         }
       }
-
-      if (this.shuttingDown !== true) {
-        let timer = awaitHardStop();
-        if (this.running) await this.stop();
-        clearTimeout(timer);
-        stopCallback(1);
-      }
-    });
+    );
 
     // handle signals
     process.on("SIGINT", async () => {
@@ -415,7 +418,10 @@ export class Process {
   }
 
   // HELPERS
-  async fatalError(errors: Error | Error[] = [], type: any) {
+  async fatalError(
+    errors: NodeJS.ErrnoException | NodeJS.ErrnoException[] = [],
+    type: any
+  ) {
     if (!(errors instanceof Array)) errors = [errors];
 
     if (errors) {
@@ -437,7 +443,7 @@ export class Process {
       }
       await utils.sleep(100); // allow time for console.log to print
 
-      if (!errors[0]["code"]) errors[0]["code"] = fatalErrorCode;
+      if (!errors[0].code) errors[0].code = fatalErrorCode;
       throw errors[0];
     }
   }

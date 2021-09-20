@@ -9,7 +9,7 @@ async function exec(
   command,
   args
 ): Promise<{
-  error?: Error;
+  error?: NodeJS.ErrnoException;
   stdout?: string;
   stderr?: string;
 }> {

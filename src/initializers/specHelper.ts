@@ -85,7 +85,7 @@ export class SpecHelper extends Initializer {
 
       async sendFile(
         connection: Connection,
-        error: Error,
+        error: NodeJS.ErrnoException,
         fileStream: EventEmitter,
         mime: string,
         length: number

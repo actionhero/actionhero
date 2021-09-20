@@ -131,7 +131,7 @@ export class StaticFileInitializer extends Initializer {
       api.staticFile.logRequest(file, connection, length, duration, true);
     });
 
-    fileStream.on("error", (error: Error) => {
+    fileStream.on("error", (error: NodeJS.ErrnoException) => {
       throw error;
     });
   };

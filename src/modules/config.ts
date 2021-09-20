@@ -128,7 +128,10 @@ export function buildConfig(_startingParams: Record<string, any> = {}) {
     );
 
     let loadRetries = 0;
-    let loadErrors: Record<string, { error: Error; msg: string }> = {};
+    let loadErrors: Record<
+      string,
+      { error: NodeJS.ErrnoException; msg: string }
+    > = {};
     for (let i = 0, limit = configFiles.length; i < limit; i++) {
       const f = configFiles[i];
       try {
