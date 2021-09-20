@@ -7,6 +7,7 @@ import { config } from "./../modules/config";
 export type ConnectionData = {
   id?: string;
   fingerprint?: string;
+  messageId?: string;
   type: string;
   rawConnection: any;
   remotePort: number | string;
@@ -67,6 +68,8 @@ export class Connection {
   destroyed: boolean;
   /** storage for a response payload */
   response?: Record<string, any>;
+  /** storage for session data */
+  session?: Record<string, any>;
 
   // --- custom methods ---
 
@@ -132,14 +135,15 @@ export class Connection {
       this.fingerprint = data.fingerprint ?? this.id;
       this.remotePort = data.remotePort ?? 0;
       this.remoteIP = data.remoteIP ?? "0";
+      this.messageId = data.messageId ?? "0";
 
       this.connectedAt = new Date().getTime();
       this.error = null;
       this.rooms = [];
       this.params = {};
+      this.session = {};
       this.pendingActions = 0;
       this.totalActions = 0;
-      this.messageId = "0";
       this.canChat = data["canChat"];
       this.destroyed = false;
 

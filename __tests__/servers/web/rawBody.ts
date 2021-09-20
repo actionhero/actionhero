@@ -3,9 +3,9 @@ import * as request from "request-promise-native";
 import { api, Process, config } from "./../../../src/index";
 
 const actionhero = new Process();
-let url;
+let url: string;
 
-const toJson = async (string) => {
+const toJson = async (string: string) => {
   try {
     return JSON.parse(string);
   } catch (error) {
@@ -13,30 +13,28 @@ const toJson = async (string) => {
   }
 };
 
-jest.mock("./../../../src/config/servers/web.ts", () => ({
+jest.mock("./../../../src/config/web.ts", () => ({
   __esModule: true,
   test: {
-    servers: {
-      web: () => {
-        return {
-          enabled: true,
-          saveRawBody: true,
-          automaticRoutes: ["post"],
-          secure: false,
-          urlPathForActions: "api",
-          urlPathForFiles: "public",
-          rootEndpointType: "file",
-          port: 18080 + parseInt(process.env.JEST_WORKER_ID || "0"),
-          matchExtensionMime: true,
-          metadataOptions: {
-            serverInformation: true,
-            requesterInformation: false,
-          },
-          fingerprintOptions: {
-            cookieKey: "sessionID",
-          },
-        };
-      },
+    web: () => {
+      return {
+        enabled: true,
+        saveRawBody: true,
+        automaticRoutes: ["post"],
+        secure: false,
+        urlPathForActions: "api",
+        urlPathForFiles: "public",
+        rootEndpointType: "file",
+        port: 18080 + parseInt(process.env.JEST_WORKER_ID || "0"),
+        matchExtensionMime: true,
+        metadataOptions: {
+          serverInformation: true,
+          requesterInformation: false,
+        },
+        fingerprintOptions: {
+          cookieKey: "sessionID",
+        },
+      };
     },
   },
 }));
