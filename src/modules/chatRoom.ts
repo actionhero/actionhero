@@ -228,26 +228,25 @@ export namespace chatRoom {
       );
     }
 
-    if (connection.rooms.indexOf(room) >= 0) {
+    if (connection.rooms.includes(room)) {
       throw new Error(
         await config.errors.connectionAlreadyInRoom(connection, room)
       );
     }
 
-    if (connection.rooms.indexOf(room) < 0) {
+    if (!connection.rooms.includes(room)) {
       const found = await chatRoom.exists(room);
       if (!found) {
         throw new Error(await config.errors.connectionRoomNotExist(room));
       }
-    }
 
-    if (connection.rooms.indexOf(room) < 0) {
       await api.chatRoom.runMiddleware(connection, room, "join");
-    }
 
-    if (connection.rooms.indexOf(room) < 0) {
+      if (!connection.rooms.includes(room)) {
+        connection.rooms.push(room);
+      }
+
       const memberDetails = await chatRoom.generateMemberDetails(connection);
-      connection.rooms.push(room);
       await client().hset(
         api.chatRoom.keys.members + room,
         connection.id,
@@ -277,26 +276,25 @@ export namespace chatRoom {
       );
     }
 
-    if (connection.rooms.indexOf(room) < 0) {
+    if (!connection.rooms.includes(room)) {
       throw new Error(
         await config.errors.connectionNotInRoom(connection, room)
       );
     }
 
-    if (connection.rooms.indexOf(room) >= 0) {
+    if (connection.rooms.includes(room)) {
       const found = await chatRoom.exists(room);
       if (!found) {
         throw new Error(await config.errors.connectionRoomNotExist(room));
       }
-    }
 
-    if (connection.rooms.indexOf(room) >= 0) {
       await api.chatRoom.runMiddleware(connection, room, "leave");
-    }
 
-    if (connection.rooms.indexOf(room) >= 0) {
-      const index = connection.rooms.indexOf(room);
-      connection.rooms.splice(index, 1);
+      if (connection.rooms.includes(room)) {
+        const index = connection.rooms.indexOf(room);
+        connection.rooms.splice(index, 1);
+      }
+
       await client().hdel(api.chatRoom.keys.members + room, connection.id);
     }
 
