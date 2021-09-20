@@ -240,6 +240,32 @@ describe("Core", () => {
         await chatRoom.destroy("newRoom");
       });
 
+      test("can see the details of the other members in the room", async () => {
+        const client = await specHelper.buildConnection();
+        const otherClient = await specHelper.buildConnection();
+        await chatRoom.add("newRoom");
+        await chatRoom.addMember(client.id, "newRoom");
+        await utils.sleep(100);
+        await chatRoom.addMember(otherClient.id, "newRoom");
+
+        const { members, membersCount } = await chatRoom.roomStatus("newRoom");
+        expect(membersCount).toBe(2);
+        expect(members).toEqual({
+          [client.id]: { id: client.id, joinedAt: expect.any(Number) },
+          [otherClient.id]: {
+            id: otherClient.id,
+            joinedAt: expect.any(Number),
+          },
+        });
+        expect(members[otherClient.id].joinedAt).toBeGreaterThan(
+          members[client.id].joinedAt
+        );
+
+        client.destroy();
+        otherClient.destroy();
+        await chatRoom.destroy("newRoom");
+      });
+
       describe("chat middleware", () => {
         let clientA;
         let clientB;
