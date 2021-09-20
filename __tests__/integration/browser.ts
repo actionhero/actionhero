@@ -28,7 +28,6 @@ describe("browser integration tests", () => {
 
   afterAll(async () => {
     await browser.close();
-    console.log(api.connections);
     await actionhero.stop();
   });
 
