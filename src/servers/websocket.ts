@@ -204,7 +204,7 @@ export class WebSocketServer extends Server {
       const clientJSFullPath = clientJSPath + clientJSName;
       try {
         if (!fs.existsSync(clientJSPath)) {
-          fs.mkdirSync(clientJSPath);
+          fs.mkdirSync(clientJSPath, { recursive: true });
         }
         fs.writeFileSync(clientJSFullPath + ".js", this.renderClientJS());
         log(`wrote ${clientJSFullPath}.js`, "debug");
