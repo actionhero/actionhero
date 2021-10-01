@@ -13,11 +13,13 @@ export class GenerateAction extends CLI {
       name: {
         required: true,
         description: "The name of the Action to Generate",
+        letter: "n",
       },
       description: {
-        required: true,
+        required: false,
         description: "The description of the Action",
         default: "an actionhero action",
+        letter: "d",
       },
     };
   }
