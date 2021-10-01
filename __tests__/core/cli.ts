@@ -193,7 +193,6 @@ describe("Core: CLI", () => {
         expect(error).toBeTruthy();
         expect(error.exitCode).toEqual(1);
         expect(error.stderr).toMatch(/unknown command 'not-a-thing'/);
-        expect(error.stderr).toMatch(/See 'actionhero --help/);
       }
     }, 20000);
 
