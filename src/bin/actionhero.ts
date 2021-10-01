@@ -103,19 +103,24 @@ export namespace ActionheroCLIRunner {
 
     for (const key in instance.inputs) {
       const input = instance.inputs[key];
+
+      if (input.flag && !input.letter) {
+        throw new Error(
+          `flag inputs require a short letter (${JSON.stringify(input)})`
+        );
+      }
+
       const separators = input.required ? ["<", ">"] : ["[", "]"];
       const methodName = input.required ? "requiredOption" : "option";
-      command[methodName](
-        `${input.letter ? `-${input.letter}, ` : ""}--${key} ${
-          input.flag
-            ? ""
-            : `${separators[0]}${input.placeholder || key}${
-                input.variadic ? "..." : ""
-              }${separators[1]}`
-        }`,
-        input.description,
-        input.default
-      );
+      const argString = `${input.letter ? `-${input.letter}, ` : ""}--${key} ${
+        input.flag
+          ? ""
+          : `${separators[0]}${input.placeholder || key}${
+              input.variadic ? "..." : ""
+            }${separators[1]}`
+      }`;
+
+      command[methodName](argString, input.description, input.default);
     }
   }
 

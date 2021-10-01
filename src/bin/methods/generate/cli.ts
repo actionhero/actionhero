@@ -12,16 +12,19 @@ export class GenerateCLI extends CLI {
       name: {
         required: true,
         description: "The name of the CLI Command to generate",
+        letter: "n",
       },
       description: {
         required: false,
         description: "The name of the CLI Command",
         default: "an actionhero cli command",
+        letter: "d",
       },
       example: {
         required: false,
         description: "An example to include for the CLI Command's help",
         default: "actionhero command --option=yes",
+        letter: "e",
       },
     };
   }

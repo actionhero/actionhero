@@ -12,6 +12,7 @@ export class GenerateServer extends CLI {
       name: {
         required: true,
         description: "The name of the Server to generate",
+        letter: "n",
       },
     };
   }
