@@ -34,14 +34,14 @@
     "node": ">=12.0.0"
   },
   "dependencies": {
-    "@types/ioredis": "^4.26.7",
+    "@types/ioredis": "^4.27.5",
     "browser_fingerprint": "^2.0.3",
     "commander": "^7.2.0",
     "dot-prop": "^6.0.1",
     "etag": "^1.8.1",
     "formidable": "^1.2.2",
-    "glob": "^7.1.7",
-    "ioredis": "^4.27.8",
+    "glob": "^7.2.0",
+    "ioredis": "^4.27.9",
     "is-running": "^2.1.0",
     "mime": "^2.5.2",
     "node-resque": "^9.1.1",
@@ -49,26 +49,26 @@
     "qs": "^6.10.1",
     "uuid": "^8.3.2",
     "winston": "^3.3.3",
-    "ws": "^8.2.0",
-    "yargs": "^17.1.1"
+    "ws": "^8.2.2",
+    "yargs": "^17.2.1"
   },
   "devDependencies": {
     "@types/glob": "^7.1.4",
-    "@types/jest": "^27.0.1",
-    "@types/node": "^16.7.1",
+    "@types/jest": "^27.0.2",
+    "@types/node": "^16.10.2",
     "@types/primus": "^7.3.5",
     "@types/puppeteer": "^5.4.4",
     "@types/uuid": "^8.3.1",
     "ioredis-mock": "^5.6.0",
-    "jest": "^27.0.6",
-    "prettier": "^2.3.2",
-    "puppeteer": "^10.2.0",
+    "jest": "^27.2.4",
+    "prettier": "^2.4.1",
+    "puppeteer": "^10.4.0",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9",
     "ts-jest": "^27.0.5",
     "ts-node-dev": "^1.1.8",
-    "typedoc": "^0.22.3",
-    "typescript": "^4.3.5"
+    "typedoc": "^0.22.4",
+    "typescript": "^4.4.3"
   },
   "bin": {
     "actionhero": "dist/bin/actionhero.js"
