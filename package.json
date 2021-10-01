@@ -36,7 +36,7 @@
   "dependencies": {
     "@types/ioredis": "^4.27.5",
     "browser_fingerprint": "^2.0.3",
-    "commander": "^7.2.0",
+    "commander": "^8.2.0",
     "dot-prop": "^6.0.1",
     "etag": "^1.8.1",
     "formidable": "^1.2.2",
