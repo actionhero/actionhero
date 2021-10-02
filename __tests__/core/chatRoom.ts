@@ -5,6 +5,7 @@ import {
   utils,
   specHelper,
   chatRoom,
+  Connection,
 } from "./../../src/index";
 
 const actionhero = new Process();
@@ -310,7 +311,7 @@ describe("Core", () => {
             name: "add chat middleware",
             join: async (connection, room) => {
               await chatRoom.broadcast(
-                {},
+                {} as Connection,
                 room,
                 `I have entered the room: ${connection.id}`
               );
@@ -321,7 +322,7 @@ describe("Core", () => {
             name: "leave chat middleware",
             leave: async (connection, room) => {
               await chatRoom.broadcast(
-                {},
+                {} as Connection,
                 room,
                 `I have left the room: ${connection.id}`
               );

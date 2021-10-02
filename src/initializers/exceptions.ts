@@ -1,18 +1,18 @@
-import { api, log, Initializer } from "../index";
+import { api, log, Initializer, config } from "../index";
 import { ExceptionReporter } from "../classes/exceptionReporter";
 
 export interface ExceptionHandlerAPI {
   reporters: Array<ExceptionReporter>;
   report: ExceptionReporter;
-  initializer?: (error: Error, filePath: string) => void;
-  action?: (error: Error, logLine: { [key: string]: any }) => void;
-  task?: (error: Error, queue: string, task: any, workerId: number) => void;
+  initializer: ExceptionsInitializer["initializer"];
+  action: ExceptionsInitializer["action"];
+  task: ExceptionsInitializer["task"];
 }
 
 /**
  * Handlers for when things go wrong.
  */
-export class Exceptions extends Initializer {
+export class ExceptionsInitializer extends Initializer {
   constructor() {
     super();
     this.name = "exceptions";
@@ -22,54 +22,10 @@ export class Exceptions extends Initializer {
   async initialize(config) {
     api.exceptionHandlers = {
       reporters: [],
-      report: (error, type, name, objects?, severity?) => {
-        if (!severity) severity = "error";
-
-        for (const reporter of api.exceptionHandlers.reporters) {
-          reporter(error, type, name, objects, severity);
-        }
-      },
-    };
-
-    api.exceptionHandlers.initializer = (error, fullFilePath) => {
-      const name = "initializer:" + fullFilePath;
-      api.exceptionHandlers.report(
-        error,
-        "initializer",
-        name,
-        { fullFilePath: fullFilePath },
-        "alert"
-      );
-    };
-
-    api.exceptionHandlers.action = (
-      error,
-      { to, action, params, duration, response }
-    ) => {
-      api.exceptionHandlers.report(
-        error,
-        "action",
-        `action: ${action}`,
-        { to, action, params, duration, error, response },
-        "alert"
-      );
-    };
-
-    api.exceptionHandlers.task = (error, queue, task, workerId) => {
-      let simpleName;
-      try {
-        simpleName = task.class;
-      } catch (e) {
-        simpleName = error.message;
-      }
-      const name = "task:" + simpleName;
-      api.exceptionHandlers.report(
-        error,
-        "task",
-        name,
-        { task: task, queue: queue, workerId: workerId },
-        config.tasks.workerLogging.failure
-      );
+      report: this.report,
+      initializer: this.initializer,
+      action: this.action,
+      task: this.task,
     };
 
     const consoleReporter: ExceptionReporter = (
@@ -121,5 +77,51 @@ export class Exceptions extends Initializer {
     };
 
     api.exceptionHandlers.reporters.push(consoleReporter);
+  }
+
+  report(error, type, name, objects?, severity?) {
+    if (!severity) severity = "error";
+
+    for (const reporter of api.exceptionHandlers.reporters) {
+      reporter(error, type, name, objects, severity);
+    }
+  }
+
+  initializer(error, fullFilePath) {
+    const name = "initializer:" + fullFilePath;
+    api.exceptionHandlers.report(
+      error,
+      "initializer",
+      name,
+      { fullFilePath: fullFilePath },
+      "alert"
+    );
+  }
+
+  action(error, { to, action, params, duration, response }) {
+    api.exceptionHandlers.report(
+      error,
+      "action",
+      `action: ${action}`,
+      { to, action, params, duration, error, response },
+      "alert"
+    );
+  }
+
+  task(error, queue, task, workerId) {
+    let simpleName;
+    try {
+      simpleName = task.class;
+    } catch (e) {
+      simpleName = error.message;
+    }
+    const name = "task:" + simpleName;
+    api.exceptionHandlers.report(
+      error,
+      "task",
+      name,
+      { task: task, queue: queue, workerId: workerId },
+      config.tasks.workerLogging.failure
+    );
   }
 }

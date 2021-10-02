@@ -3,13 +3,13 @@ import { api, utils, Initializer } from "../index";
 export interface ParamsApi {
   globalSafeParams?: Array<string>;
   postVariables: Array<string>;
-  buildPostVariables?: Function;
+  buildPostVariables: ParamsInitializer["buildPostVariables"];
 }
 
 /**
  * Collects and formats allowed params for this server.
  */
-export class Params extends Initializer {
+export class ParamsInitializer extends Initializer {
   constructor() {
     super();
     this.name = "params";
@@ -19,6 +19,7 @@ export class Params extends Initializer {
   async initialize() {
     api.params = {
       postVariables: [],
+      buildPostVariables: this.buildPostVariables,
     };
 
     // special params we will always accept
@@ -29,27 +30,27 @@ export class Params extends Initializer {
       "action",
       "messageId",
     ];
+  }
 
-    api.params.buildPostVariables = () => {
-      const postVariables = [];
-      let i;
-      let j;
+  buildPostVariables() {
+    const postVariables = [];
+    let i: string;
+    let j: string;
 
-      api.params.globalSafeParams.forEach((p) => {
-        postVariables.push(p);
-      });
+    api.params.globalSafeParams.forEach((p) => {
+      postVariables.push(p);
+    });
 
-      for (i in api.actions.actions) {
-        for (j in api.actions.actions[i]) {
-          const action = api.actions.actions[i][j];
-          for (const key in action.inputs) {
-            postVariables.push(key);
-          }
+    for (i in api.actions.actions) {
+      for (j in api.actions.actions[i]) {
+        const action = api.actions.actions[i][j];
+        for (const key in action.inputs) {
+          postVariables.push(key);
         }
       }
+    }
 
-      api.params.postVariables = utils.arrayUnique(postVariables);
-      return api.params.postVariables;
-    };
+    api.params.postVariables = utils.arrayUnique(postVariables);
+    return api.params.postVariables;
   }
 }

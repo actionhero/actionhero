@@ -2,6 +2,23 @@ import * as uuid from "uuid";
 import { api, chatRoom } from "./../index";
 import { config } from "./../modules/config";
 
+export const ConnectionVerbs = [
+  "quit",
+  "exit",
+  "documentation",
+  "paramAdd",
+  "paramDelete",
+  "paramView",
+  "paramsView",
+  "paramsDelete",
+  "roomAdd",
+  "roomLeave",
+  "roomView",
+  "detailsView",
+  "say",
+] as const;
+export type ConnectionVerb = typeof ConnectionVerbs[number];
+
 /**
  * The generic representation of a connection for all server types is an Actionhero.Connection.  You will never be creating these yourself via an action or task, but you will find them in your Actions and Action Middleware.
  */

@@ -1,5 +1,6 @@
 import { api } from "../index";
 import type { ActionheroLogLevel } from "../modules/log";
+import { ConnectionVerb } from "./connection";
 import { Inputs } from "./inputs";
 
 /**
@@ -89,7 +90,7 @@ export abstract class Action {
     }
     if (
       api.connections &&
-      api.connections.allowedVerbs.indexOf(this.name) >= 0
+      api.connections.allowedVerbs.indexOf(this.name as ConnectionVerb) >= 0
     ) {
       throw new Error(
         `action \`${this.name}\` is a reserved verb for connections. choose a new name`

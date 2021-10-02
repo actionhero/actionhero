@@ -49,12 +49,12 @@ export namespace chatRoom {
   }
 
   export interface ChatPubSubMessage extends RedisModule.redis.PubSubMessage {
-    messageType: string;
-    serverToken: string;
-    serverId: string | number;
-    message: any;
-    sentAt: number;
-    connection: {
+    messageType?: string;
+    serverToken?: string;
+    serverId?: string | number;
+    message?: any;
+    sentAt?: number;
+    connection?: {
       id: string;
       room: string;
     };
@@ -120,7 +120,7 @@ export namespace chatRoom {
     const found = await chatRoom.exists(room);
     if (found === true) {
       await api.chatRoom.broadcast(
-        {},
+        {} as Connection,
         room,
         await config.errors.connectionRoomHasBeenDeleted(room)
       );
@@ -311,7 +311,7 @@ export namespace chatRoom {
    * - message can be anything: string, json, object, etc
    */
   export async function broadcast(
-    connection: Connection | { [key: string]: any },
+    connection: Connection,
     room: string,
     message: any
   ) {

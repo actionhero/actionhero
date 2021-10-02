@@ -11,17 +11,23 @@ export interface RedisApi {
     [key: string]: Function;
   };
   rpcCallbacks: {
-    [key: string]: any;
+    [key: string]: {
+      resolve: Function;
+      reject: Function;
+      timer: NodeJS.Timeout;
+    };
   };
   status: {
     subscribed: boolean;
   };
+  do: RedisInitializer["do"];
+  doResponse: RedisInitializer["doResponse"];
 }
 
 /**
  * Redis helpers and connections.
  */
-export class Redis extends Initializer {
+export class RedisInitializer extends Initializer {
   constructor() {
     super();
     this.name = "redis";
@@ -38,51 +44,8 @@ export class Redis extends Initializer {
       status: {
         subscribed: false,
       },
-    };
-
-    api.redis.subscriptionHandlers.do = async (
-      message: RedisModule.redis.PubSubMessage
-    ) => {
-      if (
-        !message.connectionId ||
-        (api.connections && api.connections.connections[message.connectionId])
-      ) {
-        const cmdParts = message.method.split(".");
-        const cmd = cmdParts.shift();
-        if (cmd !== "api") {
-          throw new Error(
-            "cannot operate on a method outside of the api object"
-          );
-        }
-
-        const callableApi = Object.assign(api, { log });
-
-        const method: Function = dotProp.get(callableApi, cmdParts.join("."));
-        let args = message.args;
-        if (args === null) {
-          args = [];
-        }
-        if (!Array.isArray(args)) {
-          args = [args];
-        }
-        if (method) {
-          const response = await method.apply(null, args);
-          await redis.respondCluster(message.messageId, response);
-        } else {
-          log("RPC method `" + cmdParts.join(".") + "` not found", "crit");
-        }
-      }
-    };
-
-    api.redis.subscriptionHandlers.doResponse = function (
-      message: RedisModule.redis.PubSubMessage
-    ) {
-      if (api.redis.rpcCallbacks[message.messageId]) {
-        const { resolve, timer } = api.redis.rpcCallbacks[message.messageId];
-        clearTimeout(timer);
-        resolve(message.response);
-        delete api.redis.rpcCallbacks[message.messageId];
-      }
+      do: this.do,
+      doResponse: this.doResponse,
     };
 
     const connectionNames = ["client", "subscriber", "tasks"];
@@ -186,6 +149,45 @@ export class Redis extends Initializer {
       } else if (typeof client.disconnect === "function") {
         await client.disconnect();
       }
+    }
+  }
+
+  async do(message: RedisModule.redis.PubSubMessage) {
+    if (
+      !message.connectionId ||
+      (api.connections && api.connections.connections[message.connectionId])
+    ) {
+      const cmdParts = message.method.split(".");
+      const cmd = cmdParts.shift();
+      if (cmd !== "api") {
+        throw new Error("cannot operate on a method outside of the api object");
+      }
+
+      const callableApi = Object.assign(api, { log });
+
+      const method: Function = dotProp.get(callableApi, cmdParts.join("."));
+      let args = message.args;
+      if (args === null) {
+        args = [];
+      }
+      if (!Array.isArray(args)) {
+        args = [args];
+      }
+      if (method) {
+        const response = await method.apply(null, args);
+        await redis.respondCluster(message.messageId, response);
+      } else {
+        log("RPC method `" + cmdParts.join(".") + "` not found", "crit");
+      }
+    }
+  }
+
+  doResponse(message: RedisModule.redis.PubSubMessage) {
+    if (api.redis.rpcCallbacks[message.messageId]) {
+      const { resolve, timer } = api.redis.rpcCallbacks[message.messageId];
+      clearTimeout(timer);
+      resolve(message.response);
+      delete api.redis.rpcCallbacks[message.messageId];
     }
   }
 }

@@ -1,5 +1,5 @@
 import * as uuid from "uuid";
-import { api, log, env, Initializer, Server, Connection } from "../index";
+import { api, log, env, Initializer, Server } from "../index";
 
 export interface SpecHelperApi {
   returnMetadata?: boolean;

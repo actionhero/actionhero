@@ -5,7 +5,14 @@
 "use strict";
 // we need to use 'use strict' here because we are relying on EVAL to load a variable
 
-import { api, Process, config, chatRoom, utils } from "./../../src/index";
+import {
+  api,
+  Process,
+  config,
+  chatRoom,
+  utils,
+  Connection,
+} from "./../../src/index";
 
 const actionhero = new Process();
 let clientA;
@@ -265,7 +272,7 @@ describe("Server: Web Socket", () => {
           name: "join chat middleware",
           join: async (connection, room) => {
             await api.chatRoom.broadcast(
-              {},
+              {} as Connection,
               room,
               `I have entered the room: ${connection.id}`
             );
@@ -276,7 +283,7 @@ describe("Server: Web Socket", () => {
           name: "leave chat middleware",
           leave: async (connection, room) => {
             api.chatRoom.broadcast(
-              {},
+              {} as Connection,
               room,
               `I have left the room: ${connection.id}`
             );
