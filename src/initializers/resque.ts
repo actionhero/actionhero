@@ -1,5 +1,5 @@
 import { Queue, Scheduler, MultiWorker, ParsedJob } from "node-resque";
-import { api, log, utils, Initializer, config } from "../index";
+import { api, log, utils, Initializer } from "../index";
 
 export interface ResqueApi {
   connectionDetails: {
@@ -23,6 +23,8 @@ export interface ResqueApi {
  * see https://github.com/actionhero/node-resque
  */
 export class ResqueInitializer extends Initializer {
+  config: any;
+
   constructor() {
     super();
     this.name = "resque";
@@ -31,17 +33,19 @@ export class ResqueInitializer extends Initializer {
     this.stopPriority = 100;
   }
 
-  async initialize() {
+  async initialize(config) {
+    this.config = config;
+
     api.resque = {
       queue: null,
       multiWorker: null,
       scheduler: null,
-      startQueue: this.startQueue,
-      stopQueue: this.stopQueue,
-      startScheduler: this.startScheduler,
-      stopScheduler: this.stopScheduler,
-      startMultiWorker: this.startMultiWorker,
-      stopMultiWorker: this.stopMultiWorker,
+      startQueue: this.startQueue.bind(this),
+      stopQueue: this.stopQueue.bind(this),
+      startScheduler: this.startScheduler.bind(this),
+      stopScheduler: this.stopScheduler.bind(this),
+      startMultiWorker: this.startMultiWorker.bind(this),
+      stopMultiWorker: this.stopMultiWorker.bind(this),
       connectionDetails: Object.assign(
         {},
         config.tasks.connectionOptions.tasks,
@@ -76,7 +80,7 @@ export class ResqueInitializer extends Initializer {
 
   async startQueue() {
     let ActionheroQueue = Queue;
-    const resqueOverrides = config.tasks.resque_overrides;
+    const resqueOverrides = this.config.tasks.resque_overrides;
 
     if (resqueOverrides && resqueOverrides.queue) {
       ActionheroQueue = resqueOverrides.queue;
@@ -101,18 +105,18 @@ export class ResqueInitializer extends Initializer {
 
   async startScheduler() {
     let ActionheroScheduler = Scheduler;
-    const resqueOverrides = config.tasks.resque_overrides;
+    const resqueOverrides = this.config.tasks.resque_overrides;
 
     if (resqueOverrides && resqueOverrides.scheduler) {
       ActionheroScheduler = resqueOverrides.scheduler;
     }
-    if (config.tasks.scheduler === true) {
-      api.resque.schedulerLogging = config.tasks.schedulerLogging;
+    if (this.config.tasks.scheduler === true) {
+      api.resque.schedulerLogging = this.config.tasks.schedulerLogging;
       api.resque.scheduler = new ActionheroScheduler({
         connection: api.resque.connectionDetails,
-        timeout: config.tasks.timeout,
-        stuckWorkerTimeout: config.tasks.stuckWorkerTimeout,
-        retryStuckJobs: config.tasks.retryStuckJobs,
+        timeout: this.config.tasks.timeout,
+        stuckWorkerTimeout: this.config.tasks.stuckWorkerTimeout,
+        retryStuckJobs: this.config.tasks.retryStuckJobs,
       });
 
       api.resque.scheduler.on("error", (error) => {
@@ -155,25 +159,25 @@ export class ResqueInitializer extends Initializer {
 
   async startMultiWorker() {
     let ActionheroMultiWorker = MultiWorker;
-    const resqueOverrides = config.tasks.resque_overrides;
+    const resqueOverrides = this.config.tasks.resque_overrides;
 
     if (resqueOverrides && resqueOverrides.multiWorker) {
       ActionheroMultiWorker = resqueOverrides.multiWorker;
     }
-    api.resque.workerLogging = config.tasks.workerLogging;
-    api.resque.schedulerLogging = config.tasks.schedulerLogging;
+    api.resque.workerLogging = this.config.tasks.workerLogging;
+    api.resque.schedulerLogging = this.config.tasks.schedulerLogging;
 
     api.resque.multiWorker = new ActionheroMultiWorker(
       {
         connection: api.resque.connectionDetails,
-        queues: Array.isArray(config.tasks.queues)
-          ? config.tasks.queues
-          : await config.tasks.queues(),
-        timeout: config.tasks.timeout,
-        checkTimeout: config.tasks.checkTimeout,
-        minTaskProcessors: config.tasks.minTaskProcessors,
-        maxTaskProcessors: config.tasks.maxTaskProcessors,
-        maxEventLoopDelay: config.tasks.maxEventLoopDelay,
+        queues: Array.isArray(this.config.tasks.queues)
+          ? this.config.tasks.queues
+          : await this.config.tasks.queues(),
+        timeout: this.config.tasks.timeout,
+        checkTimeout: this.config.tasks.checkTimeout,
+        minTaskProcessors: this.config.tasks.minTaskProcessors,
+        maxTaskProcessors: this.config.tasks.maxTaskProcessors,
+        maxEventLoopDelay: this.config.tasks.maxEventLoopDelay,
       },
       api.tasks.jobs
     );
@@ -254,7 +258,10 @@ export class ResqueInitializer extends Initializer {
 
     // multiWorker emitters
     api.resque.multiWorker.on("multiWorkerAction", (verb, delay) => {
-      if (config.tasks.minTaskProcessors === config.tasks.maxTaskProcessors) {
+      if (
+        this.config.tasks.minTaskProcessors ===
+        this.config.tasks.maxTaskProcessors
+      ) {
         // if we aren't trying to autoscale the workers, no need to log
         return;
       }
@@ -265,13 +272,13 @@ export class ResqueInitializer extends Initializer {
       );
     });
 
-    if (config.tasks.minTaskProcessors > 0) {
+    if (this.config.tasks.minTaskProcessors > 0) {
       api.resque.multiWorker.start();
     }
   }
 
   async stopMultiWorker() {
-    if (api.resque.multiWorker && config.tasks.minTaskProcessors > 0) {
+    if (api.resque.multiWorker && this.config.tasks.minTaskProcessors > 0) {
       return api.resque.multiWorker.stop();
     }
   }

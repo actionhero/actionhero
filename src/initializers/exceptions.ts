@@ -1,4 +1,4 @@
-import { api, log, Initializer, config } from "../index";
+import { api, log, Initializer } from "../index";
 import { ExceptionReporter } from "../classes/exceptionReporter";
 
 export interface ExceptionHandlerAPI {
@@ -13,6 +13,8 @@ export interface ExceptionHandlerAPI {
  * Handlers for when things go wrong.
  */
 export class ExceptionsInitializer extends Initializer {
+  config: any;
+
   constructor() {
     super();
     this.name = "exceptions";
@@ -20,12 +22,14 @@ export class ExceptionsInitializer extends Initializer {
   }
 
   async initialize(config) {
+    this.config = config;
+
     api.exceptionHandlers = {
       reporters: [],
-      report: this.report,
-      initializer: this.initializer,
-      action: this.action,
-      task: this.task,
+      report: this.report.bind(this),
+      initializer: this.initializer.bind(this),
+      action: this.action.bind(this),
+      task: this.task.bind(this),
     };
 
     const consoleReporter: ExceptionReporter = (
@@ -121,7 +125,7 @@ export class ExceptionsInitializer extends Initializer {
       "task",
       name,
       { task: task, queue: queue, workerId: workerId },
-      config.tasks.workerLogging.failure
+      this.config.tasks.workerLogging.failure
     );
   }
 }

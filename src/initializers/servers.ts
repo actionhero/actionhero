@@ -1,6 +1,6 @@
 import * as path from "path";
 import * as glob from "glob";
-import { api, log, utils, Initializer, Server, config } from "../index";
+import { api, log, utils, Initializer, Server } from "../index";
 
 export interface ServersApi {
   servers: {
@@ -20,7 +20,7 @@ export class Servers extends Initializer {
     this.stopPriority = 100;
   }
 
-  async initialize() {
+  async initialize(config) {
     api.servers = {
       servers: {},
     };

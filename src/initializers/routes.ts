@@ -1,5 +1,5 @@
 import * as path from "path";
-import { api, log, utils, route, Initializer, config } from "../index";
+import { api, log, utils, route, Initializer } from "../index";
 
 export interface RoutesApi {
   routes: { [key: string]: any };
@@ -13,6 +13,8 @@ export interface RoutesApi {
  * Contains routing options for web clients.  Can associate routes with actions or files.
  */
 export class RoutesInitializer extends Initializer {
+  config: any;
+
   constructor() {
     super();
     this.name = "routes";
@@ -20,12 +22,14 @@ export class RoutesInitializer extends Initializer {
   }
 
   async initialize(config) {
+    this.config = config;
+
     api.routes = {
       routes: {},
       verbs: ["head", "get", "post", "put", "patch", "delete"],
-      processRoute: this.processRoute,
-      matchURL: this.matchURL,
-      loadRoutes: this.loadRoutes,
+      processRoute: this.processRoute.bind(this),
+      matchURL: this.matchURL.bind(this),
+      loadRoutes: this.loadRoutes.bind(this),
     };
 
     api.routes.loadRoutes();
@@ -172,9 +176,7 @@ export class RoutesInitializer extends Initializer {
     });
 
     if (!rawRoutes) {
-      if (config.routes) {
-        rawRoutes = config.routes;
-      }
+      if (this.config.routes) rawRoutes = this.config.routes;
     }
 
     let v: string;
@@ -212,10 +214,10 @@ export class RoutesInitializer extends Initializer {
     api.params.postVariables = utils.arrayUnique(api.params.postVariables);
 
     if (
-      config.servers.web &&
-      Array.isArray(config.servers.web.automaticRoutes)
+      this.config.servers.web &&
+      Array.isArray(this.config.servers.web.automaticRoutes)
     ) {
-      config.servers.web.automaticRoutes.forEach((verb: string) => {
+      this.config.servers.web.automaticRoutes.forEach((verb: string) => {
         if (!api.routes.verbs.includes(verb)) {
           throw new Error(`${verb} is not an HTTP verb`);
         }

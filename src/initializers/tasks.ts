@@ -2,7 +2,7 @@ import * as glob from "glob";
 import * as path from "path";
 import { Plugin } from "node-resque";
 import * as TaskModule from "./../modules/task";
-import { api, log, utils, task, Initializer, config } from "../index";
+import { api, log, utils, task, Initializer } from "../index";
 import { Task } from "../classes/task";
 
 const taskModule = task;
@@ -21,6 +21,8 @@ export interface TaskApi {
  * Tools for enqueuing and inspecting the task system (delayed jobs).
  */
 export class TasksInitializer extends Initializer {
+  config: any;
+
   constructor() {
     super();
     this.name = "tasks";
@@ -29,14 +31,16 @@ export class TasksInitializer extends Initializer {
   }
 
   async initialize(config) {
+    this.config = config;
+
     api.tasks = {
       tasks: {},
       jobs: {},
       middleware: {},
       globalMiddleware: [],
-      loadFile: this.loadFile,
-      jobWrapper: this.jobWrapper,
-      loadTasks: this.loadTasks,
+      loadFile: this.loadFile.bind(this),
+      jobWrapper: this.jobWrapper.bind(this),
+      loadTasks: this.loadTasks.bind(this),
     };
 
     await api.tasks.loadTasks(false);
@@ -154,8 +158,8 @@ export class TasksInitializer extends Initializer {
   }
 
   async loadTasks(reload: boolean) {
-    for (const i in config.general.paths.task) {
-      const p = config.general.paths.task[i];
+    for (const i in this.config.general.paths.task) {
+      const p = this.config.general.paths.task[i];
       await Promise.all(
         utils
           .ensureNoTsHeaderFiles(
@@ -165,9 +169,9 @@ export class TasksInitializer extends Initializer {
       );
     }
 
-    for (const pluginName in config.plugins) {
-      if (config.plugins[pluginName].tasks !== false) {
-        const pluginPath = config.plugins[pluginName].path;
+    for (const pluginName in this.config.plugins) {
+      if (this.config.plugins[pluginName].tasks !== false) {
+        const pluginPath = this.config.plugins[pluginName].path;
 
         // old style at the root of the project
         let files = glob.sync(path.join(pluginPath, "tasks", "**", "*.js"));

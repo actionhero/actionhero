@@ -1,4 +1,4 @@
-import { api, id, log, chatRoom, redis, Initializer, config } from "../index";
+import { api, id, log, chatRoom, redis, Initializer } from "../index";
 import { Connection } from "../classes/connection";
 import * as ChatModule from "./../modules/chatRoom";
 
@@ -9,17 +9,19 @@ export interface ChatRoomApi {
   globalMiddleware: Array<string>;
   keys: { [keys: string]: string };
   messageChannel: string;
-  broadcast?: ChatRoomInitializer["broadcast"];
-  generateMessagePayload?: ChatRoomInitializer["generateMessagePayload"];
-  incomingMessage?: ChatRoomInitializer["incomingMessage"];
-  incomingMessagePerConnection?: ChatRoomInitializer["incomingMessagePerConnection"];
-  runMiddleware?: ChatRoomInitializer["runMiddleware"];
+  broadcast: ChatRoomInitializer["broadcast"];
+  generateMessagePayload: ChatRoomInitializer["generateMessagePayload"];
+  incomingMessage: ChatRoomInitializer["incomingMessage"];
+  incomingMessagePerConnection: ChatRoomInitializer["incomingMessagePerConnection"];
+  runMiddleware: ChatRoomInitializer["runMiddleware"];
 }
 
 /**
  * Chat & Realtime Communication Methods
  */
 export class ChatRoomInitializer extends Initializer {
+  config: any;
+
   constructor() {
     super();
     this.name = "chatRoom";
@@ -27,7 +29,9 @@ export class ChatRoomInitializer extends Initializer {
     this.startPriority = 200;
   }
 
-  async initialize() {
+  async initialize(config) {
+    this.config = config;
+
     api.chatRoom = {
       middleware: {},
       globalMiddleware: [],
@@ -36,14 +40,16 @@ export class ChatRoomInitializer extends Initializer {
         rooms: "actionhero:chatRoom:rooms",
         members: "actionhero:chatRoom:members:",
       },
-      broadcast: this.broadcast,
-      generateMessagePayload: this.generateMessagePayload,
-      incomingMessage: this.incomingMessage,
-      incomingMessagePerConnection: this.incomingMessagePerConnection,
+      broadcast: this.broadcast.bind(this),
+      generateMessagePayload: this.generateMessagePayload.bind(this),
+      incomingMessage: this.incomingMessage.bind(this),
+      runMiddleware: this.runMiddleware.bind(this),
+      incomingMessagePerConnection:
+        this.incomingMessagePerConnection.bind(this),
     };
   }
 
-  async start() {
+  async start(config) {
     api.redis.subscriptionHandlers.chat = (message) => {
       if (api.chatRoom) {
         api.chatRoom.incomingMessage(message);
@@ -78,14 +84,14 @@ export class ChatRoomInitializer extends Initializer {
     message: Record<string, any> | Array<any> | string
   ) {
     if (!room || !message) {
-      throw new Error(config.errors.connectionRoomAndMessage(connection));
+      throw new Error(this.config.errors.connectionRoomAndMessage(connection));
     } else if (
       connection.rooms === undefined ||
       connection.rooms.indexOf(room) > -1
     ) {
       const payload: ChatModule.chatRoom.ChatPubSubMessage = {
         messageType: "chat",
-        serverToken: config.general.serverToken,
+        serverToken: this.config.general.serverToken,
         serverId: id,
         message: message,
         sentAt: new Date().getTime(),
@@ -104,7 +110,7 @@ export class ChatRoomInitializer extends Initializer {
       );
       const payloadToSend: ChatModule.chatRoom.ChatPubSubMessage = {
         messageType: "chat",
-        serverToken: config.general.serverToken,
+        serverToken: this.config.general.serverToken,
         serverId: id,
         message: newPayload.message,
         sentAt: newPayload.sentAt,
@@ -116,7 +122,7 @@ export class ChatRoomInitializer extends Initializer {
 
       await redis.publish(payloadToSend);
     } else {
-      throw new Error(config.errors.connectionNotInRoom(connection, room));
+      throw new Error(this.config.errors.connectionNotInRoom(connection, room));
     }
   }
 

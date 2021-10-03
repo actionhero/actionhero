@@ -30,7 +30,7 @@ export class ActionsInitializer extends Initializer {
       versions: {},
       middleware: {},
       globalMiddleware: [],
-      loadFile: this.loadFile,
+      loadFile: this.loadFile.bind(this),
     };
 
     for (const p of config.general.paths.action) {

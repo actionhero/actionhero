@@ -1,5 +1,5 @@
 import { ConnectionVerbs } from "../classes/connection";
-import { api, redis, Initializer, Connection, config } from "../index";
+import { api, redis, Initializer, Connection } from "../index";
 
 /**
  * ```js
@@ -41,29 +41,33 @@ export interface ConnectionsApi {
 }
 
 export class ConnectionsInitializer extends Initializer {
+  config: any;
+
   constructor() {
     super();
     this.name = "connections";
     this.loadPriority = 400;
   }
 
-  async initialize() {
+  async initialize(config) {
+    this.config = config;
+
     api.connections = <ConnectionsApi>{
       connections: {},
       middleware: {},
       globalMiddleware: [],
       allowedVerbs: ConnectionVerbs,
-      apply: this.apply,
-      applyResponder: this.applyResponder,
-      addMiddleware: this.addMiddleware,
-      cleanConnection: this.cleanConnection,
+      apply: this.apply.bind(this),
+      applyResponder: this.applyResponder.bind(this),
+      addMiddleware: this.addMiddleware.bind(this),
+      cleanConnection: this.cleanConnection.bind(this),
     };
   }
 
   /**
    * Find a connection on any server in the cluster and call a method on it.
    */
-  async apply(connectionId: string, method: string, args: any) {
+  async app`ly(connectionId: string, method: string, args: any) {
     return redis.doCluster(
       "api.connections.applyResponder",
       [connectionId, method, args],
@@ -96,7 +100,7 @@ export class ConnectionsInitializer extends Initializer {
       throw new Error("middleware.name is required");
     }
     if (!data.priority) {
-      data.priority = config.general.defaultMiddlewarePriority;
+      data.priority = this.config.general.defaultMiddlewarePriority;
     }
     data.priority = Number(data.priority);
     api.connections.middleware[data.name] = data;

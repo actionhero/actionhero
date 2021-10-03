@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as Mime from "mime";
-import { api, log, Initializer, config } from "../index";
+import { api, log, Initializer } from "../index";
 import { Connection } from "./../classes/connection";
 
 async function asyncStats(file: string): Promise<{ [key: string]: any }> {
@@ -41,6 +41,8 @@ export interface StaticFileApi {
  * Contains helpers for returning flies to connections.
  */
 export class StaticFileInitializer extends Initializer {
+  config: any;
+
   constructor() {
     super();
     this.name = "staticFile";
@@ -48,15 +50,17 @@ export class StaticFileInitializer extends Initializer {
   }
 
   async initialize(config) {
+    this.config = config;
+
     api.staticFile = {
       searchLocations: [],
-      get: this.get,
-      sendFile: this.sendFile,
-      searchPath: this.searchPath,
-      checkExistence: this.checkExistence,
-      sendFileNotFound: this.sendFileNotFound,
-      logRequest: this.logRequest,
-      fileLogger: this.fileLogger,
+      get: this.get.bind(this),
+      sendFile: this.sendFile.bind(this),
+      searchPath: this.searchPath.bind(this),
+      checkExistence: this.checkExistence.bind(this),
+      sendFileNotFound: this.sendFileNotFound.bind(this),
+      logRequest: this.logRequest.bind(this),
+      fileLogger: this.fileLogger.bind(this),
     };
 
     // load in the explicit public paths first
@@ -100,7 +104,7 @@ export class StaticFileInitializer extends Initializer {
     if (!connection.params.file || !api.staticFile.searchPath(counter)) {
       return api.staticFile.sendFileNotFound(
         connection,
-        await config.errors.fileNotProvided(connection)
+        await this.config.errors.fileNotProvided(connection)
       );
     }
 
@@ -160,7 +164,7 @@ export class StaticFileInitializer extends Initializer {
     } catch (error) {
       return api.staticFile.sendFileNotFound(
         connection,
-        await config.errors.fileReadError(connection, String(error))
+        await this.config.errors.fileReadError(connection, String(error))
       );
     }
   }
@@ -187,9 +191,9 @@ export class StaticFileInitializer extends Initializer {
     api.staticFile.logRequest("{not found}", connection, null, null, false);
     return {
       connection,
-      error: await config.errors.fileNotFound(connection),
+      error: await this.config.errors.fileNotFound(connection),
       mime: "text/html",
-      length: await config.errors.fileNotFound(connection).length,
+      length: await this.config.errors.fileNotFound(connection).length,
     };
   }
 
@@ -198,7 +202,7 @@ export class StaticFileInitializer extends Initializer {
       const stats = await asyncStats(file);
 
       if (stats.isDirectory()) {
-        const indexPath = file + "/" + config.general.directoryFileType;
+        const indexPath = file + "/" + this.config.general.directoryFileType;
         return api.staticFile.checkExistence(indexPath);
       }
 
@@ -225,13 +229,17 @@ export class StaticFileInitializer extends Initializer {
     duration: number,
     success: boolean
   ) {
-    log(`[ file @ ${connection.type} ]`, config.general.fileRequestLogLevel, {
-      to: connection.remoteIP,
-      file: file,
-      requestedFile: connection.params.file,
-      size: length,
-      duration: duration,
-      success: success,
-    });
+    log(
+      `[ file @ ${connection.type} ]`,
+      this.config.general.fileRequestLogLevel,
+      {
+        to: connection.remoteIP,
+        file: file,
+        requestedFile: connection.params.file,
+        size: length,
+        duration: duration,
+        success: success,
+      }
+    );
   }
 }

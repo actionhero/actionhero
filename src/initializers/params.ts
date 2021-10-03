@@ -19,7 +19,7 @@ export class ParamsInitializer extends Initializer {
   async initialize() {
     api.params = {
       postVariables: [],
-      buildPostVariables: this.buildPostVariables,
+      buildPostVariables: this.buildPostVariables.bind(this),
     };
 
     // special params we will always accept

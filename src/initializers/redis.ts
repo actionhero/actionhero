@@ -44,8 +44,8 @@ export class RedisInitializer extends Initializer {
       status: {
         subscribed: false,
       },
-      do: this.do,
-      doResponse: this.doResponse,
+      do: this.do.bind(this),
+      doResponse: this.doResponse.bind(this),
     };
 
     const connectionNames = ["client", "subscriber", "tasks"];
