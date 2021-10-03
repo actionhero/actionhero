@@ -67,7 +67,7 @@ export class ConnectionsInitializer extends Initializer {
   /**
    * Find a connection on any server in the cluster and call a method on it.
    */
-  async app`ly(connectionId: string, method: string, args: any) {
+  async apply(connectionId: string, method: string, args: any) {
     return redis.doCluster(
       "api.connections.applyResponder",
       [connectionId, method, args],
