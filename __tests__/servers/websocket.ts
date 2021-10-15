@@ -591,17 +591,27 @@ describe("Server: Web Socket", () => {
           let messagesReceivedB = 0;
           let messagesReceivedC = 0;
           const listenerA = (response) => {
+            console.log(response);
             messagesReceivedA++;
           };
           const listenerB = (response) => {
+            console.log(response);
             messagesReceivedB++;
           };
           const listenerC = (response) => {
+            console.log(response);
             messagesReceivedC++;
           };
           clientA.on("say", listenerA);
           clientB.on("say", listenerB);
           clientC.on("say", listenerC);
+
+          await utils.sleep(500); // Give a chance for the welcome message to pass
+          // Reset the message counts (in case welcome message incremented them)
+          messagesReceivedA = 0;
+          messagesReceivedB = 0;
+          messagesReceivedC = 0;
+
           clientA.say("defaultRoom", "Test Message");
 
           await utils.sleep(1000);
@@ -610,8 +620,8 @@ describe("Server: Web Socket", () => {
           expect(messagesReceivedB).toEqual(0);
           // I don't know why these below are not 1.  A and C's listener are getting called
           // twice event though only one say is happening.
-          expect(messagesReceivedA).toEqual(2);
-          expect(messagesReceivedC).toEqual(2);
+          expect(messagesReceivedA).toEqual(1);
+          expect(messagesReceivedC).toEqual(1);
         });
         test("sayReceive middleware can return null to silence a message", async () => {
           chatRoom.addMiddleware({
