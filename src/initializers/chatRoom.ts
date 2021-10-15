@@ -71,7 +71,7 @@ export class ChatRoom extends Initializer {
           "onSayReceive",
           messagePayload
         );
-        if (newPayload) {
+        if (newPayload !== null) {
           const payloadToSend: ChatModule.chatRoom.ChatPubSubMessage = {
             messageType: "chat",
             serverToken: config.general.serverToken,
