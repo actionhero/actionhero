@@ -591,15 +591,15 @@ describe("Server: Web Socket", () => {
           let messagesReceivedB = 0;
           let messagesReceivedC = 0;
           const listenerA = (response) => {
-            console.log(response);
+            clientA.removeListener("say", listenerA);
             messagesReceivedA++;
           };
           const listenerB = (response) => {
-            console.log(response);
+            clientB.removeListener("say", listenerB);
             messagesReceivedB++;
           };
           const listenerC = (response) => {
-            console.log(response);
+            clientC.removeListener("say", listenerC);
             messagesReceivedC++;
           };
           clientA.on("say", listenerA);
