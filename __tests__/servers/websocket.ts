@@ -490,6 +490,7 @@ describe("Server: Web Socket", () => {
                 firstSayCall = false;
                 await utils.sleep(200);
               }
+              return messagePayload;
             },
           });
 
@@ -575,6 +576,84 @@ describe("Server: Web Socket", () => {
           expect(joinResponse.error).toEqual("Error: joining rooms blocked");
           expect(joinResponse.status).toEqual("Error: joining rooms blocked");
         });
+      });
+
+      test("say middleware can return null to particular receivers message", async () => {
+        chatRoom.addMiddleware({
+          name: "silencing chat middleware",
+          say: (connection, room, payload) => {
+            if (connection.id === clientB.id) {
+              return null;
+            }
+            return payload;
+          },
+        });
+        let messagesReceivedA = 0;
+        let messagesReceivedB = 0;
+        let messagesReceivedC = 0;
+        const listenerA = (response) => {
+          clientA.removeListener("say", listenerA);
+          messagesReceivedA++;
+        };
+        const listenerB = (response) => {
+          clientB.removeListener("say", listenerB);
+          messagesReceivedB++;
+        };
+        const listenerC = (response) => {
+          clientC.removeListener("say", listenerC);
+          messagesReceivedC++;
+        };
+        clientA.on("say", listenerA);
+        clientB.on("say", listenerB);
+        clientC.on("say", listenerC);
+
+        await utils.sleep(500); // Give a chance for the welcome message to pass
+        // Reset the message counts (in case welcome message incremented them)
+        messagesReceivedA = 0;
+        messagesReceivedB = 0;
+        messagesReceivedC = 0;
+
+        clientA.say("defaultRoom", "Test Message");
+
+        await utils.sleep(1000);
+
+        // B's message will have been squelched
+        expect(messagesReceivedB).toEqual(0);
+        // I don't know why these below are not 1.  A and C's listener are getting called
+        // twice event though only one say is happening.
+        expect(messagesReceivedA).toEqual(1);
+        expect(messagesReceivedC).toEqual(1);
+      });
+      test("sayReceive middleware can return null to silence a message", async () => {
+        chatRoom.addMiddleware({
+          name: "silencing chat middleware",
+          onSayReceive: (connection, room, payload) => {
+            return null;
+          },
+        });
+        let messagesReceivedA = 0;
+        let messagesReceivedB = 0;
+        let messagesReceivedC = 0;
+        const listenerA = (response) => {
+          messagesReceivedA++;
+        };
+        const listenerB = (response) => {
+          messagesReceivedB++;
+        };
+        const listenerC = (response) => {
+          messagesReceivedC++;
+        };
+        clientA.on("say", listenerA);
+        clientB.on("say", listenerB);
+        clientC.on("say", listenerC);
+        clientA.say("defaultRoom", "Test Message");
+
+        await utils.sleep(1000);
+
+        // all messages will have been squelched
+        expect(messagesReceivedB).toEqual(0);
+        expect(messagesReceivedA).toEqual(0);
+        expect(messagesReceivedC).toEqual(0);
       });
     });
 
