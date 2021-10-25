@@ -13,6 +13,7 @@ export class GenerateInitializer extends CLI {
       name: {
         required: true,
         description: "The name of the Initializer to generate",
+        letter: "n",
       },
       loadPriority: {
         required: true,

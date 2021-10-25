@@ -3,7 +3,7 @@ import { api, CLI } from "./../../../index";
 export class ActionsList extends CLI {
   constructor() {
     super();
-    this.name = "actions list";
+    this.name = "actions-list";
     this.description = "List the actions defined on this server";
   }
 
