@@ -71,19 +71,20 @@ export class ChatRoom extends Initializer {
           "onSayReceive",
           messagePayload
         );
-        const payloadToSend: ChatModule.chatRoom.ChatPubSubMessage = {
-          messageType: "chat",
-          serverToken: config.general.serverToken,
-          serverId: id,
-          message: newPayload.message,
-          sentAt: newPayload.sentAt,
-          connection: {
-            id: newPayload.from,
-            room: newPayload.room,
-          },
-        };
-
-        await redis.publish(payloadToSend);
+        if (newPayload !== null) {
+          const payloadToSend: ChatModule.chatRoom.ChatPubSubMessage = {
+            messageType: "chat",
+            serverToken: config.general.serverToken,
+            serverId: id,
+            message: newPayload.message,
+            sentAt: newPayload.sentAt,
+            connection: {
+              id: newPayload.from,
+              room: newPayload.room,
+            },
+          };
+          await redis.publish(payloadToSend);
+        }
       } else {
         throw new Error(config.errors.connectionNotInRoom(connection, room));
       }
@@ -123,7 +124,9 @@ export class ChatRoom extends Initializer {
             "say",
             messagePayload
           );
-          connection.sendMessage(newMessagePayload, "say");
+          if (newMessagePayload !== null) {
+            connection.sendMessage(newMessagePayload, "say");
+          }
         } catch (error) {
           log(error, "warning", { messagePayload, connection });
         }
@@ -152,6 +155,8 @@ export class ChatRoom extends Initializer {
             );
             if (data) {
               newMessagePayload = data;
+            } else {
+              newMessagePayload = null;
             }
           } else {
             await m[direction](connection, room);
