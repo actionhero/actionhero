@@ -29,7 +29,6 @@ export const DEFAULT = {
           "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
         },
         // Route that actions will be served from; secondary route against this route will be treated as actions,
-        //  IE: /api/?action=test == /api/test/
         urlPathForActions: "api",
         // Route that static files will be served from;
         //  path (relative to your project root) to serve static content from
