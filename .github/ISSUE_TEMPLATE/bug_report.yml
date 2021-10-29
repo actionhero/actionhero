@@ -4,57 +4,56 @@ title: "[Bug]: "
 labels: [bug]
 
 body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists for the bug you encountered.
+      options:
+        - label: I have searched the existing issues
+          required: true
 
-- type: checkboxes
-  attributes:
-  label: Is there an existing issue for this?
-  description: Please search to see if an issue already exists for the bug you encountered.
-  options: 
-    - label: I have searched the existing issues
-  required: true
+  - type: textarea
+    attributes:
+      label: Current Behavior
+      description: A concise description of what you're experiencing.  Please include specific steps or a sample project to reproduce the error you are seeing.
+      placeholder: |
+        When I do <X>, <Y> happens and I see the error message attached below:
+        ```...```
+    validations:
+      required: true
 
-- type: textarea
-  attributes:
-  label: Current Behavior
-  description: A concise description of what you're experiencing. Please include specific steps or a sample project to reproduce the error you are seeing.
-  placeholder: |
-  When I do <X>, <Y> happens and I see the error message attached below:
-  `...`
-  validations:
-  required: true
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+      description: A concise description of what you expected to happen.
+      placeholder: When I do <X>, <Z> should happen instead.
+    validations:
+      required: false
 
-- type: textarea
-  attributes:
-  label: Expected Behavior
-  description: A concise description of what you expected to happen.
-  placeholder: When I do <X>, <Z> should happen instead.
-  validations:
-  required: false
+  - type: textarea
+    attributes:
+      label: Stack Trace
+      description: If applicable, add the full stack trace you see along with the error.
+      placeholder: If applicable, add the full stack trace you see along with the error.
+      render: markdown
+    validations:
+      required: false
 
-- type: textarea
-  attributes:
-  label: Stack Trace
-  description: If applicable, add the full stack trace you see along with the error.
-  placeholder: If applicable, add the full stack trace you see along with the error.
-  render: markdown
-  validations:
-  required: false
+  - type: textarea
+    attributes:
+      label: Environment
+      description: |
+        - OS: [e.g. OSX, Docker + Ubuntu 18, etc]
+        - Browser [e.g. chrome, safari]
+        - Actionhero Version [e.g. 1.2.3]
+        - Node.js Version [e.g. 1.2.3]
+    validations:
+      required: true
 
-- type: textarea
-  attributes:
-  label: Environment
-  description: | 
-    - OS: [e.g. OSX, Docker + Ubuntu 18, etc] 
-    - Browser [e.g. chrome, safari] 
-    - Actionhero Version [e.g. 1.2.3] 
-    - Node.js Version [e.g. 1.2.3]
-  validations:
-  required: true
-
-- type: textarea
-  attributes:
-  label: Additional context
-  description: |
-  Links? Screenshots? References? Anything that will give us more context about the issue you are encountering!
-  validations:
-  required: false
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: |
+        Links? Screenshots? References? Anything that will give us more context about the issue you are encountering!
+    validations:
+      required: false
