@@ -9,7 +9,8 @@ body:
   attributes:
   label: Is there an existing issue for this?
   description: Please search to see if an issue already exists for the bug you encountered.
-  options: - label: I have searched the existing issues
+  options: 
+    - label: I have searched the existing issues
   required: true
 
 - type: textarea
@@ -42,7 +43,11 @@ body:
 - type: textarea
   attributes:
   label: Environment
-  description: | - OS: [e.g. OSX, Docker + Ubuntu 18, etc] - Browser [e.g. chrome, safari] - Actionhero Version [e.g. 1.2.3] - Node.js Version [e.g. 1.2.3]
+  description: | 
+    - OS: [e.g. OSX, Docker + Ubuntu 18, etc] 
+    - Browser [e.g. chrome, safari] 
+    - Actionhero Version [e.g. 1.2.3] 
+    - Node.js Version [e.g. 1.2.3]
   validations:
   required: true
 
