@@ -15,7 +15,7 @@ export namespace specHelper {
   /**
    * Run an action via the specHelper server.
    */
-  export async function runAction<A extends Action>(
+  export async function runAction<A extends Action | void = void>(
     actionName: string,
     input: { [key: string]: any } = {}
   ) {
@@ -31,7 +31,9 @@ export namespace specHelper {
     connection.params.action = actionName;
 
     connection.messageId = connection.params.messageId || uuid.v4();
-    const response: (A extends Action ? UnwrapPromise<A["run"]> : any) & {
+    const response: (A extends Action
+      ? UnwrapPromise<A["run"]>
+      : { [key: string]: any }) & {
       messageId?: string;
       error?: Error | string | any;
       requesterInformation?: ReturnType<WebServer["buildRequesterInformation"]>;
@@ -64,7 +66,7 @@ export namespace specHelper {
    * Use the specHelper to run a task.
    * Note: this only runs the task's `run()` method, and no middleware.  This is faster than api.specHelper.runFullTask.
    */
-  export async function runTask<T extends Task>(
+  export async function runTask<T extends Task | void = void>(
     taskName: string,
     params: object | Array<any>
   ) {
@@ -72,7 +74,9 @@ export namespace specHelper {
       throw new Error(`task ${taskName} not found`);
     }
 
-    const result: (T extends Task ? UnwrapPromise<T["run"]> : any) & {
+    const result: (T extends Task
+      ? UnwrapPromise<T["run"]>
+      : { [key: string]: any }) & {
       error?: Error | string;
     } = await api.tasks.tasks[taskName].run(params, undefined);
     return result;
@@ -82,7 +86,7 @@ export namespace specHelper {
    * Use the specHelper to run a task.
    * Note: this will run a full Task worker, and will also include any middleware.  This is slower than api.specHelper.runTask.
    */
-  export async function runFullTask<T extends Task>(
+  export async function runFullTask<T extends Task | void = void>(
     taskName: string,
     params: object | Array<any>
   ) {
@@ -102,7 +106,9 @@ export namespace specHelper {
 
     try {
       await worker.connect();
-      const result: (T extends Task ? UnwrapPromise<T["run"]> : any) & {
+      const result: (T extends Task
+        ? UnwrapPromise<T["run"]>
+        : { [key: string]: any }) & {
         error?: string;
       } = await worker.performInline(
         taskName,
