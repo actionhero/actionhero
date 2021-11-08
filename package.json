@@ -62,7 +62,7 @@
     "ioredis-mock": "^5.6.0",
     "jest": "^27.2.4",
     "prettier": "^2.4.1",
-    "puppeteer": "^10.4.0",
+    "puppeteer": "^11.0.0",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9",
     "ts-jest": "^27.0.5",
