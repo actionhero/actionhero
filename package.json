@@ -39,7 +39,7 @@
     "commander": "^8.2.0",
     "dot-prop": "^6.0.1",
     "etag": "^1.8.1",
-    "formidable": "^1.2.2",
+    "formidable": "^2.0.1",
     "glob": "^7.2.0",
     "ioredis": "^4.27.9",
     "is-running": "^2.1.0",
