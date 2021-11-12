@@ -257,7 +257,7 @@ export class ActionProcessor<ActionClass extends Action> {
     // default
     if (params[key] === undefined && props.default !== undefined) {
       if (typeof props.default === "function") {
-        params[key] = await props.default.call(api, params[key], this);
+        params[key] = await props.default.call(this, params[key]);
       } else {
         params[key] = props.default;
       }
@@ -272,10 +272,10 @@ export class ActionProcessor<ActionClass extends Action> {
       for (const i in props.formatter) {
         const formatter = props.formatter[i];
         if (typeof formatter === "function") {
-          params[key] = await formatter.call(api, params[key], this);
+          params[key] = await formatter.call(this, params[key]);
         } else {
           const method = this.prepareStringMethod(formatter);
-          params[key] = await method.call(api, params[key], this);
+          params[key] = await method.call(this, params[key]);
         }
       }
     }
@@ -291,10 +291,10 @@ export class ActionProcessor<ActionClass extends Action> {
         let validatorResponse;
         try {
           if (typeof validator === "function") {
-            validatorResponse = await validator.call(api, params[key], this);
+            validatorResponse = await validator.call(this, params[key]);
           } else {
             const method = this.prepareStringMethod(validator);
-            validatorResponse = await method.call(api, params[key], this);
+            validatorResponse = await method.call(this, params[key]);
           }
 
           // validator function returned nothing; assume param is OK
