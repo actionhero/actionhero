@@ -6,14 +6,12 @@ import { log } from "../modules/log";
 import { Initializer } from "./initializer";
 import { Initializers } from "./initializers";
 import { utils } from "../modules/utils";
-
 import { id } from "./process/id";
 import { env } from "./process/env";
 import { writePidFile, clearPidFile } from "./process/pid";
-
 import { api } from "../index";
 
-const fatalErrorCode = "FATAL_ACTIONHERO_ERROR";
+export const fatalErrorCode = "FATAL_ACTIONHERO_ERROR";
 
 export class Process {
   running: boolean;
@@ -38,7 +36,6 @@ export class Process {
     this.startInitializers = [];
     this.stopInitializers = [];
     this.stopReasons = [];
-
     this.startCount = 0;
 
     api.process = this;
@@ -237,6 +234,9 @@ export class Process {
     this.initialized = true;
   }
 
+  /**
+   * Start the Actionhero Process
+   */
   async start() {
     if (this.initialized !== true) await this.initialize();
     const serverName = config.general.serverName;
@@ -267,6 +267,9 @@ export class Process {
     this.started = true;
   }
 
+  /**
+   * Stop the Actionhero Process
+   */
   async stop(stopReasons: string | string[] = []) {
     const serverName = config.general.serverName;
 
@@ -311,6 +314,9 @@ export class Process {
     }
   }
 
+  /**
+   * Restart the Actionhero Process
+   */
   async restart() {
     if (this.running === true) {
       await this.stop();
