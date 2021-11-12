@@ -35,7 +35,7 @@ export abstract class CLI {
     if (missing(this.example)) this.example = "";
     if (missing(this.inputs)) this.inputs = {};
     if (missing(this.initialize)) this.initialize = true;
-    if (missing(this.start)) this.start = true;
+    if (missing(this.start)) this.start = false;
   }
 
   /**

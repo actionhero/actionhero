@@ -43,14 +43,18 @@ export class Servers extends Initializer {
     }
 
     for (const [_, plugin] of Object.entries(config.plugins as PluginConfig)) {
-      // old style at the root of the project
-      files = files.concat(
-        glob.sync(path.join(plugin.path, "servers", "**", "*.js"))
-      );
+      if (plugin.servers !== false) {
+        const pluginPath: string = path.normalize(plugin.path);
 
-      files = files.concat(
-        glob.sync(path.join(plugin.path, "dist", "servers", "**", "*.js"))
-      );
+        // old style at the root of the project
+        files = files.concat(
+          glob.sync(path.join(pluginPath, "servers", "**", "*.js"))
+        );
+
+        files = files.concat(
+          glob.sync(path.join(pluginPath, "dist", "servers", "**", "*.js"))
+        );
+      }
     }
 
     files = utils.ensureNoTsHeaderFiles(files);

@@ -12,7 +12,7 @@ import { projectRoot } from "./../classes/process/projectRoot";
 import { RouteMethod, RoutesConfig, RouteType } from "..";
 import { ActionheroConfigInterface } from "../classes/config";
 
-export function buildConfig(_startingParams: Record<string, any> = {}) {
+export function buildConfig() {
   const configPaths: string[] = [];
 
   let config: Partial<ActionheroConfigInterface> = {
@@ -25,12 +25,12 @@ export function buildConfig(_startingParams: Record<string, any> = {}) {
     },
   };
 
-  utils.hashMerge(config, _startingParams);
   // We support multiple configuration paths as follows:
   //
   // 1. Use the project 'config' folder, if it exists.
   // 2. "actionhero --config=PATH1 --config=PATH2 --config=PATH3,PATH4"
   // 3. "ACTIONHERO_CONFIG=PATH1,PATH2 npm start"
+  // 4. "ACTIONHERO_CONFIG_OVERRIDES" (stringified JSON) can partially override any of the config objects loaded from the above
   //
   // Note that if --config or ACTIONHERO_CONFIG are used, they _overwrite_ the use of the default "config" folder. If
   // you wish to use both, you need to re-specify "config", e.g. "--config=config,local-config". Also, note that
@@ -197,20 +197,26 @@ export function buildConfig(_startingParams: Record<string, any> = {}) {
   // load the project specific config
   configPaths.map((p) => loadConfigDirectory(p, false));
 
-  // apply any configChanges
-  if (_startingParams && _startingParams.configChanges) {
-    config = utils.hashMerge(config, _startingParams.configChanges);
+  if (process.env.ACTIONHERO_CONFIG_OVERRIDES) {
+    try {
+      config = utils.hashMerge(
+        config,
+        JSON.parse(process.env.ACTIONHERO_CONFIG_OVERRIDES)
+      );
+    } catch (error) {
+      throw new Error(`could not parse ACTIONHERO_CONFIG_OVERRIDES: ${error}`);
+    }
   }
 
-  if (process.env.configChanges) {
-    config = utils.hashMerge(config, JSON.parse(process.env.configChanges));
-  }
-
-  if (utils.argv.configChanges) {
-    config = utils.hashMerge(
-      config,
-      JSON.parse(utils.argv.configChanges.toString())
-    );
+  if (utils.argv.ACTIONHERO_CONFIG_OVERRIDES) {
+    try {
+      config = utils.hashMerge(
+        config,
+        JSON.parse(utils.argv.ACTIONHERO_CONFIG_OVERRIDES.toString())
+      );
+    } catch (error) {
+      throw new Error(`could not parse ACTIONHERO_CONFIG_OVERRIDES: ${error}`);
+    }
   }
 
   return config;

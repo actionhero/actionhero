@@ -142,16 +142,20 @@ export class TasksInitializer extends Initializer {
     }
 
     for (const [_, plugin] of Object.entries(config.plugins as PluginConfig)) {
-      // old style at the root of the project
-      let files = glob.sync(path.join(plugin.path, "tasks", "**", "*.js"));
+      if (plugin.tasks !== false) {
+        const pluginPath: string = path.normalize(plugin.path);
 
-      files = files.concat(
-        glob.sync(path.join(plugin.path, "dist", "tasks", "**", "*.js"))
-      );
+        // old style at the root of the project
+        let files = glob.sync(path.join(pluginPath, "tasks", "**", "*.js"));
 
-      utils.ensureNoTsHeaderFiles(files).forEach((f) => {
-        api.tasks.loadFile(f, reload);
-      });
+        files = files.concat(
+          glob.sync(path.join(pluginPath, "dist", "tasks", "**", "*.js"))
+        );
+
+        utils.ensureNoTsHeaderFiles(files).forEach((f) => {
+          api.tasks.loadFile(f, reload);
+        });
+      }
     }
   };
 

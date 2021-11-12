@@ -33,7 +33,9 @@ describe("Core", () => {
     });
 
     test("the process is injected into the global API import", () => {
+      //@ts-ignore
       actionhero["testProperty"] = { a: 1 };
+      //@ts-ignore
       expect(api.process["testProperty"]).toEqual({ a: 1 });
     });
   });

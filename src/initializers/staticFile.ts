@@ -213,12 +213,17 @@ export class StaticFileInitializer extends Initializer {
 
     // source the public directories from plugins
     for (const [_, plugin] of Object.entries(config.plugins as PluginConfig)) {
-      const pluginPublicPath = path.join(plugin.path, "public");
-      if (
-        fs.existsSync(pluginPublicPath) &&
-        api.staticFile.searchLocations.indexOf(pluginPublicPath) < 0
-      ) {
-        api.staticFile.searchLocations.push(pluginPublicPath);
+      if (plugin.public !== false) {
+        const pluginPublicPath: string = path.normalize(
+          path.join(plugin.path, "public")
+        );
+
+        if (
+          fs.existsSync(pluginPublicPath) &&
+          api.staticFile.searchLocations.indexOf(pluginPublicPath) < 0
+        ) {
+          api.staticFile.searchLocations.push(pluginPublicPath);
+        }
       }
     }
 

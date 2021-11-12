@@ -28,16 +28,14 @@ export namespace ActionheroCLIRunner {
       }
 
       // plugins
-      for (const pluginName in config.plugins) {
-        if (config.plugins[pluginName].cli !== false) {
+      for (const pluginName of Object.keys(config.plugins)) {
+        const plugin = config.plugins[pluginName];
+        if (plugin.cli !== false) {
           // old plugins
-          await loadDirectory(
-            path.join(config.plugins[pluginName].path, "bin"),
-            pathsLoaded
-          );
+          await loadDirectory(path.join(plugin.path, "bin"), pathsLoaded);
           // new plugins
           await loadDirectory(
-            path.join(config.plugins[pluginName].path, "dist", "bin"),
+            path.join(plugin.path, "dist", "bin"),
             pathsLoaded
           );
         }

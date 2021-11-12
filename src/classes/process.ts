@@ -74,24 +74,24 @@ export class Process {
     });
 
     // load initializers from plugins
-    for (const pluginName in config.plugins) {
-      const pluginPath: string = path.normalize(
-        config.plugins[pluginName].path
-      );
-
+    for (const pluginName of Object.keys(config.plugins)) {
+      const plugin = config.plugins[pluginName];
+      const pluginPath: string = path.normalize(plugin.path);
       if (!fs.existsSync(pluginPath)) {
         throw new Error(`plugin path does not exist: ${pluginPath}`);
       }
 
-      // old style at the root of the project
-      initializerFiles = initializerFiles.concat(
-        glob.sync(path.join(pluginPath, "initializers", "**", "*.js"))
-      );
+      if (plugin.initializers !== false) {
+        // old style at the root of the project
+        initializerFiles = initializerFiles.concat(
+          glob.sync(path.join(pluginPath, "initializers", "**", "*.js"))
+        );
 
-      // new TS dist files
-      initializerFiles = initializerFiles.concat(
-        glob.sync(path.join(pluginPath, "dist", "initializers", "**", "*.js"))
-      );
+        // new TS dist files
+        initializerFiles = initializerFiles.concat(
+          glob.sync(path.join(pluginPath, "dist", "initializers", "**", "*.js"))
+        );
+      }
     }
 
     initializerFiles = utils.arrayUnique(initializerFiles);

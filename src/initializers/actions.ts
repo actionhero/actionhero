@@ -100,9 +100,10 @@ export class ActionsInitializer extends Initializer {
       }
     }
 
-    for (const pluginName in config.plugins) {
-      if (config.plugins[pluginName].actions !== false) {
-        const pluginPath = config.plugins[pluginName].path;
+    for (const [_, plugin] of Object.entries(config.plugins)) {
+      if (plugin.actions !== false) {
+        const pluginPath: string = path.normalize(plugin.path);
+
         // old style at the root of the project
         let files = glob.sync(path.join(pluginPath, "actions", "**", "*.js"));
 
