@@ -61,6 +61,7 @@ export class RoutesInitializer extends Initializer {
               // malformed URL
             }
           }
+
           connection.matchedRoute = route;
 
           if (route.dir) {
