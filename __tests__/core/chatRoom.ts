@@ -5,6 +5,7 @@ import {
   utils,
   specHelper,
   chatRoom,
+  Connection,
 } from "./../../src/index";
 
 const actionhero = new Process();
@@ -33,9 +34,9 @@ describe("Core", () => {
     });
 
     describe("say and clients on separate servers", () => {
-      let client1;
-      let client2;
-      let client3;
+      let client1: any;
+      let client2: any;
+      let client3: any;
 
       beforeAll(async () => {
         client1 = await specHelper.buildConnection();
@@ -267,9 +268,9 @@ describe("Core", () => {
       });
 
       describe("chat middleware", () => {
-        let clientA;
-        let clientB;
-        let originalGenerateMessagePayload;
+        let clientA: any;
+        let clientB: any;
+        let originalGenerateMessagePayload: (message: any) => any;
 
         beforeEach(async () => {
           originalGenerateMessagePayload = api.chatRoom.generateMessagePayload;
@@ -288,6 +289,7 @@ describe("Core", () => {
         });
 
         test("generateMessagePayload can be overloaded", async () => {
+          //@ts-ignore
           api.chatRoom.generateMessagePayload = (message) => {
             return {
               thing: "stuff",
@@ -308,7 +310,7 @@ describe("Core", () => {
         test("(join + leave) can add middleware to announce members", async () => {
           chatRoom.addMiddleware({
             name: "add chat middleware",
-            join: async (connection, room) => {
+            join: async (connection: Connection, room: string) => {
               await chatRoom.broadcast(
                 {},
                 room,
@@ -319,7 +321,7 @@ describe("Core", () => {
 
           chatRoom.addMiddleware({
             name: "leave chat middleware",
-            leave: async (connection, room) => {
+            leave: async (connection: Connection, room: string) => {
               await chatRoom.broadcast(
                 {},
                 room,
@@ -344,7 +346,11 @@ describe("Core", () => {
         test("(say) can modify message payloads", async () => {
           chatRoom.addMiddleware({
             name: "chat middleware",
-            say: (connection, room, messagePayload) => {
+            say: (
+              connection: Connection,
+              room: string,
+              messagePayload: any
+            ) => {
               if (messagePayload.from !== 0) {
                 messagePayload.message = "something else";
               }
@@ -365,7 +371,11 @@ describe("Core", () => {
           chatRoom.addMiddleware({
             name: "chat middleware 1",
             priority: 1000,
-            say: (connection, room, messagePayload, callback) => {
+            say: (
+              connection: Connection,
+              room: string,
+              messagePayload: any
+            ) => {
               messagePayload.message = "MIDDLEWARE 1";
               return messagePayload;
             },
@@ -374,7 +384,11 @@ describe("Core", () => {
           chatRoom.addMiddleware({
             name: "chat middleware 2",
             priority: 2000,
-            say: (connection, room, messagePayload) => {
+            say: (
+              connection: Connection,
+              room: string,
+              messagePayload: any
+            ) => {
               messagePayload.message = messagePayload.message + " MIDDLEWARE 2";
               return messagePayload;
             },
@@ -392,7 +406,7 @@ describe("Core", () => {
         test("say middleware can block execution", async () => {
           chatRoom.addMiddleware({
             name: "chat middleware",
-            say: (connection, room, messagePayload) => {
+            say: () => {
               throw new Error("messages blocked");
             },
           });
@@ -410,7 +424,7 @@ describe("Core", () => {
         test("join middleware can block execution", async () => {
           chatRoom.addMiddleware({
             name: "chat middleware",
-            join: (connection, room) => {
+            join: () => {
               throw new Error("joining rooms blocked");
             },
           });
@@ -427,7 +441,7 @@ describe("Core", () => {
         test("leave middleware can block execution", async () => {
           chatRoom.addMiddleware({
             name: "chat middleware",
-            leave: (connection, room) => {
+            leave: () => {
               throw new Error("Hotel California");
             },
           });
@@ -449,7 +463,11 @@ describe("Core", () => {
         test("(say verb with async keyword) can modify message payloads", async () => {
           chatRoom.addMiddleware({
             name: "chat middleware",
-            say: async (connection, room, messagePayload) => {
+            say: async (
+              connection: Connection,
+              room: string,
+              messagePayload: any
+            ) => {
               if (messagePayload.from !== 0) {
                 messagePayload.message = "something else";
               }
@@ -468,7 +486,11 @@ describe("Core", () => {
           chatRoom.addMiddleware({
             name: "chat middleware 1",
             priority: 1000,
-            say: async (connection, room, messagePayload, callback) => {
+            say: async (
+              connection: Connection,
+              room: string,
+              messagePayload: any
+            ) => {
               messagePayload.message = "MIDDLEWARE 1";
               return messagePayload;
             },
@@ -477,7 +499,11 @@ describe("Core", () => {
           chatRoom.addMiddleware({
             name: "chat middleware 2",
             priority: 2000,
-            say: async (connection, room, messagePayload) => {
+            say: async (
+              connection: Connection,
+              room: string,
+              messagePayload: any
+            ) => {
               messagePayload.message = messagePayload.message + " MIDDLEWARE 2";
               return messagePayload;
             },
@@ -495,7 +521,7 @@ describe("Core", () => {
         test("say async function middleware can block execution", async () => {
           chatRoom.addMiddleware({
             name: "chat middleware",
-            say: async (connection, room, messagePayload) => {
+            say: async () => {
               throw new Error("messages blocked");
             },
           });
@@ -513,7 +539,7 @@ describe("Core", () => {
         test("join async function middleware can block execution", async () => {
           chatRoom.addMiddleware({
             name: "chat middleware",
-            join: async (connection, room) => {
+            join: async () => {
               throw new Error("joining rooms blocked");
             },
           });
@@ -530,7 +556,7 @@ describe("Core", () => {
         test("leave async function middleware can block execution", async () => {
           chatRoom.addMiddleware({
             name: "chat middleware",
-            leave: async (connection, room) => {
+            leave: async () => {
               throw new Error("Hotel California");
             },
           });

@@ -38,7 +38,7 @@ export class ChatRoomInitializer extends Initializer {
   }
 
   broadcast = async (
-    connection: Connection | {},
+    connection: Partial<Connection>,
     room: string,
     message: object | Array<any> | string
   ) => {
@@ -47,8 +47,8 @@ export class ChatRoomInitializer extends Initializer {
         config.errors.connectionRoomAndMessage(connection as Connection)
       );
     } else if (
-      connection instanceof Connection &&
-      (connection.rooms === undefined || connection.rooms.indexOf(room) > -1)
+      connection.rooms === undefined ||
+      connection.rooms.indexOf(room) > -1
     ) {
       const payload: ChatModule.chatRoom.ChatPubSubMessage = {
         messageType: "chat",
@@ -136,7 +136,7 @@ export class ChatRoomInitializer extends Initializer {
   };
 
   runMiddleware = async (
-    connection: Connection,
+    connection: Partial<Connection>,
     room: string,
     direction: ChatMiddlewareDirections,
     messagePayload?: MessagePayloadType
@@ -188,7 +188,7 @@ export class ChatRoomInitializer extends Initializer {
       }
     };
 
-    for (const [room, options] of Object.keys(
+    for (const [room, options] of Object.entries(
       config.general.startingChatRooms
     )) {
       log(`ensuring the existence of the chatRoom: ${room}`, "debug");
