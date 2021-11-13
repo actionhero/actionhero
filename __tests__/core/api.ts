@@ -1,12 +1,5 @@
-import {
-  config,
-  api,
-  Process,
-  Action,
-  specHelper,
-  UnwrapPromise,
-  AssertEqualType,
-} from "./../../src/index";
+import { AsyncReturnType } from "type-fest";
+import { config, api, Process, Action, specHelper } from "./../../src/index";
 
 const actionhero = new Process();
 
@@ -214,7 +207,7 @@ describe("Core", () => {
 
       test("the return types of actions can be imported", async () => {
         const { RandomNumber } = await import("../../src/actions/randomNumber");
-        type ResponseType = UnwrapPromise<typeof RandomNumber.prototype.run>;
+        type ResponseType = AsyncReturnType<typeof RandomNumber.prototype.run>;
 
         // now that we know the types, we can enforce that new objects match the type
         const responsePayload: ResponseType = {
@@ -224,11 +217,6 @@ describe("Core", () => {
 
         const responsePartial: ResponseType["randomNumber"] = 2;
 
-        // <AssertEqualType> will fail compilation if the types are not equal
-        const typeMatch: AssertEqualType<typeof responsePayload, ResponseType> =
-          true;
-
-        expect(typeMatch).toBe(true);
         expect(responsePartial).toBe(2);
       });
     });
@@ -250,12 +238,12 @@ describe("Core", () => {
                 default: () => {
                   return "abc123";
                 },
-                validator: function (s) {
+                validator: function (s: any) {
                   if (s !== "abc123") {
                     return 'fancyParam should be "abc123".  so says ' + this.id;
                   }
                 },
-                formatter: function (s) {
+                formatter: function (s: any) {
                   return String(s);
                 },
               },
@@ -383,7 +371,7 @@ describe("Core", () => {
                     default: () => {
                       return "abc123";
                     },
-                    validator: function (s) {
+                    validator: function (s: any) {
                       if (s === "abc123") {
                         return true;
                       } else {
@@ -392,7 +380,7 @@ describe("Core", () => {
                         );
                       }
                     },
-                    formatter: (s) => {
+                    formatter: (s: any) => {
                       return String(s);
                     },
                   },
@@ -499,13 +487,13 @@ describe("Core", () => {
     describe("named action validations", () => {
       beforeAll(() => {
         api.validators = {
-          validator1: (param) => {
+          validator1: (param: any) => {
             if (typeof param !== "string") {
               throw new Error("only strings");
             }
             return true;
           },
-          validator2: (param) => {
+          validator2: (param: any) => {
             if (param !== "correct") {
               throw new Error("that is not correct");
             }
@@ -561,10 +549,10 @@ describe("Core", () => {
     describe("named action formatters", () => {
       beforeAll(() => {
         api._formatters = {
-          formatter1: (param) => {
+          formatter1: (param: any) => {
             return "*" + param + "*";
           },
-          formatter2: (param) => {
+          formatter2: (param: any) => {
             return "~" + param + "~";
           },
         };

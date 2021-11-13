@@ -330,7 +330,7 @@ describe("Core", () => {
       });
 
       describe("locks are actually blocking", () => {
-        let originalLockName;
+        let originalLockName: () => string;
 
         beforeAll(() => {
           originalLockName = cache.lockName;
