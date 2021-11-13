@@ -1,7 +1,7 @@
 import { promisify } from "util";
 import * as fs from "fs";
 import * as path from "path";
-import { Process, ActionheroConfigInterface } from "./../../src/index";
+import { Process, ActionheroConfigInterface } from "./../../src";
 import { buildConfig } from "./../../src/modules/config";
 
 const actionhero = new Process();

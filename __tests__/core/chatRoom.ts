@@ -6,7 +6,7 @@ import {
   specHelper,
   chatRoom,
   Connection,
-} from "./../../src/index";
+} from "./../../src";
 
 const actionhero = new Process();
 

@@ -1,5 +1,5 @@
 import { AsyncReturnType } from "type-fest";
-import { config, api, Process, Action, specHelper } from "./../../src/index";
+import { config, api, Process, Action, specHelper } from "./../../src";
 
 const actionhero = new Process();
 
