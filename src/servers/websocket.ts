@@ -120,7 +120,7 @@ export class WebSocketServer extends Server {
     let content = "";
     const response = {
       error: error,
-      content: "",
+      content: null as string,
       mime: mime,
       length: length,
       lastModified: lastModified,

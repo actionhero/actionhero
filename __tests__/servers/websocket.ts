@@ -8,11 +8,11 @@
 import { api, Process, config, chatRoom, utils } from "./../../src/index";
 
 const actionhero = new Process();
-let clientA;
-let clientB;
-let clientC;
+let clientA: any;
+let clientB: any;
+let clientC: any;
 
-let url;
+let url: string;
 
 const connectClients = async () => {
   // get ActionheroWebsocketClient in scope
@@ -35,14 +35,14 @@ const connectClients = async () => {
 };
 
 const awaitMethod = async (
-  client,
-  method,
+  client: any,
+  method: string,
   returnsError = false
 ): Promise<{
   [key: string]: any;
 }> => {
   return new Promise((resolve, reject) => {
-    client[method]((a, b) => {
+    client[method]((a: any, b: any) => {
       if (returnsError && a) {
         return reject(a);
       }
@@ -54,25 +54,33 @@ const awaitMethod = async (
   });
 };
 
-const awaitAction = async (client, action, params = {}): Promise<any> => {
+const awaitAction = async (
+  client: any,
+  action: string,
+  params = {}
+): Promise<any> => {
   return new Promise((resolve) => {
-    client.action(action, params, (response) => {
+    client.action(action, params, (response: Record<string, any>) => {
       return resolve(response);
     });
   });
 };
 
-const awaitFile = async (client, file): Promise<any> => {
+const awaitFile = async (client: any, file: string): Promise<any> => {
   return new Promise((resolve) => {
-    client.file(file, (response) => {
+    client.file(file, (response: Record<string, any>) => {
       return resolve(response);
     });
   });
 };
 
-const awaitRoom = async (client, method, room): Promise<any> => {
+const awaitRoom = async (
+  client: any,
+  method: string,
+  room: string
+): Promise<any> => {
   return new Promise((resolve) => {
-    client[method](room, (response) => {
+    client[method](room, (response: Record<string, any>) => {
       return resolve(response);
     });
   });
@@ -144,8 +152,8 @@ describe("Server: Web Socket", () => {
     });
 
     test("properly responds with messageId", async () => {
-      let aTime;
-      let bTime;
+      let aTime: Date;
+      let bTime: Date;
       const startingMessageId = clientA.messageId;
       awaitRoom(clientA, "roomAdd", "defaultRoom"); // fast
       let responseA = awaitAction(clientA, "sleepTest"); // slow
@@ -209,25 +217,49 @@ describe("Server: Web Socket", () => {
     });
 
     test("will limit how many simultaneous connections I can have", async () => {
-      const responses = [];
-      clientA.action("sleepTest", { sleepDuration: 100 }, (response) => {
-        responses.push(response);
-      });
-      clientA.action("sleepTest", { sleepDuration: 200 }, (response) => {
-        responses.push(response);
-      });
-      clientA.action("sleepTest", { sleepDuration: 300 }, (response) => {
-        responses.push(response);
-      });
-      clientA.action("sleepTest", { sleepDuration: 400 }, (response) => {
-        responses.push(response);
-      });
-      clientA.action("sleepTest", { sleepDuration: 500 }, (response) => {
-        responses.push(response);
-      });
-      clientA.action("sleepTest", { sleepDuration: 600 }, (response) => {
-        responses.push(response);
-      });
+      const responses: Record<string, any>[] = [];
+      clientA.action(
+        "sleepTest",
+        { sleepDuration: 100 },
+        (response: Record<string, any>) => {
+          responses.push(response);
+        }
+      );
+      clientA.action(
+        "sleepTest",
+        { sleepDuration: 200 },
+        (response: Record<string, any>) => {
+          responses.push(response);
+        }
+      );
+      clientA.action(
+        "sleepTest",
+        { sleepDuration: 300 },
+        (response: Record<string, any>) => {
+          responses.push(response);
+        }
+      );
+      clientA.action(
+        "sleepTest",
+        { sleepDuration: 400 },
+        (response: Record<string, any>) => {
+          responses.push(response);
+        }
+      );
+      clientA.action(
+        "sleepTest",
+        { sleepDuration: 500 },
+        (response: Record<string, any>) => {
+          responses.push(response);
+        }
+      );
+      clientA.action(
+        "sleepTest",
+        { sleepDuration: 600 },
+        (response: Record<string, any>) => {
+          responses.push(response);
+        }
+      );
 
       await utils.sleep(1000);
 
@@ -263,7 +295,7 @@ describe("Server: Web Socket", () => {
       beforeAll(() => {
         chatRoom.addMiddleware({
           name: "join chat middleware",
-          join: async (connection, room) => {
+          join: async (connection: any, room: string) => {
             await api.chatRoom.broadcast(
               {},
               room,
@@ -274,7 +306,7 @@ describe("Server: Web Socket", () => {
 
         chatRoom.addMiddleware({
           name: "leave chat middleware",
-          leave: async (connection, room) => {
+          leave: async (connection: any, room: string) => {
             api.chatRoom.broadcast(
               {},
               room,
@@ -337,7 +369,7 @@ describe("Server: Web Socket", () => {
 
       test("clients can talk to each other", async () => {
         await new Promise((resolve) => {
-          const listener = (response) => {
+          const listener = (response: Record<string, any>) => {
             clientA.removeListener("say", listener);
             expect(response.context).toEqual("user");
             expect(response.message).toEqual("hello from client 2");
@@ -351,14 +383,14 @@ describe("Server: Web Socket", () => {
 
       test("The client say method does not rely on argument order", async () => {
         await new Promise((resolve) => {
-          const listener = (response) => {
+          const listener = (response: Record<string, any>) => {
             clientA.removeListener("say", listener);
             expect(response.context).toEqual("user");
             expect(response.message).toEqual("hello from client 2");
             resolve(null);
           };
 
-          clientB.say = (room, message) => {
+          clientB.say = (room: string, message: Record<string, any>) => {
             clientB.send({ message: message, room: room, event: "say" });
           };
 
@@ -369,7 +401,7 @@ describe("Server: Web Socket", () => {
 
       test("connections are notified when I join a room", async () => {
         await new Promise((resolve) => {
-          const listener = (response) => {
+          const listener = (response: Record<string, any>) => {
             clientA.removeListener("say", listener);
             expect(response.context).toEqual("user");
             expect(response.message).toEqual(
@@ -387,7 +419,7 @@ describe("Server: Web Socket", () => {
 
       test("connections are notified when I leave a room", async () => {
         await new Promise((resolve) => {
-          const listener = (response) => {
+          const listener = (response: Record<string, any>) => {
             clientA.removeListener("say", listener);
             expect(response.context).toEqual("user");
             expect(response.message).toEqual(
@@ -407,7 +439,7 @@ describe("Server: Web Socket", () => {
         expect(clientB.rooms.length).toEqual(2);
         expect(clientC.rooms.length).toEqual(1);
 
-        const listener = (response) => {
+        const listener = () => {
           clientC.removeListener("say", listener);
           throw new Error("should not get here");
         };
@@ -441,13 +473,17 @@ describe("Server: Web Socket", () => {
           let messagesReceived = 0;
           chatRoom.addMiddleware({
             name: "say for each",
-            say: async (connection, room, messagePayload) => {
+            say: async (
+              connection: any,
+              room: string,
+              messagePayload: Record<string, any>
+            ) => {
               messagePayload.message += " - To: " + connection.id;
               return messagePayload;
             },
           });
 
-          const listenerA = (response) => {
+          const listenerA = (response: Record<string, any>) => {
             messagesReceived++;
             clientA.removeListener("say", listenerA);
             expect(response.message).toEqual(
@@ -455,7 +491,7 @@ describe("Server: Web Socket", () => {
             ); // clientA.id (Receiver)
           };
 
-          const listenerB = (response) => {
+          const listenerB = (response: Record<string, any>) => {
             messagesReceived++;
             clientB.removeListener("say", listenerB);
             expect(response.message).toEqual(
@@ -463,7 +499,7 @@ describe("Server: Web Socket", () => {
             ); // clientB.id (Receiver)
           };
 
-          const listenerC = (response) => {
+          const listenerC = (response: Record<string, any>) => {
             messagesReceived++;
             clientC.removeListener("say", listenerC);
             expect(response.message).toEqual(
@@ -485,7 +521,11 @@ describe("Server: Web Socket", () => {
           let firstSayCall = true;
           chatRoom.addMiddleware({
             name: "first say middleware",
-            say: async (connection, room, messagePayload) => {
+            say: async (
+              connection: any,
+              room: string,
+              messagePayload: Record<string, any>
+            ) => {
               if (firstSayCall) {
                 firstSayCall = false;
                 await utils.sleep(200);
@@ -524,13 +564,17 @@ describe("Server: Web Socket", () => {
           let messagesReceived = 0;
           chatRoom.addMiddleware({
             name: "say for each",
-            onSayReceive: (connection, room, messagePayload) => {
+            onSayReceive: (
+              connection: any,
+              room: string,
+              messagePayload: Record<string, any>
+            ) => {
               messagePayload.message += " - To: " + connection.id;
               return messagePayload;
             },
           });
 
-          const listenerA = (response) => {
+          const listenerA = (response: Record<string, any>) => {
             messagesReceived++;
             clientA.removeListener("say", listenerA);
             expect(response.message).toEqual(
@@ -538,7 +582,7 @@ describe("Server: Web Socket", () => {
             ); // clientB.id (Sender)
           };
 
-          const listenerB = (response) => {
+          const listenerB = (response: Record<string, any>) => {
             messagesReceived++;
             clientB.removeListener("say", listenerB);
             expect(response.message).toEqual(
@@ -546,7 +590,7 @@ describe("Server: Web Socket", () => {
             ); // clientB.id (Sender)
           };
 
-          const listenerC = (response) => {
+          const listenerC = (response: Record<string, any>) => {
             messagesReceived++;
             clientC.removeListener("say", listenerC);
             expect(response.message).toEqual(
@@ -567,7 +611,7 @@ describe("Server: Web Socket", () => {
         test("blocking middleware return an error", async () => {
           chatRoom.addMiddleware({
             name: "blocking chat middleware",
-            join: (connection, room) => {
+            join: () => {
               throw new Error("joining rooms blocked");
             },
           });
@@ -581,7 +625,11 @@ describe("Server: Web Socket", () => {
       test("say middleware can return null to particular receivers message", async () => {
         chatRoom.addMiddleware({
           name: "silencing chat middleware",
-          say: (connection, room, payload) => {
+          say: (
+            connection: any,
+            room: string,
+            payload: Record<string, any>
+          ) => {
             if (connection.id === clientB.id) {
               return null;
             }
@@ -591,15 +639,15 @@ describe("Server: Web Socket", () => {
         let messagesReceivedA = 0;
         let messagesReceivedB = 0;
         let messagesReceivedC = 0;
-        const listenerA = (response) => {
+        const listenerA = () => {
           clientA.removeListener("say", listenerA);
           messagesReceivedA++;
         };
-        const listenerB = (response) => {
+        const listenerB = () => {
           clientB.removeListener("say", listenerB);
           messagesReceivedB++;
         };
-        const listenerC = (response) => {
+        const listenerC = () => {
           clientC.removeListener("say", listenerC);
           messagesReceivedC++;
         };
@@ -627,20 +675,20 @@ describe("Server: Web Socket", () => {
       test("sayReceive middleware can return null to silence a message", async () => {
         chatRoom.addMiddleware({
           name: "silencing chat middleware",
-          onSayReceive: (connection, room, payload) => {
-            return null;
+          onSayReceive: () => {
+            return null as void;
           },
         });
         let messagesReceivedA = 0;
         let messagesReceivedB = 0;
         let messagesReceivedC = 0;
-        const listenerA = (response) => {
+        const listenerA = () => {
           messagesReceivedA++;
         };
-        const listenerB = (response) => {
+        const listenerB = () => {
           messagesReceivedB++;
         };
-        const listenerC = (response) => {
+        const listenerC = () => {
           messagesReceivedC++;
         };
         clientA.on("say", listenerA);
@@ -658,7 +706,7 @@ describe("Server: Web Socket", () => {
     });
 
     describe("param collisions", () => {
-      let originalSimultaneousActions;
+      let originalSimultaneousActions: number;
 
       beforeAll(() => {
         originalSimultaneousActions = config.general.simultaneousActions;
@@ -675,7 +723,7 @@ describe("Server: Web Socket", () => {
         const sleeps = [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110];
 
         await new Promise((resolve) => {
-          const toComplete = (sleep, response) => {
+          const toComplete = (sleep: number, response: Record<string, any>) => {
             expect(sleep).toEqual(response.sleepDuration);
             completed++;
             if (completed === started) {
@@ -688,7 +736,7 @@ describe("Server: Web Socket", () => {
             clientA.action(
               "sleepTest",
               { sleepDuration: sleep },
-              (response) => {
+              (response: Record<string, any>) => {
                 toComplete(sleep, response);
               }
             );
