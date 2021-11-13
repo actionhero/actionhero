@@ -38,8 +38,8 @@ describe("Utils", () => {
     const C = { a: 1, b: { m: 10, n: 11 } };
     const D = { a: 1, b: { n: 111, o: 22, p: {} } };
     const E = { b: {} };
-    const N = { b: null };
-    const U = { b: undefined };
+    const N = { b: null } as Record<string, any>;
+    const U = { b: undefined } as Record<string, any>;
 
     test("simple", () => {
       const Z = utils.hashMerge(A, B);
@@ -117,7 +117,7 @@ describe("Utils", () => {
       };
       const { ip, port } = utils.parseHeadersForClientAddress(headers);
       expect(ip).toEqual("10.11.12.13");
-      expect(port).toEqual(null);
+      expect(port).toBeFalsy();
     });
     test("load balancer, x-forwarded-for format", () => {
       const headers = {
@@ -203,7 +203,7 @@ describe("Utils", () => {
     });
 
     test("does not pass with empty arrays; first", () => {
-      const a = [];
+      const a: number[] = [];
       const b = [1, 2, 3, 4, 5];
       const result = utils.arrayStartingMatch(a, b);
       expect(result).toBe(false);
@@ -211,7 +211,7 @@ describe("Utils", () => {
 
     test("does not pass with empty arrays; second", () => {
       const a = [1, 2, 3, 4, 5];
-      const b = [];
+      const b: number[] = [];
       const result = utils.arrayStartingMatch(a, b);
       expect(result).toBe(false);
     });
@@ -258,7 +258,7 @@ describe("Utils", () => {
 
     test("can filter top level params, no matter the type", () => {
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
-      config.general.filteredParams.push("p1", "p2", "o2");
+      (config.general.filteredParams as string[]).push("p1", "p2", "o2");
       const filteredParams = utils.filterObjectForLogging(inputs);
       expect(filteredParams.p1).toEqual("[FILTERED]");
       expect(filteredParams.p2).toEqual("[FILTERED]");
@@ -274,7 +274,12 @@ describe("Utils", () => {
       const filteredParams = utils.filterObjectForLogging(inputs);
       expect(filteredParams).toEqual(testInput);
 
-      config.general.filteredParams.push("p3", "p4", "o1.o3", "o1.o2.p1");
+      (config.general.filteredParams as string[]).push(
+        "p3",
+        "p4",
+        "o1.o3",
+        "o1.o2.p1"
+      );
       const filteredParams2 = utils.filterObjectForLogging(inputs);
       expect(filteredParams2).toEqual(testInput);
       expect(filteredParams.a1).toEqual(testInput.a1); // unchanged
@@ -283,7 +288,11 @@ describe("Utils", () => {
 
     test("can filter a single level dot notation", () => {
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
-      config.general.filteredParams.push("p1", "o1.o1p1", "somethingNotExist");
+      (config.general.filteredParams as string[]).push(
+        "p1",
+        "o1.o1p1",
+        "somethingNotExist"
+      );
       const filteredParams = utils.filterObjectForLogging(inputs);
       expect(filteredParams.p1).toEqual("[FILTERED]");
       expect(filteredParams.o1.o1p1).toEqual("[FILTERED]");
@@ -298,7 +307,11 @@ describe("Utils", () => {
 
     test("can filter two levels deep", () => {
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
-      config.general.filteredParams.push("p2", "o1.o2.o2p1", "o1.o2.notThere");
+      (config.general.filteredParams as string[]).push(
+        "p2",
+        "o1.o2.o2p1",
+        "o1.o2.notThere"
+      );
       const filteredParams = utils.filterObjectForLogging(inputs);
       expect(filteredParams.p2).toEqual("[FILTERED]");
       expect(filteredParams.o1.o2.o2p1).toEqual("[FILTERED]");
@@ -372,7 +385,7 @@ describe("Utils", () => {
 
     test("can filter top level params, no matter the type", () => {
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
-      config.general.filteredResponse.push("p1", "p2", "o2");
+      (config.general.filteredResponse as string[]).push("p1", "p2", "o2");
       const filteredRespnose = utils.filterResponseForLogging(inputs);
       expect(filteredRespnose.p1).toEqual("[FILTERED]");
       expect(filteredRespnose.p2).toEqual("[FILTERED]");
@@ -386,14 +399,19 @@ describe("Utils", () => {
       const filteredRespnose = utils.filterResponseForLogging(inputs);
       expect(filteredRespnose).toEqual(testInput);
 
-      config.general.filteredResponse.push("p3", "p4", "o1.o3", "o1.o2.p1");
+      (config.general.filteredResponse as string[]).push(
+        "p3",
+        "p4",
+        "o1.o3",
+        "o1.o2.p1"
+      );
       const filteredRespnose2 = utils.filterResponseForLogging(inputs);
       expect(filteredRespnose2).toEqual(testInput);
     });
 
     test("can filter a single level dot notation", () => {
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
-      config.general.filteredResponse.push(
+      (config.general.filteredResponse as string[]).push(
         "p1",
         "o1.o1p1",
         "somethingNotExist"
@@ -410,7 +428,7 @@ describe("Utils", () => {
 
     test("can filter two levels deep", () => {
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
-      config.general.filteredResponse.push(
+      (config.general.filteredResponse as string[]).push(
         "p2",
         "o1.o2.o2p1",
         "o1.o2.notThere"
