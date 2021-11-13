@@ -46,8 +46,12 @@ export class ConnectionsInitializer extends Initializer {
     this.loadPriority = 400;
   }
 
-  apply = async (connectionId: string, method: string, args: any[]) => {
-    return redis.doCluster(
+  apply = async (
+    connectionId: string,
+    method?: string,
+    args?: any[] | Record<string, any>
+  ) => {
+    return redis.doCluster<Connection>(
       "api.connections.applyResponder",
       [connectionId, method, args],
       connectionId,

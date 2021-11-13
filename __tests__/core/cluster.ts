@@ -6,6 +6,7 @@ import {
   specHelper,
   chatRoom,
   redis,
+  Connection,
 } from "./../../src/index";
 
 const actionhero = new Process();
@@ -34,8 +35,8 @@ describe("Core: Action Cluster", () => {
     });
 
     test("can call remote methods on all other servers in the cluster", async () => {
-      const data = {};
-      api.rpcTestMethod = (arg1, arg2) => {
+      const data: Record<string, any> = {};
+      api.rpcTestMethod = (arg1: any, arg2: any) => {
         data[1] = [arg1, arg2];
       };
       await redis.doCluster("api.rpcTestMethod", ["arg1", "arg2"]);
@@ -47,8 +48,8 @@ describe("Core: Action Cluster", () => {
 
     test("can call remote methods only on one other cluster who holds a specific connectionId", async () => {
       const client = await specHelper.buildConnection();
-      const data = {};
-      api.rpcTestMethod = (arg1, arg2) => {
+      const data: Record<string, any> = {};
+      api.rpcTestMethod = (arg1: any, arg2: any) => {
         data[1] = [arg1, arg2];
       };
 
