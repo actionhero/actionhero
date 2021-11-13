@@ -1,4 +1,4 @@
-import { PluginConfig } from "../classes/config";
+import { PluginConfig } from "..";
 
 const namespace = "plugins";
 

@@ -38,8 +38,8 @@ export class GenerateCLI extends CLI {
       configErrorsJs: "/src/config/errors.ts",
       configPluginsJs: "/src/config/plugins.ts",
       configRoutesJs: "/src/config/routes.ts",
-      configWebJs: "/src/config/servers/web.ts",
-      configWebsocketJs: "/src/config/servers/websocket.ts",
+      configWebJs: "/src/config/web.ts",
+      configWebsocketJs: "/src/config/websocket.ts",
       packageJson: "/package.json",
       actionStatus: "/src/actions/status.ts",
       actionChatRoom: "/src/actions/createChatRoom.ts",
@@ -62,6 +62,14 @@ export class GenerateCLI extends CLI {
         documents[name] = documents[name].replace(
           'from "./../index"',
           'from "actionhero"'
+        );
+        documents[name] = documents[name].replace(
+          'from ".."',
+          'from "actionhero"'
+        );
+        documents[name] = documents[name].replace(
+          'declare module ".."',
+          'declare module "actionhero"'
         );
       }
     }
@@ -90,7 +98,6 @@ export class GenerateCLI extends CLI {
     [
       "/src",
       "/src/config",
-      "/src/config/servers",
       "/src/actions",
       "/src/tasks",
       "/src/initializers",
@@ -124,8 +131,8 @@ export class GenerateCLI extends CLI {
       "/src/config/errors.ts": "configErrorsJs",
       "/src/config/plugins.ts": "configPluginsJs",
       "/src/config/routes.ts": "configRoutesJs",
-      "/src/config/servers/web.ts": "configWebJs",
-      "/src/config/servers/websocket.ts": "configWebsocketJs",
+      "/src/config/web.ts": "configWebJs",
+      "/src/config/websocket.ts": "configWebsocketJs",
       "/package.json": "packageJson",
       "/src/actions/status.ts": "actionStatus",
       "/src/actions/createChatRoom.ts": "actionChatRoom",
