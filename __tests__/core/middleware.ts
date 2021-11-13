@@ -5,7 +5,9 @@ import {
   action,
   utils,
   specHelper,
-} from "./../../src/index";
+  ActionProcessor,
+  Connection,
+} from "./../../src";
 
 const actionhero = new Process();
 
@@ -23,7 +25,7 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "test middleware",
         global: true,
-        preProcessor: (data) => {
+        preProcessor: (data: ActionProcessor<any>) => {
           data.response._preProcessorNote = "note";
         },
       });
@@ -39,7 +41,7 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "test middleware",
         global: true,
-        preProcessor: async (data) => {
+        preProcessor: async (data: ActionProcessor<any>) => {
           await new Promise((resolve) => {
             setTimeout(resolve, 100);
           });
@@ -58,7 +60,7 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "test middleware",
         global: false,
-        preProcessor: (data) => {
+        preProcessor: (data: ActionProcessor<any>) => {
           data.response._preProcessorNote = "note";
         },
       });
@@ -71,7 +73,7 @@ describe("Core: Middleware", () => {
     });
 
     describe("middleware can read properties of the action template", () => {
-      const sessions = [];
+      const sessions: any[] = [];
 
       beforeAll(() => {
         api.actions.versions.authAction = [1];
@@ -99,7 +101,7 @@ describe("Core: Middleware", () => {
         action.addMiddleware({
           name: "auth middleware",
           global: true,
-          preProcessor: (data) => {
+          preProcessor: (data: ActionProcessor<any>) => {
             if (data.actionTemplate.authenticated === true) {
               data.response.authenticatedAction = true;
             } else {
@@ -119,7 +121,7 @@ describe("Core: Middleware", () => {
         action.addMiddleware({
           name: "session middleware",
           global: true,
-          preProcessor: async (data) => {
+          preProcessor: async (data: ActionProcessor<any>) => {
             data.session = { id: "abc123" };
           },
         });
@@ -136,7 +138,7 @@ describe("Core: Middleware", () => {
         name: "first test middleware",
         global: true,
         priority: 1,
-        preProcessor: (data) => {
+        preProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteFirst = "first";
           data.response._processorNoteEarly = "first";
           data.response._processorNoteLate = "first";
@@ -149,7 +151,7 @@ describe("Core: Middleware", () => {
         name: "early test middleware",
         global: true,
         priority: config.general.defaultMiddlewarePriority - 1,
-        preProcessor: (data) => {
+        preProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteEarly = "early";
           data.response._processorNoteLate = "early";
           data.response._processorNoteDefault = "early";
@@ -160,7 +162,7 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "default test middleware",
         global: true,
-        preProcessor: (data) => {
+        preProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteLate = "default";
           data.response._processorNoteDefault = "default";
         },
@@ -171,7 +173,7 @@ describe("Core: Middleware", () => {
         name: "late test middleware",
         global: true,
         priority: config.general.defaultMiddlewarePriority + 1,
-        preProcessor: (data) => {
+        preProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteLate = "late";
         },
       });
@@ -188,7 +190,7 @@ describe("Core: Middleware", () => {
         name: "first test middleware",
         global: true,
         priority: config.general.defaultMiddlewarePriority - 1,
-        preProcessor: (data) => {
+        preProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteFirst = "first";
         },
       });
@@ -197,7 +199,7 @@ describe("Core: Middleware", () => {
         name: "late test middleware",
         global: true,
         priority: config.general.defaultMiddlewarePriority - 1,
-        preProcessor: (data) => {
+        preProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteSecond = "second";
         },
       });
@@ -211,7 +213,7 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "test middleware",
         global: true,
-        postProcessor: (data) => {
+        postProcessor: (data: ActionProcessor<any>) => {
           data.response._postProcessorNote = "note";
         },
       });
@@ -226,7 +228,7 @@ describe("Core: Middleware", () => {
         name: "first test middleware",
         global: true,
         priority: 1,
-        postProcessor: (data) => {
+        postProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteFirst = "first";
           data.response._processorNoteEarly = "first";
           data.response._processorNoteLate = "first";
@@ -239,7 +241,7 @@ describe("Core: Middleware", () => {
         name: "early test middleware",
         global: true,
         priority: config.general.defaultMiddlewarePriority - 1,
-        postProcessor: (data) => {
+        postProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteEarly = "early";
           data.response._processorNoteLate = "early";
           data.response._processorNoteDefault = "early";
@@ -250,7 +252,7 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "default test middleware",
         global: true,
-        postProcessor: (data) => {
+        postProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteLate = "default";
           data.response._processorNoteDefault = "default";
         },
@@ -261,7 +263,7 @@ describe("Core: Middleware", () => {
         name: "late test middleware",
         global: true,
         priority: config.general.defaultMiddlewarePriority + 1,
-        postProcessor: (data) => {
+        postProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteLate = "late";
         },
       });
@@ -278,7 +280,7 @@ describe("Core: Middleware", () => {
         name: "first middleware",
         global: true,
         priority: config.general.defaultMiddlewarePriority - 1,
-        postProcessor: (data) => {
+        postProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteFirst = "first";
         },
       });
@@ -287,7 +289,7 @@ describe("Core: Middleware", () => {
         name: "second middleware",
         global: true,
         priority: config.general.defaultMiddlewarePriority - 1,
-        postProcessor: (data) => {
+        postProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteSecond = "second";
         },
       });
@@ -301,7 +303,7 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "test middleware",
         global: true,
-        preProcessor: function (data) {
+        preProcessor: function () {
           throw new Error("BLOCKED");
         },
       });
@@ -317,7 +319,7 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "test middleware",
         global: true,
-        postProcessor: (data) => {
+        postProcessor: (data: ActionProcessor<any>) => {
           data.toRender = false;
         },
       });
@@ -334,7 +336,7 @@ describe("Core: Middleware", () => {
   });
 
   describe("connection sync create/destroy callbacks", () => {
-    let connection;
+    let connection: Connection;
     beforeEach(() => {
       api.connections.middleware = {};
       api.connections.globalMiddleware = [];
@@ -349,25 +351,28 @@ describe("Core: Middleware", () => {
       let middlewareRan = false;
       api.connections.addMiddleware({
         name: "connection middleware",
-        create: (_connection) => {
+        create: (_connection: Connection) => {
           middlewareRan = true;
-          _connection.touched = "connect";
+          //@ts-ignore
+          _connection["touched"] = "connect";
         },
       });
 
       connection = await specHelper.buildConnection();
 
       expect(middlewareRan).toEqual(true);
-      expect(connection.touched).toEqual("connect");
+      //@ts-ignore
+      expect(connection["touched"]).toEqual("connect");
     });
 
     test("can create callbacks on connection destroy", async () => {
       let middlewareRan = false;
       api.connections.addMiddleware({
         name: "connection middleware",
-        destroy: (_connection) => {
+        destroy: (_connection: Connection) => {
           middlewareRan = true;
-          expect(_connection.touched).toEqual("connect");
+          //@ts-ignore
+          expect(_connection["touched"]).toEqual("connect");
         },
       });
 
@@ -389,18 +394,19 @@ describe("Core: Middleware", () => {
 
     test("can create async callbacks on connection create/destroy", async () => {
       let middlewareRan = false;
-      let middlewareDestoryRan = false;
+      let middlewareDestroyRan = false;
 
       api.connections.addMiddleware({
         name: "connection middleware",
-        create: async (_connection) => {
+        create: async (_connection: Connection) => {
           middlewareRan = true;
           await utils.sleep(1);
-          _connection.longProcessResult = true;
+          //@ts-ignore
+          _connection["longProcessResult"] = true;
         },
-        destroy: async (_connection) => {
+        destroy: async (_connection: Connection) => {
           await utils.sleep(1);
-          middlewareDestoryRan = true;
+          middlewareDestroyRan = true;
         },
       });
 
@@ -412,7 +418,7 @@ describe("Core: Middleware", () => {
 
       // destroy
       await connection.destroy();
-      expect(middlewareDestoryRan).toEqual(true);
+      expect(middlewareDestroyRan).toEqual(true);
     });
   });
 });

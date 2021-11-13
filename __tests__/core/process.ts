@@ -1,4 +1,4 @@
-import { Process, api } from "./../../src/index";
+import { Process, api } from "./../../src";
 
 const actionhero = new Process();
 

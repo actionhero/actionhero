@@ -1,4 +1,4 @@
-import { api, Process, specHelper, task } from "./../../src/index";
+import { api, Connection, Process, specHelper, task } from "./../../src";
 import { RandomNumber } from "../../src/actions/randomNumber";
 import { SleepTest } from "../../src/actions/sleepTest";
 
@@ -229,9 +229,9 @@ describe("Core: specHelper", () => {
   });
 
   describe("persistent test connections", () => {
-    let connection;
-    let connId;
-    const messageIds = [];
+    let connection: Connection;
+    let connId: string;
+    const messageIds: string[] = [];
 
     test("can make a request with a specified connection", async () => {
       connection = await specHelper.buildConnection();
