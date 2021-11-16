@@ -86,7 +86,7 @@ describe("Core: Tasks", () => {
           },
           c: {
             required: true,
-            validator: (p: any) => {
+            validator: (p: unknown) => {
               if (p !== 3) {
                 throw new Error("nope");
               }
@@ -94,7 +94,7 @@ describe("Core: Tasks", () => {
           },
           d: {
             required: true,
-            validator: (p: any) => {
+            validator: (p: unknown) => {
               if (p !== 4) {
                 return false;
               }

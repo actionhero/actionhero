@@ -238,12 +238,12 @@ describe("Core", () => {
                 default: () => {
                   return "abc123";
                 },
-                validator: function (s: any) {
+                validator: function (s: unknown) {
                   if (s !== "abc123") {
                     return 'fancyParam should be "abc123".  so says ' + this.id;
                   }
                 },
-                formatter: function (s: any) {
+                formatter: function (s: unknown) {
                   return String(s);
                 },
               },
@@ -371,7 +371,7 @@ describe("Core", () => {
                     default: () => {
                       return "abc123";
                     },
-                    validator: function (s: any) {
+                    validator: function (s: unknown) {
                       if (s === "abc123") {
                         return true;
                       } else {
@@ -380,7 +380,7 @@ describe("Core", () => {
                         );
                       }
                     },
-                    formatter: (s: any) => {
+                    formatter: (s: unknown) => {
                       return String(s);
                     },
                   },
@@ -487,13 +487,13 @@ describe("Core", () => {
     describe("named action validations", () => {
       beforeAll(() => {
         api.validators = {
-          validator1: (param: any) => {
+          validator1: (param: unknown) => {
             if (typeof param !== "string") {
               throw new Error("only strings");
             }
             return true;
           },
-          validator2: (param: any) => {
+          validator2: (param: unknown) => {
             if (param !== "correct") {
               throw new Error("that is not correct");
             }
@@ -549,10 +549,10 @@ describe("Core", () => {
     describe("named action formatters", () => {
       beforeAll(() => {
         api._formatters = {
-          formatter1: (param: any) => {
+          formatter1: (param: unknown) => {
             return "*" + param + "*";
           },
-          formatter2: (param: any) => {
+          formatter2: (param: unknown) => {
             return "~" + param + "~";
           },
         };

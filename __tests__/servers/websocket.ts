@@ -42,7 +42,7 @@ const awaitMethod = async (
   [key: string]: any;
 }> => {
   return new Promise((resolve, reject) => {
-    client[method]((a: any, b: any) => {
+    client[method]((a: any, b: unknown) => {
       if (returnsError && a) {
         return reject(a);
       }
