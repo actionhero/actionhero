@@ -289,7 +289,6 @@ describe("Core", () => {
         });
 
         test("generateMessagePayload can be overloaded", async () => {
-          //@ts-ignore
           api.chatRoom.generateMessagePayload = (message) => {
             return {
               thing: "stuff",

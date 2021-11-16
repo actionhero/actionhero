@@ -99,7 +99,7 @@ export class ChatRoomInitializer extends Initializer {
       from: message.connection.id,
       context: "user",
       sentAt: message.sentAt,
-    };
+    } as Record<string, any>; // we want to relax the return type to a Record so that this method can be modified by users
   };
 
   incomingMessage = (message: ChatModule.chatRoom.ChatPubSubMessage) => {
