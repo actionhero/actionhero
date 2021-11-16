@@ -11,10 +11,7 @@ import {
   Server,
   Connection,
 } from "../index";
-
-export type SpecHelperConnection = Connection & {
-  actionCallbacks?: { [key: string]: Function };
-};
+import { SpecHelperConnection } from "../modules/specHelper";
 
 export interface SpecHelperApi {
   returnMetadata?: boolean;

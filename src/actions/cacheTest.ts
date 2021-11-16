@@ -35,7 +35,7 @@ export class CacheTest extends Action {
     };
   }
 
-  stringFormatter(s: string) {
+  stringFormatter(s: unknown) {
     return String(s);
   }
 

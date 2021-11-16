@@ -1,16 +1,20 @@
 import * as uuid from "uuid";
 import { Worker } from "node-resque";
-import { api, config, task, Task, Action } from "./../index";
+import { api, config, task, Task, Action, Connection } from "./../index";
 import { WebServer } from "../servers/web";
 import { AsyncReturnType } from "type-fest";
 import { TaskInputs } from "../classes/task";
+
+export type SpecHelperConnection = Connection & {
+  actionCallbacks?: { [key: string]: Function };
+};
 
 export namespace specHelper {
   /**
    * Generate a connection to use in your tests
    */
   export async function buildConnection() {
-    return api.specHelper.Connection.createAsync();
+    return api.specHelper.Connection.createAsync() as SpecHelperConnection;
   }
 
   /**
@@ -56,7 +60,6 @@ export namespace specHelper {
     const connection = await specHelper.buildConnection();
     connection.params.file = file;
 
-    connection.messageCount = uuid.v4();
     const response = await new Promise((resolve) => {
       api.servers.servers.testServer.processFile(connection);
       connection.actionCallbacks[connection.messageId] = resolve;

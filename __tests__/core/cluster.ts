@@ -72,14 +72,16 @@ describe("Core: Action Cluster", () => {
 
     test("can call remote methods on/about connections connected to other servers", async () => {
       const client = await specHelper.buildConnection();
-      expect(client.auth).toBeUndefined();
+      //@ts-ignore
+      expect(client["auth"]).toBeUndefined();
 
       const connection = await api.connections.apply(client.id, "set", [
         "auth",
         true,
       ]);
       expect(connection.id).toEqual(client.id);
-      expect(client.auth).toEqual(true);
+      //@ts-ignore
+      expect(client["auth"]).toEqual(true);
       client.destroy();
     });
 

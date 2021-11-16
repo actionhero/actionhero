@@ -34,9 +34,9 @@ describe("Core", () => {
     });
 
     describe("say and clients on separate servers", () => {
-      let client1: any;
-      let client2: any;
-      let client3: any;
+      let client1: Connection;
+      let client2: Connection;
+      let client3: Connection;
 
       beforeAll(async () => {
         client1 = await specHelper.buildConnection();

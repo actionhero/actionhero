@@ -414,7 +414,8 @@ describe("Core: Middleware", () => {
 
       // create
       expect(middlewareRan).toEqual(true);
-      expect(connection.longProcessResult).toEqual(true);
+      //@ts-ignore
+      expect(connection["longProcessResult"]).toEqual(true);
 
       // destroy
       await connection.destroy();
