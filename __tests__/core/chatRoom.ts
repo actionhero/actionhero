@@ -348,7 +348,7 @@ describe("Core", () => {
             say: (
               connection: Connection,
               room: string,
-              messagePayload: any
+              messagePayload: { from: number; message: string }
             ) => {
               if (messagePayload.from !== 0) {
                 messagePayload.message = "something else";
@@ -373,7 +373,7 @@ describe("Core", () => {
             say: (
               connection: Connection,
               room: string,
-              messagePayload: any
+              messagePayload: { from: number; message: string }
             ) => {
               messagePayload.message = "MIDDLEWARE 1";
               return messagePayload;
@@ -386,7 +386,7 @@ describe("Core", () => {
             say: (
               connection: Connection,
               room: string,
-              messagePayload: any
+              messagePayload: { from: number; message: string }
             ) => {
               messagePayload.message = messagePayload.message + " MIDDLEWARE 2";
               return messagePayload;
