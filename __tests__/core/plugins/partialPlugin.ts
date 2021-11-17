@@ -71,11 +71,9 @@ describe("Core: Plugins", () => {
     test(
       "will not load CLI command from an un-loaded plugin",
       async () => {
-        const env = { ...process.env };
-
         const { stdout: helpResponse, stderr: error1 } = await exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts help",
-          { env }
+          { env: process.env }
         );
         expect(error1).toEqual("");
         expect(helpResponse).not.toContain("hello");
@@ -83,7 +81,7 @@ describe("Core: Plugins", () => {
         try {
           await exec(
             "./node_modules/.bin/ts-node ./src/bin/actionhero.ts hello",
-            { env }
+            { env: process.env }
           );
           throw new Error("should not get here");
         } catch (error) {
