@@ -76,7 +76,10 @@ export abstract class Action {
     if (!this.run || typeof this.run !== "function") {
       throw new Error(`action \`${this.name}\` has no run method`);
     }
-    if (api.connections && connectionVerbs.includes(this.name as any)) {
+    if (
+      api.connections &&
+      ([...connectionVerbs] as string[]).includes(this.name)
+    ) {
       throw new Error(
         `action \`${this.name}\` is a reserved verb for connections. choose a new name`
       );

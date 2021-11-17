@@ -98,11 +98,9 @@ export class Servers extends Initializer {
   }
 
   async start() {
-    const serverNames = Object.keys(api.servers.servers);
-    for (const i in serverNames) {
-      const serverName = serverNames[i];
-      const bindIp = config[serverName].bindIP;
-      const port = config[serverName].port;
+    for (const serverName of Object.keys(api.servers.servers)) {
+      const bindIp = config[serverName]?.bindIP?.toString();
+      const port = config[serverName]?.port?.toString();
 
       const server = api.servers.servers[serverName];
       if (server && server.config.enabled === true) {

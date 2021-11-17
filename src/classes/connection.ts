@@ -67,7 +67,7 @@ export class Connection {
   extension?: string;
   destroyed: boolean;
   /** storage for a response payload */
-  response?: Record<string, any>;
+  response?: Record<string, unknown>;
   /** storage for session data */
   session?: Record<string, any>;
 
@@ -119,7 +119,7 @@ export class Connection {
       }
     });
 
-    if (config.general.enforceConnectionProperties === true) {
+    if (config.general.enforceConnectionProperties) {
       if (!data.remotePort && data.remotePort?.toString() !== "0")
         throw new Error(
           "remotePort is required to create a new connection object"
@@ -217,15 +217,14 @@ export class Connection {
     delete api.connections.connections[this.id];
   }
 
-  private set(key: string, value: any) {
-    //@ts-ignore
+  private set(key: keyof typeof this, value: any) {
     this[key] = value;
   }
 
   /**
    * Try to run a verb command for a connection
    */
-  async verbs(verb: string, words: Array<string> | string) {
+  async verbs(verb: string, words: string[] | string) {
     let key: string;
     let value: string;
     let room: string;

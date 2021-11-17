@@ -10,6 +10,12 @@ import { ensureNoTsHeaderFiles } from "../modules/utils/ensureNoTsHeaderFiles";
 import { CLI } from "../classes/cli";
 import { PackageJson } from "type-fest";
 
+// load explicitly to find the type changes for the config module
+import "../config/api";
+import "../config/plugins";
+import "../config/logger";
+import "../config/routes";
+
 export namespace ActionheroCLIRunner {
   export async function run() {
     program.storeOptionsAsProperties(false);
@@ -20,17 +26,13 @@ export namespace ActionheroCLIRunner {
       const { config } = await import("../index");
 
       // this project
-      for (const i in config.general.paths.cli) {
-        await loadDirectory(
-          path.join(config.general.paths.cli[i]),
-          pathsLoaded
-        );
+      for (const p of config.general.paths.cli) {
+        await loadDirectory(path.join(p), pathsLoaded);
       }
 
       // plugins
       // this is needed vs Object.values to prevent TS compilation errors
-      for (const pluginName of Object.keys(config.plugins)) {
-        const plugin = config.plugins[pluginName];
+      for (const plugin of Object.values(config.plugins)) {
         if (plugin.cli !== false) {
           // old plugins
           await loadDirectory(path.join(plugin.path, "bin"), pathsLoaded);

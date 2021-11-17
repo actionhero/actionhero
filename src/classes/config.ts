@@ -1,5 +1,5 @@
 export interface ActionheroConfigInterface {
-  [key: string]: any;
+  [key: string]: Record<string, unknown>;
 }
 
 export type PluginConfigRecord = {
