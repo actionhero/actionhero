@@ -28,8 +28,7 @@ export namespace ActionheroCLIRunner {
       }
 
       // plugins
-      for (const pluginName of Object.keys(config.plugins)) {
-        const plugin = config.plugins[pluginName];
+      for (const plugin of Object.values(config.plugins)) {
         if (plugin.cli !== false) {
           // old plugins
           await loadDirectory(path.join(plugin.path, "bin"), pathsLoaded);
@@ -78,7 +77,9 @@ export namespace ActionheroCLIRunner {
     }
   }
 
-  export async function convertCLIToCommanderAction(cliConstructor: any) {
+  export async function convertCLIToCommanderAction(
+    cliConstructor: new () => CLI
+  ) {
     if (
       Object.getPrototypeOf(cliConstructor?.prototype?.constructor || {})
         .name !== "CLI"

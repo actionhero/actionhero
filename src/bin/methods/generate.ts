@@ -21,12 +21,12 @@ export class GenerateCLI extends CLI {
 
   async run() {
     const documents: {
-      [key: string]: any;
+      [key: string]: string;
     } = {};
 
-    documents.projectMap = fs.readFileSync(
-      path.join(__dirname, "/../../../templates/projectMap.txt")
-    );
+    documents.projectMap = fs
+      .readFileSync(path.join(__dirname, "/../../../templates/projectMap.txt"))
+      .toString();
 
     const oldFileMap = {
       tsconfig: "tsconfig.json",
@@ -56,21 +56,12 @@ export class GenerateCLI extends CLI {
     for (const [name, localPath] of Object.entries(oldFileMap)) {
       const source = path.join(__dirname, "/../../../", localPath);
       const extension = localPath.split(".")[1];
-      documents[name] = fs.readFileSync(source);
+      documents[name] = fs.readFileSync(source).toString();
       if (extension === "ts" || extension === "js" || extension === "json") {
-        documents[name] = documents[name].toString();
-        documents[name] = documents[name].replace(
-          'from "./../index"',
-          'from "actionhero"'
-        );
-        documents[name] = documents[name].replace(
-          'from ".."',
-          'from "actionhero"'
-        );
-        documents[name] = documents[name].replace(
-          'declare module ".."',
-          'declare module "actionhero"'
-        );
+        documents[name] = documents[name]
+          .replace('from "./../index"', 'from "actionhero"')
+          .replace('from ".."', 'from "actionhero"')
+          .replace('declare module ".."', 'declare module "actionhero"');
       }
     }
 
@@ -162,9 +153,12 @@ export class GenerateCLI extends CLI {
     );
 
     console.log("");
-    (documents.projectMap.toString() as string).split("\n").forEach((line) => {
-      console.log(line);
-    });
+    documents.projectMap
+      .toString()
+      .split("\n")
+      .forEach((line) => {
+        console.log(line);
+      });
 
     console.log(
       `
