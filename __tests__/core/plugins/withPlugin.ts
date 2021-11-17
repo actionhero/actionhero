@@ -55,7 +55,7 @@ describe("Core: Plugins", () => {
       expect(api.pluginInitializer.here).toEqual(true);
     });
 
-    // test('can load a server from a plugin')
+    test.todo("can load a server from a plugin");
 
     test("can serve static files from a plugin", async () => {
       const file = await specHelper.getStaticFile("plugin.html");
@@ -66,7 +66,7 @@ describe("Core: Plugins", () => {
     test(
       "can load CLI command from a plugin",
       async () => {
-        const env = { ...process.env };
+        const env = process.env;
 
         const { stdout: helpResponse, stderr: error1 } = await exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts help",
