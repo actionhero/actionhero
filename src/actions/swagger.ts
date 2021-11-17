@@ -139,11 +139,10 @@ export class Swagger extends Action {
         title: parentPackageJSON.name,
         license: { name: parentPackageJSON.license },
       },
-      host: (config.web.allowedRequestHosts[0]
-        ? config.web.allowedRequestHosts[0]
-            .replace("https://", "")
-            .replace("http://", "")
-        : `localhost:${config.web.port}`) as string,
+      host:
+        config.web.allowedRequestHosts[0]
+          ?.replace("https://", "")
+          .replace("https://", "") ?? `localhost:${config.web.port}`,
       basePath: `/api/${API_VERSION}`,
       // tags: tags.map((tag) => {
       //   return { name: tag, description: `topic: ${tag}` };
