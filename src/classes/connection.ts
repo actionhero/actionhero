@@ -1,6 +1,6 @@
 import * as uuid from "uuid";
+import { number } from "yargs";
 import { RouteType } from "../modules/route";
-import { missing } from "../modules/utils/missing";
 import { api, chatRoom } from "./../index";
 import { config } from "./../modules/config";
 
@@ -114,17 +114,17 @@ export class Connection {
 
   private setup(data: ConnectionData) {
     (["type", "rawConnection"] as const).forEach((req) => {
-      if (missing(data[req])) {
+      if (!data[req]) {
         throw new Error(`${req} is required to create a new connection object`);
       }
     });
 
     if (config.general.enforceConnectionProperties === true) {
-      if (missing(data.remotePort))
+      if (!data.remotePort && data.remotePort?.toString() !== "0")
         throw new Error(
           "remotePort is required to create a new connection object"
         );
-      if (missing(data.remoteIP))
+      if (!data.remoteIP && data.remoteIP?.toString() !== "0")
         throw new Error(
           "remoteIP is required to create a new connection object"
         );

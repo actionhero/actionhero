@@ -1,6 +1,5 @@
 import { api } from "../index";
 import type { ActionheroLogLevel } from "../modules/log";
-import { missing } from "../modules/utils/missing";
 import { ActionProcessor } from "./actionProcessor";
 import { connectionVerbs } from "./connection";
 import { Inputs } from "./inputs";
@@ -46,17 +45,15 @@ export abstract class Action {
   toDocument?: boolean;
 
   constructor() {
-    if (missing(this.version)) this.version = 1;
-    if (missing(this.description)) this.description = this.name;
-    if (missing(this.inputs)) this.inputs = {};
-    if (missing(this.outputExample)) this.outputExample = {};
-    if (missing(this.middleware)) this.middleware = [];
-    if (missing(this.blockedConnectionTypes)) this.blockedConnectionTypes = [];
-    if (missing(this.logLevel)) this.logLevel = "info";
-    if (missing(this.toDocument)) this.toDocument = true;
-    if (missing(this.matchExtensionMimeType)) {
-      this.matchExtensionMimeType = true;
-    }
+    this.version = this.version ?? 1;
+    this.description = this.description ?? this.name;
+    this.inputs = this.inputs ?? {};
+    this.outputExample = this.outputExample ?? {};
+    this.middleware = this.middleware ?? [];
+    this.blockedConnectionTypes = this.blockedConnectionTypes ?? [];
+    this.logLevel = this.logLevel ?? "info";
+    this.toDocument = this.toDocument ?? true;
+    this.matchExtensionMimeType = this.matchExtensionMimeType ?? true;
   }
 
   /**

@@ -1,5 +1,3 @@
-import { missing } from "../modules/utils/missing";
-
 /**
  * An Actionhero CLI Command.
  * For inputs, you can provide Options (--thing=stuff) with the "Inputs" object, or define Arguments in the name of the command (`greet [name]`)
@@ -31,11 +29,11 @@ export abstract class CLI {
   start: boolean;
 
   constructor() {
-    if (missing(this.description)) this.description = this.name;
-    if (missing(this.example)) this.example = "";
-    if (missing(this.inputs)) this.inputs = {};
-    if (missing(this.initialize)) this.initialize = true;
-    if (missing(this.start)) this.start = false;
+    this.description = this.description ?? this.name;
+    this.example = this.example ?? "";
+    this.inputs = this.inputs ?? {};
+    this.initialize = this.initialize ?? true;
+    this.start = this.start ?? false;
   }
 
   /**

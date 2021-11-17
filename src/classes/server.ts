@@ -1,7 +1,6 @@
 import { EventEmitter } from "events";
 import { api, config } from "../index";
 import { log, ActionheroLogLevel } from "../modules/log";
-import { missing } from "../modules/utils/missing";
 import { ActionProcessor } from "./actionProcessor";
 import { Connection } from "./connection";
 
@@ -49,11 +48,11 @@ export abstract class Server extends EventEmitter {
     this.config = {}; // will be applied by the initializer
     this.connectionCustomMethods = {};
 
-    if (missing(this.canChat)) this.canChat = true;
-    if (missing(this.logExits)) this.logExits = true;
-    if (missing(this.sendWelcomeMessage)) this.sendWelcomeMessage = true;
-    if (missing(this.logConnections)) this.logConnections = true;
-    if (missing(this.verbs)) this.verbs = [];
+    this.canChat = this.canChat ?? true;
+    this.logExits = this.logExits ?? true;
+    this.sendWelcomeMessage = this.sendWelcomeMessage ?? true;
+    this.logConnections = this.logConnections ?? true;
+    this.verbs = this.verbs ?? [];
   }
 
   /**

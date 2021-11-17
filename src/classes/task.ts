@@ -1,6 +1,5 @@
 import { Inputs } from "./inputs";
 import { Plugin, Worker } from "node-resque";
-import { missing } from "../modules/utils/missing";
 
 /**
  * Create a new Actionhero Task. The required properties of an task. These can be defined statically (this.name) or as methods which return a value.
@@ -41,15 +40,14 @@ export abstract class Task {
   reEnqueuePeriodicTaskIfException?: boolean;
 
   constructor() {
-    if (missing(this.description)) this.description = this.name;
-    if (missing(this.frequency)) this.frequency = 0;
-    if (missing(this.queue)) this.queue = "default";
-    if (missing(this.middleware)) this.middleware = [];
-    if (missing(this.plugins)) this.plugins = [];
-    if (missing(this.pluginOptions)) this.pluginOptions = {};
-    if (missing(this.reEnqueuePeriodicTaskIfException)) {
-      this.reEnqueuePeriodicTaskIfException = true;
-    }
+    this.description = this.description ?? this.name;
+    this.frequency = this.frequency ?? 0;
+    this.queue = this.queue ?? "default";
+    this.middleware = this.middleware ?? [];
+    this.plugins = this.plugins ?? [];
+    this.pluginOptions = this.pluginOptions ?? {};
+    this.reEnqueuePeriodicTaskIfException =
+      this.reEnqueuePeriodicTaskIfException ?? true;
   }
 
   /**
