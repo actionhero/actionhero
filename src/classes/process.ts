@@ -74,8 +74,7 @@ export class Process {
     });
 
     // load initializers from plugins
-    for (const pluginName of Object.keys(config.plugins)) {
-      const plugin = config.plugins[pluginName];
+    for (const plugin of Object.values(config.plugins)) {
       const pluginPath: string = path.normalize(plugin.path);
       if (!fs.existsSync(pluginPath)) {
         throw new Error(`plugin path does not exist: ${pluginPath}`);
@@ -238,7 +237,7 @@ export class Process {
    * Start the Actionhero Process
    */
   async start() {
-    if (this.initialized !== true) await this.initialize();
+    if (!this.initialized) await this.initialize();
     const serverName = config.general.serverName;
 
     writePidFile();
@@ -385,7 +384,7 @@ export class Process {
           }
         }
 
-        if (this.shuttingDown !== true) {
+        if (!this.shuttingDown) {
           let timer = awaitHardStop();
           if (this.running) await this.stop();
           clearTimeout(timer);
@@ -426,7 +425,7 @@ export class Process {
   // HELPERS
   async fatalError(
     errors: NodeJS.ErrnoException | NodeJS.ErrnoException[] = [],
-    type: any
+    type: string
   ) {
     if (!(errors instanceof Array)) errors = [errors];
 

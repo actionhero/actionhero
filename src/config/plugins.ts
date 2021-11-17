@@ -8,7 +8,7 @@ declare module ".." {
   }
 }
 
-export const DEFAULT = {
+export const DEFAULT: { [namespace]: () => PluginConfig } = {
   [namespace]: () => {
     /*
     If you want to use plugins in your application, include them here:
@@ -32,6 +32,6 @@ export const DEFAULT = {
     }
     */
 
-    return {} as PluginConfig;
+    return {};
   },
 };

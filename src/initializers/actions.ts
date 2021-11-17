@@ -100,7 +100,7 @@ export class ActionsInitializer extends Initializer {
       }
     }
 
-    for (const [_, plugin] of Object.entries(config.plugins)) {
+    for (const plugin of Object.values(config.plugins)) {
       if (plugin.actions !== false) {
         const pluginPath: string = path.normalize(plugin.path);
 

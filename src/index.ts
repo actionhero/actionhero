@@ -41,4 +41,4 @@ declare module globalThis {
 }
 
 if (!globalThis.api) globalThis.api = new Api();
-export const api: Api = globalThis.api;
+export const api = globalThis.api;

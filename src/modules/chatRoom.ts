@@ -12,11 +12,11 @@ export namespace chatRoom {
    *    priority: 1000,
    *    join: (connection, room) => {
    *      // announce all connections entering a room
-   *      api.chatRoom.broadcast({}, room, 'I have joined the room: ' + connection.id, callback)
+   *      api.chatRoom.broadcast(null, room, 'I have joined the room: ' + connection.id, callback)
    *    },
    *    leave:(connection, room, callback) => {
    *      // announce all connections leaving a room
-   *      api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, callback)
+   *      api.chatRoom.broadcast(null, room, 'I have left the room: ' + connection.id, callback)
    *    },
    *    // Will be executed once per client connection before delivering the message.
    *    say: (connection, room, messagePayload) => {
@@ -120,7 +120,7 @@ export namespace chatRoom {
     const found = await chatRoom.exists(room);
     if (found === true) {
       await api.chatRoom.broadcast(
-        {},
+        null,
         room,
         await config.errors.connectionRoomHasBeenDeleted(room)
       );
@@ -312,7 +312,7 @@ export namespace chatRoom {
    * - message can be anything: string, json, object, etc
    */
   export async function broadcast(
-    connection: Connection | { [key: string]: any },
+    connection: Partial<Connection>,
     room: string,
     message: any
   ) {

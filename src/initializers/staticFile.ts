@@ -35,21 +35,14 @@ export class StaticFileInitializer extends Initializer {
   get = async (
     connection: Connection,
     counter: number = 0
-  ): Promise<
-    | {
-        connection: Connection;
-        error: any;
-        mime: string;
-        length: any;
-      }
-    | {
-        connection: Connection;
-        fileStream: fs.ReadStream;
-        mime: string;
-        length: any;
-        lastModified: number;
-      }
-  > => {
+  ): Promise<{
+    connection: Connection;
+    error?: any;
+    mime: string;
+    length: any;
+    fileStream?: fs.ReadStream;
+    lastModified?: Date;
+  }> => {
     let file: string;
     if (!connection.params.file || !api.staticFile.searchPath(counter)) {
       return api.staticFile.sendFileNotFound(
@@ -92,7 +85,7 @@ export class StaticFileInitializer extends Initializer {
   };
 
   sendFile = async (file: string, connection: Connection) => {
-    let lastModified: number;
+    let lastModified: Date;
 
     try {
       const stats = await asyncStats(file);

@@ -218,13 +218,10 @@ export abstract class Server extends EventEmitter {
 
     this.sendFile(
       results.connection,
-      //@ts-ignore
       results.error,
-      //@ts-ignore
       results.fileStream,
       results.mime,
       results.length,
-      //@ts-ignore
       results.lastModified
     );
   }

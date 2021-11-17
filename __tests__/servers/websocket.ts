@@ -297,7 +297,7 @@ describe("Server: Web Socket", () => {
           name: "join chat middleware",
           join: async (connection: any, room: string) => {
             await api.chatRoom.broadcast(
-              {},
+              null,
               room,
               `I have entered the room: ${connection.id}`
             );
@@ -308,7 +308,7 @@ describe("Server: Web Socket", () => {
           name: "leave chat middleware",
           leave: async (connection: any, room: string) => {
             api.chatRoom.broadcast(
-              {},
+              null,
               room,
               `I have left the room: ${connection.id}`
             );

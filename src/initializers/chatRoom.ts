@@ -42,6 +42,8 @@ export class ChatRoomInitializer extends Initializer {
     room: string,
     message: object | Array<any> | string
   ) => {
+    if (!connection) connection = {};
+
     if (!room || !message) {
       throw new Error(
         config.errors.connectionRoomAndMessage(connection as Connection)

@@ -8,7 +8,7 @@ declare module ".." {
   }
 }
 
-export const DEFAULT = {
+export const DEFAULT: { [namespace]: () => RoutesConfig } = {
   [namespace]: () => {
     return {
       get: [
@@ -39,6 +39,6 @@ export const DEFAULT = {
       ]
 
       ---------------------- */
-    } as RoutesConfig;
+    };
   },
 };
