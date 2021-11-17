@@ -675,9 +675,7 @@ describe("Server: Web Socket", () => {
       test("sayReceive middleware can return null to silence a message", async () => {
         chatRoom.addMiddleware({
           name: "silencing chat middleware",
-          onSayReceive: () => {
-            return null as void;
-          },
+          onSayReceive: () => {},
         });
         let messagesReceivedA = 0;
         let messagesReceivedB = 0;
