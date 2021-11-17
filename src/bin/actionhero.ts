@@ -28,7 +28,9 @@ export namespace ActionheroCLIRunner {
       }
 
       // plugins
-      for (const plugin of Object.values(config.plugins)) {
+      // this is needed vs Object.values to prevent TS compilation errors
+      for (const pluginName of Object.keys(config.plugins)) {
+        const plugin = config.plugins[pluginName];
         if (plugin.cli !== false) {
           // old plugins
           await loadDirectory(path.join(plugin.path, "bin"), pathsLoaded);
