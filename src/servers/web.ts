@@ -558,8 +558,7 @@ export class WebServer extends Server {
           ");";
       }
     } else {
-      // @ts-ignore
-      stringResponse = data.response as string;
+      stringResponse = data.response as unknown as string;
     }
 
     this.sendMessage(data.connection, stringResponse);

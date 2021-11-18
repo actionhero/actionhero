@@ -143,9 +143,9 @@ export namespace chatRoom {
    * Check if a room exists.
    */
   export async function exists(room: string): Promise<boolean> {
-    const bool = await client().sismember(api.chatRoom.keys.rooms, room);
+    const isMember = await client().sismember(api.chatRoom.keys.rooms, room);
     let found = false;
-    if (bool === 1 || bool.toString() === "true") found = true;
+    if (isMember === 1 || isMember.toString() === "true") found = true;
     return found;
   }
 

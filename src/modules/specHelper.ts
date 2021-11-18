@@ -22,12 +22,12 @@ export namespace specHelper {
    */
   export async function runAction<A extends Action | void = void>(
     actionName: string,
-    input: Record<string, any> = {}
+    input: Partial<SpecHelperConnection> = {}
   ) {
-    let connection: Record<string, any>;
+    let connection: SpecHelperConnection;
 
     if (input.id && input.type === "testServer") {
-      connection = input;
+      connection = input as SpecHelperConnection;
     } else {
       connection = await specHelper.buildConnection();
       connection.params = input;
@@ -45,7 +45,6 @@ export namespace specHelper {
       requesterInformation?: ReturnType<WebServer["buildRequesterInformation"]>;
       serverInformation?: ReturnType<WebServer["buildServerInformation"]>;
     } = await new Promise((resolve) => {
-      //@ts-ignore
       api.servers.servers.testServer.processAction(connection);
       connection.actionCallbacks[connection.messageId] = resolve;
     });
