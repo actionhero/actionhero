@@ -39,13 +39,13 @@ export namespace task {
     /**Module load order. Defaults to `api.config.general.defaultMiddlewarePriority`. */
     priority?: number;
     /**Called berore the task runs.  Has access to all params, before sanitization.  Can modify the data object for use in tasks. */
-    preProcessor?: Function;
+    preProcessor?: () => boolean;
     /**Called after the task runs.*/
-    postProcessor?: Function;
+    postProcessor?: () => boolean;
     /**Called before a task using this middleware is enqueued. */
     preEnqueue?: () => Promise<boolean>;
     /**Called after a task using this middleware is enqueued. */
-    postEnqueue?: Function;
+    postEnqueue?: () => boolean;
   }
 
   /**

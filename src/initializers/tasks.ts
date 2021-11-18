@@ -76,28 +76,33 @@ export class TasksInitializer extends Initializer {
     // load middleware into plugins
     const processMiddleware = (m: string) => {
       if (api.tasks.middleware[m]) {
-        //@ts-ignore
         class NodeResquePlugin extends Plugin {
-          //@ts-ignore
-          constructor(...args) {
-            //@ts-ignore
+          constructor(...args: ConstructorParameters<typeof Plugin>) {
             super(...args);
-            if (api.tasks.middleware[m].preProcessor) {
-              //@ts-ignore
-              this.beforePerform = api.tasks.middleware[m].preProcessor;
-            }
-            if (api.tasks.middleware[m].postProcessor) {
-              //@ts-ignore
-              this.afterPerform = api.tasks.middleware[m].postProcessor;
-            }
-            if (api.tasks.middleware[m].preEnqueue) {
-              //@ts-ignore
-              this.beforeEnqueue = api.tasks.middleware[m].preEnqueue;
-            }
-            if (api.tasks.middleware[m].postEnqueue) {
-              //@ts-ignore
-              this.afterEnqueue = api.tasks.middleware[m].postEnqueue;
-            }
+          }
+
+          async beforeEnqueue() {
+            return api.tasks.middleware[m].preEnqueue
+              ? api.tasks.middleware[m].preEnqueue.call(this)
+              : true;
+          }
+
+          async afterEnqueue() {
+            return api.tasks.middleware[m].postEnqueue
+              ? api.tasks.middleware[m].postEnqueue.call(this)
+              : true;
+          }
+
+          async beforePerform() {
+            return api.tasks.middleware[m].preProcessor
+              ? api.tasks.middleware[m].preProcessor.call(this)
+              : true;
+          }
+
+          async afterPerform() {
+            return api.tasks.middleware[m].postProcessor
+              ? api.tasks.middleware[m].postProcessor.call(this)
+              : true;
           }
         }
 
@@ -141,9 +146,9 @@ export class TasksInitializer extends Initializer {
       );
     }
 
-    for (const [_, plugin] of Object.entries(config.plugins as PluginConfig)) {
+    for (const plugin of Object.values(config.plugins as PluginConfig)) {
       if (plugin.tasks !== false) {
-        const pluginPath: string = path.normalize(plugin.path);
+        const pluginPath = path.normalize(plugin.path);
 
         // old style at the root of the project
         let files = glob.sync(path.join(pluginPath, "tasks", "**", "*.js"));

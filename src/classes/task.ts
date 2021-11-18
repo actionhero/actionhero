@@ -33,7 +33,9 @@ export abstract class Task {
   /**The Middleware specific to this Task (default: []).  Middleware is described by the string names of the middleware */
   middleware?: Array<string>;
   /**Plugins from node-resque to use on this task (default: []).  Plugins like `QueueLock can be applied` */
-  plugins?: Array<string | Plugin>;
+  plugins?: Array<
+    string | (new (args: ConstructorParameters<typeof Plugin>) => Plugin)
+  >;
   /**Options for the node-resque plugins. */
   pluginOptions?: { [key: string]: any };
   /**Re-enqueuing a periodic task in the case of an exception.  (default: false) */
