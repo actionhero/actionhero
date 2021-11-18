@@ -173,7 +173,7 @@ export class RedisInitializer extends Initializer {
       `actionhero member ${id} has left the cluster`,
     ]);
 
-    await utils.sleep(100); // allow some time for the goodbye message to propagate
+    await utils.sleep(config.redis.stopTimeout); // allow some time for the goodbye message to propagate
 
     const keys = Object.keys(api.redis.clients);
     for (const i in keys) {
@@ -189,6 +189,6 @@ export class RedisInitializer extends Initializer {
       }
     }
 
-    await utils.sleep(100); // allow some time for the connection to close
+    await utils.sleep(config.redis.stopTimeout); // allow some time for the connection to close
   }
 }

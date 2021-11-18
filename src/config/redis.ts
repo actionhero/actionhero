@@ -52,7 +52,10 @@ export const DEFAULT = {
     };
 
     return {
+      // how many items should be fetched in a batch at once?
       scanCount: 1000,
+      // how many ms should we wait when disconnecting after sending server-side disconnect message to the cluster
+      stopTimeout: 100,
 
       _toExpand: false,
       client: {
