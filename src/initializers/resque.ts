@@ -90,9 +90,7 @@ export class ResqueInitializer extends Initializer {
   };
 
   stopScheduler = async () => {
-    if (api.resque.scheduler) {
-      return api.resque.scheduler.end();
-    }
+    return api.resque.scheduler?.end();
   };
 
   startMultiWorker = async () => {

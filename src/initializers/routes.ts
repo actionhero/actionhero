@@ -44,10 +44,9 @@ export class RoutesInitializer extends Initializer {
           route.path,
           route.matchTrailingPathParts
         );
-        if (match.match === true) {
+        if (match.match) {
           if (route.apiVersion) {
-            connection.params.apiVersion =
-              connection.params.apiVersion || route.apiVersion;
+            connection.params.apiVersion ||= route.apiVersion;
           }
 
           for (const param in match.params) {
@@ -98,10 +97,7 @@ export class RoutesInitializer extends Initializer {
     if (matchParts[0] === "") matchParts.splice(0, 1);
     if (matchParts[matchParts.length - 1] === "") matchParts.pop();
 
-    if (
-      matchParts.length !== pathParts.length &&
-      matchTrailingPathParts !== true
-    ) {
+    if (matchParts.length !== pathParts.length && !matchTrailingPathParts) {
       return response;
     }
 
@@ -109,10 +105,7 @@ export class RoutesInitializer extends Initializer {
       const matchPart = matchParts[i];
       let pathPart = pathParts[i];
 
-      if (
-        matchTrailingPathParts === true &&
-        parseInt(i, 10) === matchParts.length - 1
-      ) {
+      if (matchTrailingPathParts && parseInt(i, 10) === matchParts.length - 1) {
         for (const j in pathParts) {
           if (j > i) pathPart = pathPart + "/" + pathParts[j];
         }

@@ -34,7 +34,7 @@ export class StaticFileInitializer extends Initializer {
    */
   get = async (
     connection: Connection,
-    counter: number = 0
+    counter = 0
   ): Promise<{
     connection: Connection;
     error?: any;
@@ -73,7 +73,7 @@ export class StaticFileInitializer extends Initializer {
     }
   };
 
-  searchPath = (counter: number = 0) => {
+  searchPath = (counter = 0) => {
     if (
       api.staticFile.searchLocations.length === 0 ||
       counter >= api.staticFile.searchLocations.length
@@ -117,7 +117,7 @@ export class StaticFileInitializer extends Initializer {
     connection: Connection,
     start: number,
     file: string,
-    length: number
+    length: number | bigint
   ) => {
     fileStream.on("end", () => {
       const duration = new Date().getTime() - start;
@@ -171,7 +171,7 @@ export class StaticFileInitializer extends Initializer {
   logRequest = (
     file: string,
     connection: Connection,
-    length: number,
+    length: number | bigint,
     duration: number,
     success: boolean
   ) => {
@@ -205,7 +205,7 @@ export class StaticFileInitializer extends Initializer {
     }
 
     // source the public directories from plugins
-    for (const [_, plugin] of Object.entries(config.plugins as PluginConfig)) {
+    for (const plugin of Object.values(config.plugins as PluginConfig)) {
       if (plugin.public !== false) {
         const pluginPublicPath: string = path.normalize(
           path.join(plugin.path, "public")
@@ -228,7 +228,9 @@ export class StaticFileInitializer extends Initializer {
   }
 }
 
-async function asyncStats(file: string): Promise<{ [key: string]: any }> {
+async function asyncStats(
+  file: string
+): Promise<ReturnType<typeof fs.statSync>> {
   return new Promise((resolve, reject) => {
     fs.stat(file, (error, stats) => {
       if (error) {

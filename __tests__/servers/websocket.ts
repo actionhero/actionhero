@@ -6,6 +6,7 @@
 // we need to use 'use strict' here because we are relying on EVAL to load a variable
 
 import { api, Process, config, chatRoom, utils } from "./../../src/index";
+import "../../src/config/api";
 
 const actionhero = new Process();
 let clientA: any;

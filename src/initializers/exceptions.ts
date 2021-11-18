@@ -1,4 +1,4 @@
-import { api, config, log, Initializer } from "../index";
+import { api, config, log, Initializer, Action } from "../index";
 import { ExceptionReporter } from "../classes/exceptionReporter";
 import { ParsedJob } from "node-resque";
 import { ActionheroLogLevel } from "../modules/log";
@@ -48,7 +48,19 @@ export class ExceptionsInitializer extends Initializer {
 
   action = (
     error: NodeJS.ErrnoException,
-    { to, action, params, duration, response }: { [key: string]: any }
+    {
+      to,
+      action,
+      params,
+      duration,
+      response,
+    }: {
+      to: string;
+      action: Action["name"];
+      params: string;
+      duration: number;
+      response: string;
+    }
   ) => {
     api.exceptionHandlers.report(
       error,

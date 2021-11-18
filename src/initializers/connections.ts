@@ -59,11 +59,13 @@ export class ConnectionsInitializer extends Initializer {
     );
   };
 
-  applyResponder = async (connectionId: string, method: string, args: any) => {
-    const connection: Connection = api.connections.connections[connectionId];
-    if (!connection) {
-      return;
-    }
+  applyResponder = async (
+    connectionId: string,
+    method: keyof InstanceType<typeof Connection>,
+    args: any
+  ) => {
+    const connection = api.connections.connections[connectionId];
+    if (!connection) return;
 
     if (method && args) {
       if (method === "sendMessage" || method === "sendFile") {
@@ -87,16 +89,11 @@ export class ConnectionsInitializer extends Initializer {
     api.connections.middleware[data.name] = data;
 
     api.connections.globalMiddleware.push(data.name);
-    api.connections.globalMiddleware.sort((a, b) => {
-      if (
-        api.connections.middleware[a].priority >
+    api.connections.globalMiddleware.sort(
+      (a, b) =>
+        api.connections.middleware[a].priority -
         api.connections.middleware[b].priority
-      ) {
-        return 1;
-      } else {
-        return -1;
-      }
-    });
+    );
   };
 
   cleanConnection = (connection: Connection) => {
