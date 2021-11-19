@@ -70,7 +70,7 @@ export namespace redis {
           delete api.redis.rpcCallbacks[messageId];
           throw e;
         }
-      }) as Promise<T extends any ? T : unknown>;
+      });
     } else {
       return redis.publish(payload) as T extends any ? T : unknown;
     }

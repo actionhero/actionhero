@@ -231,7 +231,7 @@ export class Connection {
     const server = api.servers.servers[this.type];
     const allowedVerbs = server.attributes.verbs;
 
-    if (!(words instanceof Array)) words = [words];
+    if (!Array.isArray(words)) words = [words];
 
     if (server && allowedVerbs.indexOf(verb) >= 0) {
       server.log("verb", "debug", {

@@ -150,12 +150,8 @@ export class ChatRoomInitializer extends Initializer {
       const m = api.chatRoom.middleware[name];
       if (typeof m[direction] === "function") {
         if (messagePayload) {
-          const data = await m[direction](connection, room, newMessagePayload);
-          if (data) {
-            newMessagePayload = data;
-          } else {
-            newMessagePayload = null;
-          }
+          newMessagePayload =
+            (await m[direction](connection, room, newMessagePayload)) ?? null;
         } else {
           await m[direction](connection, room);
         }
