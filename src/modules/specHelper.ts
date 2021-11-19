@@ -22,7 +22,7 @@ export namespace specHelper {
    */
   export async function runAction<A extends Action | void = void>(
     actionName: string,
-    input: Partial<SpecHelperConnection> = {}
+    input: Partial<SpecHelperConnection> | Record<string, any> = {}
   ) {
     let connection: SpecHelperConnection;
 
@@ -34,7 +34,6 @@ export namespace specHelper {
     }
 
     connection.params.action = actionName;
-
     connection.messageId = connection.params.messageId || uuid.v4();
 
     const response: (A extends Action
