@@ -31,7 +31,6 @@ export namespace ActionheroCLIRunner {
       }
 
       // plugins
-      // this is needed vs Object.values to prevent TS compilation errors
       for (const plugin of Object.values(config.plugins)) {
         if (plugin.cli !== false) {
           // old plugins

@@ -146,7 +146,7 @@ export class TasksInitializer extends Initializer {
       );
     }
 
-    for (const plugin of Object.values(config.plugins as PluginConfig)) {
+    for (const plugin of Object.values(config.plugins)) {
       if (plugin.tasks !== false) {
         const pluginPath = path.normalize(plugin.path);
 
