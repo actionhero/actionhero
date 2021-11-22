@@ -1,4 +1,4 @@
-import * as cluster from "cluster";
+import cluster from "cluster";
 import { config } from "./../../modules/config";
 import { utils } from "../../modules/utils";
 

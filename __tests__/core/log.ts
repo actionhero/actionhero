@@ -1,4 +1,4 @@
-import { log, loggers, Process } from "./../../src/index";
+import { log, loggers, Process } from "./../../src";
 
 const actionhero = new Process();
 

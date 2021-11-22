@@ -1,6 +1,6 @@
 import * as IORedis from "ioredis";
 import * as dotProp from "dot-prop";
-import { api, id, log, Initializer, redis } from "../index";
+import { api, config, id, log, Initializer, redis, utils } from "../index";
 import * as RedisModule from "./../modules/redis";
 
 export interface RedisApi {
@@ -21,7 +21,7 @@ export interface RedisApi {
 /**
  * Redis helpers and connections.
  */
-export class Redis extends Initializer {
+export class RedisInitializer extends Initializer {
   constructor() {
     super();
     this.name = "redis";
@@ -30,7 +30,7 @@ export class Redis extends Initializer {
     this.stopPriority = 99999;
   }
 
-  async initialize(config) {
+  async initialize() {
     api.redis = {
       clients: {},
       subscriptionHandlers: {},
@@ -85,9 +85,8 @@ export class Redis extends Initializer {
       }
     };
 
-    const connectionNames = ["client", "subscriber", "tasks"];
-    for (var i in connectionNames) {
-      const r = connectionNames[i];
+    const connectionNames = ["client", "subscriber", "tasks"] as const;
+    for (const r of connectionNames) {
       if (config.redis[r].buildNew === true) {
         const args = config.redis[r].args;
         api.redis.clients[r] = new config.redis[r].konstructor(
@@ -161,18 +160,20 @@ export class Redis extends Initializer {
     }
   }
 
-  async start(config) {
+  async start() {
     await redis.doCluster("api.log", [
       `actionhero member ${id} has joined the cluster`,
     ]);
   }
 
-  async stop(config) {
+  async stop() {
     await api.redis.clients.subscriber.unsubscribe();
     api.redis.status.subscribed = false;
     await redis.doCluster("api.log", [
       `actionhero member ${id} has left the cluster`,
     ]);
+
+    await utils.sleep(config.redis.stopTimeout); // allow some time for the goodbye message to propagate
 
     const keys = Object.keys(api.redis.clients);
     for (const i in keys) {
@@ -187,5 +188,7 @@ export class Redis extends Initializer {
         await client.disconnect();
       }
     }
+
+    await utils.sleep(config.redis.stopTimeout); // allow some time for the connection to close
   }
 }

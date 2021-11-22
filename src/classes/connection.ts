@@ -1,6 +1,35 @@
 import * as uuid from "uuid";
+import { number } from "yargs";
+import { RouteType } from "../modules/route";
 import { api, chatRoom } from "./../index";
 import { config } from "./../modules/config";
+
+export type ConnectionData = {
+  id?: string;
+  fingerprint?: string;
+  messageId?: string;
+  type: string;
+  rawConnection: any;
+  remotePort: number | string;
+  remoteIP: string;
+  canChat: boolean;
+};
+
+export const connectionVerbs = [
+  "quit",
+  "exit",
+  "paramAdd",
+  "paramDelete",
+  "paramView",
+  "paramsView",
+  "paramsDelete",
+  "roomAdd",
+  "roomLeave",
+  "roomView",
+  "detailsView",
+  "say",
+] as const;
+export type ConnectionVerb = typeof connectionVerbs[number];
 
 /**
  * The generic representation of a connection for all server types is an Actionhero.Connection.  You will never be creating these yourself via an action or task, but you will find them in your Actions and Action Middleware.
@@ -29,14 +58,18 @@ export class Connection {
   /**The remote connection's IP address (as best as we can tell).  May be either IPv4 or IPv6. */
   remoteIP: string;
   /**The remote connection's port. Related to connection.remoteIP */
-  remotePort: number;
+  remotePort: string | number;
   /**Any connection-specific properties.  For, example, the HTTP res and req objects for `web` connections are here */
   rawConnection: any;
   /**If there's a local error */
-  error?: Error;
+  error?: NodeJS.ErrnoException;
   /**If there's a local extension to the request*/
   extension?: string;
   destroyed: boolean;
+  /** storage for a response payload */
+  response?: Record<string, unknown>;
+  /** storage for session data */
+  session?: Record<string, any>;
 
   // --- custom methods ---
 
@@ -46,25 +79,23 @@ export class Connection {
   //** for web connections */
   setHeader?: (key: string, value: string) => {};
   setStatusCode?: (code: number) => {};
-  matchedRoute?: string;
+  matchedRoute?: RouteType;
   pipe?: Function;
 
   /**
    * @param data The specifics of this connection
    * @param callCreateMethods The specifics of this connection will calls create methods in the constructor. This property will exist for backward compatibility. If you want to construct connection and call create methods within async, you can use `await Actionhero.Connection.createAsync(details)` for construction.
    */
-  constructor(data, callCreateMethods = true) {
+  constructor(data: ConnectionData, callCreateMethods = true) {
     this.setup(data);
-    if (callCreateMethods) {
-      Connection.callConnectionCreateMethods(this);
-    }
+    if (callCreateMethods) Connection.callConnectionCreateMethods(this);
     api.connections.connections[this.id] = this;
   }
 
   /**
    * @param data The specifics of this connection
    */
-  static async createAsync(data) {
+  static async createAsync(data: ConnectionData) {
     const connection = new this(data, false);
     await this.callConnectionCreateMethods(connection);
     return connection;
@@ -81,63 +112,50 @@ export class Connection {
     }
   }
 
-  private setup(data) {
-    if (data.id) {
-      this.id = data.id;
-    } else {
-      this.id = this.generateID();
-    }
-    this.connectedAt = new Date().getTime();
-
-    ["type", "rawConnection"].forEach((req) => {
-      if (data[req] === null || data[req] === undefined) {
+  private setup(data: ConnectionData) {
+    (["type", "rawConnection"] as const).forEach((req) => {
+      if (!data[req]) {
         throw new Error(`${req} is required to create a new connection object`);
       }
-      this[req] = data[req];
     });
 
-    ["remotePort", "remoteIP"].forEach((req) => {
-      if (data[req] === null || data[req] === undefined) {
-        if (config.general.enforceConnectionProperties === true) {
-          throw new Error(
-            `${req} is required to create a new connection object`
-          );
-        } else {
-          data[req] = 0; // could be a random uuid as well?
+    if (config.general.enforceConnectionProperties) {
+      if (!data.remotePort && data.remotePort?.toString() !== "0")
+        throw new Error(
+          "remotePort is required to create a new connection object"
+        );
+      if (!data.remoteIP && data.remoteIP?.toString() !== "0")
+        throw new Error(
+          "remoteIP is required to create a new connection object"
+        );
+
+      this.type = data.type;
+      this.rawConnection = data.rawConnection;
+      this.id = data.id ?? this.generateID();
+      this.fingerprint = data.fingerprint ?? this.id;
+      this.remotePort = data.remotePort ?? 0;
+      this.remoteIP = data.remoteIP ?? "0";
+      this.messageId = data.messageId ?? "0";
+
+      this.connectedAt = new Date().getTime();
+      this.error = null;
+      this.rooms = [];
+      this.params = {};
+      this.session = {};
+      this.pendingActions = 0;
+      this.totalActions = 0;
+      this.canChat = data["canChat"];
+      this.destroyed = false;
+
+      const server = api.servers.servers[this.type];
+      if (server && server.connectionCustomMethods) {
+        for (const [name] of Object.entries(server.connectionCustomMethods)) {
+          //@ts-ignore
+          this.set(name, async (...args) => {
+            args.unshift(this);
+            return server.connectionCustomMethods[name].apply(null, args);
+          });
         }
-      }
-      this[req] = data[req];
-    });
-
-    const connectionDefaults = {
-      error: null,
-      fingerprint: this.id,
-      rooms: [],
-      params: {},
-      pendingActions: 0,
-      totalActions: 0,
-      messageId: 0,
-      canChat: false,
-      destroyed: false,
-    };
-
-    for (const i in connectionDefaults) {
-      if (this[i] === undefined && data[i] !== undefined) {
-        this[i] = data[i];
-      }
-      if (this[i] === undefined) {
-        this[i] = connectionDefaults[i];
-      }
-    }
-
-    const connection = this;
-    const server = api.servers.servers[connection.type];
-    if (server && server.connectionCustomMethods) {
-      for (const name in server.connectionCustomMethods) {
-        connection[name] = async (...args) => {
-          args.unshift(connection);
-          return server.connectionCustomMethods[name].apply(null, args);
-        };
       }
     }
   }
@@ -199,23 +217,21 @@ export class Connection {
     delete api.connections.connections[this.id];
   }
 
-  private set(key, value) {
+  private set(key: keyof typeof this, value: any) {
     this[key] = value;
   }
 
   /**
    * Try to run a verb command for a connection
    */
-  private async verbs(verb: string, words: Array<string>) {
+  async verbs(verb: string, words: string[] | string) {
     let key: string;
     let value: string;
     let room: string;
     const server = api.servers.servers[this.type];
     const allowedVerbs = server.attributes.verbs;
 
-    if (!(words instanceof Array)) {
-      words = [words];
-    }
+    if (!Array.isArray(words)) words = [words];
 
     if (server && allowedVerbs.indexOf(verb) >= 0) {
       server.log("verb", "debug", {

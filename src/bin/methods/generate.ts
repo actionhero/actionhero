@@ -10,7 +10,7 @@ import {
   createFileSafely,
 } from "../../modules/utils/fileUtils";
 
-export class Generate extends CLI {
+export class GenerateCLI extends CLI {
   constructor() {
     super();
     this.name = "generate";
@@ -21,12 +21,12 @@ export class Generate extends CLI {
 
   async run() {
     const documents: {
-      [key: string]: any;
+      [key: string]: string;
     } = {};
 
-    documents.projectMap = fs.readFileSync(
-      path.join(__dirname, "/../../../templates/projectMap.txt")
-    );
+    documents.projectMap = fs
+      .readFileSync(path.join(__dirname, "/../../../templates/projectMap.txt"))
+      .toString();
 
     const oldFileMap = {
       tsconfig: "tsconfig.json",
@@ -38,8 +38,8 @@ export class Generate extends CLI {
       configErrorsJs: "/src/config/errors.ts",
       configPluginsJs: "/src/config/plugins.ts",
       configRoutesJs: "/src/config/routes.ts",
-      configWebJs: "/src/config/servers/web.ts",
-      configWebsocketJs: "/src/config/servers/websocket.ts",
+      configWebJs: "/src/config/web.ts",
+      configWebsocketJs: "/src/config/websocket.ts",
       packageJson: "/package.json",
       actionStatus: "/src/actions/status.ts",
       actionChatRoom: "/src/actions/createChatRoom.ts",
@@ -53,17 +53,15 @@ export class Generate extends CLI {
       gitignore: "/templates/gitignore.template",
     };
 
-    for (const name in oldFileMap) {
-      const localPath = oldFileMap[name];
+    for (const [name, localPath] of Object.entries(oldFileMap)) {
       const source = path.join(__dirname, "/../../../", localPath);
       const extension = localPath.split(".")[1];
-      documents[name] = fs.readFileSync(source);
+      documents[name] = fs.readFileSync(source).toString();
       if (extension === "ts" || extension === "js" || extension === "json") {
-        documents[name] = documents[name].toString();
-        documents[name] = documents[name].replace(
-          'from "./../index"',
-          'from "actionhero"'
-        );
+        documents[name] = documents[name]
+          .replace('from "./../index"', 'from "actionhero"')
+          .replace('from ".."', 'from "actionhero"')
+          .replace('declare module ".."', 'declare module "actionhero"');
       }
     }
 
@@ -91,7 +89,6 @@ export class Generate extends CLI {
     [
       "/src",
       "/src/config",
-      "/src/config/servers",
       "/src/actions",
       "/src/tasks",
       "/src/initializers",
@@ -125,8 +122,8 @@ export class Generate extends CLI {
       "/src/config/errors.ts": "configErrorsJs",
       "/src/config/plugins.ts": "configPluginsJs",
       "/src/config/routes.ts": "configRoutesJs",
-      "/src/config/servers/web.ts": "configWebJs",
-      "/src/config/servers/websocket.ts": "configWebsocketJs",
+      "/src/config/web.ts": "configWebJs",
+      "/src/config/websocket.ts": "configWebsocketJs",
       "/package.json": "packageJson",
       "/src/actions/status.ts": "actionStatus",
       "/src/actions/createChatRoom.ts": "actionChatRoom",
@@ -141,12 +138,9 @@ export class Generate extends CLI {
       "/.gitignore": "gitignore",
     };
 
-    for (const file in newFileMap) {
+    for (const [file, name] of Object.entries(newFileMap)) {
       try {
-        const message = createFileSafely(
-          projectRoot + file,
-          documents[newFileMap[file]]
-        );
+        const message = createFileSafely(projectRoot + file, documents[name]);
         console.log(message);
       } catch (error) {
         console.log(error.toString());
@@ -162,7 +156,7 @@ export class Generate extends CLI {
     documents.projectMap
       .toString()
       .split("\n")
-      .forEach(function (line) {
+      .forEach((line) => {
         console.log(line);
       });
 

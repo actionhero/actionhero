@@ -16,7 +16,7 @@ export abstract class Server extends EventEmitter {
   type: string;
   /**What connection verbs can connections of this type use? */
   verbs?: Array<string>;
-  /**Shorthand for `api.config.servers[this.type]` */
+  /**Shorthand for `api.config[this.type]` */
   config?: ServerConfig;
   options?: {
     [key: string]: any;
@@ -47,15 +47,12 @@ export abstract class Server extends EventEmitter {
     this.attributes = {};
     this.config = {}; // will be applied by the initializer
     this.connectionCustomMethods = {};
-    const defaultAttributes = this.defaultAttributes();
-    for (const key in defaultAttributes) {
-      if (!this.attributes[key]) {
-        this.attributes[key] = defaultAttributes[key];
-      }
-      if (typeof this.attributes[key] === "function") {
-        this.attributes[key] = this[key]();
-      }
-    }
+
+    this.canChat = this.canChat ?? true;
+    this.logExits = this.logExits ?? true;
+    this.sendWelcomeMessage = this.sendWelcomeMessage ?? true;
+    this.logConnections = this.logConnections ?? true;
+    this.verbs = this.verbs ?? [];
   }
 
   /**
@@ -100,7 +97,7 @@ export abstract class Server extends EventEmitter {
    */
   abstract sendFile(
     connection: Connection,
-    error: Error,
+    error: NodeJS.ErrnoException,
     fileStream: any,
     mime: string,
     length: number,
@@ -110,29 +107,20 @@ export abstract class Server extends EventEmitter {
   /**An optional message to send to clients when they disconnect */
   async goodbye?(connection: Connection): Promise<void>;
 
-  defaultAttributes() {
-    return {
-      type: null,
-      canChat: true,
-      logConnections: true,
-      logExits: true,
-      sendWelcomeMessage: true,
-      verbs: [],
-    };
-  }
-
   validate() {
     if (!this.type) {
       throw new Error("type is required for this server");
     }
 
-    [
-      "start",
-      "stop",
-      "sendFile", // connection, error, fileStream, mime, length, lastModified
-      "sendMessage", // connection, message
-      "goodbye",
-    ].forEach((method) => {
+    (
+      [
+        "start",
+        "stop",
+        "sendFile", // connection, error, fileStream, mime, length, lastModified
+        "sendMessage", // connection, message
+        "goodbye",
+      ] as const
+    ).forEach((method) => {
       if (!this[method] || typeof this[method] !== "function") {
         throw new Error(
           `${method} is a required method for the server \`${this.type}\``
@@ -170,17 +158,9 @@ export abstract class Server extends EventEmitter {
       remoteIP: data.remoteAddress,
       rawConnection: data.rawConnection,
       messageId: data.messageId,
-      canChat: null,
-      fingerprint: null,
+      canChat: this.attributes.canChat ?? null,
+      fingerprint: data.fingerprint ?? null,
     };
-
-    if (this.attributes.canChat === true) {
-      details.canChat = true;
-    }
-
-    if (data.fingerprint) {
-      details.fingerprint = data.fingerprint;
-    }
 
     const connection = await Connection.createAsync(details);
 
@@ -235,6 +215,7 @@ export abstract class Server extends EventEmitter {
    */
   async processFile(connection: Connection) {
     const results = await api.staticFile.get(connection);
+
     this.sendFile(
       results.connection,
       results.error,

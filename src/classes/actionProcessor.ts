@@ -5,6 +5,7 @@ import { utils } from "../modules/utils";
 import { config } from "./../modules/config";
 import { Action } from "./action";
 import { Connection } from "./connection";
+import { Input } from "./input";
 
 export enum ActionsStatus {
   Complete,
@@ -24,8 +25,8 @@ export class ActionProcessor<ActionClass extends Action> {
   toRender: boolean;
   messageId: number | string;
   params: {
-    action: string;
-    apiVersion: string | number;
+    action?: string;
+    apiVersion?: string | number;
     [key: string]: any;
   };
   // params: ActionClass["inputs"];
@@ -79,8 +80,11 @@ export class ActionProcessor<ActionClass extends Action> {
     return this.connection.pendingActions;
   }
 
-  private async completeAction(status: ActionsStatus, _error?: Error) {
-    let error: Error = null;
+  private async completeAction(
+    status: ActionsStatus,
+    _error?: NodeJS.ErrnoException
+  ) {
+    let error: NodeJS.ErrnoException | string = null;
     this.actionStatus = status;
 
     if (status === ActionsStatus.GenericError) {
@@ -123,7 +127,10 @@ export class ActionProcessor<ActionClass extends Action> {
     return this;
   }
 
-  private logAndReportAction(status: ActionsStatus, error: Error) {
+  private logAndReportAction(
+    status: ActionsStatus,
+    error: NodeJS.ErrnoException
+  ) {
     const { type, rawConnection } = this.connection;
 
     let logLevel: ActionheroLogLevel = "info";
@@ -140,7 +147,7 @@ export class ActionProcessor<ActionClass extends Action> {
       method: type === "web" ? rawConnection.method : undefined,
       pathname: type === "web" ? rawConnection.parsedURL.pathname : undefined,
       error: "",
-      response: undefined,
+      response: undefined as string,
     };
 
     if (config.general.enableResponseLogging) {
@@ -169,13 +176,15 @@ export class ActionProcessor<ActionClass extends Action> {
     }
   }
 
-  private applyDefaultErrorLogLineFormat(error: Error) {
+  applyDefaultErrorLogLineFormat(error: NodeJS.ErrnoException) {
+    const logLevel = "error" as ActionheroLogLevel;
     const errorFields: { error: string } = { error: null };
     if (error instanceof Error) {
       errorFields.error = error.toString();
       Object.getOwnPropertyNames(error)
         .filter((prop) => prop !== "message")
         .sort((a, b) => (a === "stack" || b === "stack" ? -1 : 1))
+        //@ts-ignore
         .forEach((prop) => (errorFields[prop] = error[prop]));
     } else {
       try {
@@ -185,7 +194,7 @@ export class ActionProcessor<ActionClass extends Action> {
       }
     }
 
-    return { errorFields };
+    return { errorFields, logLevel };
   }
 
   private async preProcessAction() {
@@ -253,7 +262,12 @@ export class ActionProcessor<ActionClass extends Action> {
     return dotProp.get(api, cmdParts.join("."));
   }
 
-  private async validateParam(props, params, key, schemaKey) {
+  private async validateParam(
+    props: Input,
+    params: ActionProcessor<any>["params"],
+    key: string,
+    schemaKey: string
+  ) {
     // default
     if (params[key] === undefined && props.default !== undefined) {
       if (typeof props.default === "function") {

@@ -1,6 +1,7 @@
 // export classes (capitalized)
 export { Api } from "./classes/api";
 export { Process } from "./classes/process";
+export { ActionheroConfigInterface } from "./classes/config";
 export { Initializer } from "./classes/initializer";
 export { Connection } from "./classes/connection";
 export { ExceptionReporter } from "./classes/exceptionReporter";
@@ -9,6 +10,7 @@ export { Task } from "./classes/task";
 export { Server } from "./classes/server";
 export { CLI } from "./classes/cli";
 export { ActionProcessor } from "./classes/actionProcessor";
+export { PluginConfig } from "./classes/config";
 
 // export modules (lower case)
 export { utils } from "./modules/utils";
@@ -19,7 +21,7 @@ export { task } from "./modules/task";
 export { cache } from "./modules/cache";
 export { chatRoom } from "./modules/chatRoom";
 export { redis } from "./modules/redis";
-export { route } from "./modules/route";
+export { route, RouteMethod, RouteType, RoutesConfig } from "./modules/route";
 export { specHelper } from "./modules/specHelper";
 
 // export static members of this process (lower case)
@@ -29,19 +31,14 @@ export { projectRoot } from "./classes/process/projectRoot";
 export { typescript } from "./classes/process/typescript";
 export { id } from "./classes/process/id";
 
-// export typescript helpers
-export { UnwrapPromise, AssertEqualType } from "./modules/tsUtils";
-
 // API object to hold connections, actions, tasks, initializers, and servers
 import { Api } from "./classes/api";
 
-// backwards-compatibility for older versions of node.js
-// we can't use globalThis for node v8, v10
+// export a global API instance
 
-// @ts-ignore
-if (!global.api) {
-  // @ts-ignore
-  global.api = new Api();
+declare module globalThis {
+  let api: Api;
 }
-// @ts-ignore
-export const api: Api = global.api;
+
+if (!globalThis.api) globalThis.api = new Api();
+export const api = globalThis.api;

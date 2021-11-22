@@ -36,12 +36,12 @@ export namespace redis {
   /**
    * Invoke a command on all servers in this cluster.
    */
-  export async function doCluster(
+  export async function doCluster<T>(
     method: string,
     args: Array<any> = [],
     connectionId?: string,
     waitForResponse: boolean = false
-  ) {
+  ): Promise<T extends any ? T : unknown> {
     const messageId = uuid.v4();
     const payload = {
       messageType: "do",
@@ -71,9 +71,9 @@ export namespace redis {
           throw e;
         }
       });
+    } else {
+      return redis.publish(payload) as T extends any ? T : unknown;
     }
-
-    await redis.publish(payload);
   }
 
   export async function respondCluster(

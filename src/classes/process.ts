@@ -1,21 +1,17 @@
 import * as path from "path";
 import * as glob from "glob";
 import * as fs from "fs";
-import { buildConfig, ConfigInterface } from "./../modules/config";
+import { config } from "..";
 import { log } from "../modules/log";
 import { Initializer } from "./initializer";
 import { Initializers } from "./initializers";
 import { utils } from "../modules/utils";
-
 import { id } from "./process/id";
 import { env } from "./process/env";
 import { writePidFile, clearPidFile } from "./process/pid";
-
 import { api } from "../index";
 
-const fatalErrorCode = "FATAL_ACTIONHERO_ERROR";
-
-let config: ConfigInterface = {};
+export const fatalErrorCode = "FATAL_ACTIONHERO_ERROR";
 
 export class Process {
   running: boolean;
@@ -27,12 +23,9 @@ export class Process {
   bootTime: number;
   initializers: Initializers;
   startCount: number;
-  loadInitializers: Array<Function>;
-  startInitializers: Array<Function>;
-  stopInitializers: Array<Function>;
-  _startingParams: {
-    [key: string]: any;
-  };
+  loadInitializers: Initializer["initialize"][];
+  startInitializers: Initializer["start"][];
+  stopInitializers: Initializer["stop"][];
 
   constructor() {
     this.initialized = false;
@@ -43,38 +36,28 @@ export class Process {
     this.startInitializers = [];
     this.stopInitializers = [];
     this.stopReasons = [];
-
     this.startCount = 0;
 
-    api.commands.initialize = async (...args) => {
-      return this.initialize(...args);
-    };
-
-    api.commands.start = async (...args) => {
-      return this.start(...args);
-    };
-
-    api.commands.stop = async () => {
-      return this.stop();
-    };
-
-    api.commands.restart = async () => {
-      return this.restart();
-    };
-
     api.process = this;
+
+    api.commands.initialize = this.initialize;
+    api.commands.start = this.start;
+    api.commands.stop = this.stop;
+    api.commands.restart = this.restart;
   }
 
-  async initialize(params: object = {}) {
-    this._startingParams = params;
+  async initialize() {
+    const loadInitializerRankings: {
+      [rank: number]: Initializer["initialize"][];
+    } = {};
+    const startInitializerRankings: {
+      [rank: number]: Initializer["start"][];
+    } = {};
+    const stopInitializerRankings: {
+      [rank: number]: Initializer["stop"][];
+    } = {};
 
-    const loadInitializerRankings = {};
-    const startInitializerRankings = {};
-    const stopInitializerRankings = {};
     let initializerFiles: Array<string> = [];
-
-    // rebuild config with startingParams
-    config = buildConfig(this._startingParams);
 
     // load initializers from core
     initializerFiles = initializerFiles.concat(
@@ -91,16 +74,13 @@ export class Process {
     });
 
     // load initializers from plugins
-    for (const pluginName in config.plugins) {
-      if (config.plugins[pluginName] !== false) {
-        const pluginPath: string = path.normalize(
-          config.plugins[pluginName].path
-        );
+    for (const plugin of Object.values(config.plugins)) {
+      const pluginPath: string = path.normalize(plugin.path);
+      if (!fs.existsSync(pluginPath)) {
+        throw new Error(`plugin path does not exist: ${pluginPath}`);
+      }
 
-        if (!fs.existsSync(pluginPath)) {
-          throw new Error(`plugin path does not exist: ${pluginPath}`);
-        }
-
+      if (plugin.initializers !== false) {
         // old style at the root of the project
         initializerFiles = initializerFiles.concat(
           glob.sync(path.join(pluginPath, "initializers", "**", "*.js"))
@@ -155,7 +135,10 @@ export class Process {
           this.fatalError(error, file);
         }
 
-        function decorateInitError(error: Error, type: string) {
+        function decorateInitError(
+          error: NodeJS.ErrnoException & Record<string, any>,
+          type: string
+        ) {
           error["data"] = error["data"] ?? {};
           error["data"].name = initializer.name;
           error["data"].file = file;
@@ -167,7 +150,7 @@ export class Process {
             log(`Loading initializer: ${initializer.name}`, "debug", file);
 
             try {
-              await initializer.initialize(config);
+              await initializer.initialize();
               log(`Loaded initializer: ${initializer.name}`, "debug", file);
             } catch (error) {
               decorateInitError(error, "initialize");
@@ -181,7 +164,7 @@ export class Process {
             log(`Starting initializer: ${initializer.name}`, "debug", file);
 
             try {
-              await initializer.start(config);
+              await initializer.start();
               log(`Started initializer: ${initializer.name}`, "debug", file);
             } catch (error) {
               decorateInitError(error, "start");
@@ -195,7 +178,7 @@ export class Process {
             log(`Stopping initializer: ${initializer.name}`, "debug", file);
 
             try {
-              await initializer.stop(config);
+              await initializer.stop();
               log(`Stopped initializer: ${initializer.name}`, "debug", file);
             } catch (error) {
               decorateInitError(error, "stop");
@@ -250,23 +233,27 @@ export class Process {
     this.initialized = true;
   }
 
-  async start(params = {}) {
-    if (this.initialized !== true) await this.initialize(params);
+  /**
+   * Start the Actionhero Process
+   */
+  async start() {
+    if (!this.initialized) await this.initialize();
+    const serverName = config.general.serverName;
 
     writePidFile();
     this.running = true;
     api.running = true;
     log(`environment: ${env}`, "notice");
-    log(`*** Starting ${config.general.serverName} ***`, "info");
+    log(`*** Starting ${serverName} ***`, "info");
 
-    this.startInitializers.push(() => {
+    this.startInitializers.push(async () => {
       this.bootTime = new Date().getTime();
       if (this.startCount === 0) {
         log(`server ID: ${id}`, "notice");
-        log(`*** ${config.general.serverName} Started ***`, "notice");
+        log(`*** ${serverName} Started ***`, "notice");
         this.startCount++;
       } else {
-        log(`*** ${config.general.serverName} Restarted ***`, "notice");
+        log(`*** ${serverName} Restarted ***`, "notice");
       }
     });
 
@@ -279,7 +266,12 @@ export class Process {
     this.started = true;
   }
 
+  /**
+   * Stop the Actionhero Process
+   */
   async stop(stopReasons: string | string[] = []) {
+    const serverName = config.general.serverName;
+
     if (this.running) {
       this.shuttingDown = true;
       this.running = false;
@@ -298,7 +290,7 @@ export class Process {
 
       this.stopInitializers.push(async () => {
         clearPidFile();
-        log(`*** ${config.general.serverName} Stopped ***`, "notice");
+        log(`*** ${serverName} Stopped ***`, "notice");
         delete this.shuttingDown;
         // reset initializers to prevent duplicate check on restart
         this.initializers = {};
@@ -316,17 +308,20 @@ export class Process {
     } else if (this.shuttingDown === true) {
       // double sigterm; ignore it
     } else {
-      const message = `Cannot shut down ${config.general.serverName}, not running`;
+      const message = `Cannot shut down ${serverName}, not running`;
       log(message, "crit");
     }
   }
 
+  /**
+   * Restart the Actionhero Process
+   */
   async restart() {
     if (this.running === true) {
       await this.stop();
-      await this.start(this._startingParams);
+      await this.start();
     } else {
-      await this.start(this._startingParams);
+      await this.start();
     }
   }
 
@@ -349,8 +344,8 @@ export class Process {
     }
 
     // handle errors & rejections
-    process.once("uncaughtException", async (error: Error) => {
-      if (error["code"] !== fatalErrorCode) {
+    process.once("uncaughtException", async (error: NodeJS.ErrnoException) => {
+      if (error.code !== fatalErrorCode) {
         if (api.exceptionHandlers) {
           api.exceptionHandlers.report(
             error,
@@ -372,28 +367,31 @@ export class Process {
       }
     });
 
-    process.once("unhandledRejection", async (rejection: Error) => {
-      if (rejection["code"] !== fatalErrorCode) {
-        if (api.exceptionHandlers) {
-          api.exceptionHandlers.report(
-            rejection,
-            "uncaught",
-            "Rejection",
-            {},
-            "emerg"
-          );
-        } else {
-          console.error(rejection);
+    process.once(
+      "unhandledRejection",
+      async (rejection: NodeJS.ErrnoException) => {
+        if (rejection.code !== fatalErrorCode) {
+          if (api.exceptionHandlers) {
+            api.exceptionHandlers.report(
+              rejection,
+              "uncaught",
+              "Rejection",
+              {},
+              "emerg"
+            );
+          } else {
+            console.error(rejection);
+          }
+        }
+
+        if (!this.shuttingDown) {
+          let timer = awaitHardStop();
+          if (this.running) await this.stop();
+          clearTimeout(timer);
+          stopCallback(1);
         }
       }
-
-      if (this.shuttingDown !== true) {
-        let timer = awaitHardStop();
-        if (this.running) await this.stop();
-        clearTimeout(timer);
-        stopCallback(1);
-      }
-    });
+    );
 
     // handle signals
     process.on("SIGINT", async () => {
@@ -425,7 +423,10 @@ export class Process {
   }
 
   // HELPERS
-  async fatalError(errors: Error | Error[] = [], type: any) {
+  async fatalError(
+    errors: NodeJS.ErrnoException | NodeJS.ErrnoException[] = [],
+    type: string
+  ) {
     if (!(errors instanceof Array)) errors = [errors];
 
     if (errors) {
@@ -447,16 +448,16 @@ export class Process {
       }
       await utils.sleep(100); // allow time for console.log to print
 
-      if (!errors[0]["code"]) errors[0]["code"] = fatalErrorCode;
+      if (!errors[0].code) errors[0].code = fatalErrorCode;
       throw errors[0];
     }
   }
 
-  flattenOrderedInitializer(collection: any) {
-    const output = [];
+  flattenOrderedInitializer<T>(collection: { [rank: number]: T[] }) {
+    const output: T[] = [];
     const keys = [];
 
-    for (const key in collection) keys.push(parseInt(key));
+    for (const key in collection) keys.push(parseInt(key, 10));
     keys.sort(sortNumber);
 
     keys.forEach((key) => {

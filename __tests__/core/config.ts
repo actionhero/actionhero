@@ -1,12 +1,12 @@
 import { promisify } from "util";
 import * as fs from "fs";
 import * as path from "path";
-import { Process } from "./../../src/index";
+import { Process, ActionheroConfigInterface } from "./../../src";
 import { buildConfig } from "./../../src/modules/config";
 
 const actionhero = new Process();
-let config;
-let configFolders;
+let config: Partial<ActionheroConfigInterface>;
+let configFolders: string;
 
 const newConfigFolderPaths = [
   path.join(__dirname, "first_config"),
@@ -18,7 +18,10 @@ const routeFilesContent = [
   "export const DEFAULT = { collection: () => { return { b: 2 } } }",
 ];
 
-const createRouteFile = async (newConfigFolderPath, routeFileContent) => {
+const createRouteFile = async (
+  newConfigFolderPath: string,
+  routeFileContent: string
+) => {
   try {
     await promisify(fs.mkdir)(newConfigFolderPath);
   } catch (ex) {}
@@ -32,7 +35,7 @@ const createRouteFile = async (newConfigFolderPath, routeFileContent) => {
   } catch (ex) {}
 };
 
-const removeRouteFile = async (newConfigFolderPath) => {
+const removeRouteFile = async (newConfigFolderPath: string) => {
   try {
     const newRoutesFilePath = path.join(newConfigFolderPath, "collection.ts");
 

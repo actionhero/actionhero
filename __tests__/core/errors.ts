@@ -1,8 +1,8 @@
-import { api, Process, config, specHelper } from "./../../src/index";
+import { api, Process, config, specHelper } from "./../../src";
 
 const actionhero = new Process();
-let originalUnknownAction;
-let originalGenericError;
+let originalUnknownAction: any;
+let originalGenericError: any;
 
 describe("Core", () => {
   describe("errors", () => {
@@ -22,6 +22,7 @@ describe("Core", () => {
     });
 
     test("returns Error object properly", async () => {
+      //@ts-ignore
       config.errors.unknownAction = () => {
         return new Error("error test");
       };
@@ -30,6 +31,7 @@ describe("Core", () => {
     });
 
     test("returns generic object properly", async () => {
+      //@ts-ignore
       config.errors.unknownAction = () => {
         return { code: "error111", reason: "busted" };
       };
@@ -40,11 +42,11 @@ describe("Core", () => {
     });
 
     test("can have async error handlers", async () => {
+      //@ts-ignore
       config.errors.unknownAction = async () => {
         return new Promise((resolve) => {
-          setTimeout(() => {
-            resolve({ sleepy: true });
-          }, 100);
+          //@ts-ignore
+          setTimeout(() => resolve({ sleepy: true }), 100);
         });
       };
 

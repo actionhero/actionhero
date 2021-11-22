@@ -2,32 +2,30 @@ import * as request from "request-promise-native";
 import { Process, config } from "./../../../src/index";
 
 const actionhero = new Process();
-let url;
+let url: string;
 
-jest.mock("./../../../src/config/servers/web.ts", () => ({
+jest.mock("./../../../src/config/web.ts", () => ({
   __esModule: true,
   test: {
-    servers: {
-      web: () => {
-        return {
-          enabled: true,
-          secure: false,
-          automaticRoutes: ["get"],
-          allowedRequestHosts: ["https://www.site.com"],
-          urlPathForActions: "api",
-          urlPathForFiles: "public",
-          rootEndpointType: "file",
-          port: 18080 + parseInt(process.env.JEST_WORKER_ID || "0"),
-          matchExtensionMime: true,
-          metadataOptions: {
-            serverInformation: true,
-            requesterInformation: false,
-          },
-          fingerprintOptions: {
-            cookieKey: "sessionID",
-          },
-        };
-      },
+    web: () => {
+      return {
+        enabled: true,
+        secure: false,
+        automaticRoutes: ["get"],
+        allowedRequestHosts: ["https://www.site.com"],
+        urlPathForActions: "api",
+        urlPathForFiles: "public",
+        rootEndpointType: "file",
+        port: 18080 + parseInt(process.env.JEST_WORKER_ID || "0"),
+        matchExtensionMime: true,
+        metadataOptions: {
+          serverInformation: true,
+          requesterInformation: false,
+        },
+        fingerprintOptions: {
+          cookieKey: "sessionID",
+        },
+      };
     },
   },
 }));
@@ -35,7 +33,7 @@ jest.mock("./../../../src/config/servers/web.ts", () => ({
 describe("Server: Web", () => {
   beforeAll(async () => {
     await actionhero.start();
-    url = "http://localhost:" + config.servers.web.port;
+    url = "http://localhost:" + config.web.port;
   });
 
   afterAll(async () => await actionhero.stop());

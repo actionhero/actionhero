@@ -5,29 +5,31 @@
 "use strict";
 // we need to use 'use strict' here because we are loading a variable from a remote host
 
+process.env.AUTOMATIC_ROUTES = "get";
+
 import * as _Primus from "primus";
 import * as request from "request-promise-native";
 import { api, Process, config } from "./../../src/index";
 
 const actionhero = new Process();
-let ActionheroWebsocketClient;
-let fingerprint;
-let url;
+let ActionheroWebsocketClient: any;
+let fingerprint: string;
+let url: string;
 
 const connectClient = async (query = ""): Promise<any> => {
   const S = _Primus.createSocket(undefined);
-  const clientSocket = new S(
-    `http://localhost:${config.servers.web.port}?${query}`
-  );
+  const clientSocket = new S(`http://localhost:${config.web.port}?${query}`);
 
   let client = new ActionheroWebsocketClient({}, clientSocket); // eslint-disable-line
   const connectResponse = await new Promise((resolve, reject) => {
-    client.connect((error, connectResponse) => {
-      if (error) {
-        return reject(error);
+    client.connect(
+      (error: NodeJS.ErrnoException, connectResponse: Record<string, any>) => {
+        if (error) {
+          return reject(error);
+        }
+        resolve(connectResponse);
       }
-      resolve(connectResponse);
-    });
+    );
   });
 
   return { client, connectResponse };
@@ -35,10 +37,9 @@ const connectClient = async (query = ""): Promise<any> => {
 
 describe("Integration: Web Server + Websocket Socket shared fingerprint", () => {
   beforeAll(async () => {
-    process.env.AUTOMATIC_ROUTES = "get";
     await actionhero.start();
     await api.redis.clients.client.flushdb();
-    url = "http://localhost:" + config.servers.web.port;
+    url = "http://localhost:" + config.web.port;
     ActionheroWebsocketClient = eval(
       // @ts-ignore
       api.servers.servers.websocket.compileActionheroWebsocketClientJS()
@@ -53,7 +54,7 @@ describe("Integration: Web Server + Websocket Socket shared fingerprint", () => 
       json: true,
     });
     fingerprint = body.requesterInformation.fingerprint;
-    const query = `${config.servers.web.fingerprintOptions.cookieKey}=${fingerprint}`;
+    const query = `${config.web.fingerprintOptions.cookieKey}=${fingerprint}`;
     const { client, connectResponse } = await connectClient(query);
     expect(connectResponse.status).toEqual("OK");
     expect(connectResponse.data.id).toBeTruthy();
@@ -74,7 +75,7 @@ describe("Integration: Web Server + Websocket Socket shared fingerprint", () => 
   });
 
   test("should exist as long as cookie is passed", async () => {
-    const query = `${config.servers.web.fingerprintOptions.cookieKey}=dummyValue`;
+    const query = `${config.web.fingerprintOptions.cookieKey}=dummyValue`;
     const { client, connectResponse } = await connectClient(query);
     expect(connectResponse.status).toEqual("OK");
     expect(connectResponse.data.id).toBeTruthy();

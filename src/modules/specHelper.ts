@@ -1,15 +1,20 @@
 import * as uuid from "uuid";
 import { Worker } from "node-resque";
-import { api, config, task, Task, Action } from "./../index";
-import { UnwrapPromise } from "./tsUtils/unwrapPromise";
+import { api, config, task, Task, Action, Connection } from "./../index";
 import { WebServer } from "../servers/web";
+import { AsyncReturnType } from "type-fest";
+import { TaskInputs } from "../classes/task";
+
+export type SpecHelperConnection = Connection & {
+  actionCallbacks?: { [key: string]: Function };
+};
 
 export namespace specHelper {
   /**
    * Generate a connection to use in your tests
    */
   export async function buildConnection() {
-    return api.specHelper.Connection.createAsync();
+    return api.specHelper.Connection.createAsync() as SpecHelperConnection;
   }
 
   /**
@@ -17,25 +22,25 @@ export namespace specHelper {
    */
   export async function runAction<A extends Action | void = void>(
     actionName: string,
-    input: { [key: string]: any } = {}
+    input: Partial<SpecHelperConnection> | Record<string, any> = {}
   ) {
-    let connection;
+    let connection: SpecHelperConnection;
 
     if (input.id && input.type === "testServer") {
-      connection = input;
+      connection = input as SpecHelperConnection;
     } else {
       connection = await specHelper.buildConnection();
       connection.params = input;
     }
 
     connection.params.action = actionName;
-
     connection.messageId = connection.params.messageId || uuid.v4();
+
     const response: (A extends Action
-      ? UnwrapPromise<A["run"]>
+      ? AsyncReturnType<A["run"]>
       : { [key: string]: any }) & {
       messageId?: string;
-      error?: Error | string | any;
+      error?: NodeJS.ErrnoException | string | any;
       requesterInformation?: ReturnType<WebServer["buildRequesterInformation"]>;
       serverInformation?: ReturnType<WebServer["buildServerInformation"]>;
     } = await new Promise((resolve) => {
@@ -53,7 +58,6 @@ export namespace specHelper {
     const connection = await specHelper.buildConnection();
     connection.params.file = file;
 
-    connection.messageCount = uuid.v4();
     const response = await new Promise((resolve) => {
       api.servers.servers.testServer.processFile(connection);
       connection.actionCallbacks[connection.messageId] = resolve;
@@ -75,9 +79,9 @@ export namespace specHelper {
     }
 
     const result: (T extends Task
-      ? UnwrapPromise<T["run"]>
+      ? AsyncReturnType<T["run"]>
       : { [key: string]: any }) & {
-      error?: Error | string;
+      error?: NodeJS.ErrnoException | string;
     } = await api.tasks.tasks[taskName].run(params, undefined);
     return result;
   }
@@ -99,15 +103,18 @@ export namespace specHelper {
               ? "ioredis-mock"
               : "ioredis",
         },
-        queues: config.tasks.queues || ["default"],
+        queues: (Array.isArray(config.tasks.queues)
+          ? config.tasks.queues
+          : await config.tasks.queues()) || ["default"],
       },
       api.tasks.jobs
     );
 
     try {
       await worker.connect();
+
       const result: (T extends Task
-        ? UnwrapPromise<T["run"]>
+        ? AsyncReturnType<T["run"]>
         : { [key: string]: any }) & {
         error?: string;
       } = await worker.performInline(
@@ -131,7 +138,7 @@ export namespace specHelper {
    * i.e. [ { class: 'regularTask', queue: 'testQueue', args: [ [Object] ] } ]
    */
   export async function findEnqueuedTasks(taskName: string) {
-    let found = [];
+    let found: TaskInputs[] = [];
 
     // normal queues
     const queues = await api.resque.queue.queues();

@@ -1,7 +1,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as os from "os";
-import { api, Process, cache, utils, id } from "./../../src/index";
+import { api, Process, cache, utils, id } from "./../../src";
 
 const actionhero = new Process();
 
@@ -330,7 +330,7 @@ describe("Core", () => {
       });
 
       describe("locks are actually blocking", () => {
-        let originalLockName;
+        let originalLockName: () => string;
 
         beforeAll(() => {
           originalLockName = cache.lockName;

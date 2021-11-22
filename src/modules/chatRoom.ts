@@ -1,6 +1,6 @@
+import { AsyncReturnType } from "type-fest";
 import { api, config, id, redis, Connection } from "./../index";
 import * as RedisModule from "../modules/redis";
-import { UnwrapPromise } from "./tsUtils";
 
 export namespace chatRoom {
   /**
@@ -12,11 +12,11 @@ export namespace chatRoom {
    *    priority: 1000,
    *    join: (connection, room) => {
    *      // announce all connections entering a room
-   *      api.chatRoom.broadcast({}, room, 'I have joined the room: ' + connection.id, callback)
+   *      api.chatRoom.broadcast(null, room, 'I have joined the room: ' + connection.id, callback)
    *    },
    *    leave:(connection, room, callback) => {
    *      // announce all connections leaving a room
-   *      api.chatRoom.broadcast({}, room, 'I have left the room: ' + connection.id, callback)
+   *      api.chatRoom.broadcast(null, room, 'I have left the room: ' + connection.id, callback)
    *    },
    *    // Will be executed once per client connection before delivering the message.
    *    say: (connection, room, messagePayload) => {
@@ -120,7 +120,7 @@ export namespace chatRoom {
     const found = await chatRoom.exists(room);
     if (found === true) {
       await api.chatRoom.broadcast(
-        {},
+        null,
         room,
         await config.errors.connectionRoomHasBeenDeleted(room)
       );
@@ -143,19 +143,20 @@ export namespace chatRoom {
    * Check if a room exists.
    */
   export async function exists(room: string): Promise<boolean> {
-    const bool = await client().sismember(api.chatRoom.keys.rooms, room);
+    const isMember = await client().sismember(api.chatRoom.keys.rooms, room);
     let found = false;
-    // @ts-ignore
-    if (bool === 1 || bool === true) {
-      found = true;
-    }
+    if (isMember === 1 || isMember.toString() === "true") found = true;
     return found;
   }
 
   /**
    * Configures what properties of connections in a room to return via `api.chatRoom.roomStatus`
    */
-  export async function sanitizeMemberDetails(memberData) {
+  export async function sanitizeMemberDetails(memberData: {
+    id: string;
+    joinedAt: number;
+    [key: string]: any;
+  }) {
     return {
       id: memberData.id,
       joinedAt: memberData.joinedAt,
@@ -169,7 +170,7 @@ export namespace chatRoom {
   export async function roomStatus(room: string): Promise<{
     room: string;
     membersCount: number;
-    members: Record<string, UnwrapPromise<typeof sanitizeMemberDetails>>;
+    members: Record<string, AsyncReturnType<typeof sanitizeMemberDetails>>;
   }> {
     if (room) {
       const found = await chatRoom.exists(room);
@@ -178,7 +179,7 @@ export namespace chatRoom {
         const members = (await api.redis.clients.client.hgetall(key)) as {
           [key: string]: string;
         };
-        const cleanedMembers = {};
+        const cleanedMembers: Record<string, any> = {};
         let count = 0;
 
         for (const id in members) {
@@ -311,7 +312,7 @@ export namespace chatRoom {
    * - message can be anything: string, json, object, etc
    */
   export async function broadcast(
-    connection: Connection | { [key: string]: any },
+    connection: Partial<Connection>,
     room: string,
     message: any
   ) {

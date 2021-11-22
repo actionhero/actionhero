@@ -36,6 +36,10 @@ export class WebSocketServer extends Server {
 
   async start() {
     const webserver = api.servers.servers.web;
+    if (!webserver) {
+      throw new Error(`websocket server requires web server to be enabled`);
+    }
+
     this.server = new Primus(webserver.server, this.config.server);
 
     this.writeClientJS();
@@ -54,7 +58,7 @@ export class WebSocketServer extends Server {
     );
 
     this.on("connection", (connection: Connection) => {
-      connection.rawConnection.on("data", (data) => {
+      connection.rawConnection.on("data", (data: Record<string, any>) => {
         this.handleData(connection, data);
       });
     });
@@ -80,7 +84,11 @@ export class WebSocketServer extends Server {
     this.server.destroy();
   }
 
-  async sendMessage(connection: Connection, message, messageId: string) {
+  async sendMessage(
+    connection: Connection,
+    message: Record<string, any>,
+    messageId: string
+  ) {
     if (message.error) {
       message.error = config.errors.serializers.servers.websocket(
         message.error
@@ -96,12 +104,13 @@ export class WebSocketServer extends Server {
     if (message.context === "response" && !message.messageId) {
       message.messageId = messageId;
     }
+
     connection.rawConnection.write(message);
   }
 
   async sendFile(
     connection: Connection,
-    error: Error,
+    error: NodeJS.ErrnoException,
     fileStream: any,
     mime: string,
     length: number,
@@ -111,7 +120,7 @@ export class WebSocketServer extends Server {
     let content = "";
     const response = {
       error: error,
-      content: null,
+      content: null as string,
       mime: mime,
       length: length,
       lastModified: lastModified,
@@ -119,7 +128,7 @@ export class WebSocketServer extends Server {
 
     try {
       if (!error) {
-        fileStream.on("data", (d) => {
+        fileStream.on("data", (d: string) => {
           content += d;
         });
         fileStream.on("end", () => {
@@ -215,9 +224,9 @@ export class WebSocketServer extends Server {
     }
   }
 
-  handleConnection(rawConnection) {
+  handleConnection(rawConnection: Primus.Spark) {
     const fingerprint =
-      rawConnection.query[config.servers.web.fingerprintOptions.cookieKey];
+      rawConnection.query[config.web.fingerprintOptions.cookieKey];
     const { ip, port } = utils.parseHeadersForClientAddress(
       rawConnection.headers
     );
@@ -230,7 +239,7 @@ export class WebSocketServer extends Server {
     });
   }
 
-  handleDisconnection(rawConnection) {
+  handleDisconnection(rawConnection: Primus.Spark) {
     const connections = this.connections();
     for (const i in connections) {
       if (
@@ -243,7 +252,7 @@ export class WebSocketServer extends Server {
     }
   }
 
-  async handleData(connection, data) {
+  async handleData(connection: Connection, data: Record<string, any>) {
     const verb = data.event;
     delete data.event;
 

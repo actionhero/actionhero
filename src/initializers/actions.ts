@@ -1,6 +1,6 @@
 import * as glob from "glob";
 import * as path from "path";
-import { api, log, utils, Initializer, Action } from "../index";
+import { api, config, log, utils, Initializer, Action } from "../index";
 import * as ActionModule from "./../modules/action";
 
 export interface ActionsApi {
@@ -19,14 +19,14 @@ export interface ActionsApi {
   loadFile?: Function;
 }
 
-export class Actions extends Initializer {
+export class ActionsInitializer extends Initializer {
   constructor() {
     super();
     this.name = "actions";
     this.loadPriority = 410;
   }
 
-  async initialize(config) {
+  async initialize() {
     api.actions = {
       actions: {},
       versions: {},
@@ -38,7 +38,7 @@ export class Actions extends Initializer {
       fullFilePath: string,
       reload: boolean = false
     ) => {
-      const loadMessage = (action) => {
+      const loadMessage = (action: Action) => {
         if (reload) {
           log(
             `action reloaded: ${action.name} @ v${action.version}, ${fullFilePath}`,
@@ -100,9 +100,10 @@ export class Actions extends Initializer {
       }
     }
 
-    for (const pluginName in config.plugins) {
-      if (config.plugins[pluginName].actions !== false) {
-        const pluginPath = config.plugins[pluginName].path;
+    for (const plugin of Object.values(config.plugins)) {
+      if (plugin.actions !== false) {
+        const pluginPath: string = path.normalize(plugin.path);
+
         // old style at the root of the project
         let files = glob.sync(path.join(pluginPath, "actions", "**", "*.js"));
 

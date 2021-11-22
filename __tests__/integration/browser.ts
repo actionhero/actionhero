@@ -1,22 +1,25 @@
 import * as path from "path";
 import * as fs from "fs";
-import * as puppeteer from "puppeteer";
+import * as Puppeteer from "puppeteer";
 import { api, Process, config, utils } from "../../src/index";
-const packageJSON = JSON.parse(
+import { PackageJson } from "type-fest";
+
+const packageJSON: PackageJson = JSON.parse(
   fs.readFileSync(path.join(__dirname, "..", "..", "package.json")).toString()
 );
-const host = "localhost";
 
-const actionhero = new Process();
-let browser: puppeteer.Browser;
-let page: puppeteer.Page;
+let browser: Puppeteer.Browser;
+let page: Puppeteer.Page;
 let url: string;
 
 describe("browser integration tests", () => {
+  let actionhero: Process;
+
   beforeAll(async () => {
+    actionhero = new Process();
     await actionhero.start();
     await api.redis.clients.client.flushdb();
-    browser = await puppeteer.launch({
+    browser = await Puppeteer.launch({
       headless: true,
       args: ["--no-sandbox"],
     });
@@ -30,7 +33,7 @@ describe("browser integration tests", () => {
 
   describe("default index page", () => {
     beforeAll(() => {
-      url = `http://${host}:${config.servers.web.port}`;
+      url = `http://localhost:${config.web.port}`;
     });
 
     test("loads the page", async () => {
@@ -56,7 +59,7 @@ describe("browser integration tests", () => {
 
   describe("swagger page", () => {
     beforeAll(() => {
-      url = `http://${host}:${config.servers.web.port}/swagger.html`;
+      url = `http://localhost:${config.web.port}/swagger.html`;
     });
 
     test("loads the page", async () => {
@@ -81,7 +84,7 @@ describe("browser integration tests", () => {
   });
 
   describe("chat test page", () => {
-    let sessionIDCookie;
+    let sessionIDCookie: Puppeteer.Protocol.Network.Cookie;
 
     test("I can be assigned a session on another page", async () => {
       sessionIDCookie = (await page.cookies()).filter(
@@ -92,7 +95,7 @@ describe("browser integration tests", () => {
 
     describe("on the chat page", () => {
       beforeAll(() => {
-        url = `http://${host}:${config.servers.web.port}/chat.html`;
+        url = `http://localhost:${config.web.port}/chat.html`;
       });
 
       test("can connect", async () => {
@@ -103,7 +106,6 @@ describe("browser integration tests", () => {
       });
 
       test("can chat", async () => {
-        await page.goto(url);
         const chatForm = await page.$("#message");
         await chatForm.type("hello world");
         const chatSubmit = await page.$("#submitButton");

@@ -9,14 +9,13 @@ import { id } from "./../classes/process/id";
 import { actionheroVersion } from "./../classes/process/actionheroVersion";
 import { typescript } from "./../classes/process/typescript";
 import { projectRoot } from "./../classes/process/projectRoot";
+import { RouteMethod, RoutesConfig, RouteType } from "..";
+import { ActionheroConfigInterface } from "../classes/config";
 
-export interface ConfigInterface {
-  [key: string]: any;
-}
-export const configPaths = [];
+export function buildConfig() {
+  const configPaths: string[] = [];
 
-export function buildConfig(_startingParams: ConfigInterface = {}) {
-  let config: ConfigInterface = {
+  let config: Partial<ActionheroConfigInterface> = {
     process: {
       env,
       id,
@@ -26,12 +25,12 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
     },
   };
 
-  utils.hashMerge(config, _startingParams);
   // We support multiple configuration paths as follows:
   //
   // 1. Use the project 'config' folder, if it exists.
   // 2. "actionhero --config=PATH1 --config=PATH2 --config=PATH3,PATH4"
   // 3. "ACTIONHERO_CONFIG=PATH1,PATH2 npm start"
+  // 4. "ACTIONHERO_CONFIG_OVERRIDES" (stringified JSON) can partially override any of the config objects loaded from the above
   //
   // Note that if --config or ACTIONHERO_CONFIG are used, they _overwrite_ the use of the default "config" folder. If
   // you wish to use both, you need to re-specify "config", e.g. "--config=config,local-config". Also, note that
@@ -92,24 +91,23 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
         return;
       }
 
-      let localRoutes: { [key: string]: any } = { routes: {} };
+      let localRoutes: { routes: Partial<RoutesConfig> } = { routes: {} };
 
       if (localConfig.DEFAULT) {
+        // @ts-ignore
         localRoutes = utils.hashMerge(localRoutes, localConfig.DEFAULT, config);
       }
 
       if (localConfig[env]) {
+        // @ts-ignore
         localRoutes = utils.hashMerge(localRoutes, localConfig[env], config);
       }
 
-      Object.keys(localRoutes.routes).forEach((v) => {
+      (Object.keys(localRoutes.routes) as RouteMethod[]).forEach((v) => {
         if (config.routes && config.routes[v]) {
           config.routes[v].push(...localRoutes.routes[v]);
         } else {
-          if (!config.routes) {
-            config.routes = {};
-          }
-
+          if (!config.routes) config.routes = {};
           config.routes[v] = localRoutes.routes[v];
         }
       });
@@ -130,7 +128,10 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
     );
 
     let loadRetries = 0;
-    let loadErrors = {};
+    let loadErrors: Record<
+      string,
+      { error: NodeJS.ErrnoException; msg: string }
+    > = {};
     for (let i = 0, limit = configFiles.length; i < limit; i++) {
       const f = configFiles[i];
       try {
@@ -173,9 +174,9 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
     // Remove duplicate routes since we might be loading from multiple config directories, also we load every
     // config directory twice.
     if (config.routes) {
-      Object.keys(config.routes).forEach((v) => {
+      (Object.keys(config.routes) as RouteMethod[]).forEach((v) => {
         config.routes[v] = config.routes[v].filter(
-          (route, index, self) =>
+          (route: RouteType, index: number, self: RouteType[]) =>
             index ===
             self.findIndex(
               (r) =>
@@ -196,20 +197,26 @@ export function buildConfig(_startingParams: ConfigInterface = {}) {
   // load the project specific config
   configPaths.map((p) => loadConfigDirectory(p, false));
 
-  // apply any configChanges
-  if (_startingParams && _startingParams.configChanges) {
-    config = utils.hashMerge(config, _startingParams.configChanges);
+  if (process.env.ACTIONHERO_CONFIG_OVERRIDES) {
+    try {
+      config = utils.hashMerge(
+        config,
+        JSON.parse(process.env.ACTIONHERO_CONFIG_OVERRIDES)
+      );
+    } catch (error) {
+      throw new Error(`could not parse ACTIONHERO_CONFIG_OVERRIDES: ${error}`);
+    }
   }
 
-  if (process.env.configChanges) {
-    config = utils.hashMerge(config, JSON.parse(process.env.configChanges));
-  }
-
-  if (utils.argv.configChanges) {
-    config = utils.hashMerge(
-      config,
-      JSON.parse(utils.argv.configChanges.toString())
-    );
+  if (utils.argv.ACTIONHERO_CONFIG_OVERRIDES) {
+    try {
+      config = utils.hashMerge(
+        config,
+        JSON.parse(utils.argv.ACTIONHERO_CONFIG_OVERRIDES.toString())
+      );
+    } catch (error) {
+      throw new Error(`could not parse ACTIONHERO_CONFIG_OVERRIDES: ${error}`);
+    }
   }
 
   return config;

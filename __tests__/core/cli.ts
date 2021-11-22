@@ -5,20 +5,18 @@ import * as fs from "fs";
 import * as path from "path";
 import { spawn } from "child_process";
 import * as request from "request-promise-native";
-import * as isrunning from "is-running";
+import { isRunning } from "../../src/modules/utils/isRunning";
+import { sleep } from "../../src/modules/utils/sleep";
 
 const testDir = path.join(process.cwd(), "tmp", "actionheroTestProject");
 const binary = "./node_modules/.bin/actionhero";
-const pacakgeJSON = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "/../../package.json")).toString()
-);
 
 console.log(`testDir: ${testDir}`);
 
 const port = 18080 + parseInt(process.env.JEST_WORKER_ID || "0");
 const host = "localhost";
-let pid;
-let AHPath;
+let pid: number;
+let AHPath: string;
 
 class ErrorWithStd extends Error {
   stderr: string;
@@ -78,12 +76,6 @@ const doCommand = async (
     });
   });
 };
-
-async function sleep(time) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, time);
-  });
-}
 
 describe("Core: CLI", () => {
   if (process.platform === "win32") {
@@ -147,9 +139,8 @@ describe("Core: CLI", () => {
         "src/config/redis.ts",
         "src/config/routes.ts",
         "src/config/tasks.ts",
-        "src/config/servers",
-        "src/config/servers/web.ts",
-        "src/config/servers/websocket.ts",
+        "src/config/web.ts",
+        "src/config/websocket.ts",
         "pids",
         "log",
         "public",
@@ -307,7 +298,7 @@ describe("Core: CLI", () => {
     }, 120000);
 
     describe("can run the server", () => {
-      let serverPid;
+      let serverPid: number;
 
       beforeAll(async function () {
         doCommand(`node dist/server.js`, true, { PORT: port });
@@ -316,7 +307,7 @@ describe("Core: CLI", () => {
       }, 20000);
 
       afterAll(async () => {
-        if (isrunning(serverPid)) {
+        if (isRunning(serverPid)) {
           await doCommand(`kill ${serverPid}`);
         }
       });

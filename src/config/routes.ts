@@ -1,5 +1,15 @@
-export const DEFAULT = {
-  routes: (config) => {
+import { RoutesConfig } from "..";
+
+const namespace = "routes";
+
+declare module ".." {
+  export interface ActionheroConfigInterface {
+    [namespace]: ReturnType<typeof DEFAULT[typeof namespace]>;
+  }
+}
+
+export const DEFAULT: { [namespace]: () => RoutesConfig } = {
+  [namespace]: () => {
     return {
       get: [
         { path: "/status", action: "status" },

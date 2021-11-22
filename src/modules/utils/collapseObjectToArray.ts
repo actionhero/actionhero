@@ -1,7 +1,9 @@
 /**
  * Collapses an Object with numerical keys (like `arguments` in a function) to an Array
  */
-export function collapseObjectToArray(obj: object): Array<any> | boolean {
+export function collapseObjectToArray(
+  obj: Record<string, any>
+): Array<any> | boolean {
   try {
     const keys = Object.keys(obj);
     if (keys.length < 1) {

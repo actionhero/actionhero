@@ -3,11 +3,12 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import { api, Process, config, route } from "../../../../src/index";
+import { routerMethods } from "../../../../src/modules/route";
 
-const actionhero = new Process();
-let url;
+let url: string;
+let actionhero: Process;
 
-const toJson = async (string) => {
+const toJson = async (string: string) => {
   try {
     return JSON.parse(string);
   } catch (error) {
@@ -17,15 +18,16 @@ const toJson = async (string) => {
 
 describe("Server: Web", () => {
   beforeAll(async () => {
-    // process.env.AUTOMATIC_ROUTES = "head,get,post,put,delete";
+    actionhero = new Process();
     await actionhero.start();
-    url = "http://localhost:" + config.servers.web.port;
+    url = "http://localhost:" + config.web.port;
   });
 
   afterAll(async () => await actionhero.stop());
 
   describe("routes", () => {
-    let originalRoutes;
+    let originalRoutes: typeof api.routes.routes;
+
     beforeAll(() => {
       originalRoutes = api.routes.routes;
       api.actions.versions.mimeTestAction = [1];
@@ -146,20 +148,23 @@ describe("Server: Web", () => {
 
     test("'all' routes are duplicated properly", () => {
       route.registerRoute("all", "/other-login", "login", null);
-      const loaded = {};
-      const registered = {};
-      api.routes.verbs.forEach((verb) => {
+      const loaded: Partial<Record<typeof routerMethods[number], boolean>> = {};
+      const registered: Partial<Record<typeof routerMethods[number], boolean>> =
+        {};
+      routerMethods.forEach((verb) => {
         api.routes.routes[verb].forEach((route) => {
-          if (!loaded[verb])
+          if (!loaded[verb]) {
             loaded[verb] =
               route.action === "user" && route.path === "/user/:userID";
-          if (!registered[verb])
+          }
+          if (!registered[verb]) {
             registered[verb] =
               route.action === "login" && route.path === "/other-login";
+          }
         });
       });
-      expect(Object.keys(loaded).length).toEqual(api.routes.verbs.length);
-      expect(Object.keys(registered).length).toEqual(api.routes.verbs.length);
+      expect(Object.keys(loaded).length).toEqual(routerMethods.length);
+      expect(Object.keys(registered).length).toEqual(routerMethods.length);
     });
 
     test("unknown actions are still unknown", async () => {
@@ -490,7 +495,7 @@ describe("Server: Web", () => {
   });
 
   describe("manually set routes persist a reload", () => {
-    let originalRoutes;
+    let originalRoutes: typeof api.routes.routes;
     beforeAll(() => {
       originalRoutes = api.routes.routes;
     });

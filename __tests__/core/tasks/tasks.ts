@@ -11,7 +11,7 @@ import { sleep } from "../../../src/modules/utils/sleep";
 
 const actionhero = new Process();
 
-let taskOutput = [];
+let taskOutput: any[] = [];
 const queue = "testQueue";
 
 describe("Core: Tasks", () => {
@@ -31,7 +31,7 @@ describe("Core: Tasks", () => {
         this.frequency = 0;
       }
 
-      run(params) {
+      run(params: Record<string, any>) {
         taskOutput.push(params.word);
         return params.word;
       }
@@ -46,7 +46,7 @@ describe("Core: Tasks", () => {
         this.frequency = 100;
       }
 
-      async run(params) {
+      async run() {
         await sleep(10);
         taskOutput.push("periodicTask");
         return "periodicTask";
@@ -62,7 +62,7 @@ describe("Core: Tasks", () => {
         this.frequency = 0;
       }
 
-      async run(params) {
+      async run() {
         await utils.sleep(5000);
         taskOutput.push("slowTask");
         return "slowTask";
@@ -86,7 +86,7 @@ describe("Core: Tasks", () => {
           },
           c: {
             required: true,
-            validator: (p) => {
+            validator: (p: unknown) => {
               if (p !== 3) {
                 throw new Error("nope");
               }
@@ -94,7 +94,7 @@ describe("Core: Tasks", () => {
           },
           d: {
             required: true,
-            validator: (p) => {
+            validator: (p: unknown) => {
               if (p !== 4) {
                 return false;
               }
@@ -103,7 +103,7 @@ describe("Core: Tasks", () => {
         };
       }
 
-      async run(params) {
+      async run() {
         taskOutput.push("taskWithInputs");
         return "taskWithInputs";
       }
@@ -162,7 +162,7 @@ describe("Core: Tasks", () => {
         this.frequency = 0;
       }
 
-      async run(params) {}
+      async run() {}
     }
 
     const task = new BadTask();

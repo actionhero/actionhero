@@ -1,3 +1,5 @@
+process.env.AUTOMATIC_ROUTES = "head,get,post,put,delete";
+
 import * as request from "request-promise-native";
 import * as fs from "fs";
 import * as os from "os";
@@ -5,9 +7,9 @@ import * as path from "path";
 import { api, Process, config, utils, route } from "./../../../src/index";
 
 const actionhero = new Process();
-let url;
+let url: string;
 
-const toJson = async (string) => {
+const toJson = async (string: string) => {
   try {
     return JSON.parse(string);
   } catch (error) {
@@ -17,9 +19,8 @@ const toJson = async (string) => {
 
 describe("Server: Web", () => {
   beforeAll(async () => {
-    process.env.AUTOMATIC_ROUTES = "head,get,post,put,delete";
     await actionhero.start();
-    url = "http://localhost:" + config.servers.web.port;
+    url = "http://localhost:" + config.web.port;
   });
 
   afterAll(async () => await actionhero.stop());
@@ -72,7 +73,7 @@ describe("Server: Web", () => {
 
   describe("will properly destroy connections", () => {
     beforeAll(() => {
-      config.servers.web.returnErrorCodes = true;
+      config.web.returnErrorCodes = true;
       api.actions.versions.customRender = [1];
       api.actions.actions.customRender = {
         // @ts-ignore
@@ -214,7 +215,7 @@ describe("Server: Web", () => {
   });
 
   describe("if disableParamScrubbing is set", () => {
-    let orig;
+    let orig: typeof config.general.disableParamScrubbing;
     beforeAll(() => {
       orig = config.general.disableParamScrubbing;
       config.general.disableParamScrubbing = true;
@@ -335,7 +336,7 @@ describe("Server: Web", () => {
 
     test("messageIds can be provided by the client and returned by the server", async () => {
       const response = await request
-        .get(url + "/api/randomNumber", { messageId: "aaa" })
+        .get(url + "/api/randomNumber?messageId=aaa")
         .then(toJson);
       expect(response.requesterInformation.messageId).not.toEqual("aaa");
     });
@@ -396,7 +397,7 @@ describe("Server: Web", () => {
     });
 
     test(".rawBody can be disabled", async () => {
-      config.servers.web.saveRawBody = false;
+      config.web.saveRawBody = false;
       const requestBody = '{"key":      "value"}';
       const body = await request
         .post(url + "/api/paramTestAction", {
@@ -906,7 +907,7 @@ describe("Server: Web", () => {
   });
 
   describe("custom methods", () => {
-    let originalRoutes;
+    let originalRoutes: typeof api.routes.routes;
 
     beforeAll(() => {
       originalRoutes = api.routes.routes;
@@ -934,7 +935,7 @@ describe("Server: Web", () => {
             code: {
               required: true,
               default: 200,
-              formatter: (p) => {
+              formatter: (p: string) => {
                 return parseInt(p);
               },
             },

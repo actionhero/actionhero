@@ -29,15 +29,11 @@ export abstract class CLI {
   start: boolean;
 
   constructor() {
-    const defaults = this.getDefaults();
-    for (const key in defaults) {
-      if (!this[key]) {
-        this[key] = defaults[key];
-      }
-      if (typeof this[key] === "function") {
-        this[key] = this[key]();
-      }
-    }
+    this.description = this.description ?? this.name;
+    this.example = this.example ?? "";
+    this.inputs = this.inputs ?? {};
+    this.initialize = this.initialize ?? true;
+    this.start = this.start ?? false;
   }
 
   /**
@@ -51,17 +47,6 @@ export abstract class CLI {
    * An optional method to append additional information to the --help response for this CLI command
    */
   help() {}
-
-  private getDefaults() {
-    return {
-      name: null,
-      description: this.name,
-      example: "",
-      inputs: {},
-      initialize: true,
-      start: false,
-    };
-  }
 
   validate() {
     if (!this.name) {

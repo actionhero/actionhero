@@ -1,7 +1,7 @@
 import { api, Process, Task, utils, config, task } from "./../../../src/index";
 
 const actionhero = new Process();
-let taskOutput = [];
+let taskOutput: any[] = [];
 const queue = "testQueue";
 
 jest.mock("./../../../src/config/tasks.ts", () => ({
@@ -42,7 +42,7 @@ describe("Core: Tasks", () => {
           this.frequency = 0;
         }
 
-        run(params) {
+        run(params: Record<string, any>) {
           taskOutput.push(params.word);
           return params.word;
         }
@@ -57,7 +57,7 @@ describe("Core: Tasks", () => {
           this.frequency = 100;
         }
 
-        async run(params) {
+        async run() {
           taskOutput.push("periodicTask");
           return "periodicTask";
         }
@@ -72,7 +72,7 @@ describe("Core: Tasks", () => {
           this.frequency = 0;
         }
 
-        async run(params) {
+        async run() {
           await utils.sleep(5000);
           taskOutput.push("slowTask");
           return "slowTask";
@@ -171,7 +171,13 @@ describe("Core: Tasks", () => {
       await new Promise(async (resolve) => {
         config.tasks.queues = ["*"];
 
-        const listener = async (workerId, queue, job, f) => {
+        const listener = async (
+          workerId: number,
+          queue: string,
+          job: any,
+          f: Error,
+          duration: number
+        ) => {
           expect(queue).toEqual(queue);
           expect(job.class).toEqual("someCrazyTask");
           expect(job.queue).toEqual("testQueue");

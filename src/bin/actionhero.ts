@@ -8,6 +8,13 @@ import { typescript } from "../classes/process/typescript";
 import { projectRoot } from "../classes/process/projectRoot";
 import { ensureNoTsHeaderFiles } from "../modules/utils/ensureNoTsHeaderFiles";
 import { CLI } from "../classes/cli";
+import { PackageJson } from "type-fest";
+
+// load explicitly to find the type changes for the config module
+import "../config/api";
+import "../config/plugins";
+import "../config/logger";
+import "../config/routes";
 
 export namespace ActionheroCLIRunner {
   export async function run() {
@@ -19,24 +26,18 @@ export namespace ActionheroCLIRunner {
       const { config } = await import("../index");
 
       // this project
-      for (const i in config.general.paths.cli) {
-        await loadDirectory(
-          path.join(config.general.paths.cli[i]),
-          pathsLoaded
-        );
+      for (const p of config.general.paths.cli) {
+        await loadDirectory(path.join(p), pathsLoaded);
       }
 
       // plugins
-      for (const pluginName in config.plugins) {
-        if (config.plugins[pluginName].cli !== false) {
+      for (const plugin of Object.values(config.plugins)) {
+        if (plugin.cli !== false) {
           // old plugins
-          await loadDirectory(
-            path.join(config.plugins[pluginName].path, "bin"),
-            pathsLoaded
-          );
+          await loadDirectory(path.join(plugin.path, "bin"), pathsLoaded);
           // new plugins
           await loadDirectory(
-            path.join(config.plugins[pluginName].path, "dist", "bin"),
+            path.join(plugin.path, "dist", "bin"),
             pathsLoaded
           );
         }
@@ -79,14 +80,17 @@ export namespace ActionheroCLIRunner {
     }
   }
 
-  export async function convertCLIToCommanderAction(cli) {
+  export async function convertCLIToCommanderAction(
+    cliConstructor: new () => CLI
+  ) {
     if (
-      Object.getPrototypeOf(cli?.prototype?.constructor || {}).name !== "CLI"
+      Object.getPrototypeOf(cliConstructor?.prototype?.constructor || {})
+        .name !== "CLI"
     ) {
       return;
     }
 
-    const instance: CLI = new cli();
+    const instance: CLI = new cliConstructor();
     const command = program
       .command(instance.name)
       .description(instance.description)
@@ -134,8 +138,8 @@ export namespace ActionheroCLIRunner {
   ) {
     let toStop = false;
 
-    let _arguments = [];
-    let params = {};
+    let _arguments: string[] = [];
+    let params: Record<string, string[]> = {};
     [_arg1, _arg2, _arg3, _arg4, _arg5].forEach((arg) => {
       if (typeof arg?.opts === "function") {
         params = arg.opts();
@@ -168,7 +172,7 @@ export namespace ActionheroCLIRunner {
     }
   }
 
-  export function readPackageJSON(file) {
+  export function readPackageJSON(file: string) {
     return JSON.parse(fs.readFileSync(file).toString());
   }
 
@@ -176,10 +180,10 @@ export namespace ActionheroCLIRunner {
     const parentPackageJSON = path.join(projectRoot, "package.json");
 
     if (fs.existsSync(parentPackageJSON)) {
-      const pkg = readPackageJSON(parentPackageJSON);
+      const pkg: PackageJson = readPackageJSON(parentPackageJSON);
       return pkg.version;
     } else {
-      const pkg = readPackageJSON(
+      const pkg: PackageJson = readPackageJSON(
         path.join(__dirname, "..", "..", "package.json")
       );
       return pkg.version;

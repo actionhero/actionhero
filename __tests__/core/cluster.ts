@@ -6,7 +6,8 @@ import {
   specHelper,
   chatRoom,
   redis,
-} from "./../../src/index";
+  Connection,
+} from "./../../src";
 
 const actionhero = new Process();
 
@@ -34,8 +35,8 @@ describe("Core: Action Cluster", () => {
     });
 
     test("can call remote methods on all other servers in the cluster", async () => {
-      const data = {};
-      api.rpcTestMethod = (arg1, arg2) => {
+      const data: Record<string, any> = {};
+      api.rpcTestMethod = (arg1: any, arg2: any) => {
         data[1] = [arg1, arg2];
       };
       await redis.doCluster("api.rpcTestMethod", ["arg1", "arg2"]);
@@ -47,8 +48,8 @@ describe("Core: Action Cluster", () => {
 
     test("can call remote methods only on one other cluster who holds a specific connectionId", async () => {
       const client = await specHelper.buildConnection();
-      const data = {};
-      api.rpcTestMethod = (arg1, arg2) => {
+      const data: Record<string, any> = {};
+      api.rpcTestMethod = (arg1: any, arg2: any) => {
         data[1] = [arg1, arg2];
       };
 
@@ -71,14 +72,16 @@ describe("Core: Action Cluster", () => {
 
     test("can call remote methods on/about connections connected to other servers", async () => {
       const client = await specHelper.buildConnection();
-      expect(client.auth).toBeUndefined();
+      //@ts-ignore
+      expect(client["auth"]).toBeUndefined();
 
       const connection = await api.connections.apply(client.id, "set", [
         "auth",
         true,
       ]);
       expect(connection.id).toEqual(client.id);
-      expect(client.auth).toEqual(true);
+      //@ts-ignore
+      expect(client["auth"]).toEqual(true);
       client.destroy();
     });
 

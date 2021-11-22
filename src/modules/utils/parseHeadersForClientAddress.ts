@@ -3,16 +3,17 @@ import { parseIPv6URI } from "./parseIPv6URI";
 /**
  * Return ip and port information if defined in the header
  */
-export function parseHeadersForClientAddress(headers: object): {
-  ip: string;
-  port: number;
-} {
-  let ip = null;
-  let port = null;
+export function parseHeadersForClientAddress(
+  headers: Record<string, string | string[]>
+) {
+  let ip: string;
+  let port: number | string;
 
   if (headers["x-forwarded-for"]) {
     let parts;
-    let forwardedIp = headers["x-forwarded-for"].split(",")[0];
+    let forwardedIp = Array.isArray(headers["x-forwarded-for"])
+      ? headers["x-forwarded-for"][0].split(",")[0]
+      : headers["x-forwarded-for"].split(",")[0];
     if (
       forwardedIp.indexOf(".") >= 0 ||
       (forwardedIp.indexOf(".") < 0 && forwardedIp.indexOf(":") < 0)
@@ -38,11 +39,15 @@ export function parseHeadersForClientAddress(headers: object): {
     }
   }
   if (headers["x-forwarded-port"]) {
-    port = headers["x-forwarded-port"];
+    port = Array.isArray(headers["x-forwarded-port"])
+      ? headers["x-forwarded-port"][0]
+      : headers["x-forwarded-port"];
   }
   if (headers["x-real-ip"]) {
     // https://distinctplace.com/2014/04/23/story-behind-x-forwarded-for-and-x-real-ip-headers/
-    ip = headers["x-real-ip"];
+    ip = Array.isArray(headers["x-real-ip"])
+      ? headers["x-real-ip"][0]
+      : headers["x-real-ip"];
   }
   return { ip, port };
 }

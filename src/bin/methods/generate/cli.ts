@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { config, utils, CLI } from "./../../../index";
 
-export class GenerateCLI extends CLI {
+export class GenerateCLICLI extends CLI {
   constructor() {
     super();
     this.name = "generate-cli";
@@ -29,17 +29,21 @@ export class GenerateCLI extends CLI {
     };
   }
 
-  async run({ params }) {
+  async run({
+    params,
+  }: {
+    params: { name: string; description?: string; example?: string };
+  }) {
     let templateBuffer = fs.readFileSync(
       path.join(__dirname, "/../../../../templates/cli.ts.template")
     );
 
     let template = templateBuffer.toString();
 
-    ["name", "description", "example"].forEach((v) => {
-      const regex = new RegExp("%%" + v + "%%", "g");
-      template = template.replace(regex, params[v]);
-    });
+    for (const [k, v] of Object.entries(params)) {
+      const regex = new RegExp("%%" + k + "%%", "g");
+      template = template.replace(regex, v);
+    }
 
     const message = utils.fileUtils.createFileSafely(
       utils.replaceDistWithSrc(

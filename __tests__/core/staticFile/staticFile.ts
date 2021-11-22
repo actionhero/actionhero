@@ -3,9 +3,9 @@ import * as child_process from "child_process";
 import { Process, config, utils, specHelper } from "../../../src/index";
 
 const actionhero = new Process();
-let url;
+let url: string;
 
-async function exec(command) {
+async function exec(command: string) {
   return new Promise((resolve, reject) => {
     child_process.exec(command, (error, stdout, stderr) => {
       if (error) {
@@ -22,9 +22,9 @@ describe("Core", () => {
       await actionhero.start();
       url =
         "http://localhost:" +
-        config.servers.web.port +
+        config.web.port +
         "/" +
-        config.servers.web.urlPathForFiles;
+        config.web.urlPathForFiles;
     });
 
     afterAll(async () => {

@@ -12,7 +12,7 @@ export class MyServer extends Server {
       sendWelcomeMessage: false,
       verbs: []
     };
-    // this.config will be set to equal api.config.servers[this.type]
+    // this.config will be set to equal config[this.type]
   }
 
   async initialize() {

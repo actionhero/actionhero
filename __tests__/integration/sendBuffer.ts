@@ -1,15 +1,16 @@
+process.env.AUTOMATIC_ROUTES = "get";
+
 import * as request from "request-promise-native";
 import * as stream from "stream";
 import { api, Process, config } from "./../../src/index";
 
 const actionhero = new Process();
-let url;
+let url: string;
 
 describe("Server: sendBuffer", () => {
   beforeAll(async () => {
-    process.env.AUTOMATIC_ROUTES = "get";
     await actionhero.start();
-    url = "http://localhost:" + config.servers.web.port;
+    url = "http://localhost:" + config.web.port;
   });
 
   afterAll(async () => await actionhero.stop());

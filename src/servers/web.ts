@@ -11,7 +11,7 @@ import * as uuid from "uuid";
 import * as etag from "etag";
 import { BrowserFingerprint } from "browser_fingerprint";
 import { api, config, utils, Server, Connection } from "../index";
-import { ActionsStatus } from "../classes/actionProcessor";
+import { ActionsStatus, ActionProcessor } from "../classes/actionProcessor";
 
 export class WebServer extends Server {
   server: http.Server | https.Server;
@@ -32,17 +32,24 @@ export class WebServer extends Server {
     };
 
     this.connectionCustomMethods = {
-      setHeader: (connection: Connection, key, value) => {
+      setHeader: (
+        connection: Connection,
+        key: string,
+        value: string | number
+      ) => {
         connection.rawConnection.res.setHeader(key, value);
       },
 
-      setStatusCode: (connection: Connection, value) => {
+      setStatusCode: (connection: Connection, value: number) => {
         connection.rawConnection.responseHttpCode = value;
       },
 
-      pipe: (connection: Connection, buffer, headers) => {
+      pipe: (
+        connection: Connection,
+        buffer: string | Buffer,
+        headers: Record<string, string>
+      ) => {
         for (const k in headers) {
-          //@ts-ignore
           connection.setHeader(k, headers[k]);
         }
         if (typeof buffer === "string") {
@@ -145,7 +152,7 @@ export class WebServer extends Server {
     });
   }
 
-  async sendMessage(connection: Connection, message) {
+  async sendMessage(connection: Connection, message: string) {
     let stringResponse = "";
     if (connection.rawConnection.method !== "HEAD") {
       stringResponse = String(message);
@@ -167,7 +174,7 @@ export class WebServer extends Server {
 
   async sendFile(
     connection: Connection,
-    error: Error,
+    error: NodeJS.ErrnoException,
     fileStream: any,
     mime: string,
     length: number,
@@ -176,7 +183,7 @@ export class WebServer extends Server {
     let foundCacheControl = false;
     let ifModifiedSince;
 
-    connection.rawConnection.responseHeaders.forEach((pair) => {
+    connection.rawConnection.responseHeaders.forEach((pair: string[]) => {
       if (pair[0].toLowerCase() === "cache-control") {
         foundCacheControl = true;
       }
@@ -285,7 +292,7 @@ export class WebServer extends Server {
       }
       // if-none-match
       if (noneMatchHeader) {
-        etagMatches = noneMatchHeader.some((match) => {
+        etagMatches = noneMatchHeader.some((match: string) => {
           return (
             match === "*" || match === fileEtag || match === "W/" + fileEtag
           );
@@ -303,7 +310,7 @@ export class WebServer extends Server {
   sendWithCompression(
     connection: Connection,
     responseHttpCode: number,
-    headers: Array<object>,
+    headers: Array<[string, string | number]>,
     stringResponse: string,
     fileStream?: any,
     fileLength?: number
@@ -390,8 +397,12 @@ export class WebServer extends Server {
     }
   }
 
-  handleRequest(req, res) {
-    const { fingerprint, headersHash } = this.fingerPrinter.fingerprint(req);
+  handleRequest(req: http.IncomingMessage, res: http.ServerResponse) {
+    const {
+      fingerprint,
+      headersHash,
+    }: { fingerprint: string; headersHash: Record<string, string> } =
+      this.fingerPrinter.fingerprint(req);
     const responseHeaders = [];
     const cookies = utils.parseCookies(req);
     const responseHttpCode = 200;
@@ -453,7 +464,7 @@ export class WebServer extends Server {
     });
   }
 
-  async completeResponse(data) {
+  async completeResponse(data: ActionProcessor<any>) {
     if (data.toRender !== true) {
       if (data.connection.rawConnection.res.finished) {
         data.connection.destroy();
@@ -547,7 +558,7 @@ export class WebServer extends Server {
           ");";
       }
     } else {
-      stringResponse = data.response;
+      stringResponse = data.response as unknown as string;
     }
 
     this.sendMessage(data.connection, stringResponse);
@@ -692,7 +703,7 @@ export class WebServer extends Server {
           rawBody = new Promise((resolve, reject) => {
             let fullBody = Buffer.alloc(0);
             connection.rawConnection.req
-              .on("data", (chunk) => {
+              .on("data", (chunk: Uint8Array) => {
                 fullBody = Buffer.concat([fullBody, chunk]);
               })
               .on("end", () => {
@@ -704,7 +715,11 @@ export class WebServer extends Server {
         const { fields, files } = await new Promise((resolve) => {
           connection.rawConnection.form.parse(
             connection.rawConnection.req,
-            (error, fields, files) => {
+            (
+              error: NodeJS.ErrnoException,
+              fields: string[],
+              files: string[]
+            ) => {
               if (error) {
                 this.log("error processing form: " + String(error), "error");
                 connection.error = new Error(
@@ -753,7 +768,10 @@ export class WebServer extends Server {
     }
   }
 
-  fillParamsFromWebRequest(connection, varsHash) {
+  fillParamsFromWebRequest(
+    connection: Connection,
+    varsHash: Record<string, any>
+  ) {
     // helper for JSON posts
     const collapsedVarsHash = utils.collapseObjectToArray(varsHash);
     if (collapsedVarsHash !== false) {
@@ -765,22 +783,25 @@ export class WebServer extends Server {
     }
   }
 
-  transformHeaders(headersArray) {
-    return headersArray.reduce((headers, currentHeader) => {
-      const currentHeaderKey = currentHeader[0].toLowerCase();
-      // we have a set-cookie, let's see what we have to do
-      if (currentHeaderKey === "set-cookie") {
-        if (headers[currentHeaderKey]) {
-          headers[currentHeaderKey].push(currentHeader[1]);
+  transformHeaders(headersArray: Array<[string, string | number]>) {
+    return headersArray.reduce(
+      (headers: Record<string, string[]>, currentHeader) => {
+        const currentHeaderKey = currentHeader[0].toLowerCase();
+        // we have a set-cookie, let's see what we have to do
+        if (currentHeaderKey === "set-cookie") {
+          if (headers[currentHeaderKey]) {
+            headers[currentHeaderKey].push(currentHeader[1].toString());
+          } else {
+            headers[currentHeaderKey] = [currentHeader[1].toString()];
+          }
         } else {
-          headers[currentHeaderKey] = [currentHeader[1]];
+          headers[currentHeaderKey] = [currentHeader[1].toString()];
         }
-      } else {
-        headers[currentHeaderKey] = currentHeader[1];
-      }
 
-      return headers;
-    }, {});
+        return headers;
+      },
+      {}
+    );
   }
 
   buildServerInformation(connectedAt: number) {
@@ -793,7 +814,7 @@ export class WebServer extends Server {
     };
   }
 
-  buildRequesterInformation(connection) {
+  buildRequesterInformation(connection: Connection) {
     const requesterInformation = {
       id: connection.id,
       fingerprint: connection.fingerprint,
@@ -814,7 +835,7 @@ export class WebServer extends Server {
     return requesterInformation;
   }
 
-  cleanHeaders(connection) {
+  cleanHeaders(connection: Connection) {
     const originalHeaders = connection.rawConnection.responseHeaders.reverse();
     const foundHeaders = [];
     const cleanedHeaders = [];
@@ -839,7 +860,7 @@ export class WebServer extends Server {
     connection.rawConnection.responseHeaders = cleanedHeaders;
   }
 
-  cleanSocket(bindIP, port) {
+  cleanSocket(bindIP: string | number, port: string | number) {
     if (!bindIP && typeof port === "string" && port.indexOf("/") >= 0) {
       fs.unlink(port, (error) => {
         if (error) {
@@ -851,14 +872,14 @@ export class WebServer extends Server {
     }
   }
 
-  chmodSocket(bindIP, port) {
+  chmodSocket(bindIP: string | number, port: string | number) {
     if (!bindIP && typeof port === "string" && port.indexOf("/") >= 0) {
       fs.chmodSync(port, "0777");
     }
   }
 
-  callbackHtmlEscape(str) {
-    return str
+  callbackHtmlEscape(s: string) {
+    return s
       .replace(/&/g, "&amp;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;")
