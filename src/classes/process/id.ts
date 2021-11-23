@@ -1,4 +1,4 @@
-import cluster from "cluster";
+import * as cluster from "cluster";
 import { config } from "./../../modules/config";
 import { utils } from "../../modules/utils";
 
@@ -21,6 +21,7 @@ function determineId() {
     }
 
     id = externalIP;
+    // @ts-ignore - we need to load * as for node v16 support
     if (cluster["isWorker"]) id += `:${process.pid}`;
   } else {
     id = config.general.id;
