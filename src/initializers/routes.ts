@@ -91,7 +91,7 @@ export class RoutesInitializer extends Initializer {
       params: {},
     };
     const matchParts = match.split("/");
-    let regexp = "";
+    let regexpMatch: string = null;
     let variable = "";
 
     if (matchParts[0] === "") matchParts.splice(0, 1);
@@ -105,7 +105,7 @@ export class RoutesInitializer extends Initializer {
       const matchPart = matchParts[i];
       let pathPart = pathParts[i];
 
-      if (matchTrailingPathParts && parseInt(i, 10) === matchParts.length - 1) {
+      if (matchTrailingPathParts && parseInt(i) === matchParts.length - 1) {
         for (const j in pathParts) {
           if (j > i) pathPart = pathPart + "/" + pathParts[j];
         }
@@ -113,25 +113,26 @@ export class RoutesInitializer extends Initializer {
 
       if (!pathPart) return response;
 
-      if (matchPart.indexOf(":") >= 0) {
+      if (matchPart.includes(":")) {
         const trimmedMatchParts = matchPart.split(":");
         const trimmedMatchPart =
           trimmedMatchParts[trimmedMatchParts.length - 1];
         const replacement = trimmedMatchParts[trimmedMatchParts.length - 2];
         if (replacement) {
+          if (!pathPart.includes(replacement)) return response;
           pathPart = pathPart.replace(replacement, "");
         }
 
-        if (trimmedMatchPart.indexOf("(") < 0) {
+        if (!trimmedMatchPart.includes("(")) {
           variable = trimmedMatchPart;
           response.params[variable] = pathPart;
         } else {
           variable = trimmedMatchPart.replace(":", "").split("(")[0];
-          regexp = trimmedMatchPart.substring(
+          regexpMatch = trimmedMatchPart.substring(
             trimmedMatchPart.indexOf("(") + 1,
             trimmedMatchPart.length - 1
           );
-          const matches = pathPart.match(new RegExp(regexp, "g"));
+          const matches = pathPart.match(new RegExp(regexpMatch, "g"));
           if (matches) {
             response.params[variable] = pathPart;
           } else {

@@ -114,7 +114,7 @@ describe("Server: Web", () => {
           { path: "/thing", action: "thing" },
           { path: "/thing/stuff", action: "thingStuff" },
           { path: "/v:apiVersion/login", action: "login" },
-          { path: "/:apiVersion/login", action: "login" },
+          { path: "/login/v:apiVersion/stuff", action: "login" },
           { path: "/login", action: "login" },
           { path: "/old_login", action: "login", apiVersion: "1" },
           {
@@ -459,7 +459,7 @@ describe("Server: Web", () => {
     describe("versions", () => {
       test("versions can be numbers", async () => {
         const body = await request
-          .get(url + "/api/1/login?user_id=123")
+          .get(url + "/api/v1/login?user_id=123")
           .then(toJson);
         expect(body.version).toEqual(1);
         expect(body.user_id).toEqual("123");
@@ -467,7 +467,7 @@ describe("Server: Web", () => {
 
       test("versions can be strings", async () => {
         const body = await request
-          .get(url + "/api/three/login?userID=123")
+          .get(url + "/api/vthree/login?userID=123")
           .then(toJson);
         expect(body.version).toEqual("three");
         expect(body.userID).toEqual("123");
@@ -481,6 +481,33 @@ describe("Server: Web", () => {
         expect(body.user_id).toEqual("123");
         expect(body.requesterInformation.receivedParams.apiVersion).toBe("1");
         expect(body.requesterInformation.receivedParams.action).toBe("login");
+      });
+
+      [
+        [false, "/api/v0/login"], // there is no version 0
+        [true, "/api/v1/login"], // ✅
+        [true, "/api/v2/login"], // ✅
+        [true, "/api/vthree/login"], // ✅
+        [false, "/api/v9999/login"], // there is no version 99
+        [false, "/api/1/login"], // "1" is not "v1"
+        [false, "/api/three/login"], // "1" is not "v3"
+        [true, "/api/login"], // ✅
+        [false, "/api/foo/login"], // foo is not a matching prefix
+        [false, "/api/vv/login"], // "v" is not a version
+        [false, "/api/login/v1"], // "stuff" is needed at the end
+        [true, "/api/login/v1/stuff"], // ✅
+        [true, "/api/login/v2/stuff"], // ✅
+        [true, "/api/login/vthree/stuff"], // ✅
+        [false, "/api/login/v99/stuff"], // there is no version 99
+      ].forEach((group) => {
+        test(`routes match (${group[1]} - ${group[0]})`, async () => {
+          const [match, path] = group;
+          await expect(request.get(url + path).then(toJson)).rejects.toThrow(
+            match
+              ? "is a required parameter for this action"
+              : "unknown action or invalid apiVersion"
+          );
+        });
       });
 
       test("routes with no version will default to the highest version number", async () => {
