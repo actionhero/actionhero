@@ -21,7 +21,7 @@ export class GenerateCLI extends CLI {
 
   async run() {
     const documents: {
-      [key: string]: string;
+      [key: string]: string | NodeJS.ArrayBufferView;
     } = {};
 
     documents.projectMap = fs
@@ -56,16 +56,19 @@ export class GenerateCLI extends CLI {
     for (const [name, localPath] of Object.entries(oldFileMap)) {
       const source = path.join(__dirname, "/../../../", localPath);
       const extension = localPath.split(".")[1];
-      documents[name] = fs.readFileSync(source).toString();
+      documents[name] = fs.readFileSync(source);
       if (extension === "ts" || extension === "js" || extension === "json") {
         documents[name] = documents[name]
+          .toString()
           .replace('from "./../index"', 'from "actionhero"')
           .replace('from ".."', 'from "actionhero"')
           .replace('declare module ".."', 'declare module "actionhero"');
       }
     }
 
-    const AHversionNumber = JSON.parse(documents.packageJson).version;
+    const AHversionNumber = JSON.parse(
+      documents.packageJson.toString()
+    ).version;
 
     documents.packageJson = String(
       fs.readFileSync(
