@@ -20,6 +20,7 @@
     "prettier": "latest",
     "ts-jest": "latest",
     "ts-node-dev": "latest",
+    "type-fest": "latest",
     "typescript": "latest"
   },
   "scripts": {
