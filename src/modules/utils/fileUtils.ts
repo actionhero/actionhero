@@ -49,7 +49,7 @@ export function createDirSafely(dir: string): string {
  */
 export function createFileSafely(
   file: string,
-  data: string,
+  data: string | NodeJS.ArrayBufferView,
   overwrite: boolean = false
 ): string {
   if (fileExists(file) && !overwrite) {

@@ -2,11 +2,11 @@ import * as fs from "fs";
 import * as path from "path";
 
 export function sourceRelativeLinkPath(
-  linkfile: string,
+  linkFile: string,
   pluginPaths: Array<string>
 ): string | boolean {
-  const type = fs.readFileSync(linkfile).toString();
-  const pathParts = linkfile.split(path.sep);
+  const type = fs.readFileSync(linkFile).toString();
+  const pathParts = linkFile.split(path.sep);
   const name = pathParts[pathParts.length - 1].split(".")[0];
   const pathsToTry = pluginPaths.slice(0);
   let pluginRoot: string;
