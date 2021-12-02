@@ -227,7 +227,7 @@ export namespace task {
    * Will contain locks with keys like `resque:lock:{job}` and `resque:workerslock:{workerId}`
    * Will throw an error if redis cannot be reached.
    */
-  export async function locks(): Promise<Object> {
+  export async function locks() {
     return api.resque.queue.locks();
   }
 
@@ -269,7 +269,7 @@ export namespace task {
    * Note: MultiWorker processors each register as a unique worker.
    * Will throw an error if redis cannot be reached.
    */
-  export async function workers(): Promise<Object> {
+  export async function workers() {
     return api.resque.queue.workers();
   }
 
@@ -288,7 +288,7 @@ export namespace task {
    * Return all workers and what job they might be working on.
    * Will throw an error if redis cannot be reached.
    */
-  export async function allWorkingOn(): Promise<object> {
+  export async function allWorkingOn() {
     return api.resque.queue.allWorkingOn();
   }
 
@@ -304,10 +304,7 @@ export namespace task {
    * Retrieve the details of failed jobs between start and stop (0-indexed).
    * Will throw an error if redis cannot be reached.
    */
-  export async function failed(
-    start: number,
-    stop: number
-  ): Promise<Array<object>> {
+  export async function failed(start: number, stop: number) {
     return api.resque.queue.failed(start, stop);
   }
 
@@ -334,7 +331,7 @@ export namespace task {
    * However, it will not actually remove any processes which may be running.  A job *may* be running that you have removed.
    * Will throw an error if redis cannot be reached.
    */
-  export async function cleanOldWorkers(age: number): Promise<object> {
+  export async function cleanOldWorkers(age: number) {
     return api.resque.queue.cleanOldWorkers(age);
   }
 
