@@ -79,11 +79,7 @@ export class Swagger extends Action {
         const tag = action.name.split(":")[0];
         const formattedPath = route.path
           .replace("/v:apiVersion", "")
-          .replace(/\/:(\w*)/, "/{$1}")
-          .replace(/\/:(\w*)/, "/{$1}")
-          .replace(/\/:(\w*)/, "/{$1}")
-          .replace(/\/:(\w*)/, "/{$1}")
-          .replace(/\/:(\w*)/, "/{$1}");
+          .replace(/\/:(\w*)/g, "/{$1}");
 
         swaggerPaths[formattedPath] = swaggerPaths[formattedPath] || {};
         swaggerPaths[formattedPath][method] = {
