@@ -1,3 +1,4 @@
+import { ActionProcessor } from "../classes/actionProcessor";
 import { cache, Action } from "./../index";
 
 export class CacheTest extends Action {
@@ -47,7 +48,7 @@ export class CacheTest extends Action {
     }
   }
 
-  async run({ params }: { params: { key: string; value: string } }) {
+  async run({ params }: ActionProcessor<this>) {
     const key = `cacheTest_${params.key}`;
     const value = params.value;
 

@@ -5,7 +5,7 @@ import { utils } from "../modules/utils";
 import { config } from "./../modules/config";
 import { Action } from "./action";
 import { Connection } from "./connection";
-import { Input } from "./input";
+import { Input, InputFormatter } from "./input";
 
 export enum ActionsStatus {
   Complete,
@@ -25,10 +25,20 @@ export class ActionProcessor<ActionClass extends Action> {
   toRender: boolean;
   messageId: number | string;
   params: {
+    [k in keyof ActionClass["inputs"]]: ActionClass["inputs"][k]["formatter"] extends InputFormatter
+      ? ReturnType<ActionClass["inputs"][k]["formatter"]>
+      : ActionClass["inputs"][k]["formatter"] extends InputFormatter[]
+      ? ReturnType<ActionClass["inputs"][k]["formatter"][0]> // just try the first formatter's type?
+      : unknown;
+  } & {
     action?: string;
     apiVersion?: string | number;
-    [key: string]: any;
   };
+  // params: {
+  //   action?: string;
+  //   apiVersion?: string | number;
+  //   [key: string]: any;
+  // };
   // params: ActionClass["inputs"];
   missingParams: Array<string>;
   validatorErrors: Array<string | Error>;
@@ -53,7 +63,7 @@ export class ActionProcessor<ActionClass extends Action> {
     this.params = Object.assign(
       { action: null, apiVersion: null },
       connection.params
-    );
+    ) as typeof this.params;
     this.missingParams = [];
     this.validatorErrors = [];
     this.actionStartTime = null;
@@ -237,7 +247,7 @@ export class ActionProcessor<ActionClass extends Action> {
 
     if (schemaKey) {
       inputs = this.actionTemplate.inputs[schemaKey].schema;
-      params = this.params[schemaKey];
+      params = this.params[schemaKey] as typeof this.params;
     }
 
     const inputNames = Object.keys(inputs) || [];
@@ -351,7 +361,7 @@ export class ActionProcessor<ActionClass extends Action> {
 
     if (schemaKey) {
       inputs = this.actionTemplate.inputs[schemaKey].schema;
-      params = this.params[schemaKey];
+      params = this.params[schemaKey] as typeof this.params;
     }
 
     for (const key in inputs) {
