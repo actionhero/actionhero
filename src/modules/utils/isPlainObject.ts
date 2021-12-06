@@ -35,5 +35,11 @@ export function isPlainObject(o: any) {
   if (o[expandPreventMatchKey] === false) {
     return false;
   }
-  return o.toString() === "[object Object]";
+
+  try {
+    // sometimes objects cannot be successfully stringified (https://github.com/node-formidable/formidable/pull/796)
+    return o.toString() === "[object Object]";
+  } catch (error) {
+    return true;
+  }
 }
