@@ -1,5 +1,5 @@
 process.env.AUTOMATIC_ROUTES = "head,get,post,put,delete";
-process.env.LOG_LEVEL = "info";
+// process.env.LOG_LEVEL = "info";
 
 import * as request from "request-promise-native";
 import * as fs from "fs";
