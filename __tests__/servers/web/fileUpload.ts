@@ -1,14 +1,16 @@
 process.env.AUTOMATIC_ROUTES = "head,get,post,put,delete";
+process.env.LOG_LEVEL = "info";
 
 import * as request from "request-promise-native";
 import * as fs from "fs";
 import * as path from "path";
 import { api, Process, config } from "./../../../src/index";
-
-const actionhero = new Process();
-let url: string;
+import { sleep } from "../../../src/modules/utils/sleep";
 
 describe("Server: Web", () => {
+  const actionhero = new Process();
+  let url: string;
+
   beforeAll(async () => {
     await actionhero.start();
     url = "http://localhost:" + config.web.port;
@@ -31,6 +33,7 @@ describe("Server: Web", () => {
         },
         outputExample: {},
         run: async (data) => {
+          await sleep(1000 * 1);
           return { params: data.params };
         },
       },
@@ -51,7 +54,15 @@ describe("Server: Web", () => {
       headers: { "Content-Type": "multipart/form-data" },
       formData: {
         file: fs.createReadStream(
-          path.join(__dirname, "..", "..", "..", "public", "simple.html")
+          path.join(
+            __dirname,
+            "..",
+            "..",
+            "..",
+            "public",
+            "logo",
+            "actionhero.png"
+          )
         ),
         stringParam: "hello world",
       },
@@ -61,9 +72,9 @@ describe("Server: Web", () => {
     expect(body.params.stringParam).toEqual("hello world");
     expect(body.params.file).toEqual(
       expect.objectContaining({
-        originalFilename: "simple.html",
-        mimetype: "text/html",
-        size: 101,
+        originalFilename: "actionhero.png",
+        mimetype: "image/png",
+        size: 59273,
       })
     );
   });
