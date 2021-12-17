@@ -20,7 +20,7 @@ learn more about winston v3 loggers @
 */
 
 type ActionheroConfigLoggerBuilderArray = Array<
-  (config: any) => winston.Logger
+  (config: ActionheroConfigInterface) => winston.Logger
 >;
 
 export const DEFAULT = {
