@@ -11,8 +11,11 @@ function isTypescript(): boolean {
   // if this file is typescript, we are running typescript :D
   // this is the best check, but fails when actionhero is compiled to js though...
   const extension = path.extname(__filename);
-  if (extension === ".ts") {
-    return true;
+  if (extension === ".ts") return true;
+
+  // is the script that was executed a TS script? Check for a *.ts filename somewhere in the process arguments
+  for (const arg of process.argv) {
+    if (arg.match(/.+\.ts$/)) return true;
   }
 
   // are we running via a ts-node/ts-node-dev shim?
@@ -28,15 +31,14 @@ function isTypescript(): boolean {
      */
 
     // @ts-ignore
-    return process[Symbol.for("ts-node.register.instance")] ||
-      (process.env.NODE_ENV === "test" &&
-        process.env.ACTIONHERO_TYPESCRIPT_MODE?.toLowerCase() !== "false")
-      ? true
-      : false;
+    if (process[Symbol.for("ts-node.register.instance")]) return true;
   } catch (error) {
     console.error(error);
     return false;
   }
+
+  // We didn't find a reason to suspect we are running TS, so return false
+  return false;
 }
 
 export const typescript = isTypescript();
