@@ -7,28 +7,25 @@ function sleep(time: number): Promise<void> {
 }
 
 export class SleepTest extends Action {
-  constructor() {
-    super();
-    this.name = "sleepTest";
-    this.description = "I will sleep and then return";
-    this.inputs = {
-      sleepDuration: {
-        required: true,
-        formatter: (n: string) => {
-          return parseInt(n);
-        },
-        default: () => {
-          return 1000;
-        },
+  name = "sleepTest";
+  description = "I will sleep and then return";
+  inputs = {
+    sleepDuration: {
+      required: true,
+      formatter: (n: string) => {
+        return parseInt(n);
       },
-    };
-    this.outputExample = {
-      sleepStarted: 1420953571322,
-      sleepEnded: 1420953572327,
-      sleepDelta: 1005,
-      sleepDuration: 1000,
-    };
-  }
+      default: () => {
+        return 1000;
+      },
+    },
+  };
+  outputExample = {
+    sleepStarted: 1420953571322,
+    sleepEnded: 1420953572327,
+    sleepDelta: 1005,
+    sleepDuration: 1000,
+  };
 
   async run({ params }: { params: { sleepDuration: number } }) {
     const sleepDuration = params.sleepDuration;

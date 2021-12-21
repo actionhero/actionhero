@@ -1,22 +1,18 @@
-import { Action } from "../classes/action";
-import { log, Task, action } from "./../index";
+import { log, Task, action, ParamsFrom } from "./../index";
 
 export class RunAction extends Task {
-  constructor() {
-    super();
-    this.name = "runAction";
-    this.description = "I will run an action and return the connection object";
-    this.frequency = 0;
-    this.queue = "default";
-    this.middleware = [];
-  }
+  name = "runAction";
+  description = "I will run an action and return the connection object";
+  frequency = 0;
+  queue = "default";
 
-  async run(params: Record<string, any>) {
+  async run(params: ParamsFrom<RunAction>) {
     if (!params) params = {};
 
     const response = await action.run(
       params.action,
       params.version,
+      // @ts-ignore
       params.params
     );
 

@@ -1,39 +1,36 @@
-import { cache, Action } from "./../index";
+import { cache, Action, ParamsFrom } from "./../index";
 
 export class CacheTest extends Action {
-  constructor() {
-    super();
-    this.name = "cacheTest";
-    this.description = "I will test the internal cache functions of the API";
-    this.inputs = {
-      key: {
-        required: true,
-        formatter: this.stringFormatter,
-        validator: this.stringValidator,
-      },
+  name = "cacheTest";
+  description = "I will test the internal cache functions of the API";
+  inputs = {
+    key: {
+      required: true,
+      formatter: this.stringFormatter,
+      validator: this.stringValidator,
+    },
 
-      value: {
-        required: true,
-        formatter: this.stringFormatter,
-        validator: this.stringValidator,
-      },
-    };
+    value: {
+      required: true,
+      formatter: this.stringFormatter,
+      validator: this.stringValidator,
+    },
+  };
 
-    this.outputExample = {
-      cacheTestResults: {
-        saveResp: true,
-        sizeResp: 1,
-        loadResp: {
-          key: "cacheTest_key",
-          value: "value",
-          expireTimestamp: 1420953274716,
-          createdAt: 1420953269716,
-          readAt: null,
-        },
-        deleteResp: true,
+  outputExample = {
+    cacheTestResults: {
+      saveResp: true,
+      sizeResp: 1,
+      loadResp: {
+        key: "cacheTest_key",
+        value: "value",
+        expireTimestamp: 1420953274716,
+        createdAt: 1420953269716,
+        readAt: null as number,
       },
-    };
-  }
+      deleteResp: true,
+    },
+  };
 
   stringFormatter(s: unknown) {
     return String(s);
@@ -47,7 +44,7 @@ export class CacheTest extends Action {
     }
   }
 
-  async run({ params }: { params: { key: string; value: string } }) {
+  async run({ params }: { params: ParamsFrom<CacheTest> }) {
     const key = `cacheTest_${params.key}`;
     const value = params.value;
 
