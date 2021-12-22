@@ -18,12 +18,14 @@ function isTypescript(): boolean {
     if (arg.match(/.+\.ts$/)) return true;
   }
 
+  // are we running via ts-jest?
+  if (process.env.TS_JEST) return true;
+
   // are we running via a ts-node/ts-node-dev shim?
   const lastArg = process.execArgv[process.execArgv.length - 1];
   if (lastArg && path.parse(lastArg).name.indexOf("ts-node") >= 0) {
     return true;
   }
-
   try {
     /**
      * Are we running in typescript at the moment?
