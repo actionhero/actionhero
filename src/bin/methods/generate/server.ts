@@ -1,23 +1,20 @@
 import * as fs from "fs";
 import * as path from "path";
-import { config, utils, CLI } from "./../../../index";
+import { config, utils, CLI, ParamsFrom } from "./../../../index";
 
 export class GenerateServerCLI extends CLI {
-  constructor() {
-    super();
-    this.name = "generate-server";
-    this.description = "Generate a new Server";
-    this.example = "actionhero generate server --name=<name>";
-    this.inputs = {
-      name: {
-        required: true,
-        description: "The name of the Server to generate",
-        letter: "n",
-      },
-    };
-  }
+  name = "generate-server";
+  description = "Generate a new Server";
+  example = "actionhero generate server --name=<name>";
+  inputs = {
+    name: {
+      required: true,
+      description: "The name of the Server to generate",
+      letter: "n",
+    },
+  };
 
-  async run({ params }: { params: { name: string } }) {
+  async run({ params }: { params: ParamsFrom<GenerateServerCLI> }) {
     let templateBuffer = fs.readFileSync(
       path.join(__dirname, "/../../../../templates/server.ts.template")
     );

@@ -19,6 +19,8 @@ export abstract class CLI {
       placeholder?: string;
       variadic?: boolean;
       description?: string;
+      formatter?: Function;
+      validator?: Function;
     };
   };
 

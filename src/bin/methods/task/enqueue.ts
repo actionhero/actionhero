@@ -1,27 +1,24 @@
-import { api, log, task, CLI } from "./../../../index";
+import { api, log, task, CLI, ParamsFrom } from "./../../../index";
 
 export class TaskEnqueueCLI extends CLI {
-  constructor() {
-    super();
-    this.name = "task-enqueue";
-    this.description = "Enqueue a defined Task into your actionhero cluster";
-    this.example =
-      "actionhero task enqueue --name=[taskName] --args=[JSON-encoded args]";
-    this.inputs = {
-      name: {
-        required: true,
-        description: "The name of the Task to enqueue",
-        letter: "n",
-      },
-      args: {
-        required: false,
-        description: "Arguments to the Task (JSON encoded)",
-        letter: "a",
-      },
-    };
-  }
+  name = "task-enqueue";
+  description = "Enqueue a defined Task into your actionhero cluster";
+  example =
+    "actionhero task enqueue --name=[taskName] --args=[JSON-encoded args]";
+  inputs = {
+    name: {
+      required: true,
+      description: "The name of the Task to enqueue",
+      letter: "n",
+    },
+    args: {
+      required: false,
+      description: "Arguments to the Task (JSON encoded)",
+      letter: "a",
+    },
+  };
 
-  async run({ params }: { params: { name: string; args: string } }) {
+  async run({ params }: { params: ParamsFrom<TaskEnqueueCLI> }) {
     if (!api.tasks.tasks[params.name]) {
       throw new Error('Task "' + params.name + '" not found');
     }

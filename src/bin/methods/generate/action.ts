@@ -1,30 +1,27 @@
 import * as fs from "fs";
 import * as path from "path";
-import { config, utils, CLI } from "./../../../index";
+import { config, utils, CLI, ParamsFrom } from "./../../../index";
 
 export class GenerateActionCLI extends CLI {
-  constructor() {
-    super();
-    this.name = "generate-action";
-    this.description = "Generate a new Action";
-    this.example =
-      "actionhero generate action --name=<name> --description=[description]";
-    this.inputs = {
-      name: {
-        required: true,
-        description: "The name of the Action to Generate",
-        letter: "n",
-      },
-      description: {
-        required: false,
-        description: "The description of the Action",
-        default: "an actionhero action",
-        letter: "d",
-      },
-    };
-  }
+  name = "generate-action";
+  description = "Generate a new Action";
+  example =
+    "actionhero generate action --name=<name> --description=[description]";
+  inputs = {
+    name: {
+      required: true,
+      description: "The name of the Action to Generate",
+      letter: "n",
+    },
+    description: {
+      required: false,
+      description: "The description of the Action",
+      default: "an actionhero action",
+      letter: "d",
+    },
+  };
 
-  async run({ params }: { params: { name: string; description?: string } }) {
+  async run({ params }: { params: ParamsFrom<GenerateActionCLI> }) {
     let actionTemplateBuffer = fs.readFileSync(
       path.join(__dirname, "../../../../templates/action.ts.template")
     );

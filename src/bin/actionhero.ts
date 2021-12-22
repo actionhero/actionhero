@@ -150,6 +150,16 @@ export namespace ActionheroCLIRunner {
 
     params["_arguments"] = _arguments;
 
+    for (const [key, inputOpts] of Object.entries(instance.inputs)) {
+      if (typeof inputOpts.validator === "function") {
+        await inputOpts.validator(params[key]);
+      }
+
+      if (typeof inputOpts.formatter === "function") {
+        params[key] = await inputOpts.formatter(params[key]);
+      }
+    }
+
     if (instance.initialize === false && instance.start === false) {
       toStop = await instance.run({ params });
     } else {
