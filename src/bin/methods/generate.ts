@@ -11,13 +11,9 @@ import {
 } from "../../modules/utils/fileUtils";
 
 export class GenerateCLI extends CLI {
-  constructor() {
-    super();
-    this.name = "generate";
-    this.description =
-      "Generate a new Actionhero Project in an empty directory";
-    this.initialize = false;
-  }
+  name = "generate";
+  description = "Generate a new Actionhero Project in an empty directory";
+  initialize = false;
 
   async run() {
     const documents: {

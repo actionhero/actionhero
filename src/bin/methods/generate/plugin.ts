@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { PackageJson } from "type-fest";
-import { CLI, utils } from "./../../../index";
+import { CLI, utils, ParamsFrom } from "./../../../index";
 
 const PackageJSON: PackageJson = JSON.parse(
   fs
@@ -10,14 +10,10 @@ const PackageJSON: PackageJson = JSON.parse(
 );
 
 export class GeneratePluginCLI extends CLI {
-  constructor() {
-    super();
-    this.name = "generate-plugin";
-    this.description =
-      "Generate the structure of a new actionhero plugin in an empty directory";
-    this.example = "actionhero generate plugin";
-    this.inputs = {};
-  }
+  name = "generate-plugin";
+  description =
+    "Generate the structure of a new actionhero plugin in an empty directory";
+  example = "actionhero generate plugin";
 
   async run() {
     let templateBuffer = fs.readFileSync(

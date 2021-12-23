@@ -1,39 +1,32 @@
 import * as fs from "fs";
 import * as path from "path";
-import { config, utils, CLI } from "./../../../index";
+import { config, utils, ParamsFrom, CLI } from "./../../../index";
 
 export class GenerateCLICLI extends CLI {
-  constructor() {
-    super();
-    this.name = "generate-cli";
-    this.description = "Generate a new cli command";
-    this.example = "actionhero generate cli --name=<name>";
-    this.inputs = {
-      name: {
-        required: true,
-        description: "The name of the CLI Command to generate",
-        letter: "n",
-      },
-      description: {
-        required: false,
-        description: "The name of the CLI Command",
-        default: "an actionhero cli command",
-        letter: "d",
-      },
-      example: {
-        required: false,
-        description: "An example to include for the CLI Command's help",
-        default: "actionhero command --option=yes",
-        letter: "e",
-      },
-    };
-  }
+  name = "generate-cli";
+  description = "Generate a new cli command";
+  example = "actionhero generate cli --name=<name>";
+  inputs = {
+    name: {
+      required: true,
+      description: "The name of the CLI Command to generate",
+      letter: "n",
+    },
+    description: {
+      required: false,
+      description: "The name of the CLI Command",
+      default: "an actionhero cli command",
+      letter: "d",
+    },
+    example: {
+      required: false,
+      description: "An example to include for the CLI Command's help",
+      default: "actionhero command --option=yes",
+      letter: "e",
+    },
+  };
 
-  async run({
-    params,
-  }: {
-    params: { name: string; description?: string; example?: string };
-  }) {
+  async run({ params }: { params: ParamsFrom<GenerateCLICLI> }) {
     let templateBuffer = fs.readFileSync(
       path.join(__dirname, "/../../../../templates/cli.ts.template")
     );

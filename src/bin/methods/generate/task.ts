@@ -1,50 +1,38 @@
 import * as fs from "fs";
 import * as path from "path";
-import { config, utils, CLI } from "./../../../index";
+import { config, utils, CLI, ParamsFrom } from "./../../../index";
 
 export class GenerateTaskCLI extends CLI {
-  constructor() {
-    super();
-    this.name = "generate-task";
-    this.description = "Generate a new Task";
-    this.example =
-      "actionhero generate task --name=<name> -queue=<queue> --description=[description] --frequency=[frequency]";
-    this.inputs = {
-      name: {
-        required: true,
-        description: "The name of the Task to generate",
-        letter: "n",
-      },
-      queue: {
-        required: true,
-        description: "The queue that this Task will run on",
-        letter: "q",
-      },
-      description: {
-        required: true,
-        description: "The description of this Task",
-        default: "an actionhero task",
-        letter: "d",
-      },
-      frequency: {
-        required: true,
-        description: "Should this Task run periodically? Frequency is in ms",
-        default: "0",
-        letter: "f",
-      },
-    };
-  }
+  name = "generate-task";
+  description = "Generate a new Task";
+  example =
+    "actionhero generate task --name=<name> -queue=<queue> --description=[description] --frequency=[frequency]";
+  inputs = {
+    name: {
+      required: true,
+      description: "The name of the Task to generate",
+      letter: "n",
+    },
+    queue: {
+      required: true,
+      description: "The queue that this Task will run on",
+      letter: "q",
+    },
+    description: {
+      required: true,
+      description: "The description of this Task",
+      default: "an actionhero task",
+      letter: "d",
+    },
+    frequency: {
+      required: true,
+      description: "Should this Task run periodically? Frequency is in ms",
+      default: "0",
+      letter: "f",
+    },
+  };
 
-  async run({
-    params,
-  }: {
-    params: {
-      name: string;
-      queue?: string;
-      description?: string;
-      frequency?: string;
-    };
-  }) {
+  async run({ params }: { params: ParamsFrom<GenerateTaskCLI> }) {
     let taskTemplateBuffer = fs.readFileSync(
       path.join(__dirname, "/../../../../templates/task.ts.template")
     );

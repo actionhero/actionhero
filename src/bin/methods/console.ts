@@ -2,12 +2,9 @@ import * as REPL from "repl";
 import { api, env, CLI } from "./../../index";
 
 export class ConsoleCLI extends CLI {
-  constructor() {
-    super();
-    this.name = "console";
-    this.description =
-      "Start an interactive REPL session with the api object in-scope";
-  }
+  name = "console";
+  description =
+    "Start an interactive REPL session with the api object in-scope";
 
   async run() {
     await new Promise((resolve, reject) => {
