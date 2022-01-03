@@ -132,6 +132,7 @@ describe("Server: Web", () => {
           headers: { "Content-type": "text/xml" },
         });
         bufferStream.write(Buffer.from(requestPart1)); // write the first part
+        // @ts-ignore (we are not await-ing)
         bufferStream.pipe(req);
 
         setTimeout(() => {
@@ -161,6 +162,7 @@ describe("Server: Web", () => {
           headers: { "Content-type": "application/json" },
         });
         bufferStream.write(Buffer.from(requestPart1)); // write the first part
+        // @ts-ignore (we are not await-ing)
         bufferStream.pipe(req);
 
         setTimeout(() => {
@@ -186,6 +188,7 @@ describe("Server: Web", () => {
           headers: { "Content-type": "text/xml" },
         });
         bufferStream.write(Buffer.from(requestPart1)); // write the first part
+        // @ts-ignore (we are not await-ing)
         bufferStream.pipe(req);
 
         setTimeout(() => {
