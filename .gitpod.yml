@@ -1,0 +1,9 @@
+tasks:
+  - init: 
+        sudo apt-get install redis-server -y && 
+        redis-server --daemonize yes &&
+        npm install
+    command: npm run dev
+ports:
+  - port: 8080
+    onOpen: open-preview
