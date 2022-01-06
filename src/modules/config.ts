@@ -222,4 +222,5 @@ export function buildConfig() {
   return config;
 }
 
-export const config = buildConfig();
+export let config = buildConfig();
+export const rebuildConfig = () => (config = buildConfig());
