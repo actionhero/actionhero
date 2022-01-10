@@ -10,6 +10,7 @@ import { id } from "./process/id";
 import { env } from "./process/env";
 import { writePidFile, clearPidFile } from "./process/pid";
 import { api } from "../index";
+import { rebuildConfig } from "../modules/config";
 
 export const fatalErrorCode = "FATAL_ACTIONHERO_ERROR";
 
@@ -319,6 +320,7 @@ export class Process {
   async restart() {
     if (this.running === true) {
       await this.stop();
+      rebuildConfig();
       await this.start();
     } else {
       await this.start();
