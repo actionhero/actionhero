@@ -43,4 +43,5 @@ function isTypescript(): boolean {
   return false;
 }
 
-export const typescript = isTypescript();
+export let typescript = isTypescript();
+export const recalculateIsTypescript = () => (typescript = isTypescript());

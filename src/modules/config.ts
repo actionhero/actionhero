@@ -4,11 +4,20 @@ import * as glob from "glob";
 import { utils } from "./utils";
 import { ensureNoTsHeaderFiles } from "./utils/ensureNoTsHeaderFiles";
 
-import { env } from "./../classes/process/env";
-import { id } from "./../classes/process/id";
-import { actionheroVersion } from "./../classes/process/actionheroVersion";
-import { typescript } from "./../classes/process/typescript";
-import { projectRoot } from "./../classes/process/projectRoot";
+import { env, recalculateEnv } from "./../classes/process/env";
+import { id, recalcuateId } from "./../classes/process/id";
+import {
+  actionheroVersion,
+  recalculateActionheroVersion,
+} from "./../classes/process/actionheroVersion";
+import {
+  recalculateIsTypescript,
+  typescript,
+} from "./../classes/process/typescript";
+import {
+  projectRoot,
+  recalculateProjectRoot,
+} from "./../classes/process/projectRoot";
 import { RouteMethod, RoutesConfig, RouteType } from "..";
 import { ActionheroConfigInterface } from "../classes/config";
 
@@ -223,4 +232,11 @@ export function buildConfig() {
 }
 
 export let config = buildConfig();
-export const rebuildConfig = () => (config = buildConfig());
+export const rebuildConfig = () => {
+  recalculateEnv();
+  recalculateActionheroVersion();
+  recalcuateId();
+  recalculateProjectRoot();
+  recalculateIsTypescript();
+  config = buildConfig();
+};

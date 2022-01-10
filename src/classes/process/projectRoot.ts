@@ -11,4 +11,6 @@ function determineProjectRoot() {
   return projectRoot;
 }
 
-export const projectRoot = determineProjectRoot();
+export let projectRoot = determineProjectRoot();
+export const recalculateProjectRoot = () =>
+  (projectRoot = determineProjectRoot());

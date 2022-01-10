@@ -11,8 +11,7 @@ function sanitizeId() {
   return pidfile;
 }
 
-export const pid = process.pid;
-const path = config.general.paths.pid[0]; // it would be silly to have more than one pi
+const path = config.general.paths.pid[0]; // it would be silly to have more than one pid
 let title = `actionhero-${sanitizeId()}`;
 
 try {
@@ -21,7 +20,7 @@ try {
 
 export function writePidFile() {
   log(`pid: ${process.pid}`, "notice");
-  fs.writeFileSync(path + "/" + title, pid.toString(), "ascii");
+  fs.writeFileSync(path + "/" + title, process.pid.toString(), "ascii");
 }
 
 export function clearPidFile() {

@@ -30,4 +30,5 @@ function determineId() {
   return id;
 }
 
-export const id = determineId();
+export let id = determineId();
+export const recalcuateId = () => (id = determineId());

@@ -12,4 +12,5 @@ function determineNodeEnv(): string {
   return env;
 }
 
-export const env = determineNodeEnv();
+export let env = determineNodeEnv();
+export const recalculateEnv = () => (env = determineNodeEnv());
