@@ -232,6 +232,10 @@ export function buildConfig() {
 }
 
 export let config = buildConfig();
+
+/**
+ * Rebuild Actionhero's `config` object.  Useful when Environment variables effecting the config may have changed.
+ */
 export const rebuildConfig = () => {
   recalculateEnv();
   recalculateActionheroVersion();
