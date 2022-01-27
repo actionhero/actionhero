@@ -83,6 +83,7 @@
     "maxWorkers": "50%",
     "testPathIgnorePatterns": [
       "<rootDir>/__tests__/testPlugin",
+      "<rootDir>/__tests__/testCliCommands",
       "<rootDir>/tmp"
     ],
     "transform": {
