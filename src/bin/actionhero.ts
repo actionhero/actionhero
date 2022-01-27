@@ -3,7 +3,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as glob from "glob";
-import { program, InvalidOptionArgumentError } from "commander";
+import { program, InvalidArgumentError } from "commander";
 import { typescript } from "../classes/process/typescript";
 import { projectRoot } from "../classes/process/projectRoot";
 import { ensureNoTsHeaderFiles } from "../modules/utils/ensureNoTsHeaderFiles";
@@ -145,7 +145,7 @@ export namespace ActionheroCLIRunner {
 
           return value;
         } catch (error) {
-          throw new InvalidOptionArgumentError(error?.message ?? error);
+          throw new InvalidArgumentError(error?.message ?? error);
         }
       };
 
