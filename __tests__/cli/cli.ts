@@ -1,14 +1,6 @@
 import * as ChildProcess from "child_process";
 import * as path from "path";
 
-process.env.ACTIONHERO_CONFIG_OVERRIDES = JSON.stringify({
-  general: {
-    paths: {
-      cli: [path.join(__dirname, "..", "testCliCommands")],
-    },
-  },
-});
-
 async function exec(
   command: string,
   args: Record<string, any>
@@ -26,7 +18,17 @@ async function exec(
 }
 
 describe("cli commands", () => {
-  const env = process.env;
+  const env = {
+    ...process.env,
+    ACTIONHERO_CONFIG_OVERRIDES: JSON.stringify({
+      general: {
+        paths: {
+          cli: [path.join(__dirname, "..", "testCliCommands")],
+        },
+      },
+    }),
+  };
+
   test(
     "new commands appear in help",
     async () => {
