@@ -114,7 +114,8 @@ export namespace ActionheroCLIRunner {
         );
       }
 
-      const separators = input.required ? ["<", ">"] : ["[", "]"];
+      const separators =
+        input.required || input.requiredValue ? ["<", ">"] : ["[", "]"];
       const methodName = input.required ? "requiredOption" : "option";
       const argString = `${input.letter ? `-${input.letter}, ` : ""}--${key} ${
         input.flag

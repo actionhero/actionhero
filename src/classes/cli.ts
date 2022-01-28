@@ -13,6 +13,7 @@ export abstract class CLI {
   inputs: {
     [key: string]: {
       required?: boolean;
+      requiredValue?: boolean;
       default?: string | boolean;
       letter?: string;
       flag?: boolean;
