@@ -7,20 +7,28 @@ export interface Inputs {
   [key: string]: Input;
 }
 
-export type ParamsFrom<A extends Action | Task | CLI> = A extends CLI
-  ? {
-      [Input in keyof A["inputs"]]: A["inputs"][Input]["variadic"] extends true
-        ? A["inputs"][Input]["formatter"] extends (...ags: any[]) => any
-          ? ReturnType<A["inputs"][Input]["formatter"]>[]
-          : string[]
-        : A["inputs"][Input]["formatter"] extends (...ags: any[]) => any
-        ? ReturnType<A["inputs"][Input]["formatter"]>
-        : string;
-    }
-  : {
-      [Input in keyof A["inputs"]]: A["inputs"][Input]["formatter"] extends (
-        ...ags: any[]
-      ) => any
-        ? ReturnType<A["inputs"][Input]["formatter"]>
-        : string;
-    };
+export type CLIParamsFrom<A extends CLI> = {
+  [Input in keyof A["inputs"]]: A["inputs"][Input]["variadic"] extends true
+    ? A["inputs"][Input]["formatter"] extends (...args: any[]) => any
+      ? ReturnType<A["inputs"][Input]["formatter"]>[]
+      : string[]
+    : A["inputs"][Input]["formatter"] extends (...args: any[]) => any
+    ? ReturnType<A["inputs"][Input]["formatter"]>
+    : string;
+};
+
+export type OtherParamsFrom<A extends Action | Task> = {
+  [Input in keyof A["inputs"]]: A["inputs"][Input]["formatter"] extends (
+    ...args: any[]
+  ) => any
+    ? ReturnType<A["inputs"][Input]["formatter"]>
+    : string;
+};
+
+export type ParamsFrom<T extends Action | Task | CLI> = T extends CLI
+  ? CLIParamsFrom<T>
+  : T extends Action
+  ? OtherParamsFrom<T>
+  : T extends Task
+  ? OtherParamsFrom<T>
+  : never;
