@@ -15,7 +15,7 @@ declare module ".." {
 
 export const DEFAULT = {
   [namespace]: () => {
-    const konstructor = require("ioredis");
+    const konstructor = require("ioredis"); // or konstructor = require("ioredis-mock") if you don't need real redis;
     let protocol = process.env.REDIS_SSL ? "rediss" : "redis";
     let host = process.env.REDIS_HOST || "127.0.0.1";
     let port = process.env.REDIS_PORT || 6379;
@@ -76,37 +76,3 @@ export const DEFAULT = {
     };
   },
 };
-
-/**
- * If you do not want to connect to a real redis server, and want to emulate the functionally of redis in-memory, you can use `MockIORedis`
- * Note that large data sets will be stored in RAM, and not persisted to disk.  Multiple Actionhero processes cannot share cache, chat messages, etc.
- * Redis Pub/Sub works with this configuration.
- */
-
-// export const DEFAULT = {
-//   [namespace]: (config) => {
-//     const MockIORedis = require("ioredis-mock");
-//     const baseRedis = new MockIORedis();
-
-//     return {
-//       scanCount: 1000,
-
-//       _toExpand: false,
-//       client: {
-//         konstructor: () => baseRedis,
-//         args: [],
-//         buildNew: false,
-//       },
-//       subscriber: {
-//         konstructor: () => baseRedis.createConnectedClient(),
-//         args: [],
-//         buildNew: false,
-//       },
-//       tasks: {
-//         konstructor: () => baseRedis.createConnectedClient(),
-//         args: [],
-//         buildNew: false,
-//       },
-//     };
-//   },
-// };
