@@ -11,7 +11,7 @@ export { Server } from "./classes/server";
 export { CLI } from "./classes/cli";
 export { ActionProcessor } from "./classes/actionProcessor";
 export { PluginConfig } from "./classes/config";
-export { Inputs, ParamsFrom } from "./classes/inputs";
+export { Inputs, ParamsFrom, CLIParamsFrom } from "./classes/inputs";
 export { Input } from "./classes/input";
 
 // export modules (lower case)

@@ -1,4 +1,4 @@
-import { CLI, ParamsFrom } from "./../../src/index";
+import { CLI, CLIParamsFrom } from "./../../src/index";
 
 export class HelloCliTest extends CLI {
   name = "hello";
@@ -31,7 +31,7 @@ export class HelloCliTest extends CLI {
     },
   };
 
-  async run({ params }: { params: Partial<ParamsFrom<HelloCliTest>> }) {
+  async run({ params }: { params: Partial<CLIParamsFrom<HelloCliTest>> }) {
     console.log(
       `Hello, ${params.title} ${params.name} ${
         params.countries ? `(${params.countries.join(" ")})` : ""
