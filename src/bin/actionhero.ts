@@ -3,7 +3,7 @@
 import * as path from "path";
 import * as fs from "fs";
 import * as glob from "glob";
-import { program } from "commander";
+import { program, InvalidArgumentError } from "commander";
 import { typescript } from "../classes/process/typescript";
 import { projectRoot } from "../classes/process/projectRoot";
 import { ensureNoTsHeaderFiles } from "../modules/utils/ensureNoTsHeaderFiles";
@@ -124,7 +124,37 @@ export namespace ActionheroCLIRunner {
             }${separators[1]}`
       }`;
 
-      command[methodName](argString, input.description, input.default);
+      const argProcessor = (
+        value: string,
+        accumulator?: unknown[]
+      ): unknown => {
+        try {
+          if (typeof input.formatter === "function") {
+            value = input.formatter(value);
+          }
+
+          if (typeof input.validator === "function") {
+            input.validator(value);
+          }
+
+          if (input.variadic) {
+            if (!Array.isArray(accumulator)) accumulator = [];
+            accumulator.push(value);
+            return accumulator;
+          }
+
+          return value;
+        } catch (error) {
+          throw new InvalidArgumentError(error?.message ?? error);
+        }
+      };
+
+      command[methodName](
+        argString,
+        input.description,
+        argProcessor,
+        input.default
+      );
     }
   }
 
@@ -149,16 +179,6 @@ export namespace ActionheroCLIRunner {
     });
 
     params["_arguments"] = _arguments;
-
-    for (const [key, inputOpts] of Object.entries(instance.inputs)) {
-      if (typeof inputOpts.formatter === "function") {
-        params[key] = await inputOpts.formatter(params[key]);
-      }
-
-      if (typeof inputOpts.validator === "function") {
-        await inputOpts.validator(params[key]);
-      }
-    }
 
     if (instance.initialize === false && instance.start === false) {
       toStop = await instance.run({ params });
