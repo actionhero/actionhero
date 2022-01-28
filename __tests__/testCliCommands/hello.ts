@@ -6,6 +6,7 @@ export class HelloCliTest extends CLI {
   inputs = {
     name: {
       required: false,
+      requiredValue: true,
       default: "World",
     },
     title: {

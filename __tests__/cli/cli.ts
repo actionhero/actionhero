@@ -66,6 +66,21 @@ describe("cli commands", () => {
   );
 
   test(
+    "can require a value when optional inputs are specified",
+    async () => {
+      await expect(
+        exec(
+          "./node_modules/.bin/ts-node ./src/bin/actionhero.ts hello --name",
+          {
+            env,
+          }
+        )
+      ).rejects.toThrow(/error: option '--name <name>' argument missing/);
+    },
+    30 * 1000
+  );
+
+  test(
     "can validate inputs",
     async () => {
       await expect(
