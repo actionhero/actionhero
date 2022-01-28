@@ -65,7 +65,7 @@ function buildConsoleLogger(level = "info") {
           } ${stringifyExtraMessagePropertiesForConsole(info)}`;
         })
       ),
-      level,
+      level: level as winston.level,
       levels: winston.config.syslog.levels,
       transports: [new winston.transports.Console()],
     });
@@ -80,7 +80,7 @@ function buildFileLogger(path: string, level = "info", maxFiles?: number) {
         winston.format.timestamp(),
         winston.format.json()
       ),
-      level,
+      level: level as winston.level,
       levels: winston.config.syslog.levels,
       transports: [
         new winston.transports.File({

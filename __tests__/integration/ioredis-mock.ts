@@ -14,27 +14,25 @@ jest.mock("./../../src/config/redis.ts", () => ({
   __esModule: true,
   test: {
     redis: () => {
-      //@ts-ignore
-      const baseRedis = new MockIORedis();
+      const konstructor = MockIORedis;
+      const args = [{ port: 123, database: 1 }];
       return {
         _toExpand: false,
         scanCount: 1000,
         client: {
-          konstructor: () => baseRedis,
-          args: [] as string[],
-          buildNew: false,
+          konstructor,
+          buildNew: true,
+          args,
         },
         subscriber: {
-          //@ts-ignore
-          konstructor: () => baseRedis.createConnectedClient(),
-          args: [] as string[],
-          buildNew: false,
+          konstructor,
+          buildNew: true,
+          args,
         },
         tasks: {
-          //@ts-ignore
-          konstructor: () => baseRedis.createConnectedClient(),
-          args: [] as string[],
-          buildNew: false,
+          konstructor,
+          buildNew: true,
+          args,
         },
       };
     },
@@ -70,7 +68,6 @@ describe("with ioredis-mock", () => {
   beforeAll(async () => {
     process.env.AUTOMATIC_ROUTES = "get";
     await actionhero.start();
-    await api.redis.clients.client.flushdb();
   });
 
   afterAll(async () => await actionhero.stop());
@@ -99,7 +96,10 @@ describe("with ioredis-mock", () => {
   });
 
   test("chat works", async () => {
-    await chatRoom.add("defaultRoom");
+    try {
+      await chatRoom.add("defaultRoom");
+    } catch {}
+
     const client1 = await specHelper.buildConnection();
     const client2 = await specHelper.buildConnection();
     client1.verbs("roomAdd", "defaultRoom");

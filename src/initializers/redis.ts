@@ -88,11 +88,8 @@ export class RedisInitializer extends Initializer {
     const connectionNames = ["client", "subscriber", "tasks"] as const;
     for (const r of connectionNames) {
       if (config.redis[r].buildNew === true) {
-        const args = config.redis[r].args;
         api.redis.clients[r] = new config.redis[r].konstructor(
-          args[0],
-          args[1],
-          args[2]
+          ...(config.redis[r].args ?? [])
         );
 
         api.redis.clients[r].on("error", (error) => {
