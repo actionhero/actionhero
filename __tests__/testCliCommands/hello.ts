@@ -1,4 +1,4 @@
-import { CLI, CLIParamsFrom } from "./../../src/index";
+import { CLI, ParamsFrom } from "./../../src/index";
 
 export class HelloCliTest extends CLI {
   name = "hello";
@@ -22,7 +22,7 @@ export class HelloCliTest extends CLI {
       },
     },
     countries: {
-      variadic: true as const,
+      variadic: true as true,
       formatter: (val: string) => `${val}!`,
       validator: (val: string) => {
         if (val.length > 0 && val[0].toUpperCase() !== val[0])
@@ -31,12 +31,12 @@ export class HelloCliTest extends CLI {
     },
   };
 
-  async run({ params }: { params: Partial<CLIParamsFrom<HelloCliTest>> }) {
-    console.log(
-      `Hello, ${params.title} ${params.name} ${
-        params.countries ? `(${params.countries.join(" ")})` : ""
-      }`
-    );
+  async run({ params }: { params: Partial<ParamsFrom<HelloCliTest>> }) {
+    const sayHello = (title: string, name: string, countries: string[]) =>
+      console.log(
+        `Hello, ${title} ${name} ${countries ? `(${countries.join(" ")})` : ""}`
+      );
+    sayHello(params.title, params.name, params.countries);
     return true;
   }
 }

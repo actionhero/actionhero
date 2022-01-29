@@ -12,12 +12,10 @@ type FormatterOrString<I extends (Action | Task | CLI)["inputs"][string]> =
     ? ReturnType<I["formatter"]>
     : string;
 
-export type CLIParamsFrom<A extends CLI> = {
-  [Input in keyof A["inputs"]]: A["inputs"][Input]["variadic"] extends true
-    ? FormatterOrString<A["inputs"][Input]>[]
-    : FormatterOrString<A["inputs"][Input]>;
-};
+type Variadic = { variadic: true };
 
 export type ParamsFrom<A extends Action | Task | CLI> = {
-  [Input in keyof A["inputs"]]: FormatterOrString<A["inputs"][Input]>;
+  [Input in keyof A["inputs"]]: A["inputs"][Input] extends Variadic
+    ? FormatterOrString<A["inputs"][Input]>[]
+    : FormatterOrString<A["inputs"][Input]>;
 };
