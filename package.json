@@ -64,7 +64,7 @@
     "@types/qs": "^6.9.7",
     "@types/request-promise-native": "^1.0.18",
     "@types/uuid": "^8.3.3",
-    "ioredis-mock": "^6.0.0",
+    "ioredis-mock": "^7.0.0",
     "jest": "^27.4.3",
     "prettier": "^2.5.0",
     "puppeteer": "^13.0.0",
