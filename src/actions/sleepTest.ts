@@ -11,7 +11,7 @@ export class SleepTest extends Action {
   description = "I will sleep and then return";
   inputs = {
     sleepDuration: {
-      required: true,
+      required: true as true,
       formatter: (n: string) => {
         return parseInt(n);
       },

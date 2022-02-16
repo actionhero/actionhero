@@ -6,16 +6,29 @@ import { CLI } from "../classes/cli";
 export interface Inputs {
   [key: string]: Input;
 }
+type ActionheroWithParams = Action | Task | CLI;
 
-type FormatterOrString<I extends (Action | Task | CLI)["inputs"][string]> =
-  I["formatter"] extends (...args: any[]) => any
-    ? ReturnType<I["formatter"]>
-    : string;
-
+type KeysOfType<T, U> = { [K in keyof T]: T[K] extends U ? K : never }[keyof T];
+type FormatterOrString<I extends Input> = I["formatter"] extends (
+  ...args: any[]
+) => any
+  ? ReturnType<I["formatter"]>
+  : string;
+type RequiredParamsKeys<A extends ActionheroWithParams> = KeysOfType<
+  A["inputs"],
+  Required
+>;
 type Variadic = { variadic: true };
+type Required = Readonly<{ required: true }> | { required: true };
 
-export type ParamsFrom<A extends Action | Task | CLI> = {
+type ParamsExtractor<A extends ActionheroWithParams> = {
   [Input in keyof A["inputs"]]: A["inputs"][Input] extends Variadic
     ? FormatterOrString<A["inputs"][Input]>[]
     : FormatterOrString<A["inputs"][Input]>;
 };
+
+export type ParamsFrom<A extends ActionheroWithParams> = Pick<
+  ParamsExtractor<A>,
+  RequiredParamsKeys<A>
+> &
+  Partial<ParamsExtractor<A>>;

@@ -4,7 +4,7 @@ export class CreateChatRoom extends Action {
   name = "createChatRoom";
   description = "I will create a chatroom with the given name";
   inputs = {
-    name: { required: true },
+    name: { required: true as true },
   };
 
   async run({ params }: { params: ParamsFrom<CreateChatRoom> }) {

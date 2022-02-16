@@ -9,23 +9,23 @@ export class GenerateTaskCLI extends CLI {
     "actionhero generate task --name=<name> -queue=<queue> --description=[description] --frequency=[frequency]";
   inputs = {
     name: {
-      required: true,
+      required: true as true,
       description: "The name of the Task to generate",
       letter: "n",
     },
     queue: {
-      required: true,
+      required: true as true,
       description: "The queue that this Task will run on",
       letter: "q",
     },
     description: {
-      required: true,
+      required: true as true,
       description: "The description of this Task",
       default: "an actionhero task",
       letter: "d",
     },
     frequency: {
-      required: true,
+      required: true as true,
       description: "Should this Task run periodically? Frequency is in ms",
       default: "0",
       letter: "f",

@@ -7,7 +7,7 @@ export class TaskEnqueueCLI extends CLI {
     "actionhero task enqueue --name=[taskName] --args=[JSON-encoded args]";
   inputs = {
     name: {
-      required: true,
+      required: true as true,
       description: "The name of the Task to enqueue",
       letter: "n",
     },

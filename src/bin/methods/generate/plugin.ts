@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { PackageJson } from "type-fest";
-import { CLI, utils, ParamsFrom } from "./../../../index";
+import { CLI, utils } from "./../../../index";
 
 const PackageJSON: PackageJson = JSON.parse(
   fs

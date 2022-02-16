@@ -5,7 +5,7 @@ export class ValidationTest extends Action {
   description = "I will test action input validators.";
   inputs = {
     string: {
-      required: true,
+      required: true as true,
       validator: (param: string) => {
         return typeof param === "string";
       },

@@ -5,13 +5,13 @@ export class CacheTest extends Action {
   description = "I will test the internal cache functions of the API";
   inputs = {
     key: {
-      required: true,
+      required: true as true,
       formatter: this.stringFormatter,
       validator: this.stringValidator,
     },
 
     value: {
-      required: true,
+      required: true as true,
       formatter: this.stringFormatter,
       validator: this.stringValidator,
     },
