@@ -8,7 +8,7 @@ export class GenerateCLICLI extends CLI {
   example = "actionhero generate cli --name=<name>";
   inputs = {
     name: {
-      required: true,
+      required: true as true as true,
       description: "The name of the CLI Command to generate",
       letter: "n",
     },

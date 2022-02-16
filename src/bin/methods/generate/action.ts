@@ -9,7 +9,7 @@ export class GenerateActionCLI extends CLI {
     "actionhero generate action --name=<name> --description=[description]";
   inputs = {
     name: {
-      required: true,
+      required: true as true,
       description: "The name of the Action to Generate",
       letter: "n",
     },

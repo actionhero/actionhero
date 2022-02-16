@@ -8,7 +8,7 @@ export class GenerateServerCLI extends CLI {
   example = "actionhero generate server --name=<name>";
   inputs = {
     name: {
-      required: true,
+      required: true as true,
       description: "The name of the Server to generate",
       letter: "n",
     },

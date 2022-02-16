@@ -9,22 +9,22 @@ export class GenerateInitializerCLI extends CLI {
     "actionhero generate initializer --name=<name> --loadPriority=[p] --startPriority=[p] --stopPriority=[p]";
   inputs = {
     name: {
-      required: true,
+      required: true as true,
       description: "The name of the Initializer to generate",
       letter: "n",
     },
     loadPriority: {
-      required: true,
+      required: true as true,
       description: "The order that this Initializer will initialize",
       default: "1000",
     },
     startPriority: {
-      required: true,
+      required: true as true,
       description: "The order that this Initializer will start",
       default: "1000",
     },
     stopPriority: {
-      required: true,
+      required: true as true,
       description: "The order that this Initializer will stop",
       default: "1000",
     },
