@@ -13,7 +13,7 @@ jobs:
     container:
       image: node
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js 14.x
         uses: actions/setup-node@v3.1.0
         with:
@@ -33,7 +33,7 @@ jobs:
     container:
       image: node
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js 14.x
         uses: actions/setup-node@v3.1.0
         with:
@@ -53,7 +53,7 @@ jobs:
     container:
       image: node
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js 14.x
         uses: actions/setup-node@v3.1.0
         with:
@@ -84,7 +84,7 @@ jobs:
         node-version: [12.x, 14.x, 16.x]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3.1.0
         with:
