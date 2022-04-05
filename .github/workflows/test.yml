@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js 14.x
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3.1.0
         with:
           node-version: 14.x
       - run: npm ci
@@ -35,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js 14.x
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3.1.0
         with:
           node-version: 14.x
       - name: download cache
@@ -55,7 +55,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js 14.x
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3.1.0
         with:
           node-version: 14.x
       - name: download cache
@@ -86,7 +86,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3.1.0
         with:
           node-version: ${{ matrix.node-version }}
       - name: download cache
