@@ -40,7 +40,7 @@
     "dot-prop": "^6.0.1",
     "etag": "^1.8.1",
     "formidable": "^2.0.1",
-    "glob": "^7.2.0",
+    "glob": "^8.0.1",
     "ioredis": "^4.28.3",
     "mime": "^3.0.0",
     "node-resque": "^9.1.5",
