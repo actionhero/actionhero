@@ -4,6 +4,7 @@ export const routerMethods = [
   "all",
   "head",
   "get",
+  "patch",
   "post",
   "put",
   "delete",

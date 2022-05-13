@@ -583,7 +583,7 @@ export class WebServer extends Server {
       !this.config.httpHeaders["Access-Control-Allow-Methods"] &&
       !this.extractHeader(connection, "Access-Control-Allow-Methods")
     ) {
-      const methods = "HEAD, GET, POST, PUT, DELETE, OPTIONS, TRACE";
+      const methods = "HEAD, GET, POST, PATCH, PUT, DELETE, OPTIONS, TRACE";
       connection.rawConnection.responseHeaders.push([
         "Access-Control-Allow-Methods",
         methods,
