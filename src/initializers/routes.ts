@@ -214,6 +214,7 @@ export class RoutesInitializer extends Initializer {
         all: [],
         head: [],
         get: [],
+        patch: [],
         post: [],
         put: [],
         delete: [],
