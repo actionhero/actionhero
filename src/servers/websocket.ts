@@ -53,7 +53,7 @@ export class WebSocketServer extends Server {
     });
 
     this.log(
-      `webSockets bound to ${webserver.options.bindIP}: ${webserver.options.port}`,
+      `webSockets bound to ${webserver.config.bindIP}:${webserver.config.port}`,
       "debug"
     );
 
