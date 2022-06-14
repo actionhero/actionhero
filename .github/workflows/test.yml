@@ -23,7 +23,7 @@ jobs:
           node-version: 14.x
       - run: npm ci
       - name: save cache
-        uses: actions/cache@v3.0.3
+        uses: actions/cache@v3.0.4
         with:
           path: |
             node_modules
@@ -42,7 +42,7 @@ jobs:
         with:
           node-version: 14.x
       - name: download cache
-        uses: actions/cache@v3.0.3
+        uses: actions/cache@v3.0.4
         with:
           path: |
             node_modules
@@ -62,7 +62,7 @@ jobs:
         with:
           node-version: 14.x
       - name: download cache
-        uses: actions/cache@v3.0.3
+        uses: actions/cache@v3.0.4
         with:
           path: |
             node_modules
@@ -93,7 +93,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: download cache
-        uses: actions/cache@v3.0.3
+        uses: actions/cache@v3.0.4
         with:
           path: |
             node_modules
