@@ -1,4 +1,5 @@
 import { isPlainObject } from "./isPlainObject";
+import { deepCopy } from "./deepCopy";
 import { config } from "../config";
 import * as dotProp from "dot-prop";
 
@@ -10,7 +11,7 @@ import * as dotProp from "dot-prop";
 export function filterResponseForLogging(response: Record<string, any>): {
   [key: string]: any;
 } {
-  response = Object.assign({}, response);
+  response = deepCopy(response);
   const sanitizedResponse: Record<string, any> = {};
 
   for (const i in response) {

@@ -2,6 +2,7 @@ import { argv } from "./utils/argv";
 import { arrayStartingMatch } from "./utils/arrayStartingMatch";
 import { arrayUnique } from "./utils/arrayUnique";
 import { collapseObjectToArray } from "./utils/collapseObjectToArray";
+import { deepCopy } from "./utils/deepCopy";
 import { ensureNoTsHeaderFiles } from "./utils/ensureNoTsHeaderFiles";
 import { eventLoopDelay } from "./utils/eventLoopDelay";
 import { filterObjectForLogging } from "./utils/filterObjectForLogging";
@@ -35,6 +36,7 @@ export const utils = {
   arrayStartingMatch,
   arrayUnique,
   collapseObjectToArray,
+  deepCopy,
   ensureNoTsHeaderFiles,
   eventLoopDelay,
   filterObjectForLogging,
