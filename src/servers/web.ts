@@ -712,7 +712,7 @@ export class WebServer extends Server {
           });
         }
 
-        const { fields, files } = await new Promise((resolve) => {
+        const { fields, files } = (await new Promise((resolve) => {
           connection.rawConnection.form.parse(
             connection.rawConnection.req,
             (
@@ -729,7 +729,7 @@ export class WebServer extends Server {
               resolve({ fields, files });
             }
           );
-        });
+        })) as { fields: string[]; files: string[] };
 
         connection.rawConnection.params.body = fields;
         connection.rawConnection.params.rawBody = await rawBody;

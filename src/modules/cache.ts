@@ -60,9 +60,9 @@ export namespace cache {
 
     const [newCursor, matches] = await client().scan(
       cursor,
-      "match",
+      "MATCH",
       pattern,
-      "count",
+      "COUNT",
       count
     );
 

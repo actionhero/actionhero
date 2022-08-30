@@ -1,4 +1,5 @@
-import * as MockIORedis from "ioredis-mock";
+const MockIORedis = require("ioredis-mock");
+
 import {
   api,
   cache,
