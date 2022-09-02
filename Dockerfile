@@ -5,6 +5,9 @@ ENV PORT=8080
 
 WORKDIR /actionhero
 
+# needed for tests
+RUN apk add chromium
+
 COPY package*.json ./
 COPY . .
 RUN npm install
