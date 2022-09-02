@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import * as path from "path";
-import * as glob from "glob";
 import { utils } from "./utils";
 import { ensureNoTsHeaderFiles } from "./utils/ensureNoTsHeaderFiles";
 
@@ -20,6 +19,7 @@ import {
 } from "./../classes/process/projectRoot";
 import { RouteMethod, RoutesConfig, RouteType } from "..";
 import { ActionheroConfigInterface } from "../classes/config";
+import { safeGlobSync } from "./utils/safeGlob";
 
 export function buildConfig() {
   const configPaths: string[] = [];
@@ -133,7 +133,7 @@ export function buildConfig() {
 
   const loadConfigDirectory = (configPath: string, watch: boolean) => {
     const configFiles = ensureNoTsHeaderFiles(
-      glob.sync(path.join(configPath, "**", "**/*(*.js|*.ts)"))
+      safeGlobSync(path.join(configPath, "**", "**/*(*.js|*.ts)"))
     );
 
     let loadRetries = 0;

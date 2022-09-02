@@ -1,6 +1,6 @@
-import * as glob from "glob";
 import * as path from "path";
 import { api, config, log, utils, Initializer, Action } from "../index";
+import { safeGlobSync } from "../modules/utils/safeGlob";
 import * as ActionModule from "./../modules/action";
 
 export interface ActionsApi {
@@ -93,7 +93,7 @@ export class ActionsInitializer extends Initializer {
     };
 
     for (const p of config.general.paths.action) {
-      let files = glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"));
+      let files = safeGlobSync(path.join(p, "**", "**/*(*.js|*.ts)"));
       files = utils.ensureNoTsHeaderFiles(files);
       for (const j in files) {
         await api.actions.loadFile(files[j]);
@@ -105,10 +105,10 @@ export class ActionsInitializer extends Initializer {
         const pluginPath: string = path.normalize(plugin.path);
 
         // old style at the root of the project
-        let files = glob.sync(path.join(pluginPath, "actions", "**", "*.js"));
+        let files = safeGlobSync(path.join(pluginPath, "actions", "**", "*.js"));
 
         files = files.concat(
-          glob.sync(path.join(pluginPath, "dist", "actions", "**", "*.js"))
+          safeGlobSync(path.join(pluginPath, "dist", "actions", "**", "*.js"))
         );
 
         utils
