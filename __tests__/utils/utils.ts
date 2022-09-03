@@ -1,3 +1,5 @@
+import * as glob from "glob";
+import * as path from "path";
 import { config, utils } from "./../../src/index";
 
 describe("Utils", () => {
@@ -453,6 +455,16 @@ describe("Utils", () => {
       expect(filteredRespnose.p2).toEqual("[FILTERED]");
       expect(filteredRespnose.o2).toEqual("[FILTERED]"); // entire object filtered
       expect(filteredRespnose.o1).toEqual(testInput.o1); // unchanged
+    });
+
+    test("safeGlobSync to match normal glob.sync", () => {
+      const directory = __dirname; // if it is windows platform includes backslash (\\)
+      const pattern = "/**/*.ts";
+      const normalResult = glob.sync(directory.replace(/\\/g, "/") + pattern); // do not use path.join
+
+      const safeResult = utils.safeGlobSync(path.join(directory, pattern));
+
+      expect(normalResult).toEqual(safeResult);
     });
   });
 });

@@ -89,7 +89,9 @@ export class Process {
 
         // new TS dist files
         initializerFiles = initializerFiles.concat(
-          safeGlobSync(path.join(pluginPath, "dist", "initializers", "**", "*.js"))
+          safeGlobSync(
+            path.join(pluginPath, "dist", "initializers", "**", "*.js")
+          )
         );
       }
     }

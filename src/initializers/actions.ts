@@ -105,7 +105,9 @@ export class ActionsInitializer extends Initializer {
         const pluginPath: string = path.normalize(plugin.path);
 
         // old style at the root of the project
-        let files = safeGlobSync(path.join(pluginPath, "actions", "**", "*.js"));
+        let files = safeGlobSync(
+          path.join(pluginPath, "actions", "**", "*.js")
+        );
 
         files = files.concat(
           safeGlobSync(path.join(pluginPath, "dist", "actions", "**", "*.js"))
