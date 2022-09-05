@@ -54,7 +54,7 @@
   "devDependencies": {
     "@types/etag": "^1.8.1",
     "@types/formidable": "^2.0.4",
-    "@types/glob": "^7.2.0",
+    "@types/glob": "^8.0.0",
     "@types/jest": "^27.4.0",
     "@types/mime": "^3.0.0",
     "@types/node": "^18.0.0",
