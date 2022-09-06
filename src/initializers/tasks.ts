@@ -1,10 +1,9 @@
-import * as glob from "glob";
 import * as path from "path";
 import { Plugin } from "node-resque";
 import * as TaskModule from "./../modules/task";
 import { api, config, log, utils, task, Initializer } from "../index";
 import { Task } from "../classes/task";
-import { PluginConfig } from "../classes/config";
+import { safeGlobSync } from "../modules/utils/safeGlob";
 
 const taskModule = task;
 
@@ -140,7 +139,7 @@ export class TasksInitializer extends Initializer {
       await Promise.all(
         utils
           .ensureNoTsHeaderFiles(
-            glob.sync(path.join(p, "**", "**/*(*.js|*.ts)"))
+            safeGlobSync(path.join(p, "**", "**/*(*.js|*.ts)"))
           )
           .map((f) => api.tasks.loadFile(f, reload))
       );
@@ -151,10 +150,10 @@ export class TasksInitializer extends Initializer {
         const pluginPath = path.normalize(plugin.path);
 
         // old style at the root of the project
-        let files = glob.sync(path.join(pluginPath, "tasks", "**", "*.js"));
+        let files = safeGlobSync(path.join(pluginPath, "tasks", "**", "*.js"));
 
         files = files.concat(
-          glob.sync(path.join(pluginPath, "dist", "tasks", "**", "*.js"))
+          safeGlobSync(path.join(pluginPath, "dist", "tasks", "**", "*.js"))
         );
 
         utils.ensureNoTsHeaderFiles(files).forEach((f) => {

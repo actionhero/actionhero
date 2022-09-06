@@ -2,7 +2,6 @@
 
 import * as path from "path";
 import * as fs from "fs";
-import * as glob from "glob";
 import { program, InvalidArgumentError } from "commander";
 import { typescript } from "../classes/process/typescript";
 import { projectRoot } from "../classes/process/projectRoot";
@@ -15,6 +14,7 @@ import "../config/api";
 import "../config/plugins";
 import "../config/logger";
 import "../config/routes";
+import { safeGlobSync } from "../modules/utils/safeGlob";
 
 export namespace ActionheroCLIRunner {
   export async function run() {
@@ -70,7 +70,7 @@ export namespace ActionheroCLIRunner {
     const matcher = `${realpath}/**/+(${
       typescript ? `${match}.js|*.ts` : `${match}.js`
     })`;
-    const files = ensureNoTsHeaderFiles(glob.sync(matcher));
+    const files = ensureNoTsHeaderFiles(safeGlobSync(matcher));
     for (const i in files) {
       const collection = await import(files[i]);
       for (const j in collection) {

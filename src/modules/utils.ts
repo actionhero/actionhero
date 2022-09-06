@@ -27,6 +27,7 @@ import {
   createSymlinkSafely,
 } from "./utils/fileUtils";
 import { isRunning } from "./utils/isRunning";
+import { safeGlobSync } from "./utils/safeGlob";
 
 /**
  * Utility functions for Actionhero
@@ -60,5 +61,6 @@ export const utils = {
     removeLinkfileSafely,
     createSymlinkSafely,
   },
+  safeGlobSync,
   isRunning,
 };

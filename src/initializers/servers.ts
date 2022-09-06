@@ -1,7 +1,7 @@
 import * as path from "path";
-import * as glob from "glob";
 import { api, config, log, utils, Initializer, Server } from "../index";
 import { PluginConfig } from "../classes/config";
+import { safeGlobSync } from "../modules/utils/safeGlob";
 
 export interface ServersApi {
   servers: {
@@ -39,7 +39,7 @@ export class Servers extends Initializer {
 
     for (const i in serverFolders) {
       const p = serverFolders[i];
-      files = files.concat(glob.sync(path.join(p, "**", "**/*(*.js|*.ts)")));
+      files = files.concat(safeGlobSync(path.join(p, "**", "**/*(*.js|*.ts)")));
     }
 
     for (const [_, plugin] of Object.entries(config.plugins as PluginConfig)) {
@@ -48,11 +48,11 @@ export class Servers extends Initializer {
 
         // old style at the root of the project
         files = files.concat(
-          glob.sync(path.join(pluginPath, "servers", "**", "*.js"))
+          safeGlobSync(path.join(pluginPath, "servers", "**", "*.js"))
         );
 
         files = files.concat(
-          glob.sync(path.join(pluginPath, "dist", "servers", "**", "*.js"))
+          safeGlobSync(path.join(pluginPath, "dist", "servers", "**", "*.js"))
         );
       }
     }

@@ -1,5 +1,4 @@
 import * as path from "path";
-import * as glob from "glob";
 import * as fs from "fs";
 import { config } from "..";
 import { log } from "../modules/log";
@@ -11,6 +10,7 @@ import { env } from "./process/env";
 import { writePidFile, clearPidFile } from "./process/pid";
 import { api } from "../index";
 import { rebuildConfig } from "../modules/config";
+import { safeGlobSync } from "../modules/utils/safeGlob";
 
 export const fatalErrorCode = "FATAL_ACTIONHERO_ERROR";
 
@@ -62,7 +62,7 @@ export class Process {
 
     // load initializers from core
     initializerFiles = initializerFiles.concat(
-      glob.sync(
+      safeGlobSync(
         path.join(__dirname, "..", "initializers", "**", "**/*(*.js|*.ts)")
       )
     );
@@ -70,7 +70,7 @@ export class Process {
     // load initializers from project
     config.general.paths.initializer.forEach((startPath: string) => {
       initializerFiles = initializerFiles.concat(
-        glob.sync(path.join(startPath, "**", "**/*(*.js|*.ts)"))
+        safeGlobSync(path.join(startPath, "**", "**/*(*.js|*.ts)"))
       );
     });
 
@@ -84,12 +84,14 @@ export class Process {
       if (plugin.initializers !== false) {
         // old style at the root of the project
         initializerFiles = initializerFiles.concat(
-          glob.sync(path.join(pluginPath, "initializers", "**", "*.js"))
+          safeGlobSync(path.join(pluginPath, "initializers", "**", "*.js"))
         );
 
         // new TS dist files
         initializerFiles = initializerFiles.concat(
-          glob.sync(path.join(pluginPath, "dist", "initializers", "**", "*.js"))
+          safeGlobSync(
+            path.join(pluginPath, "dist", "initializers", "**", "*.js")
+          )
         );
       }
     }
