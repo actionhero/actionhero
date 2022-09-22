@@ -2,7 +2,6 @@ import * as uuid from "uuid";
 import { Worker } from "node-resque";
 import { api, config, task, Task, Action, Connection } from "./../index";
 import { WebServer } from "../servers/web";
-import { AsyncReturnType } from "type-fest";
 import { TaskInputs } from "../classes/task";
 
 export type SpecHelperConnection = Connection & {
@@ -37,7 +36,7 @@ export namespace specHelper {
     connection.messageId = connection.params.messageId || uuid.v4();
 
     const response: (A extends Action
-      ? AsyncReturnType<A["run"]>
+      ? Awaited<Promise<A["run"]>>
       : { [key: string]: any }) & {
       messageId?: string;
       error?: NodeJS.ErrnoException | string | any;
@@ -79,7 +78,7 @@ export namespace specHelper {
     }
 
     const result: (T extends Task
-      ? AsyncReturnType<T["run"]>
+      ? Awaited<Promise<T["run"]>>
       : { [key: string]: any }) & {
       error?: NodeJS.ErrnoException | string;
     } = await api.tasks.tasks[taskName].run(params, undefined);
@@ -114,7 +113,7 @@ export namespace specHelper {
       await worker.connect();
 
       const result: (T extends Task
-        ? AsyncReturnType<T["run"]>
+        ? Awaited<Promise<T["run"]>>
         : { [key: string]: any }) & {
         error?: string;
       } = await worker.performInline(
