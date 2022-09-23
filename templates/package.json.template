@@ -15,8 +15,8 @@
   },
   "devDependencies": {
     "@types/node": "latest",
-    "@types/jest": "latest",
     "@types/glob": "latest",
+    "@types/jest": "latest",
     "jest": "latest",
     "prettier": "latest",
     "ts-jest": "latest",
