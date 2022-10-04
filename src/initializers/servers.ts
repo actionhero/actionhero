@@ -57,7 +57,7 @@ export class Servers extends Initializer {
       }
     }
 
-    files = utils.ensureNoTsHeaderFiles(files);
+    files = utils.ensureNoTsHeaderOrSpecFiles(files);
 
     let server: Server;
 

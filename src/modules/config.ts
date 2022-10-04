@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { utils } from "./utils";
-import { ensureNoTsHeaderFiles } from "./utils/ensureNoTsHeaderFiles";
+import { ensureNoTsHeaderOrSpecFiles } from "./utils/ensureNoTsHeaderOrSpecFiles";
 
 import { env, recalculateEnv } from "./../classes/process/env";
 import { id, recalcuateId } from "./../classes/process/id";
@@ -132,7 +132,7 @@ export function buildConfig() {
   };
 
   const loadConfigDirectory = (configPath: string, watch: boolean) => {
-    const configFiles = ensureNoTsHeaderFiles(
+    const configFiles = ensureNoTsHeaderOrSpecFiles(
       safeGlobSync(path.join(configPath, "**", "**/*(*.js|*.ts)"))
     );
 

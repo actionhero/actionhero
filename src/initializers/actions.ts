@@ -94,7 +94,7 @@ export class ActionsInitializer extends Initializer {
 
     for (const p of config.general.paths.action) {
       let files = safeGlobSync(path.join(p, "**", "**/*(*.js|*.ts)"));
-      files = utils.ensureNoTsHeaderFiles(files);
+      files = utils.ensureNoTsHeaderOrSpecFiles(files);
       for (const j in files) {
         await api.actions.loadFile(files[j]);
       }
@@ -114,7 +114,7 @@ export class ActionsInitializer extends Initializer {
         );
 
         utils
-          .ensureNoTsHeaderFiles(files)
+          .ensureNoTsHeaderOrSpecFiles(files)
           .forEach((f) => api.actions.loadFile(f));
       }
     }

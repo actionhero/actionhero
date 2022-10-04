@@ -3,7 +3,7 @@ import { arrayStartingMatch } from "./utils/arrayStartingMatch";
 import { arrayUnique } from "./utils/arrayUnique";
 import { collapseObjectToArray } from "./utils/collapseObjectToArray";
 import { deepCopy } from "./utils/deepCopy";
-import { ensureNoTsHeaderFiles } from "./utils/ensureNoTsHeaderFiles";
+import { ensureNoTsHeaderOrSpecFiles } from "./utils/ensureNoTsHeaderOrSpecFiles";
 import { eventLoopDelay } from "./utils/eventLoopDelay";
 import { filterObjectForLogging } from "./utils/filterObjectForLogging";
 import { filterResponseForLogging } from "./utils/filterResponseForLogging";
@@ -38,7 +38,7 @@ export const utils = {
   arrayUnique,
   collapseObjectToArray,
   deepCopy,
-  ensureNoTsHeaderFiles,
+  ensureNoTsHeaderOrSpecFiles,
   eventLoopDelay,
   filterObjectForLogging,
   filterResponseForLogging,

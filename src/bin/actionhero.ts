@@ -5,7 +5,7 @@ import * as fs from "fs";
 import { program, InvalidArgumentError } from "commander";
 import { typescript } from "../classes/process/typescript";
 import { projectRoot } from "../classes/process/projectRoot";
-import { ensureNoTsHeaderFiles } from "../modules/utils/ensureNoTsHeaderFiles";
+import { ensureNoTsHeaderOrSpecFiles } from "../modules/utils/ensureNoTsHeaderOrSpecFiles";
 import { CLI } from "../classes/cli";
 import { PackageJson } from "type-fest";
 
@@ -70,7 +70,7 @@ export namespace ActionheroCLIRunner {
     const matcher = `${realpath}/**/+(${
       typescript ? `${match}.js|*.ts` : `${match}.js`
     })`;
-    const files = ensureNoTsHeaderFiles(safeGlobSync(matcher));
+    const files = ensureNoTsHeaderOrSpecFiles(safeGlobSync(matcher));
     for (const i in files) {
       const collection = await import(files[i]);
       for (const j in collection) {

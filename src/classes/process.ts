@@ -97,7 +97,7 @@ export class Process {
     }
 
     initializerFiles = utils.arrayUnique(initializerFiles);
-    initializerFiles = utils.ensureNoTsHeaderFiles(initializerFiles);
+    initializerFiles = utils.ensureNoTsHeaderOrSpecFiles(initializerFiles);
 
     for (const i in initializerFiles) {
       const f = initializerFiles[i];

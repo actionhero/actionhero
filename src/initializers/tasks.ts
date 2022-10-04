@@ -138,7 +138,7 @@ export class TasksInitializer extends Initializer {
     for (const p of config.general.paths.task) {
       await Promise.all(
         utils
-          .ensureNoTsHeaderFiles(
+          .ensureNoTsHeaderOrSpecFiles(
             safeGlobSync(path.join(p, "**", "**/*(*.js|*.ts)"))
           )
           .map((f) => api.tasks.loadFile(f, reload))
@@ -156,7 +156,7 @@ export class TasksInitializer extends Initializer {
           safeGlobSync(path.join(pluginPath, "dist", "tasks", "**", "*.js"))
         );
 
-        utils.ensureNoTsHeaderFiles(files).forEach((f) => {
+        utils.ensureNoTsHeaderOrSpecFiles(files).forEach((f) => {
           api.tasks.loadFile(f, reload);
         });
       }
