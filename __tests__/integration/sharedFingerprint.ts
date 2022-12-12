@@ -1,9 +1,4 @@
-/**
- * @jest-environment jsdom
- */
-
-"use strict";
-// we need to use 'use strict' here because we are loading a variable from a remote host
+const window = { location: {} };
 
 process.env.AUTOMATIC_ROUTES = "get";
 

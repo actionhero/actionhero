@@ -1,9 +1,4 @@
-/**
- * @jest-environment jsdom
- */
-
-"use strict";
-// we need to use 'use strict' here because we are relying on EVAL to load a variable
+const window = { location: {} };
 
 import { api, Process, config, chatRoom, utils } from "./../../src/index";
 import "../../src/config/api";
