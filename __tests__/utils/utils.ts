@@ -358,12 +358,14 @@ describe("Utils", () => {
 
   describe("utils.filterResponseForLogging", () => {
     beforeEach(() => {
+      config.logger.maxLogArrayLength = 100;
       expect(config.general.filteredResponse.length).toEqual(0);
     });
 
     afterEach(() => {
       // after each test, empty the array
       config.general.filteredResponse = [];
+      config.logger.maxLogArrayLength = 10;
     });
 
     const testInput = {
@@ -381,23 +383,27 @@ describe("Utils", () => {
         name: "same as o1`s inner object!",
         o2p1: "nothing secret",
       },
+      a1: ["a", "b", "c"],
+      a2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
     };
 
     test("can filter top level params, no matter the type", () => {
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
       (config.general.filteredResponse as string[]).push("p1", "p2", "o2");
-      const filteredRespnose = utils.filterResponseForLogging(inputs);
-      expect(filteredRespnose.p1).toEqual("[FILTERED]");
-      expect(filteredRespnose.p2).toEqual("[FILTERED]");
-      expect(filteredRespnose.o2).toEqual("[FILTERED]"); // entire object filtered
-      expect(filteredRespnose.o1).toEqual(testInput.o1); // unchanged
+      const filteredResponse = utils.filterResponseForLogging(inputs);
+      expect(filteredResponse.p1).toEqual("[FILTERED]");
+      expect(filteredResponse.p2).toEqual("[FILTERED]");
+      expect(filteredResponse.o2).toEqual("[FILTERED]"); // entire object filtered
+      expect(filteredResponse.o1).toEqual(testInput.o1); // unchanged
+      expect(filteredResponse.a1).toEqual(testInput.a1); // unchanged
+      expect(filteredResponse.a2).toEqual(testInput.a2); // unchanged
     });
 
     test("will not filter things that do not exist", () => {
       // Identity
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
-      const filteredRespnose = utils.filterResponseForLogging(inputs);
-      expect(filteredRespnose).toEqual(testInput);
+      const filteredResponse = utils.filterResponseForLogging(inputs);
+      expect(filteredResponse).toEqual(testInput);
 
       (config.general.filteredResponse as string[]).push(
         "p3",
@@ -405,8 +411,10 @@ describe("Utils", () => {
         "o1.o3",
         "o1.o2.p1"
       );
-      const filteredRespnose2 = utils.filterResponseForLogging(inputs);
-      expect(filteredRespnose2).toEqual(testInput);
+      const filteredResponse2 = utils.filterResponseForLogging(inputs);
+      expect(filteredResponse2).toEqual(testInput);
+      expect(filteredResponse2.a1).toEqual(testInput.a1); // unchanged
+      expect(filteredResponse2.a2).toEqual(testInput.a2); // unchanged
     });
 
     test("can filter a single level dot notation", () => {
@@ -416,14 +424,16 @@ describe("Utils", () => {
         "o1.o1p1",
         "somethingNotExist"
       );
-      const filteredRespnose = utils.filterResponseForLogging(inputs);
-      expect(filteredRespnose.p1).toEqual("[FILTERED]");
-      expect(filteredRespnose.o1.o1p1).toEqual("[FILTERED]");
+      const filteredResponse = utils.filterResponseForLogging(inputs);
+      expect(filteredResponse.p1).toEqual("[FILTERED]");
+      expect(filteredResponse.o1.o1p1).toEqual("[FILTERED]");
       // Unchanged things
-      expect(filteredRespnose.p2).toEqual(testInput.p2);
-      expect(filteredRespnose.o1.o1p2).toEqual(testInput.o1.o1p2);
-      expect(filteredRespnose.o1.o2).toEqual(testInput.o1.o2);
-      expect(filteredRespnose.o2).toEqual(testInput.o2);
+      expect(filteredResponse.p2).toEqual(testInput.p2);
+      expect(filteredResponse.o1.o1p2).toEqual(testInput.o1.o1p2);
+      expect(filteredResponse.o1.o2).toEqual(testInput.o1.o2);
+      expect(filteredResponse.o2).toEqual(testInput.o2);
+      expect(filteredResponse.a1).toEqual(testInput.a1);
+      expect(filteredResponse.a2).toEqual(testInput.a2);
     });
 
     test("can filter two levels deep", () => {
@@ -433,13 +443,15 @@ describe("Utils", () => {
         "o1.o2.o2p1",
         "o1.o2.notThere"
       );
-      const filteredRespnose = utils.filterResponseForLogging(inputs);
-      expect(filteredRespnose.p2).toEqual("[FILTERED]");
-      expect(filteredRespnose.o1.o2.o2p1).toEqual("[FILTERED]");
+      const filteredResponse = utils.filterResponseForLogging(inputs);
+      expect(filteredResponse.p2).toEqual("[FILTERED]");
+      expect(filteredResponse.o1.o2.o2p1).toEqual("[FILTERED]");
       // Unchanged things
-      expect(filteredRespnose.p1).toEqual(testInput.p1);
-      expect(filteredRespnose.o1.o1p1).toEqual(testInput.o1.o1p1);
-      expect(filteredRespnose.o1.o2.o2p2).toEqual(testInput.o1.o2.o2p2);
+      expect(filteredResponse.p1).toEqual(testInput.p1);
+      expect(filteredResponse.o1.o1p1).toEqual(testInput.o1.o1p1);
+      expect(filteredResponse.o1.o2.o2p2).toEqual(testInput.o1.o2.o2p2);
+      expect(filteredResponse.a1).toEqual(testInput.a1);
+      expect(filteredResponse.a2).toEqual(testInput.a2);
     });
 
     test("can filter with a function rather than an array", () => {
@@ -448,11 +460,21 @@ describe("Utils", () => {
         return ["p1", "p2", "o2"];
       };
 
-      const filteredRespnose = utils.filterResponseForLogging(inputs);
-      expect(filteredRespnose.p1).toEqual("[FILTERED]");
-      expect(filteredRespnose.p2).toEqual("[FILTERED]");
-      expect(filteredRespnose.o2).toEqual("[FILTERED]"); // entire object filtered
-      expect(filteredRespnose.o1).toEqual(testInput.o1); // unchanged
+      const filteredResponse = utils.filterResponseForLogging(inputs);
+      expect(filteredResponse.p1).toEqual("[FILTERED]");
+      expect(filteredResponse.p2).toEqual("[FILTERED]");
+      expect(filteredResponse.o2).toEqual("[FILTERED]"); // entire object filtered
+      expect(filteredResponse.o1).toEqual(testInput.o1); // unchanged
+      expect(filteredResponse.a1).toEqual(testInput.a1);
+      expect(filteredResponse.a2).toEqual(testInput.a2);
+    });
+
+    test("long arrays will be collected", () => {
+      config.logger.maxLogArrayLength = 10;
+      const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
+      const filteredResponse = utils.filterResponseForLogging(inputs);
+      expect(filteredResponse.a1).toEqual(testInput.a1);
+      expect(filteredResponse.a2).toEqual("11 items");
     });
   });
 });
