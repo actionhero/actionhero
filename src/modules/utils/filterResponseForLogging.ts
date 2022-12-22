@@ -15,6 +15,13 @@ export function filterResponseForLogging(response: Record<string, any>): {
   const sanitizedResponse: Record<string, any> = {};
 
   for (const i in response) {
+    if (
+      Array.isArray(response[i]) &&
+      response[i].length > (config.logger?.maxLogArrayLength ?? 10)
+    ) {
+      response[i] = `${response[i].length} items`;
+    }
+
     if (isPlainObject(response[i])) {
       sanitizedResponse[i] = response[i];
     } else if (typeof response[i] === "string") {
