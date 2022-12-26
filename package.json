@@ -60,7 +60,7 @@
     "@types/mime": "^3.0.1",
     "@types/node": "^18.11.13",
     "@types/primus": "^7.3.6",
-    "@types/puppeteer": "^5.4.7",
+    "@types/puppeteer": "^7.0.4",
     "@types/qs": "^6.9.7",
     "@types/request-promise-native": "^1.0.18",
     "@types/uuid": "^9.0.0",
