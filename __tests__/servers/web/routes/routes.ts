@@ -20,7 +20,7 @@ describe("Server: Web", () => {
   beforeAll(async () => {
     actionhero = new Process();
     await actionhero.start();
-    url = "http://localhost:" + config.web.port;
+    url = "http://localhost:" + config.web!.port;
   });
 
   afterAll(async () => await actionhero.stop());
@@ -43,11 +43,11 @@ describe("Server: Web", () => {
           },
           outputExample: {},
           run: async (data) => {
-            if (data.params.key === "fail") {
+            if (data.params!.key === "fail") {
               throw new Error("failed");
             }
 
-            data.response.matchedRoute = data.connection.matchedRoute;
+            data.response!.matchedRoute = data.connection!.matchedRoute;
           },
         },
       };
@@ -65,8 +65,8 @@ describe("Server: Web", () => {
           },
           outputExample: {},
           run: async (data) => {
-            data.response.user_id = data.params.user_id;
-            data.response.version = 1;
+            data.response!.user_id = data.params!.user_id;
+            data.response!.version = 1;
           },
         },
 
@@ -81,8 +81,8 @@ describe("Server: Web", () => {
           },
           outputExample: {},
           run: async (data) => {
-            data.response.userID = data.params.userID;
-            data.response.version = 2;
+            data.response!.userID = data.params!.userID;
+            data.response!.version = 2;
           },
         },
 
@@ -97,8 +97,8 @@ describe("Server: Web", () => {
           },
           outputExample: {},
           run: async (data) => {
-            data.response.userID = data.params.userID;
-            data.response.version = "three";
+            data.response!.userID = data.params!.userID;
+            data.response!.version = "three";
           },
         },
       };
@@ -147,6 +147,7 @@ describe("Server: Web", () => {
     });
 
     test("'all' routes are duplicated properly", () => {
+      // @ts-expect-error
       route.registerRoute("all", "/other-login", "login", null);
       const loaded: Partial<Record<typeof routerMethods[number], boolean>> = {};
       const registered: Partial<Record<typeof routerMethods[number], boolean>> =

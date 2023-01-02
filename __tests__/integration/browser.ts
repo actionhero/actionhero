@@ -33,7 +33,7 @@ describe("browser integration tests", () => {
 
   describe("default index page", () => {
     beforeAll(() => {
-      url = `http://localhost:${config.web.port}`;
+      url = `http://localhost:${config.web!.port}`;
     });
 
     test("loads the page", async () => {
@@ -59,7 +59,7 @@ describe("browser integration tests", () => {
 
   describe("swagger page", () => {
     beforeAll(() => {
-      url = `http://localhost:${config.web.port}/swagger.html`;
+      url = `http://localhost:${config.web!.port}/swagger.html`;
     });
 
     test("loads the page", async () => {
@@ -95,7 +95,7 @@ describe("browser integration tests", () => {
 
     describe("on the chat page", () => {
       beforeAll(() => {
-        url = `http://localhost:${config.web.port}/chat.html`;
+        url = `http://localhost:${config.web!.port}/chat.html`;
       });
 
       test("can connect", async () => {
@@ -107,9 +107,9 @@ describe("browser integration tests", () => {
 
       test("can chat", async () => {
         const chatForm = await page.$("#message");
-        await chatForm.type("hello world");
+        await chatForm!.type("hello world");
         const chatSubmit = await page.$("#submitButton");
-        await chatSubmit.click();
+        await chatSubmit!.click();
 
         await utils.sleep(1000);
 

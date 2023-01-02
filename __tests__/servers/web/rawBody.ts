@@ -42,7 +42,7 @@ jest.mock("./../../../src/config/web.ts", () => ({
 describe("Server: Web", () => {
   beforeAll(async () => {
     await actionhero.start();
-    url = "http://localhost:" + config.web.port;
+    url = "http://localhost:" + config.web!.port;
   });
 
   afterAll(async () => await actionhero.stop());
@@ -57,10 +57,10 @@ describe("Server: Web", () => {
           description: "I return connection.rawConnection.params",
           version: 1,
           run: async (data) => {
-            data.response = data.connection.rawConnection.params;
-            if (data.connection.rawConnection.params.rawBody) {
-              data.response.rawBody =
-                data.connection.rawConnection.params.rawBody.toString();
+            data.response = data.connection!.rawConnection.params;
+            if (data.connection!.rawConnection.params.rawBody) {
+              data.response!.rawBody =
+                data.connection!.rawConnection.params.rawBody.toString();
             }
           },
         },

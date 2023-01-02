@@ -37,7 +37,7 @@ const doCommand = async (
 }> => {
   return new Promise((resolve, reject) => {
     const parts = command.split(" ");
-    const bin = parts.shift();
+    const bin = parts.shift() as string;
     const args = parts;
     let stdout = "";
     let stderr = "";
@@ -61,7 +61,7 @@ const doCommand = async (
       stderr += data.toString();
     });
 
-    pid = cmd.pid;
+    pid = cmd.pid ?? -1;
 
     cmd.on("close", (exitCode) => {
       if (stderr.length > 0 || exitCode !== 0) {
@@ -69,7 +69,7 @@ const doCommand = async (
         error.stderr = stderr;
         error.stdout = stdout;
         error.pid = pid;
-        error.exitCode = exitCode;
+        error.exitCode = exitCode ?? -1;
         return reject(error);
       }
       return resolve({ stderr, stdout, pid, exitCode });
@@ -279,10 +279,10 @@ describe("Core: CLI", () => {
 
     test("can call npm test in the new project and not fail", async () => {
       // since prettier no longer works with node < 10, we need to skip this test
-      const nodeVersion = Number(process.version.match(/^v(\d+\.\d+)/)[1]);
+      const nodeVersion = Number(process.version.match(/^v(\d+\.\d+)/)![1]);
       if (nodeVersion < 10) {
         console.log(
-          `skpping 'npm test' because this node version ${nodeVersion} < 10.0.0`
+          `skipping 'npm test' because this node version ${nodeVersion} < 10.0.0`
         );
         return;
       }

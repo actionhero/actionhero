@@ -13,13 +13,13 @@ describe("Server: Web", () => {
 
   beforeAll(async () => {
     await actionhero.start();
-    url = "http://localhost:" + config.web.port;
+    url = "http://localhost:" + config.web!.port;
   });
 
   afterAll(async () => await actionhero.stop());
 
   beforeAll(() => {
-    config.web.returnErrorCodes = true;
+    config.web!.returnErrorCodes = true;
     api.actions.versions.uploadAction = [1];
     api.actions.actions.uploadAction = {
       // @ts-ignore

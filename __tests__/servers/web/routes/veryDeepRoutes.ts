@@ -32,7 +32,7 @@ describe("Server: Web", () => {
   describe("Routes", () => {
     beforeAll(async () => {
       await actionhero.start();
-      url = "http://localhost:" + config.web.port;
+      url = "http://localhost:" + config.web!.port;
     });
 
     afterAll(async () => {

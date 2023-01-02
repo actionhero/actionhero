@@ -15,15 +15,23 @@ describe("Core", () => {
     beforeAll(async () => {
       await actionhero.start();
 
-      for (var room in config.general.startingChatRooms) {
+      for (var room in config!.general!.startingChatRooms as Record<
+        string,
+        Record<string, any>
+      >) {
         try {
           await chatRoom.destroy(room);
           await chatRoom.add(room);
         } catch (error) {
           if (
-            !error.toString().match(config.errors.connectionRoomExists(room))
+            config.errors &&
+            typeof config.errors.connectionRoomExists === "function"
           ) {
-            throw error;
+            if (
+              !error.toString().match(config.errors.connectionRoomExists(room))
+            ) {
+              throw error;
+            }
           }
         }
       }
@@ -92,6 +100,8 @@ describe("Core", () => {
           "1",
         ]);
         await utils.sleep(100);
+
+        if (!client2.messages) throw new Error("no messages for client2");
 
         const { message, room, from } =
           client2.messages[client2.messages.length - 1];

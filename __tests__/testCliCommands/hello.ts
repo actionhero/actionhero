@@ -36,7 +36,7 @@ export class HelloCliTest extends CLI {
       console.log(
         `Hello, ${title} ${name} ${countries ? `(${countries.join(" ")})` : ""}`
       );
-    sayHello(params.title, params.name, params.countries);
+    sayHello(params.title!, params.name!, params.countries!);
     return true;
   }
 }

@@ -6,7 +6,7 @@ import { buildConfig } from "./../../src/modules/config";
 
 const actionhero = new Process();
 let config: Partial<ActionheroConfigInterface>;
-let configFolders: string;
+let configFolders: string | undefined;
 
 const newConfigFolderPaths = [
   path.join(__dirname, "first_config"),

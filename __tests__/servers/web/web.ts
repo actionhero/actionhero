@@ -20,7 +20,7 @@ const toJson = async (string: string) => {
 describe("Server: Web", () => {
   beforeAll(async () => {
     await actionhero.start();
-    url = "http://localhost:" + config.web.port;
+    url = "http://localhost:" + config.web!.port;
   });
 
   afterAll(async () => await actionhero.stop());
@@ -73,7 +73,7 @@ describe("Server: Web", () => {
 
   describe("will properly destroy connections", () => {
     beforeAll(() => {
-      config.web.returnErrorCodes = true;
+      config.web!.returnErrorCodes = true;
       api.actions.versions.customRender = [1];
       api.actions.actions.customRender = {
         // @ts-ignore
@@ -84,10 +84,10 @@ describe("Server: Web", () => {
           outputExample: {},
           run: async (data) => {
             data.toRender = false;
-            data.connection.rawConnection.res.writeHead(200, {
+            data.connection!.rawConnection.res.writeHead(200, {
               "Content-Type": "text/plain",
             });
-            data.connection.rawConnection.res.end(`${Math.random()}`);
+            data.connection!.rawConnection.res.end(`${Math.random()}`);
           },
         },
       };
@@ -137,7 +137,7 @@ describe("Server: Web", () => {
           description: "stringErrorTestAction",
           version: 1,
           run: async (data) => {
-            data.response.error = "broken";
+            data.response!.error = "broken";
           },
         },
       };
@@ -163,7 +163,7 @@ describe("Server: Web", () => {
           description: "complexErrorTestAction",
           version: 1,
           run: async (data) => {
-            data.response.error = { error: "broken", reason: "stuff" };
+            data.response!.error = { error: "broken", reason: "stuff" };
           },
         },
       };
@@ -215,14 +215,14 @@ describe("Server: Web", () => {
   });
 
   describe("if disableParamScrubbing is set", () => {
-    let orig: typeof config.general.disableParamScrubbing;
+    let orig: boolean;
     beforeAll(() => {
-      orig = config.general.disableParamScrubbing;
-      config.general.disableParamScrubbing = true;
+      orig = config.general!.disableParamScrubbing as boolean;
+      config.general!.disableParamScrubbing = true;
     });
 
     afterAll(() => {
-      config.general.disableParamScrubbing = orig;
+      config.general!.disableParamScrubbing = orig;
     });
 
     test("params are not ignored", async () => {
@@ -361,10 +361,10 @@ describe("Server: Web", () => {
           description: "I return connection.rawConnection.params",
           version: 1,
           run: async (data) => {
-            data.response = data.connection.rawConnection.params;
-            if (data.connection.rawConnection.params.rawBody) {
-              data.response.rawBody =
-                data.connection.rawConnection.params.rawBody.toString();
+            data.response = data.connection!.rawConnection.params;
+            if (data.connection!.rawConnection.params.rawBody) {
+              data.response!.rawBody =
+                data.connection!.rawConnection.params.rawBody.toString();
             }
           },
         },
@@ -397,7 +397,7 @@ describe("Server: Web", () => {
     });
 
     test(".rawBody can be disabled", async () => {
-      config.web.saveRawBody = false;
+      config.web!.saveRawBody = false;
       const requestBody = '{"key":      "value"}';
       const body = await request
         .post(url + "/api/paramTestAction", {
@@ -429,14 +429,14 @@ describe("Server: Web", () => {
           version: 1,
           outputExample: {},
           run: async (data) => {
-            data.connection.rawConnection.responseHeaders.push(["thing", "A"]);
-            data.connection.rawConnection.responseHeaders.push(["thing", "B"]);
-            data.connection.rawConnection.responseHeaders.push(["thing", "C"]);
-            data.connection.rawConnection.responseHeaders.push([
+            data.connection!.rawConnection.responseHeaders.push(["thing", "A"]);
+            data.connection!.rawConnection.responseHeaders.push(["thing", "B"]);
+            data.connection!.rawConnection.responseHeaders.push(["thing", "C"]);
+            data.connection!.rawConnection.responseHeaders.push([
               "Set-Cookie",
               "value_1=1",
             ]);
-            data.connection.rawConnection.responseHeaders.push([
+            data.connection!.rawConnection.responseHeaders.push([
               "Set-Cookie",
               "value_2=2",
             ]);
@@ -577,44 +577,46 @@ describe("Server: Web", () => {
             randomKey: { required: false },
           },
           run: async (data) => {
-            if (data.params.key !== "value") {
-              data.connection.rawConnection.responseHttpCode = 402;
+            if (data.params!.key !== "value") {
+              data.connection!.rawConnection.responseHttpCode = 402;
               throw new ErrorWithCode("key != value");
             }
-            const hasQueryParam = !!data.params.query;
+            const hasQueryParam = !!data.params!.query;
             if (hasQueryParam) {
               const validQueryFilters = ["test", "search"];
               const validQueryParam =
-                validQueryFilters.indexOf(data.params.query) > -1;
+                validQueryFilters.indexOf(data.params!.query) > -1;
               if (!validQueryParam) {
                 const notFoundError = new ErrorWithCode(
-                  `404: Filter '${data.params.query}' not found `
+                  `404: Filter '${data.params!.query}' not found `
                 );
                 notFoundError.code = 404;
                 throw notFoundError;
               }
             }
-            const hasRandomKey = !!data.params.randomKey;
+            const hasRandomKey = !!data.params!.randomKey;
             if (hasRandomKey) {
               const validRandomKeys = ["key1", "key2", "key3"];
               const validRandomKey =
-                validRandomKeys.indexOf(data.params.randomKey) > -1;
+                validRandomKeys.indexOf(data.params!.randomKey) > -1;
               if (!validRandomKey) {
-                if (data.params.randomKey === "expired-key") {
+                if (data.params!.randomKey === "expired-key") {
                   const expiredError = new ErrorWithCode(
-                    `999: Key '${data.params.randomKey}' is expired`
+                    `999: Key '${data.params!.randomKey}' is expired`
                   );
                   expiredError.code = 999;
                   throw expiredError;
                 }
                 const suspiciousError = new ErrorWithCode(
-                  `402: Suspicious Activity detected with key ${data.params.randomKey}`
+                  `402: Suspicious Activity detected with key ${
+                    data.params!.randomKey
+                  }`
                 );
                 suspiciousError.code = 402;
                 throw suspiciousError;
               }
             }
-            data.response.good = true;
+            data.response!.good = true;
           },
         },
       };
@@ -835,6 +837,7 @@ describe("Server: Web", () => {
         route.registerRoute(
           "get",
           "/my/public/route",
+          // @ts-expect-error
           null,
           null,
           true,
@@ -920,7 +923,7 @@ describe("Server: Web", () => {
           inputs: {},
           outputExample: {},
           run: async (data) => {
-            data.connection.setHeader("X-Foo", "bar");
+            data.connection!.setHeader!("X-Foo", "bar");
           },
         },
       };
@@ -942,7 +945,7 @@ describe("Server: Web", () => {
           },
           outputExample: {},
           run: async (data) => {
-            data.connection.setStatusCode(data.params.code);
+            data.connection!.setStatusCode!(data.params!.code);
           },
         },
       };
@@ -959,14 +962,14 @@ describe("Server: Web", () => {
           outputExample: {},
           run: async (data) => {
             data.toRender = false;
-            if (data.params.mode === "string") {
-              data.connection.pipe("a string", { "custom-header": "cool" });
-            } else if (data.params.mode === "buffer") {
-              data.connection.pipe(Buffer.from("a buffer"), {
+            if (data.params!.mode === "string") {
+              data.connection!.pipe!("a string", { "custom-header": "cool" });
+            } else if (data.params!.mode === "buffer") {
+              data.connection!.pipe!(Buffer.from("a buffer"), {
                 "custom-header": "still-cool",
               });
-            } else if (data.params.mode === "contentType") {
-              data.connection.pipe("just some good, old-fashioned words", {
+            } else if (data.params!.mode === "contentType") {
+              data.connection!.pipe!("just some good, old-fashioned words", {
                 "Content-Type": "text/plain",
                 "custom-header": "words",
               });

@@ -6,7 +6,7 @@ describe("Action: randomNumber", () => {
   beforeAll(async () => await actionhero.start());
   afterAll(async () => await actionhero.stop());
 
-  let firstNumber: number = null;
+  let firstNumber: number;
 
   test("generates random numbers", async () => {
     const { randomNumber } = await specHelper.runAction<RandomNumber>(

@@ -5,15 +5,15 @@ export interface ResqueApi {
   connectionDetails: {
     [key: string]: any;
   };
-  queue?: Queue;
-  scheduler?: Scheduler;
-  multiWorker?: MultiWorker;
-  startQueue?: ResqueInitializer["startQueue"];
-  stopQueue?: ResqueInitializer["stopQueue"];
-  startScheduler?: ResqueInitializer["startScheduler"];
-  stopScheduler?: ResqueInitializer["stopScheduler"];
-  startMultiWorker?: ResqueInitializer["startMultiWorker"];
-  stopMultiWorker?: ResqueInitializer["stopMultiWorker"];
+  queue: Queue;
+  scheduler: Scheduler;
+  multiWorker: MultiWorker;
+  startQueue: ResqueInitializer["startQueue"];
+  stopQueue: ResqueInitializer["stopQueue"];
+  startScheduler: ResqueInitializer["startScheduler"];
+  stopScheduler: ResqueInitializer["stopScheduler"];
+  startMultiWorker: ResqueInitializer["startMultiWorker"];
+  stopMultiWorker: ResqueInitializer["stopMultiWorker"];
 }
 
 /**

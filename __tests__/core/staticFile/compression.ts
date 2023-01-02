@@ -35,9 +35,9 @@ describe("Core", () => {
       await actionhero.start();
       url =
         "http://localhost:" +
-        config.web.port +
+        config.web!.port +
         "/" +
-        config.web.urlPathForFiles;
+        config.web!.urlPathForFiles;
     });
 
     afterAll(async () => {

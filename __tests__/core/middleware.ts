@@ -10,10 +10,16 @@ import {
 } from "./../../src";
 
 const actionhero = new Process();
+let defaultMiddlewarePriority: number;
 
 describe("Core: Middleware", () => {
   beforeAll(async () => await actionhero.start());
   afterAll(async () => await actionhero.stop());
+
+  beforeAll(() => {
+    defaultMiddlewarePriority = config!.general!
+      .defaultMiddlewarePriority as number;
+  });
 
   afterEach(() => {
     api.actions.middleware = {};
@@ -86,7 +92,7 @@ describe("Core: Middleware", () => {
             authenticated: true,
             run: async ({ response, session }) => {
               sessions.push(session);
-              response.thing = "stuff";
+              response!.thing = "stuff";
             },
           },
         };
@@ -150,7 +156,7 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "early test middleware",
         global: true,
-        priority: config.general.defaultMiddlewarePriority - 1,
+        priority: defaultMiddlewarePriority - 1,
         preProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteEarly = "early";
           data.response._processorNoteLate = "early";
@@ -172,7 +178,7 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "late test middleware",
         global: true,
-        priority: config.general.defaultMiddlewarePriority + 1,
+        priority: defaultMiddlewarePriority + 1,
         preProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteLate = "late";
         },
@@ -189,7 +195,7 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "first test middleware",
         global: true,
-        priority: config.general.defaultMiddlewarePriority - 1,
+        priority: defaultMiddlewarePriority - 1,
         preProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteFirst = "first";
         },
@@ -198,7 +204,7 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "late test middleware",
         global: true,
-        priority: config.general.defaultMiddlewarePriority - 1,
+        priority: defaultMiddlewarePriority - 1,
         preProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteSecond = "second";
         },
@@ -240,7 +246,7 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "early test middleware",
         global: true,
-        priority: config.general.defaultMiddlewarePriority - 1,
+        priority: defaultMiddlewarePriority - 1,
         postProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteEarly = "early";
           data.response._processorNoteLate = "early";
@@ -262,7 +268,7 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "late test middleware",
         global: true,
-        priority: config.general.defaultMiddlewarePriority + 1,
+        priority: defaultMiddlewarePriority + 1,
         postProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteLate = "late";
         },
@@ -279,7 +285,7 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "first middleware",
         global: true,
-        priority: config.general.defaultMiddlewarePriority - 1,
+        priority: defaultMiddlewarePriority - 1,
         postProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteFirst = "first";
         },
@@ -288,7 +294,7 @@ describe("Core: Middleware", () => {
       action.addMiddleware({
         name: "second middleware",
         global: true,
-        priority: config.general.defaultMiddlewarePriority - 1,
+        priority: defaultMiddlewarePriority - 1,
         postProcessor: (data: ActionProcessor<any>) => {
           data.response._processorNoteSecond = "second";
         },

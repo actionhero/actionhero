@@ -14,9 +14,9 @@ import { routerMethods } from "../modules/route";
 
 export interface RoutesApi {
   routes: { [method in RouteMethod]: RouteType[] };
-  processRoute?: RoutesInitializer["processRoute"];
-  matchURL?: RoutesInitializer["matchURL"];
-  loadRoutes?: RoutesInitializer["loadRoutes"];
+  processRoute: RoutesInitializer["processRoute"];
+  matchURL: RoutesInitializer["matchURL"];
+  loadRoutes: RoutesInitializer["loadRoutes"];
 }
 
 /**
@@ -219,11 +219,10 @@ export class RoutesInitializer extends Initializer {
         put: [],
         delete: [],
       },
+      processRoute: this.processRoute,
+      matchURL: this.matchURL,
+      loadRoutes: this.loadRoutes,
     };
-
-    api.routes.processRoute = this.processRoute;
-    api.routes.matchURL = this.matchURL;
-    api.routes.loadRoutes = this.loadRoutes;
 
     api.routes.loadRoutes();
   }

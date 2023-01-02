@@ -25,7 +25,7 @@ describe("Action: swagger", () => {
         },
         outputExample: {},
         run: async (data) => {
-          data.response.success = true;
+          if (data.response) data.response.success = true;
         },
       },
     };
@@ -49,7 +49,7 @@ describe("Action: swagger", () => {
   });
 
   test("automatic routes is enabled", () => {
-    expect(config.web.automaticRoutes).toEqual(["get"]);
+    config.web && expect(config.web.automaticRoutes).toEqual(["get"]);
   });
 
   test("returns the correct parts", async () => {

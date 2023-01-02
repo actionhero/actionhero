@@ -3,7 +3,7 @@ import { api, utils, Initializer } from "../index";
 export interface ParamsApi {
   globalSafeParams?: Array<string>;
   postVariables: Array<string>;
-  buildPostVariables?: ParamsInitializer["buildPostVariables"];
+  buildPostVariables: ParamsInitializer["buildPostVariables"];
 }
 
 /**

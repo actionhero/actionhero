@@ -85,8 +85,8 @@ describe("Core", () => {
             version: 3,
             outputExample: {},
             run: async (data) => {
-              data.response.version = 3;
-              data.response.error = {
+              data.response!.version = 3;
+              data.response!.error = {
                 a: { complex: "error" },
               };
             },
@@ -101,9 +101,9 @@ describe("Core", () => {
 
       test("will default actions to version 1 when no version is provided by the definition", async () => {
         const response = await specHelper.runAction("randomNumber");
-        expect(response.requesterInformation.receivedParams.apiVersion).toEqual(
-          1
-        );
+        expect(
+          response.requesterInformation!.receivedParams.apiVersion
+        ).toEqual(1);
       });
 
       test("can specify an apiVersion", async () => {
@@ -124,9 +124,9 @@ describe("Core", () => {
 
       test("will default clients to the latest version of the action", async () => {
         const response = await specHelper.runAction("versionedAction");
-        expect(response.requesterInformation.receivedParams.apiVersion).toEqual(
-          3
-        );
+        expect(
+          response.requesterInformation!.receivedParams.apiVersion
+        ).toEqual(3);
       });
 
       test("will fail on a missing action + version", async () => {
@@ -249,7 +249,7 @@ describe("Core", () => {
               },
             },
             run: async (data) => {
-              data.response.params = data.params;
+              data.response!.params = data.params;
             },
           },
         };
@@ -258,7 +258,7 @@ describe("Core", () => {
       afterAll(() => {
         delete api.actions.actions.testAction;
         delete api.actions.versions.testAction;
-        config.general.missingParamChecks = [null, "", undefined];
+        config.general!.missingParamChecks = [null, "", undefined];
       });
 
       test("correct params that are falsey (false, []) should be allowed", async () => {
@@ -286,7 +286,7 @@ describe("Core", () => {
 
       test("correct params respect config options", async () => {
         let response;
-        config.general.missingParamChecks = [undefined];
+        config.general!.missingParamChecks = [undefined];
         response = await specHelper.runAction("testAction", {
           requiredParam: "",
         });
@@ -325,9 +325,9 @@ describe("Core", () => {
           requiredParam: true,
           fancyParam: 123,
         });
-        expect(response.requesterInformation.receivedParams.fancyParam).toEqual(
-          "123"
-        );
+        expect(
+          response.requesterInformation!.receivedParams.fancyParam
+        ).toEqual("123");
       });
 
       test("succeeds a validator which returns no response", async () => {
@@ -344,10 +344,10 @@ describe("Core", () => {
           sleepDuration: true,
         });
         expect(
-          response.requesterInformation.receivedParams.requiredParam
+          response.requesterInformation!.receivedParams.requiredParam
         ).toBeTruthy();
         expect(
-          response.requesterInformation.receivedParams.sleepDuration
+          response.requesterInformation!.receivedParams.sleepDuration
         ).toBeUndefined();
       });
     });
@@ -388,7 +388,7 @@ describe("Core", () => {
               },
             },
             run: async (data) => {
-              data.response.params = data.params;
+              data.response!.params = data.params;
             },
           },
         };
@@ -397,7 +397,7 @@ describe("Core", () => {
       afterAll(() => {
         delete api.actions.actions.testAction;
         delete api.actions.versions.testAction;
-        config.general.missingParamChecks = [null, "", undefined];
+        config.general!.missingParamChecks = [null, "", undefined];
       });
 
       test("correct params that are falsey (false, []) should be allowed", async () => {
@@ -429,8 +429,8 @@ describe("Core", () => {
       });
 
       test("correct params respect config options", async () => {
-        let response;
-        config.general.missingParamChecks = [undefined];
+        let response: Record<string, any>;
+        config.general!.missingParamChecks = [undefined];
         response = await specHelper.runAction("testAction", {
           schemaParam: { requiredParam: "" },
         });
@@ -467,7 +467,7 @@ describe("Core", () => {
           schemaParam: { requiredParam: true, fancyParam: 123 },
         });
         expect(
-          response.requesterInformation.receivedParams.schemaParam.fancyParam
+          response.requesterInformation!.receivedParams.schemaParam.fancyParam
         ).toEqual("123");
       });
 
@@ -476,10 +476,12 @@ describe("Core", () => {
           schemaParam: { requiredParam: true, sleepDuration: true },
         });
         expect(
-          response.requesterInformation.receivedParams.schemaParam.requiredParam
+          response.requesterInformation!.receivedParams.schemaParam
+            .requiredParam
         ).toBeTruthy();
         expect(
-          response.requesterInformation.receivedParams.schemaParam.sleepDuration
+          response.requesterInformation!.receivedParams.schemaParam
+            .sleepDuration
         ).toBeUndefined();
       });
     });
@@ -572,7 +574,7 @@ describe("Core", () => {
               },
             },
             run: async (data) => {
-              data.response.a = data.params.a;
+              data.response!.a = data.params!.a;
             },
           },
         };
@@ -604,8 +606,8 @@ describe("Core", () => {
               a: { required: true },
             },
             run: async ({ params, response }) => {
-              params.a = "changed!";
-              response.a = params.a;
+              params!.a = "changed!";
+              response!.a = params!.a;
             },
           },
         };

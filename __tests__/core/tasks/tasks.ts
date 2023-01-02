@@ -20,7 +20,7 @@ describe("Core: Tasks", () => {
 
     api.resque.multiWorker.options.minTaskProcessors = 1;
     api.resque.multiWorker.options.maxTaskProcessors = 1;
-    api.resque.multiWorker.options.connection.redis.setMaxListeners(100);
+    api.resque.multiWorker.options.connection!.redis!.setMaxListeners(100);
 
     class RegularTask extends Task {
       constructor() {
@@ -130,7 +130,7 @@ describe("Core: Tasks", () => {
     delete api.tasks.jobs.slowTask;
     delete api.tasks.jobs.taskWithInputs;
 
-    config.tasks.queues = [];
+    config.tasks!.queues = [];
 
     api.resque.multiWorker.options.minTaskProcessors = 0;
     api.resque.multiWorker.options.maxTaskProcessors = 0;
@@ -149,7 +149,9 @@ describe("Core: Tasks", () => {
   });
 
   test("validates tasks", () => {
-    api.tasks.tasks.regularTask.validate();
+    if (api.tasks.tasks.regularTask.validate) {
+      api.tasks.tasks.regularTask.validate();
+    }
   });
 
   test("a bad task definition causes an exception", () => {
@@ -168,7 +170,7 @@ describe("Core: Tasks", () => {
     const task = new BadTask();
 
     try {
-      task.validate();
+      if (task.validate) task.validate();
       throw new Error("should not get here");
     } catch (error) {
       expect(error.toString()).toMatch(/name is required for this task/);
@@ -305,8 +307,8 @@ describe("Core: Tasks", () => {
   });
 
   test("re-enqueuing a periodic task should not enqueue it again", async () => {
-    const tryOne = await task.enqueue("periodicTask", null);
-    const tryTwo = await task.enqueue("periodicTask", null);
+    const tryOne = await task.enqueue("periodicTask", {});
+    const tryTwo = await task.enqueue("periodicTask", {});
     const length = await api.resque.queue.length(queue);
     expect(tryOne).toEqual(true);
     expect(tryTwo).toEqual(false);
@@ -400,8 +402,8 @@ describe("Core: Tasks", () => {
 
   test("I can remove and stop a recurring task", async () => {
     // enqueue the delayed job 2x, one in each type of queue
-    await task.enqueue("periodicTask", null);
-    await task.enqueueIn(1000, "periodicTask", null);
+    await task.enqueue("periodicTask", {});
+    await task.enqueueIn(1000, "periodicTask", {});
 
     const count = await task.stopRecurrentTask("periodicTask");
     expect(count).toEqual(2);
@@ -580,7 +582,7 @@ describe("Core: Tasks", () => {
 
   describe("details view in a working system", () => {
     test("can use api.tasks.details to learn about the system", async () => {
-      config.tasks.queues = ["*"];
+      config.tasks!.queues = ["*"];
 
       await task.enqueue("slowTask", { a: 1 });
       api.resque.multiWorker.start();

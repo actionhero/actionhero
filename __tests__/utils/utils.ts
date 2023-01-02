@@ -221,7 +221,7 @@ describe("Utils", () => {
 
   describe("utils.replaceDistWithSrc", () => {
     test("it replaces paths from dist to src", () => {
-      const p = `${config.general.paths.action[0]}/new-actions/test.ts`;
+      const p = `${config.general!.paths.action[0]}/new-actions/test.ts`;
       const withDist = utils.replaceDistWithSrc(p);
       expect(withDist).toMatch("/src/actions/new-actions/test.ts");
     });
@@ -229,14 +229,14 @@ describe("Utils", () => {
 
   describe("utils.filterObjectForLogging", () => {
     beforeEach(() => {
-      config.logger.maxLogArrayLength = 100;
-      expect(config.general.filteredParams.length).toEqual(0);
+      config.logger!.maxLogArrayLength = 100;
+      expect(config.general!.filteredParams.length).toEqual(0);
     });
 
     afterEach(() => {
       // after each test, empty the array
-      config.general.filteredParams = [];
-      config.logger.maxLogArrayLength = 10;
+      config.general!.filteredParams = [];
+      config.logger!.maxLogArrayLength = 10;
     });
 
     const testInput = {
@@ -260,7 +260,7 @@ describe("Utils", () => {
 
     test("can filter top level params, no matter the type", () => {
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
-      (config.general.filteredParams as string[]).push("p1", "p2", "o2");
+      (config.general!.filteredParams as string[]).push("p1", "p2", "o2");
       const filteredParams = utils.filterObjectForLogging(inputs);
       expect(filteredParams.p1).toEqual("[FILTERED]");
       expect(filteredParams.p2).toEqual("[FILTERED]");
@@ -276,7 +276,7 @@ describe("Utils", () => {
       const filteredParams = utils.filterObjectForLogging(inputs);
       expect(filteredParams).toEqual(testInput);
 
-      (config.general.filteredParams as string[]).push(
+      (config.general!.filteredParams as string[]).push(
         "p3",
         "p4",
         "o1.o3",
@@ -290,7 +290,7 @@ describe("Utils", () => {
 
     test("can filter a single level dot notation", () => {
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
-      (config.general.filteredParams as string[]).push(
+      (config.general!.filteredParams as string[]).push(
         "p1",
         "o1.o1p1",
         "somethingNotExist"
@@ -309,7 +309,7 @@ describe("Utils", () => {
 
     test("can filter two levels deep", () => {
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
-      (config.general.filteredParams as string[]).push(
+      (config.general!.filteredParams as string[]).push(
         "p2",
         "o1.o2.o2p1",
         "o1.o2.notThere"
@@ -327,7 +327,7 @@ describe("Utils", () => {
 
     test("can filter with a function rather than an array", () => {
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
-      config.general.filteredParams = () => {
+      config.general!.filteredParams = () => {
         return ["p1", "p2", "o2"];
       };
 
@@ -342,7 +342,7 @@ describe("Utils", () => {
     });
 
     test("short arrays will be displayed as-is", () => {
-      config.logger.maxLogArrayLength = 100;
+      config.logger!.maxLogArrayLength = 100;
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
       const filteredParams = utils.filterObjectForLogging(inputs);
       expect(filteredParams.a1).toEqual(testInput.a1);
@@ -350,7 +350,7 @@ describe("Utils", () => {
     });
 
     test("long arrays will be collected", () => {
-      config.logger.maxLogArrayLength = 10;
+      config.logger!.maxLogArrayLength = 10;
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
       const filteredParams = utils.filterObjectForLogging(inputs);
       expect(filteredParams.a1).toEqual(testInput.a1);
@@ -360,14 +360,14 @@ describe("Utils", () => {
 
   describe("utils.filterResponseForLogging", () => {
     beforeEach(() => {
-      config.logger.maxLogArrayLength = 100;
-      expect(config.general.filteredResponse.length).toEqual(0);
+      config.logger!.maxLogArrayLength = 100;
+      expect(config.general!.filteredResponse.length).toEqual(0);
     });
 
     afterEach(() => {
       // after each test, empty the array
-      config.general.filteredResponse = [];
-      config.logger.maxLogArrayLength = 10;
+      config.general!.filteredResponse = [];
+      config.logger!.maxLogArrayLength = 10;
     });
 
     const testInput = {
@@ -391,7 +391,7 @@ describe("Utils", () => {
 
     test("can filter top level params, no matter the type", () => {
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
-      (config.general.filteredResponse as string[]).push("p1", "p2", "o2");
+      (config.general!.filteredResponse as string[]).push("p1", "p2", "o2");
       const filteredResponse = utils.filterResponseForLogging(inputs);
       expect(filteredResponse.p1).toEqual("[FILTERED]");
       expect(filteredResponse.p2).toEqual("[FILTERED]");
@@ -407,7 +407,7 @@ describe("Utils", () => {
       const filteredResponse = utils.filterResponseForLogging(inputs);
       expect(filteredResponse).toEqual(testInput);
 
-      (config.general.filteredResponse as string[]).push(
+      (config.general!.filteredResponse as string[]).push(
         "p3",
         "p4",
         "o1.o3",
@@ -421,7 +421,7 @@ describe("Utils", () => {
 
     test("can filter a single level dot notation", () => {
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
-      (config.general.filteredResponse as string[]).push(
+      (config.general!.filteredResponse as string[]).push(
         "p1",
         "o1.o1p1",
         "somethingNotExist"
@@ -440,7 +440,7 @@ describe("Utils", () => {
 
     test("can filter two levels deep", () => {
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
-      (config.general.filteredResponse as string[]).push(
+      (config.general!.filteredResponse as string[]).push(
         "p2",
         "o1.o2.o2p1",
         "o1.o2.notThere"
@@ -458,7 +458,7 @@ describe("Utils", () => {
 
     test("can filter with a function rather than an array", () => {
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
-      config.general.filteredResponse = () => {
+      config.general!.filteredResponse = () => {
         return ["p1", "p2", "o2"];
       };
 
@@ -472,7 +472,7 @@ describe("Utils", () => {
     });
 
     test("long arrays will be collected", () => {
-      config.logger.maxLogArrayLength = 10;
+      config.logger!.maxLogArrayLength = 10;
       const inputs = JSON.parse(JSON.stringify(testInput)); // quick deep Clone
       const filteredResponse = utils.filterResponseForLogging(inputs);
       expect(filteredResponse.a1).toEqual(testInput.a1);
