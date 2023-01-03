@@ -43,7 +43,7 @@
     "glob": "^8.0.3",
     "ioredis": "^5.2.4",
     "mime": "^3.0.0",
-    "node-resque": "^9.2.1",
+    "node-resque": "^9.2.2",
     "primus": "^8.0.6",
     "qs": "^6.11.0",
     "type-fest": "^3.3.0",
