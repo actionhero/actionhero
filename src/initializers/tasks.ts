@@ -12,9 +12,9 @@ export interface TaskApi {
   jobs: { [key: string]: any };
   middleware: { [key: string]: TaskModule.task.TaskMiddleware };
   globalMiddleware: Array<string>;
-  loadFile?: TasksInitializer["loadFile"];
-  jobWrapper?: TasksInitializer["jobWrapper"];
-  loadTasks?: TasksInitializer["loadTasks"];
+  loadFile: TasksInitializer["loadFile"];
+  jobWrapper: TasksInitializer["jobWrapper"];
+  loadTasks: TasksInitializer["loadTasks"];
 }
 
 /**

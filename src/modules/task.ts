@@ -54,7 +54,7 @@ export namespace task {
    */
   export async function enqueue(
     taskName: string,
-    inputs: TaskInputs,
+    inputs?: TaskInputs,
     queue: string = api.tasks.tasks[taskName].queue
   ) {
     await validateInput(taskName, inputs);
@@ -74,7 +74,7 @@ export namespace task {
   export async function enqueueAt(
     timestamp: number,
     taskName: string,
-    inputs: TaskInputs,
+    inputs?: TaskInputs,
     queue: string = api.tasks.tasks[taskName].queue,
     suppressDuplicateTaskError = false
   ) {
@@ -102,7 +102,7 @@ export namespace task {
   export async function enqueueIn(
     time: number,
     taskName: string,
-    inputs: TaskInputs,
+    inputs?: TaskInputs,
     queue: string = api.tasks.tasks[taskName].queue,
     suppressDuplicateTaskError = false
   ) {

@@ -10,7 +10,7 @@ let url: string;
 describe("Server: sendBuffer", () => {
   beforeAll(async () => {
     await actionhero.start();
-    url = "http://localhost:" + config.web.port;
+    url = "http://localhost:" + config.web!.port;
   });
 
   afterAll(async () => await actionhero.stop());
@@ -26,12 +26,13 @@ describe("Server: sendBuffer", () => {
         run: async (data) => {
           const buffer = "Example of data buffer";
           const bufferStream = new stream.PassThrough();
-          data.connection.rawConnection.responseHeaders.push([
+          data.connection!.rawConnection.responseHeaders.push([
             "Content-Disposition",
             "attachment; filename=test.csv",
           ]);
           api.servers.servers.web.sendFile(
-            data.connection,
+            data.connection!,
+            // @ts-ignore
             null,
             bufferStream,
             "text/csv",
@@ -54,7 +55,8 @@ describe("Server: sendBuffer", () => {
         run: async (data) => {
           const bufferStream = new stream.PassThrough();
           api.servers.servers.web.sendFile(
-            data.connection,
+            data.connection!,
+            // @ts-ignore
             null,
             bufferStream,
             "text/plain",

@@ -36,11 +36,11 @@ describe("Core: Tasks", () => {
   describe("custom queues function", () => {
     beforeAll(async () => {
       await actionhero.start();
-      api.resque.multiWorker.options.connection.redis.setMaxListeners(100);
+      api.resque.multiWorker.options.connection!.redis!.setMaxListeners(100);
     });
 
     afterAll(async () => {
-      config.tasks.queues = [];
+      config.tasks!.queues = [];
 
       api.resque.multiWorker.options.minTaskProcessors = 0;
       api.resque.multiWorker.options.maxTaskProcessors = 0;

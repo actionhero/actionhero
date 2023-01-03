@@ -91,6 +91,8 @@ describe("with ioredis-mock", () => {
 
     await api.redis.clients.client.publish("test-channel", "hello");
     await utils.sleep(10);
+
+    //@ts-ignore
     expect(message).toBe("hello");
 
     api.redis.clients.subscriber.unsubscribe("test-channel");
@@ -110,6 +112,7 @@ describe("with ioredis-mock", () => {
     await client1.verbs("say", ["defaultRoom", "Hi"]);
     await utils.sleep(10);
 
+    if (!client2.messages) throw new Error("client2 has no messages");
     const { message, room, from } =
       client2.messages[client2.messages.length - 1];
 

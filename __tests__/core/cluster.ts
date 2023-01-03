@@ -13,13 +13,19 @@ const actionhero = new Process();
 describe("Core: Action Cluster", () => {
   beforeAll(async () => {
     await actionhero.start();
-    for (var room in config.general.startingChatRooms) {
+    for (var room in config!.general!.startingChatRooms as Record<
+      string,
+      Record<string, any>
+    >) {
       try {
         await chatRoom.destroy(room);
         await chatRoom.add(room);
       } catch (error) {
         console.log(error);
-        if (!error.toString().match(config.errors.connectionRoomExists(room))) {
+        if (
+          config.errors &&
+          typeof config.errors.connectionRoomExists === "function"
+        ) {
           throw error;
         }
       }
@@ -90,6 +96,7 @@ describe("Core: Action Cluster", () => {
       const connection = await api.connections.apply(client.id, "sendMessage", {
         message: "hi",
       });
+      if (!connection.messages) throw new Error("no connection.messages");
       const message = connection.messages[connection.messages.length - 1];
       expect(message.message).toEqual("hi");
     });

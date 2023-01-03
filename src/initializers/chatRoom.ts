@@ -13,7 +13,7 @@ export interface ChatRoomApi {
   generateMessagePayload: ChatRoomInitializer["generateMessagePayload"];
   incomingMessage: ChatRoomInitializer["incomingMessage"];
   incomingMessagePerConnection?: ChatRoomInitializer["incomingMessagePerConnection"];
-  runMiddleware?: ChatRoomInitializer["runMiddleware"];
+  runMiddleware: ChatRoomInitializer["runMiddleware"];
 }
 
 export type ChatMiddlewareDirections =

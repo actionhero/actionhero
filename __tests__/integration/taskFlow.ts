@@ -94,9 +94,11 @@ describe("task integration tests", () => {
 
     test("the periodic task should have started", async () => {
       const getCount = async () => {
-        return parseInt(
-          await api.redis.clients.client.get("resque:stat:processed")
+        const resp = await api.redis.clients.client.get(
+          "resque:stat:processed"
         );
+        if (!resp) throw new Error("no response from redis");
+        return parseInt(resp);
       };
 
       while ((await getCount()) < 1) await utils.sleep(100);

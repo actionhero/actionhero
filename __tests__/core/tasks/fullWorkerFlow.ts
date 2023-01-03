@@ -31,7 +31,7 @@ describe("Core: Tasks", () => {
   describe("full worker flow", () => {
     beforeAll(async () => {
       await actionhero.start();
-      api.resque.multiWorker.options.connection.redis.setMaxListeners(100);
+      api.resque.multiWorker.options.connection!.redis!.setMaxListeners(100);
 
       class RegularTask extends Task {
         constructor() {
@@ -96,7 +96,7 @@ describe("Core: Tasks", () => {
       delete api.tasks.jobs.periodicTask;
       delete api.tasks.jobs.slowTask;
 
-      config.tasks.queues = [];
+      config.tasks!.queues = [];
 
       api.resque.multiWorker.options.minTaskProcessors = 0;
       api.resque.multiWorker.options.maxTaskProcessors = 0;
@@ -116,7 +116,7 @@ describe("Core: Tasks", () => {
 
     test("normal tasks work", async () => {
       await task.enqueue("regularTask", { word: "first" });
-      config.tasks.queues = ["*"];
+      config.tasks!.queues = ["*"];
       api.resque.multiWorker.start();
 
       await utils.sleep(500);
@@ -128,8 +128,8 @@ describe("Core: Tasks", () => {
     test("delayed tasks work", async () => {
       await task.enqueueIn(100, "regularTask", { word: "delayed" });
 
-      config.tasks.queues = ["*"];
-      config.tasks.scheduler = true;
+      config.tasks!.queues = ["*"];
+      config.tasks!.scheduler = true;
       await api.resque.startScheduler();
       await api.resque.multiWorker.start();
 
@@ -142,8 +142,8 @@ describe("Core: Tasks", () => {
     test("recurrent tasks work", async () => {
       await task.enqueueRecurrentTask("periodicTask");
 
-      config.tasks.queues = ["*"];
-      config.tasks.scheduler = true;
+      config.tasks!.queues = ["*"];
+      config.tasks!.scheduler = true;
       await api.resque.startScheduler();
       await api.resque.multiWorker.start();
 
@@ -169,7 +169,7 @@ describe("Core: Tasks", () => {
 
     test("trying to run an unknown job will return a failure, but not crash the server", async () => {
       await new Promise(async (resolve) => {
-        config.tasks.queues = ["*"];
+        config.tasks!.queues = ["*"];
 
         const listener = async (
           workerId: number,

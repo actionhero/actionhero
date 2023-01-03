@@ -20,11 +20,13 @@ describe("Core", () => {
   describe("static file", () => {
     beforeAll(async () => {
       await actionhero.start();
-      url =
-        "http://localhost:" +
-        config.web.port +
-        "/" +
-        config.web.urlPathForFiles;
+      if (config.web) {
+        url =
+          "http://localhost:" +
+          config.web.port +
+          "/" +
+          config.web.urlPathForFiles;
+      }
     });
 
     afterAll(async () => {

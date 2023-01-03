@@ -8,12 +8,12 @@ describe("Core", () => {
   describe("errors", () => {
     beforeAll(async () => {
       await actionhero.start();
-      originalUnknownAction = config.errors.unknownAction;
+      originalUnknownAction = config!.errors!.unknownAction;
     });
 
     afterAll(async () => {
       await actionhero.stop();
-      config.errors.unknownAction = originalUnknownAction;
+      config!.errors!.unknownAction = originalUnknownAction;
     });
 
     test("returns string errors properly", async () => {
@@ -59,7 +59,7 @@ describe("Core", () => {
     const errorMsg = "worst action ever!";
     beforeAll(async () => {
       await actionhero.start();
-      originalGenericError = config.errors.genericError;
+      originalGenericError = config!.errors!.genericError;
       api.actions.versions.errorAction = [1];
       api.actions.actions.errorAction = {
         // @ts-ignore
@@ -79,7 +79,7 @@ describe("Core", () => {
       await actionhero.stop();
       delete api.actions.actions.errorAction;
       delete api.actions.versions.errorAction;
-      config.errors.genericError = originalGenericError;
+      config!.errors!.genericError = originalGenericError;
     });
 
     test("will return an actions error", async () => {
@@ -89,7 +89,7 @@ describe("Core", () => {
     });
 
     test("can decorate an error", async () => {
-      config.errors.genericError = async (data, error) => {
+      config!.errors!.genericError = async (data, error) => {
         data.response.requestId = "id-12345";
         return error;
       };

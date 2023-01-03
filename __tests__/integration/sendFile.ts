@@ -10,7 +10,7 @@ let url: string;
 describe("Server: sendFile", () => {
   beforeAll(async () => {
     await actionhero.start();
-    url = "http://localhost:" + config.web.port;
+    url = "http://localhost:" + config.web!.port;
   });
 
   afterAll(async () => await actionhero.stop());

@@ -20,7 +20,7 @@ const connectClients = async () => {
   ); // eslint-disable-line
 
   const S = api.servers.servers.websocket.server.Socket;
-  url = "http://localhost:" + config.web.port;
+  url = "http://localhost:" + config.web!.port;
   const clientAsocket = new S(url);
   const clientBsocket = new S(url);
   const clientCsocket = new S(url);
@@ -40,7 +40,7 @@ const awaitMethod = async (
   [key: string]: any;
 }> => {
   return new Promise((resolve, reject) => {
-    client[method]((a: any, b: unknown) => {
+    client[method]((a: any, b: any) => {
       if (returnsError && a) {
         return reject(a);
       }
@@ -92,8 +92,8 @@ describe("Server: Web Socket", () => {
     await chatRoom.add("defaultRoom");
     await chatRoom.add("otherRoom");
 
-    url = "http://localhost:" + config.web.port;
-    config.websocket.clientUrl = url;
+    url = "http://localhost:" + config.web!.port;
+    config.websocket!.clientUrl = url;
     await connectClients();
   });
 
@@ -153,17 +153,19 @@ describe("Server: Web Socket", () => {
       let aTime: Date;
       let bTime: Date;
       const startingMessageId = clientA.messageId;
+      let responseA: Record<string, any>;
+      let responseB: Record<string, any>;
       awaitRoom(clientA, "roomAdd", "defaultRoom"); // fast
-      let responseA = awaitAction(clientA, "sleepTest"); // slow
+      const promiseA = awaitAction(clientA, "sleepTest"); // slow
       awaitRoom(clientA, "roomAdd", "defaultRoom"); // fast
-      let responseB = awaitAction(clientA, "randomNumber"); // fast
+      const promiseB = awaitAction(clientA, "randomNumber"); // fast
 
-      responseA.then((data) => {
+      promiseA.then((data) => {
         responseA = data;
         aTime = new Date();
       });
 
-      responseB.then((data) => {
+      promiseB.then((data) => {
         responseB = data;
         bTime = new Date();
       });
@@ -174,6 +176,7 @@ describe("Server: Web Socket", () => {
       expect(responseA.messageId).toEqual(startingMessageId + 2);
       //@ts-ignore
       expect(responseB.messageId).toEqual(startingMessageId + 4);
+      //@ts-ignore
       expect(aTime.getTime()).toBeGreaterThan(bTime.getTime());
     });
 
@@ -295,6 +298,7 @@ describe("Server: Web Socket", () => {
           name: "join chat middleware",
           join: async (connection: any, room: string) => {
             await api.chatRoom.broadcast(
+              //@ts-ignore
               null,
               room,
               `I have entered the room: ${connection.id}`
@@ -306,6 +310,7 @@ describe("Server: Web Socket", () => {
           name: "leave chat middleware",
           leave: async (connection: any, room: string) => {
             api.chatRoom.broadcast(
+              //@ts-ignore
               null,
               room,
               `I have left the room: ${connection.id}`
@@ -705,12 +710,12 @@ describe("Server: Web Socket", () => {
       let originalSimultaneousActions: number;
 
       beforeAll(() => {
-        originalSimultaneousActions = config.general.simultaneousActions;
-        config.general.simultaneousActions = 99999999;
+        originalSimultaneousActions = config.general!.simultaneousActions;
+        config.general!.simultaneousActions = 99999999;
       });
 
       afterAll(() => {
-        config.general.simultaneousActions = originalSimultaneousActions;
+        config.general!.simultaneousActions = originalSimultaneousActions;
       });
 
       test("will not have param collisions", async () => {

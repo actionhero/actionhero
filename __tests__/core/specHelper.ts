@@ -20,6 +20,7 @@ describe("Core: specHelper", () => {
     const connection = await specHelper.buildConnection();
     connection.params.thing = "stuff";
     const { error } = await specHelper.runAction("x", connection);
+    if (!connection.messages) throw new Error("no connection.messages");
     expect(connection.messages).toHaveLength(2);
     expect(connection.messages[0].welcome).toEqual(
       "Welcome to the actionhero api"
@@ -108,8 +109,8 @@ describe("Core: specHelper", () => {
         expect(response.error).toBeUndefined();
         expect(response.randomNumber).toBeTruthy();
         expect(response.messageId).toBeTruthy();
-        expect(response.serverInformation.serverName).toEqual("actionhero");
-        expect(response.requesterInformation.remoteIP).toEqual("testServer");
+        expect(response.serverInformation!.serverName).toEqual("actionhero");
+        expect(response.requesterInformation!.remoteIP).toEqual("testServer");
       });
 
       test("if the response payload is a string, it maintains type", async () => {
@@ -158,8 +159,8 @@ describe("Core: specHelper", () => {
           "Error: unknown action or invalid apiVersion"
         );
         expect(response.messageId).toBeTruthy();
-        expect(response.serverInformation.serverName).toEqual("actionhero");
-        expect(response.requesterInformation.remoteIP).toEqual("testServer");
+        expect(response.serverInformation!.serverName).toEqual("actionhero");
+        expect(response.requesterInformation!.remoteIP).toEqual("testServer");
       });
 
       test("if the response payload is a string, just the error will be returned", async () => {
@@ -243,7 +244,7 @@ describe("Core: specHelper", () => {
       connId = connection.id;
 
       const response = await specHelper.runAction("cacheTest", connection);
-      messageIds.push(response.messageId);
+      messageIds.push(response.messageId!);
       expect(connection.messages).toHaveLength(2);
       expect(connId).toEqual(connection.id);
       expect(connection.fingerprint).toEqual(connId);
@@ -251,7 +252,7 @@ describe("Core: specHelper", () => {
 
     test("can make second request", async () => {
       const response = await specHelper.runAction("randomNumber", connection);
-      messageIds.push(response.messageId);
+      messageIds.push(response.messageId!);
       expect(connection.messages).toHaveLength(3);
       expect(connId).toEqual(connection.id);
       expect(connection.fingerprint).toEqual(connId);
@@ -259,9 +260,9 @@ describe("Core: specHelper", () => {
 
     test("will generate new ids and fingerprints for a new connection", async () => {
       const response = await specHelper.runAction("randomNumber");
-      messageIds.push(response.messageId);
-      expect(response.requesterInformation.id).not.toEqual(connId);
-      expect(response.requesterInformation.fingerprint).not.toEqual(connId);
+      messageIds.push(response.messageId!);
+      expect(response.requesterInformation!.id).not.toEqual(connId);
+      expect(response.requesterInformation!.fingerprint).not.toEqual(connId);
     });
 
     test("message ids are unique", () => {

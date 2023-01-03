@@ -80,7 +80,7 @@ export const DEFAULT = {
       startingChatRooms: {
         // format is {roomName: {authKey, authValue}}
         // 'secureRoom': {authorized: true},
-      },
+      } as Record<string, Record<string, any>>,
     };
   },
 };
