@@ -402,8 +402,8 @@ describe("Core: Tasks", () => {
 
   test("I can remove and stop a recurring task", async () => {
     // enqueue the delayed job 2x, one in each type of queue
-    await task.enqueue("periodicTask", {});
-    await task.enqueueIn(1000, "periodicTask", {});
+    await task.enqueue("periodicTask");
+    await task.enqueueIn(1000, "periodicTask");
 
     const count = await task.stopRecurrentTask("periodicTask");
     expect(count).toEqual(2);
