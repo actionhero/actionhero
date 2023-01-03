@@ -25,7 +25,7 @@ describe("Modules", () => {
     });
 
     test("in-line actions can accept params", async () => {
-      // @ts-expect-error
+      // @ts-ignore
       const response = await action.run("cacheTest", null, {
         key: "testKey",
         value: "testValue",
@@ -92,7 +92,7 @@ describe("Modules", () => {
           /not logged in/
         );
 
-        // @ts-expect-error
+        // @ts-ignore
         const response = await action.run("randomNumber", null, null, {
           session: { userId: 123 },
         });

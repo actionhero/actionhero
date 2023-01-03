@@ -50,7 +50,7 @@ describe("Integration: Web Server + Websocket Socket shared fingerprint", () => 
     });
     fingerprint = body.requesterInformation.fingerprint;
     const query = `${
-      (config.web!.fingerprintOptions as Record<string, string>).cookieKey
+      (config.web!.fingerprintOptions as Record<string, any>).cookieKey
     }=${fingerprint}`;
     const { client, connectResponse } = await connectClient(query);
     expect(connectResponse.status).toEqual("OK");
@@ -73,7 +73,7 @@ describe("Integration: Web Server + Websocket Socket shared fingerprint", () => 
 
   test("should exist as long as cookie is passed", async () => {
     const query = `${
-      (config.web!.fingerprintOptions as Record<string, string>).cookieKey
+      (config.web!.fingerprintOptions as Record<string, any>).cookieKey
     }=dummyValue`;
     const { client, connectResponse } = await connectClient(query);
     expect(connectResponse.status).toEqual("OK");

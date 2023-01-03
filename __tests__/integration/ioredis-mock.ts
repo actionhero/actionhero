@@ -92,7 +92,7 @@ describe("with ioredis-mock", () => {
     await api.redis.clients.client.publish("test-channel", "hello");
     await utils.sleep(10);
 
-    //@ts-expect-error
+    //@ts-ignore
     expect(message).toBe("hello");
 
     api.redis.clients.subscriber.unsubscribe("test-channel");

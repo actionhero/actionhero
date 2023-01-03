@@ -147,7 +147,7 @@ describe("Server: Web", () => {
     });
 
     test("'all' routes are duplicated properly", () => {
-      // @ts-expect-error
+      // @ts-ignore
       route.registerRoute("all", "/other-login", "login", null);
       const loaded: Partial<Record<typeof routerMethods[number], boolean>> = {};
       const registered: Partial<Record<typeof routerMethods[number], boolean>> =
@@ -532,6 +532,7 @@ describe("Server: Web", () => {
     });
 
     test("it remembers manually loaded routes", async () => {
+      // @ts-ignore
       route.registerRoute("get", "/a-custom-route", "randomNumber", null);
       const response = await request.get(url + "/api/a-custom-route", {
         resolveWithFullResponse: true,

@@ -195,7 +195,7 @@ export class RoutesInitializer extends Initializer {
         }
 
         log(
-          `creating routes automatically for all actions to ${verb} HTTP verb`
+          `creating routes automatically for all actions responding to ${verb.toUpperCase()} HTTP verb`
         );
 
         for (const action in api.actions.actions) {

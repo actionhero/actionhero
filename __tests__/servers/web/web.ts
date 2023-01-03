@@ -837,7 +837,7 @@ describe("Server: Web", () => {
         route.registerRoute(
           "get",
           "/my/public/route",
-          // @ts-expect-error
+          // @ts-ignore
           null,
           null,
           true,

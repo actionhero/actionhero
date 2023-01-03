@@ -32,7 +32,7 @@ describe("Server: sendBuffer", () => {
           ]);
           api.servers.servers.web.sendFile(
             data.connection!,
-            // @ts-expect-error
+            // @ts-ignore
             null,
             bufferStream,
             "text/csv",
@@ -56,7 +56,7 @@ describe("Server: sendBuffer", () => {
           const bufferStream = new stream.PassThrough();
           api.servers.servers.web.sendFile(
             data.connection!,
-            // @ts-expect-error
+            // @ts-ignore
             null,
             bufferStream,
             "text/plain",
