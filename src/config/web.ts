@@ -24,9 +24,9 @@ export const DEFAULT = {
         : [],
       // Port or Socket Path
       port: process.env.PORT || 8080,
-      // Which IP to listen on (use '0.0.0.0' for all; '::' for all on ipv4 and ipv6)
+      // Which IP to listen on (use '0.0.0.0' for the default ip stack; '::' for all on ipv4 and ipv6)
       // Set to `null` when listening to socket
-      bindIP: "0.0.0.0",
+      bindIP: "::",
       // Any additional headers you want actionhero to respond with
       httpHeaders: {
         "X-Powered-By": config.general.serverName,

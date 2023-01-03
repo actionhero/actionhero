@@ -10,6 +10,8 @@ let clientC: any;
 
 let url: string;
 
+const localhosts = ["127.0.0.1", "::ffff:127.0.0.1", "::1"];
+
 const connectClients = async () => {
   // get ActionheroWebsocketClient in scope
   const ActionheroWebsocketClient = eval(
@@ -128,7 +130,7 @@ describe("Server: Web Socket", () => {
     test("I can get my connection details", async () => {
       const response = await awaitMethod(clientA, "detailsView");
       expect(response.data.connectedAt).toBeLessThan(new Date().getTime());
-      expect(response.data.remoteIP).toEqual("127.0.0.1");
+      expect(localhosts).toContain(response.data.remoteIP);
     });
 
     test("can run actions with errors", async () => {
@@ -768,7 +770,7 @@ describe("Server: Web Socket", () => {
 
       test("can be sent disconnect events from the server", async () => {
         const response = await awaitMethod(clientA, "detailsView");
-        expect(response.data.remoteIP).toEqual("127.0.0.1");
+        expect(localhosts).toContain(response.data.remoteIP);
 
         let count = 0;
         for (const id in api.connections.connections) {
