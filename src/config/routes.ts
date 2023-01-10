@@ -4,7 +4,7 @@ const namespace = "routes";
 
 declare module ".." {
   export interface ActionheroConfigInterface {
-    [namespace]: ReturnType<typeof DEFAULT[typeof namespace]>;
+    [namespace]: ReturnType<(typeof DEFAULT)[typeof namespace]>;
   }
 }
 

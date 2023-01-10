@@ -149,9 +149,11 @@ describe("Server: Web", () => {
     test("'all' routes are duplicated properly", () => {
       // @ts-ignore
       route.registerRoute("all", "/other-login", "login", null);
-      const loaded: Partial<Record<typeof routerMethods[number], boolean>> = {};
-      const registered: Partial<Record<typeof routerMethods[number], boolean>> =
+      const loaded: Partial<Record<(typeof routerMethods)[number], boolean>> =
         {};
+      const registered: Partial<
+        Record<(typeof routerMethods)[number], boolean>
+      > = {};
       routerMethods.forEach((verb) => {
         api.routes.routes[verb].forEach((route) => {
           if (!loaded[verb]) {

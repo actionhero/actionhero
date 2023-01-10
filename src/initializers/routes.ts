@@ -154,7 +154,7 @@ export class RoutesInitializer extends Initializer {
     return response;
   };
 
-  loadRoutes = (rawRoutes?: typeof config["routes"]) => {
+  loadRoutes = (rawRoutes?: (typeof config)["routes"]) => {
     let counter = 0;
 
     if (!rawRoutes) if (config.routes) rawRoutes = config.routes;
