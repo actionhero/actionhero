@@ -9,7 +9,7 @@ export const routerMethods = [
   "put",
   "delete",
 ] as const;
-export type RouteMethod = typeof routerMethods[number];
+export type RouteMethod = (typeof routerMethods)[number];
 
 export type RouteType = {
   path: string;
@@ -20,7 +20,7 @@ export type RouteType = {
 };
 
 export type RoutesConfig = Partial<
-  Record<typeof routerMethods[number], RouteType[]>
+  Record<(typeof routerMethods)[number], RouteType[]>
 >;
 
 export namespace route {

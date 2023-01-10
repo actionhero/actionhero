@@ -1,5 +1,4 @@
 import * as uuid from "uuid";
-import { number } from "yargs";
 import { RouteType } from "../modules/route";
 import { api, chatRoom } from "./../index";
 import { config } from "./../modules/config";
@@ -29,7 +28,7 @@ export const connectionVerbs = [
   "detailsView",
   "say",
 ] as const;
-export type ConnectionVerb = typeof connectionVerbs[number];
+export type ConnectionVerb = (typeof connectionVerbs)[number];
 
 /**
  * The generic representation of a connection for all server types is an Actionhero.Connection.  You will never be creating these yourself via an action or task, but you will find them in your Actions and Action Middleware.

@@ -5,7 +5,7 @@ const namespace = "tasks";
 
 declare module ".." {
   export interface ActionheroConfigInterface {
-    [namespace]: ReturnType<typeof DEFAULT[typeof namespace]>;
+    [namespace]: ReturnType<(typeof DEFAULT)[typeof namespace]>;
   }
 }
 
