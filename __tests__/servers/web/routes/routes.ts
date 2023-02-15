@@ -1,4 +1,4 @@
-import * as request from "request-promise-native";
+import axios, { AxiosError } from "axios";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
@@ -7,14 +7,6 @@ import { routerMethods } from "../../../../src/modules/route";
 
 let url: string;
 let actionhero: Process;
-
-const toJson = async (string: string) => {
-  try {
-    return JSON.parse(string);
-  } catch (error) {
-    return error;
-  }
-};
 
 describe("Server: Web", () => {
   beforeAll(async () => {
@@ -172,242 +164,278 @@ describe("Server: Web", () => {
 
     test("unknown actions are still unknown", async () => {
       try {
-        await request.get(url + "/api/a_crazy_action");
+        await axios.get(url + "/api/a_crazy_action");
         throw new Error("should not get here");
       } catch (error) {
-        expect(error.statusCode).toEqual(404);
-        const body = await toJson(error.response.body);
-        expect(body.error).toEqual("unknown action or invalid apiVersion");
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(404);
+          expect(error.response?.data.error).toEqual(
+            "unknown action or invalid apiVersion"
+          );
+        } else throw error;
       }
     });
 
     test("route actions will override explicit actions, if the defined action is null", async () => {
       try {
-        await request
-          .get(url + "/api/user/123?action=someFakeAction")
-          .then(toJson);
+        await axios.get(url + "/api/user/123?action=someFakeAction");
         throw new Error("should not get here");
       } catch (error) {
-        expect(error.statusCode).toEqual(404);
-        const body = await toJson(error.response.body);
-        expect(body.requesterInformation.receivedParams.action).toEqual("user");
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(404);
+          expect(
+            error.response?.data.requesterInformation.receivedParams.action
+          ).toEqual("user");
+        } else throw error;
       }
     });
 
     test("returns application/json when the mime type cannot be determined for an action", async () => {
-      const response = await request.get(
-        url + "/api/mimeTestAction/thing.bogus",
-        { resolveWithFullResponse: true }
-      );
+      const response = await axios.get(url + "/api/mimeTestAction/thing.bogus");
       expect(response.headers["content-type"]).toMatch(/json/);
-      const body = JSON.parse(response.body);
-      expect(body.matchedRoute.path).toEqual("/mimeTestAction/:key");
-      expect(body.matchedRoute.action).toEqual("mimeTestAction");
+      expect(response.data.matchedRoute.path).toEqual("/mimeTestAction/:key");
+      expect(response.data.matchedRoute.action).toEqual("mimeTestAction");
     });
 
     test("route actions have the matched route available to the action", async () => {
-      const body = await request
-        .get(url + "/api/mimeTestAction/thing.json")
-        .then(toJson);
-      expect(body.matchedRoute.path).toEqual("/mimeTestAction/:key");
-      expect(body.matchedRoute.action).toEqual("mimeTestAction");
+      const body = await axios.get(url + "/api/mimeTestAction/thing.json");
+      expect(body.data.matchedRoute.path).toEqual("/mimeTestAction/:key");
+      expect(body.data.matchedRoute.action).toEqual("mimeTestAction");
     });
 
     test("Routes should recognize apiVersion as default param", async () => {
-      const body = await request
-        .get(url + "/api/old_login?user_id=7")
-        .then(toJson);
-      expect(body.user_id).toEqual("7");
-      expect(body.requesterInformation.receivedParams.action).toEqual("login");
+      const body = await axios.get(url + "/api/old_login?user_id=7");
+      expect(body.data.user_id).toEqual("7");
+      expect(body.data.requesterInformation.receivedParams.action).toEqual(
+        "login"
+      );
     });
 
     test("Routes should be mapped for GET (simple)", async () => {
       try {
-        await request.get(url + "/api/users").then(toJson);
+        await axios.get(url + "/api/users");
         throw new Error("should not get here");
       } catch (error) {
-        expect(error.statusCode).toEqual(404);
-        const body = await toJson(error.response.body);
-        expect(body.requesterInformation.receivedParams.action).toEqual(
-          "usersList"
-        );
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(404);
+          expect(
+            error.response?.data.requesterInformation.receivedParams.action
+          ).toEqual("usersList");
+        } else throw error;
       }
     });
 
     test("Routes should be mapped for GET (complex)", async () => {
       try {
-        await request.get(url + "/api/user/1234").then(toJson);
+        await axios.get(url + "/api/user/1234");
         throw new Error("should not get here");
       } catch (error) {
-        expect(error.statusCode).toEqual(404);
-        const body = await toJson(error.response.body);
-        expect(body.requesterInformation.receivedParams.action).toEqual("user");
-        expect(body.requesterInformation.receivedParams.userID).toEqual("1234");
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(404);
+          expect(
+            error.response?.data.requesterInformation.receivedParams.action
+          ).toEqual("user");
+          expect(
+            error.response?.data.requesterInformation.receivedParams.userID
+          ).toEqual("1234");
+        } else throw error;
       }
     });
 
     test("Routes should be mapped for POST", async () => {
       try {
-        await request.post(url + "/api/user/1234?key=value").then(toJson);
+        await axios.post(url + "/api/user/1234?key=value");
         throw new Error("should not get here");
       } catch (error) {
-        expect(error.statusCode).toEqual(404);
-        const body = await toJson(error.response.body);
-        expect(body.requesterInformation.receivedParams.action).toEqual("user");
-        expect(body.requesterInformation.receivedParams.userID).toEqual("1234");
-        expect(body.requesterInformation.receivedParams.key).toEqual("value");
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(404);
+          expect(
+            error.response?.data.requesterInformation.receivedParams.action
+          ).toEqual("user");
+          expect(
+            error.response?.data.requesterInformation.receivedParams.userID
+          ).toEqual("1234");
+          expect(
+            error.response?.data.requesterInformation.receivedParams.key
+          ).toEqual("value");
+        } else throw error;
       }
     });
 
     test("Routes should be mapped for PUT", async () => {
       try {
-        await request.put(url + "/api/user/1234?key=value").then(toJson);
+        await axios.put(url + "/api/user/1234?key=value");
         throw new Error("should not get here");
       } catch (error) {
-        expect(error.statusCode).toEqual(404);
-        const body = await toJson(error.response.body);
-        expect(body.requesterInformation.receivedParams.action).toEqual("user");
-        expect(body.requesterInformation.receivedParams.userID).toEqual("1234");
-        expect(body.requesterInformation.receivedParams.key).toEqual("value");
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(404);
+          expect(
+            error.response?.data.requesterInformation.receivedParams.action
+          ).toEqual("user");
+          expect(
+            error.response?.data.requesterInformation.receivedParams.userID
+          ).toEqual("1234");
+          expect(
+            error.response?.data.requesterInformation.receivedParams.key
+          ).toEqual("value");
+        } else throw error;
       }
     });
 
     test("Routes should be mapped for DELETE", async () => {
       try {
-        await request.del(url + "/api/user/1234?key=value").then(toJson);
+        await axios.delete(url + "/api/user/1234?key=value");
         throw new Error("should not get here");
       } catch (error) {
-        expect(error.statusCode).toEqual(404);
-        const body = await toJson(error.response.body);
-        expect(body.requesterInformation.receivedParams.action).toEqual("user");
-        expect(body.requesterInformation.receivedParams.userID).toEqual("1234");
-        expect(body.requesterInformation.receivedParams.key).toEqual("value");
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(404);
+          expect(
+            error.response?.data.requesterInformation.receivedParams.action
+          ).toEqual("user");
+          expect(
+            error.response?.data.requesterInformation.receivedParams.userID
+          ).toEqual("1234");
+          expect(
+            error.response?.data.requesterInformation.receivedParams.key
+          ).toEqual("value");
+        } else throw error;
       }
     });
 
     test("route params trump explicit params", async () => {
       try {
-        await request.get(url + "/api/user/1?userID=2").then(toJson);
+        await axios.get(url + "/api/user/1?userID=2");
         throw new Error("should not get here");
       } catch (error) {
-        expect(error.statusCode).toEqual(404);
-        const body = await toJson(error.response.body);
-        expect(body.requesterInformation.receivedParams.action).toEqual("user");
-        expect(body.requesterInformation.receivedParams.userID).toEqual("1");
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(404);
+          expect(
+            error.response?.data.requesterInformation.receivedParams.action
+          ).toEqual("user");
+          expect(
+            error.response?.data.requesterInformation.receivedParams.userID
+          ).toEqual("1");
+        } else throw error;
       }
     });
 
     test("to match, a route much match all parts of the URL", async () => {
       try {
-        await request.get(url + "/api/thing").then(toJson);
+        await axios.get(url + "/api/thing");
         throw new Error("should not get here");
       } catch (error) {
-        expect(error.statusCode).toEqual(404);
-        const body = await toJson(error.response.body);
-        expect(body.requesterInformation.receivedParams.action).toEqual(
-          "thing"
-        );
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(404);
+          expect(
+            error.response?.data.requesterInformation.receivedParams.action
+          ).toEqual("thing");
+        } else throw error;
       }
 
       try {
-        await request.get(url + "/api/thing/stuff").then(toJson);
+        await axios.get(url + "/api/thing/stuff");
         throw new Error("should not get here");
       } catch (error) {
-        expect(error.statusCode).toEqual(404);
-        const body = await toJson(error.response.body);
-        expect(body.requesterInformation.receivedParams.action).toEqual(
-          "thingStuff"
-        );
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(404);
+          expect(
+            error.response?.data.requesterInformation.receivedParams.action
+          ).toEqual("thingStuff");
+        } else throw error;
       }
     });
 
     test("regexp matches will provide proper variables", async () => {
-      const body = await request.post(url + "/api/login/123").then(toJson);
-      expect(body.requesterInformation.receivedParams.action).toEqual("login");
-      expect(body.requesterInformation.receivedParams.userID).toEqual("123");
-
-      const bodyAgain = await request
-        .post(url + "/api/login/admin")
-        .then(toJson);
-      expect(bodyAgain.requesterInformation.receivedParams.action).toEqual(
+      const response = await axios.post(url + "/api/login/123");
+      expect(response.data.requesterInformation.receivedParams.action).toEqual(
         "login"
       );
-      expect(bodyAgain.requesterInformation.receivedParams.userID).toEqual(
-        "admin"
+      expect(response.data.requesterInformation.receivedParams.userID).toEqual(
+        "123"
       );
+
+      const responseAgain = await axios.post(url + "/api/login/admin");
+      expect(
+        responseAgain.data.requesterInformation.receivedParams.action
+      ).toEqual("login");
+      expect(
+        responseAgain.data.requesterInformation.receivedParams.userID
+      ).toEqual("admin");
     });
 
     test("regexp matches will still work with params with periods and other wacky chars", async () => {
-      const body = await request
-        .get(url + "/api/c/key/log_me-in.com$123.")
-        .then(toJson);
-      expect(body.requesterInformation.receivedParams.action).toEqual(
+      const response = await axios.get(url + "/api/c/key/log_me-in.com$123.");
+      expect(response.data.requesterInformation.receivedParams.action).toEqual(
         "cacheTest"
       );
-      expect(body.requesterInformation.receivedParams.value).toEqual(
+      expect(response.data.requesterInformation.receivedParams.value).toEqual(
         "log_me-in.com$123."
       );
     });
 
     test("regexp match failures will be rejected", async () => {
       try {
-        await request.get(url + "/api/login/1234").then(toJson);
+        await axios.get(url + "/api/login/1234");
         throw new Error("should not get here");
       } catch (error) {
-        expect(error.statusCode).toEqual(404);
-        const body = await toJson(error.response.body);
-        expect(body.error).toEqual("unknown action or invalid apiVersion");
-        expect(body.requesterInformation.receivedParams.userID).toBeUndefined();
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(404);
+          expect(
+            error.response?.data.requesterInformation.receivedParams.userID
+          ).toBeUndefined();
+        } else throw error;
       }
     });
 
     describe("file extensions + routes", () => {
       test("will change header information based on extension (when active)", async () => {
-        const response = await request.get(
-          url + "/api/mimeTestAction/val.png",
-          { resolveWithFullResponse: true }
-        );
+        const response = await axios.get(url + "/api/mimeTestAction/val.png");
         expect(response.headers["content-type"]).toEqual("image/png");
       });
 
       test("will not change header information if there is a connection.error", async () => {
         try {
-          await request.get(url + "/api/mimeTestAction/fail");
+          await axios.get(url + "/api/mimeTestAction/fail");
           throw new Error("should not get here");
         } catch (error) {
-          expect(error.statusCode).toEqual(500);
-          const body = await toJson(error.response.body);
-          expect(error.response.headers["content-type"]).toEqual(
-            "application/json; charset=utf-8"
-          );
-          expect(body.error).toEqual("failed");
+          if (error instanceof AxiosError) {
+            expect(error.response?.status).toEqual(500);
+            expect(error.response?.headers["content-type"]).toEqual(
+              "application/json; charset=utf-8"
+            );
+            expect(error.response?.data.error).toEqual("failed");
+          } else throw error;
         }
       });
 
       test("works with with matchTrailingPathParts", async () => {
-        const body = await request
-          .get(url + "/api/a/wild/theKey/and/some/more/path")
-          .then(toJson);
-        expect(body.requesterInformation.receivedParams.action).toEqual(
-          "mimeTestAction"
+        const response = await axios.get(
+          url + "/api/a/wild/theKey/and/some/more/path"
         );
-        expect(body.requesterInformation.receivedParams.path).toEqual(
+        expect(
+          response.data.requesterInformation.receivedParams.action
+        ).toEqual("mimeTestAction");
+        expect(response.data.requesterInformation.receivedParams.path).toEqual(
           "and/some/more/path"
         );
-        expect(body.requesterInformation.receivedParams.key).toEqual("theKey");
+        expect(response.data.requesterInformation.receivedParams.key).toEqual(
+          "theKey"
+        );
       });
 
       test("works with with matchTrailingPathParts and ignored variable prefixes", async () => {
-        const body = await request
-          .get(url + "/api/a/complex/theKey/__path-stuff")
-          .then(toJson);
-        expect(body.requesterInformation.receivedParams.action).toEqual(
-          "mimeTestAction"
+        const response = await axios.get(
+          url + "/api/a/complex/theKey/__path-stuff"
         );
-        expect(body.requesterInformation.receivedParams.path).toEqual(
+        expect(
+          response.data.requesterInformation.receivedParams.action
+        ).toEqual("mimeTestAction");
+        expect(response.data.requesterInformation.receivedParams.path).toEqual(
           "path-stuff"
         );
-        expect(body.requesterInformation.receivedParams.key).toEqual("theKey");
+        expect(response.data.requesterInformation.receivedParams.key).toEqual(
+          "theKey"
+        );
       });
     });
 
@@ -438,52 +466,50 @@ describe("Server: Web", () => {
       });
 
       test("will decode %20 or plus sign to a space so that file system can read", async () => {
-        const response = await request.get(
-          url + "/actionhero%20with%20space.png",
-          { resolveWithFullResponse: true }
+        const response = await axios.get(
+          url + "/actionhero%20with%20space.png"
         );
-        expect(response.statusCode).toEqual(200);
-        expect(response.body).toMatch(/PNG/);
+        expect(response.status).toEqual(200);
+        expect(response.data).toMatch(/PNG/);
         expect(response.headers["content-type"]).toEqual("image/png");
       });
 
       test("will capture bad encoding in URL and return NOT FOUND", async () => {
         try {
-          await request.get(url + "/actionhero%20%%%%%%%%%%with+space.png");
+          await axios.get(url + "/actionhero%20%%%%%%%%%%with+space.png");
           throw new Error("should not get here");
         } catch (error) {
-          expect(error.statusCode).toEqual(404);
-          expect(typeof error.response.body).toEqual("string");
-          expect(error.response.body).toMatch(/^that file is not found/);
+          if (error instanceof AxiosError) {
+            expect(error.response?.status).toEqual(404);
+            expect(error.response?.data).toEqual("that file is not found");
+          } else throw error;
         }
       });
     });
 
     describe("versions", () => {
       test("versions can be numbers", async () => {
-        const body = await request
-          .get(url + "/api/v1/login?user_id=123")
-          .then(toJson);
-        expect(body.version).toEqual(1);
-        expect(body.user_id).toEqual("123");
+        const response = await axios.get(url + "/api/v1/login?user_id=123");
+        expect(response.data.version).toEqual(1);
+        expect(response.data.user_id).toEqual("123");
       });
 
       test("versions can be strings", async () => {
-        const body = await request
-          .get(url + "/api/vthree/login?userID=123")
-          .then(toJson);
-        expect(body.version).toEqual("three");
-        expect(body.userID).toEqual("123");
+        const response = await axios.get(url + "/api/vthree/login?userID=123");
+        expect(response.data.version).toEqual("three");
+        expect(response.data.userID).toEqual("123");
       });
 
       test("versions have an ignored prefix", async () => {
-        const body = await request
-          .get(url + "/api/v1/login?user_id=123")
-          .then(toJson);
-        expect(body.version).toEqual(1);
-        expect(body.user_id).toEqual("123");
-        expect(body.requesterInformation.receivedParams.apiVersion).toBe("1");
-        expect(body.requesterInformation.receivedParams.action).toBe("login");
+        const response = await axios.get(url + "/api/v1/login?user_id=123");
+        expect(response.data.version).toEqual(1);
+        expect(response.data.user_id).toEqual("123");
+        expect(
+          response.data.requesterInformation.receivedParams.apiVersion
+        ).toBe("1");
+        expect(response.data.requesterInformation.receivedParams.action).toBe(
+          "login"
+        );
       });
 
       [
@@ -505,21 +531,26 @@ describe("Server: Web", () => {
       ].forEach((group) => {
         test(`routes match (${group[1]} - ${group[0]})`, async () => {
           const [match, path] = group;
-          await expect(request.get(url + path).then(toJson)).rejects.toThrow(
-            match
-              ? "is a required parameter for this action"
-              : "unknown action or invalid apiVersion"
-          );
+          try {
+            await axios.get(url + path);
+            throw new Error("should not get here");
+          } catch (error) {
+            if (error instanceof AxiosError) {
+              expect(error.response?.data.error).toMatch(
+                match
+                  ? "is a required parameter for this action"
+                  : "unknown action or invalid apiVersion"
+              );
+            } else throw error;
+          }
         });
       });
 
       test("routes with no version will default to the highest version number", async () => {
         // sorting numerically, 2 > 'three'
-        const body = await request
-          .get(url + "/api/login?userID=123")
-          .then(toJson);
-        expect(body.version).toEqual(2);
-        expect(body.userID).toEqual("123");
+        const response = await axios.get(url + "/api/login?userID=123");
+        expect(response.data.version).toEqual(2);
+        expect(response.data.userID).toEqual("123");
       });
     });
   });
@@ -536,17 +567,13 @@ describe("Server: Web", () => {
     test("it remembers manually loaded routes", async () => {
       // @ts-ignore
       route.registerRoute("get", "/a-custom-route", "randomNumber", null);
-      const response = await request.get(url + "/api/a-custom-route", {
-        resolveWithFullResponse: true,
-      });
-      expect(response.statusCode).toEqual(200);
+      const response = await axios.get(url + "/api/a-custom-route");
+      expect(response.status).toEqual(200);
 
       api.routes.loadRoutes();
 
-      const responseAgain = await request.get(url + "/api/a-custom-route", {
-        resolveWithFullResponse: true,
-      });
-      expect(responseAgain.statusCode).toEqual(200);
+      const responseAgain = await axios.get(url + "/api/a-custom-route");
+      expect(responseAgain.status).toEqual(200);
     });
   });
 });
