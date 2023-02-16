@@ -3,7 +3,7 @@ const window = { location: {} };
 process.env.AUTOMATIC_ROUTES = "get";
 
 import * as _Primus from "primus";
-import * as request from "request-promise-native";
+import axios from "axios";
 import { api, Process, config } from "./../../src/index";
 
 const actionhero = new Process();
@@ -44,11 +44,8 @@ describe("Integration: Web Server + Websocket Socket shared fingerprint", () => 
   afterAll(async () => await actionhero.stop());
 
   test("should exist when web server been called", async () => {
-    const body = await request.get({
-      uri: url + "/api/randomNumber",
-      json: true,
-    });
-    fingerprint = body.requesterInformation.fingerprint;
+    const response = await axios.get(url + "/api/randomNumber");
+    fingerprint = response.data.requesterInformation.fingerprint;
     const query = `${
       (config.web!.fingerprintOptions as Record<string, any>).cookieKey
     }=${fingerprint}`;

@@ -1,6 +1,6 @@
 process.env.AUTOMATIC_ROUTES = "get";
 
-import * as request from "request-promise-native";
+import axios from "axios";
 import * as stream from "stream";
 import { api, Process, config } from "./../../src/index";
 
@@ -82,17 +82,16 @@ describe("Server: sendBuffer", () => {
   });
 
   test("Server should sendBuffer", async () => {
-    const body = await request.get(url + "/api/sendBufferTest");
-    expect(body).toEqual("Example of data buffer");
+    const response = await axios.get(url + "/api/sendBufferTest");
+    expect(response.data).toEqual("Example of data buffer");
   });
 
   test("Server should send a stream with no specified length", async () => {
-    const { body, headers } = await request.get({
-      uri: url + "/api/sendUnknownLengthBufferTest",
-      resolveWithFullResponse: true,
-    });
+    const { data, headers } = await axios.get(
+      url + "/api/sendUnknownLengthBufferTest"
+    );
 
     expect(headers).not.toHaveProperty("content-length");
-    expect(body).toEqual("Example of unknown length data buffer");
+    expect(data).toEqual("Example of unknown length data buffer");
   });
 });

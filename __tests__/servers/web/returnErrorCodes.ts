@@ -1,5 +1,5 @@
-import * as request from "request-promise-native";
-import { api, Process, config } from "./../../../src/index";
+import axios, { AxiosError } from "axios";
+import { Process, config } from "./../../../src/index";
 
 const actionhero = new Process();
 let url: string;
@@ -48,10 +48,8 @@ describe("Server: Web", () => {
   describe("errorCodes", () => {
     test("returnErrorCodes false should still have a status of 200", async () => {
       config.web!.returnErrorCodes = false;
-      const response = await request.del(url + "/api/", {
-        resolveWithFullResponse: true,
-      });
-      expect(response.statusCode).toEqual(200);
+      const response = await axios.delete(url + "/api/");
+      expect(response.status).toEqual(200);
     });
   });
 });

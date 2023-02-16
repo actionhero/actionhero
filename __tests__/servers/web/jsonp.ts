@@ -1,4 +1,4 @@
-import * as request from "request-promise-native";
+import axios, { AxiosError } from "axios";
 import { Process, config } from "./../../../src/index";
 
 const actionhero = new Process();
@@ -39,19 +39,19 @@ describe("Server: Web", () => {
 
   describe("JSONp", () => {
     test("can ask for JSONp responses", async () => {
-      const response = await request.get(
+      const response = await axios.get(
         url + "/api/randomNumber?callback=myCallback"
       );
-      expect(response.indexOf("myCallback({")).toEqual(0);
-      expect(response.indexOf("Your random number is")).toBeGreaterThan(0);
+      expect(response.data).toContain("myCallback({");
+      expect(response.data).toContain("Your random number is");
     });
 
     test("JSONp responses cannot be used for XSS", async () => {
-      const response = await request.get(
+      const response = await axios.get(
         url + "/api/randomNumber?callback=alert(%27hi%27);foo"
       );
-      expect(response).not.toMatch(/alert\(/);
-      expect(response.indexOf("alert&#39;hi&#39;;foo(")).toEqual(0);
+      expect(response.data).not.toMatch(/alert\(/);
+      expect(response.data.indexOf("alert&#39;hi&#39;;foo(")).toEqual(0);
     });
   });
 });

@@ -1,7 +1,8 @@
 process.env.AUTOMATIC_ROUTES = "head,get,post,put,delete";
 // process.env.LOG_LEVEL = "info";
 
-import * as request from "request-promise-native";
+import axios, { AxiosError } from "axios";
+import * as FormData from "form-data";
 import * as fs from "fs";
 import * as path from "path";
 import { api, Process, config } from "./../../../src/index";
@@ -48,29 +49,26 @@ describe("Server: Web", () => {
   });
 
   test("files can be uploaded", async () => {
-    const options = {
-      method: "POST",
-      url: `${url}/api/uploadAction`,
-      headers: { "Content-Type": "multipart/form-data" },
-      formData: {
-        file: fs.createReadStream(
-          path.join(
-            __dirname,
-            "..",
-            "..",
-            "..",
-            "public",
-            "logo",
-            "actionhero.png"
-          )
-        ),
-        stringParam: "hello world",
-      },
-    };
+    const form = new FormData();
+    form.append("stringParam", "hello world");
+    form.append(
+      "file",
+      fs.createReadStream(
+        path.join(
+          __dirname,
+          "..",
+          "..",
+          "..",
+          "public",
+          "logo",
+          "actionhero.png"
+        )
+      )
+    );
 
-    const body = await request.post(options).then(toJson);
-    expect(body.params.stringParam).toEqual("hello world");
-    expect(body.params.file).toEqual(
+    const response = await axios.post(`${url}/api/uploadAction`, form);
+    expect(response.data.params.stringParam).toEqual("hello world");
+    expect(response.data.params.file).toEqual(
       expect.objectContaining({
         originalFilename: "actionhero.png",
         mimetype: "image/png",
@@ -79,11 +77,3 @@ describe("Server: Web", () => {
     );
   });
 });
-
-const toJson = async (string: string) => {
-  try {
-    return JSON.parse(string);
-  } catch (error) {
-    return error;
-  }
-};

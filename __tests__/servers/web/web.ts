@@ -400,13 +400,13 @@ describe("Server: Web", () => {
       expect(response.data.body.key).toEqual("value");
     });
 
-    // TODO: Cannot post a body payload with Axios...
-    test.skip(".rawBody can be disabled", async () => {
+    test(".rawBody can be disabled", async () => {
       config.web!.saveRawBody = false;
       const requestBody = '{"key":      "value"}';
       const response = await axios.post(
         url + "/api/paramTestAction",
-        requestBody
+        requestBody,
+        { headers: { "Content-type": "application/json" } }
       );
       expect(response.data.body.key).toEqual("value");
       expect(response.data.rawBody).toEqual("");
