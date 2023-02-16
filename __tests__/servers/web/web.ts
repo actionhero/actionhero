@@ -2,6 +2,8 @@ process.env.AUTOMATIC_ROUTES = "head,get,post,put,delete";
 
 import axios, { AxiosError } from "axios";
 import * as FormData from "form-data";
+import { wrapper } from "axios-cookiejar-support";
+import { CookieJar } from "tough-cookie";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
@@ -398,6 +400,7 @@ describe("Server: Web", () => {
       expect(response.data.body.key).toEqual("value");
     });
 
+    // TODO: Cannot post a body payload with Axios...
     test.skip(".rawBody can be disabled", async () => {
       config.web!.saveRawBody = false;
       const requestBody = '{"key":      "value"}';
@@ -414,641 +417,614 @@ describe("Server: Web", () => {
     try {
       await axios.delete(url + "/api/");
     } catch (error) {
-      expect(error.statusCode).toEqual(404);
+      if (error instanceof AxiosError) {
+        expect(error.response?.status).toEqual(404);
+      } else throw error;
     }
   });
 
-  // describe("http header", () => {
-  //   beforeAll(() => {
-  //     api.actions.versions.headerTestAction = [1];
-  //     api.actions.actions.headerTestAction = {
-  //       // @ts-ignore
-  //       1: {
-  //         name: "headerTestAction",
-  //         description: "I am a test",
-  //         version: 1,
-  //         outputExample: {},
-  //         run: async (data) => {
-  //           data.connection!.rawConnection.responseHeaders.push(["thing", "A"]);
-  //           data.connection!.rawConnection.responseHeaders.push(["thing", "B"]);
-  //           data.connection!.rawConnection.responseHeaders.push(["thing", "C"]);
-  //           data.connection!.rawConnection.responseHeaders.push([
-  //             "Set-Cookie",
-  //             "value_1=1",
-  //           ]);
-  //           data.connection!.rawConnection.responseHeaders.push([
-  //             "Set-Cookie",
-  //             "value_2=2",
-  //           ]);
-  //         },
-  //       },
-  //     };
+  describe("http header", () => {
+    beforeAll(() => {
+      api.actions.versions.headerTestAction = [1];
+      api.actions.actions.headerTestAction = {
+        // @ts-ignore
+        1: {
+          name: "headerTestAction",
+          description: "I am a test",
+          version: 1,
+          outputExample: {},
+          run: async (data) => {
+            data.connection!.rawConnection.responseHeaders.push(["thing", "A"]);
+            data.connection!.rawConnection.responseHeaders.push(["thing", "B"]);
+            data.connection!.rawConnection.responseHeaders.push(["thing", "C"]);
+            data.connection!.rawConnection.responseHeaders.push([
+              "Set-Cookie",
+              "value_1=1",
+            ]);
+            data.connection!.rawConnection.responseHeaders.push([
+              "Set-Cookie",
+              "value_2=2",
+            ]);
+          },
+        },
+      };
 
-  //     api.routes.loadRoutes();
-  //   });
+      api.routes.loadRoutes();
+    });
 
-  //   afterAll(() => {
-  //     delete api.actions.actions.headerTestAction;
-  //     delete api.actions.versions.headerTestAction;
-  //   });
+    afterAll(() => {
+      delete api.actions.actions.headerTestAction;
+      delete api.actions.versions.headerTestAction;
+    });
 
-  //   test("duplicate headers should be removed (in favor of the last set)", async () => {
-  //     const response = await request.get(url + "/api/headerTestAction", {
-  //       resolveWithFullResponse: true,
-  //     });
-  //     expect(response.statusCode).toEqual(200);
-  //     expect(response.headers.thing).toEqual("C");
-  //   });
+    test("duplicate headers should be removed (in favor of the last set)", async () => {
+      const response = await axios.get(url + "/api/headerTestAction");
+      expect(response.status).toEqual(200);
+      expect(response.headers.thing).toEqual("C");
+    });
 
-  //   test("but duplicate set-cookie requests should be allowed", async () => {
-  //     const response = await request.get(url + "/api/headerTestAction", {
-  //       resolveWithFullResponse: true,
-  //     });
-  //     expect(response.statusCode).toEqual(200);
-  //     // this will convert node >= 10 header array to look like node <= 9 combined strings
-  //     const cookieString = response.headers["set-cookie"].join();
-  //     const parts = cookieString.split(",");
-  //     expect(parts[1]).toEqual("value_1=1");
-  //     expect(parts[0]).toEqual("value_2=2");
-  //   });
+    test("but duplicate set-cookie requests should be allowed", async () => {
+      const response = await axios.get(url + "/api/headerTestAction");
+      expect(response.status).toEqual(200);
+      // this will convert node >= 10 header array to look like node <= 9 combined strings
+      const cookieString = (response.headers["set-cookie"] || [""]).join();
+      const parts = cookieString.split(",");
+      expect(parts[1]).toEqual("value_1=1");
+      expect(parts[0]).toEqual("value_2=2");
+    });
 
-  //   test("should respond to OPTIONS with only HTTP headers", async () => {
-  //     const response = await request({
-  //       method: "options",
-  //       url: url + "/api/cacheTest",
-  //       resolveWithFullResponse: true,
-  //     });
-  //     expect(response.statusCode).toEqual(200);
-  //     expect(response.headers["access-control-allow-methods"]).toEqual(
-  //       "HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE"
-  //     );
-  //     expect(response.headers["access-control-allow-origin"]).toEqual("*");
-  //     expect(response.headers["content-length"]).toEqual("0");
-  //     expect(response.body).toEqual("");
-  //   });
+    test("should respond to OPTIONS with only HTTP headers", async () => {
+      const response = await axios.options(url + "/api/cacheTest");
+      expect(response.status).toEqual(200);
+      expect(response.headers["access-control-allow-methods"]).toEqual(
+        "HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE"
+      );
+      expect(response.headers["access-control-allow-origin"]).toEqual("*");
+      expect(response.headers["content-length"]).toEqual("0");
+      expect(response.data).toEqual("");
+    });
 
-  //   test("should respond to TRACE with parsed params received", async () => {
-  //     const response = await request({
-  //       method: "trace",
-  //       url: url + "/api/x",
-  //       form: { key: "someKey", value: "someValue" },
-  //       resolveWithFullResponse: true,
-  //     });
-  //     expect(response.statusCode).toEqual(200);
-  //     const body = await toJson(response.body);
-  //     expect(body.receivedParams.key).toEqual("someKey");
-  //     expect(body.receivedParams.value).toEqual("someValue");
-  //   });
+    test("should respond to TRACE with parsed params received", async () => {
+      const response = await axios({
+        method: "trace",
+        url: url + "/api/x",
+        data: { key: "someKey", value: "someValue" },
+      });
+      expect(response.status).toEqual(200);
+      expect(response.data.receivedParams.key).toEqual("someKey");
+      expect(response.data.receivedParams.value).toEqual("someValue");
+    });
 
-  //   test("should respond to HEAD requests just like GET, but with no body", async () => {
-  //     const response = await request({
-  //       method: "head",
-  //       url: url + "/api/headerTestAction",
-  //       resolveWithFullResponse: true,
-  //     });
-  //     expect(response.statusCode).toEqual(200);
-  //     expect(response.body).toEqual("");
-  //   });
+    test("should respond to HEAD requests just like GET, but with no body", async () => {
+      const response = await axios.head(url + "/api/headerTestAction");
+      expect(response.status).toEqual(200);
+      expect(response.data).toEqual("");
+    });
 
-  //   test("keeps sessions with browser_fingerprint", async () => {
-  //     const j = request.jar();
-  //     const response1 = await request.post({
-  //       url: url + "/api/randomNumber",
-  //       jar: j,
-  //       resolveWithFullResponse: true,
-  //     });
-  //     const response2 = await request.get({
-  //       url: url + "/api/randomNumber",
-  //       jar: j,
-  //       resolveWithFullResponse: true,
-  //     });
-  //     const response3 = await request.put({
-  //       url: url + "/api/randomNumber",
-  //       jar: j,
-  //       resolveWithFullResponse: true,
-  //     });
-  //     const response4 = await request.del({
-  //       url: url + "/api/randomNumber",
-  //       jar: j,
-  //       resolveWithFullResponse: true,
-  //     });
+    test("keeps sessions with browser_fingerprint", async () => {
+      const jar = new CookieJar();
+      const client = wrapper(axios.create({ jar }));
 
-  //     expect(response1.headers["set-cookie"]).toBeTruthy();
-  //     expect(response2.headers["set-cookie"]).toBeUndefined();
-  //     expect(response3.headers["set-cookie"]).toBeUndefined();
-  //     expect(response4.headers["set-cookie"]).toBeUndefined();
+      const response1 = await client.post(url + "/api/randomNumber");
+      const response2 = await client.get(url + "/api/randomNumber");
+      const response3 = await client.put(url + "/api/randomNumber");
+      const response4 = await client.delete(url + "/api/randomNumber");
+      const response5 = await axios.delete(url + "/api/randomNumber");
 
-  //     const body1 = await toJson(response1.body);
-  //     const body2 = await toJson(response2.body);
-  //     const body3 = await toJson(response3.body);
-  //     const body4 = await toJson(response4.body);
+      expect(response1.headers["set-cookie"]).toBeTruthy();
+      expect(response2.headers["set-cookie"]).toBeUndefined();
+      expect(response3.headers["set-cookie"]).toBeUndefined();
+      expect(response4.headers["set-cookie"]).toBeUndefined();
+      expect(response5.headers["set-cookie"]).toBeTruthy();
 
-  //     const fingerprint1 = body1.requesterInformation.id.split("-")[0];
-  //     const fingerprint2 = body2.requesterInformation.id.split("-")[0];
-  //     const fingerprint3 = body3.requesterInformation.id.split("-")[0];
-  //     const fingerprint4 = body4.requesterInformation.id.split("-")[0];
+      const fingerprint1 = response1.data.requesterInformation.id.split("-")[0];
+      const fingerprint2 = response2.data.requesterInformation.id.split("-")[0];
+      const fingerprint3 = response3.data.requesterInformation.id.split("-")[0];
+      const fingerprint4 = response4.data.requesterInformation.id.split("-")[0];
+      const fingerprint5 = response5.data.requesterInformation.id.split("-")[0];
 
-  //     expect(fingerprint1).toEqual(fingerprint2);
-  //     expect(fingerprint1).toEqual(fingerprint3);
-  //     expect(fingerprint1).toEqual(fingerprint4);
+      expect(fingerprint1).toEqual(fingerprint2);
+      expect(fingerprint1).toEqual(fingerprint3);
+      expect(fingerprint1).toEqual(fingerprint4);
+      expect(fingerprint1).not.toEqual(fingerprint5);
 
-  //     expect(fingerprint1).toEqual(body1.requesterInformation.fingerprint);
-  //     expect(fingerprint2).toEqual(body2.requesterInformation.fingerprint);
-  //     expect(fingerprint3).toEqual(body3.requesterInformation.fingerprint);
-  //     expect(fingerprint4).toEqual(body4.requesterInformation.fingerprint);
-  //   });
-  // });
+      expect(fingerprint1).toEqual(
+        response1.data.requesterInformation.fingerprint
+      );
+      expect(fingerprint2).toEqual(
+        response2.data.requesterInformation.fingerprint
+      );
+      expect(fingerprint3).toEqual(
+        response3.data.requesterInformation.fingerprint
+      );
+      expect(fingerprint4).toEqual(
+        response4.data.requesterInformation.fingerprint
+      );
+      expect(fingerprint5).toEqual(
+        response5.data.requesterInformation.fingerprint
+      );
+    });
+  });
 
-  // describe("http returnErrorCodes true", () => {
-  //   class ErrorWithCode extends Error {
-  //     code: number;
-  //   }
+  describe("http returnErrorCodes true", () => {
+    class ErrorWithCode extends Error {
+      code: number;
+    }
 
-  //   beforeAll(() => {
-  //     api.actions.versions.statusTestAction = [1];
-  //     api.actions.actions.statusTestAction = {
-  //       // @ts-ignore
-  //       1: {
-  //         name: "statusTestAction",
-  //         description: "I am a test",
-  //         inputs: {
-  //           key: { required: true },
-  //           query: { required: false },
-  //           randomKey: { required: false },
-  //         },
-  //         run: async (data) => {
-  //           if (data.params!.key !== "value") {
-  //             data.connection!.rawConnection.responseHttpCode = 402;
-  //             throw new ErrorWithCode("key != value");
-  //           }
-  //           const hasQueryParam = !!data.params!.query;
-  //           if (hasQueryParam) {
-  //             const validQueryFilters = ["test", "search"];
-  //             const validQueryParam =
-  //               validQueryFilters.indexOf(data.params!.query) > -1;
-  //             if (!validQueryParam) {
-  //               const notFoundError = new ErrorWithCode(
-  //                 `404: Filter '${data.params!.query}' not found `
-  //               );
-  //               notFoundError.code = 404;
-  //               throw notFoundError;
-  //             }
-  //           }
-  //           const hasRandomKey = !!data.params!.randomKey;
-  //           if (hasRandomKey) {
-  //             const validRandomKeys = ["key1", "key2", "key3"];
-  //             const validRandomKey =
-  //               validRandomKeys.indexOf(data.params!.randomKey) > -1;
-  //             if (!validRandomKey) {
-  //               if (data.params!.randomKey === "expired-key") {
-  //                 const expiredError = new ErrorWithCode(
-  //                   `999: Key '${data.params!.randomKey}' is expired`
-  //                 );
-  //                 expiredError.code = 999;
-  //                 throw expiredError;
-  //               }
-  //               const suspiciousError = new ErrorWithCode(
-  //                 `402: Suspicious Activity detected with key ${
-  //                   data.params!.randomKey
-  //                 }`
-  //               );
-  //               suspiciousError.code = 402;
-  //               throw suspiciousError;
-  //             }
-  //           }
-  //           data.response!.good = true;
-  //         },
-  //       },
-  //     };
+    beforeAll(() => {
+      api.actions.versions.statusTestAction = [1];
+      api.actions.actions.statusTestAction = {
+        // @ts-ignore
+        1: {
+          name: "statusTestAction",
+          description: "I am a test",
+          inputs: {
+            key: { required: true },
+            query: { required: false },
+            randomKey: { required: false },
+          },
+          run: async (data) => {
+            if (data.params!.key !== "value") {
+              data.connection!.rawConnection.responseHttpCode = 402;
+              throw new ErrorWithCode("key != value");
+            }
+            const hasQueryParam = !!data.params!.query;
+            if (hasQueryParam) {
+              const validQueryFilters = ["test", "search"];
+              const validQueryParam =
+                validQueryFilters.indexOf(data.params!.query) > -1;
+              if (!validQueryParam) {
+                const notFoundError = new ErrorWithCode(
+                  `404: Filter '${data.params!.query}' not found `
+                );
+                notFoundError.code = 404;
+                throw notFoundError;
+              }
+            }
+            const hasRandomKey = !!data.params!.randomKey;
+            if (hasRandomKey) {
+              const validRandomKeys = ["key1", "key2", "key3"];
+              const validRandomKey =
+                validRandomKeys.indexOf(data.params!.randomKey) > -1;
+              if (!validRandomKey) {
+                if (data.params!.randomKey === "expired-key") {
+                  const expiredError = new ErrorWithCode(
+                    `999: Key '${data.params!.randomKey}' is expired`
+                  );
+                  expiredError.code = 999;
+                  throw expiredError;
+                }
+                const suspiciousError = new ErrorWithCode(
+                  `402: Suspicious Activity detected with key ${
+                    data.params!.randomKey
+                  }`
+                );
+                suspiciousError.code = 402;
+                throw suspiciousError;
+              }
+            }
+            data.response!.good = true;
+          },
+        },
+      };
 
-  //     api.routes.loadRoutes();
-  //   });
+      api.routes.loadRoutes();
+    });
 
-  //   afterAll(() => {
-  //     delete api.actions.versions.statusTestAction;
-  //     delete api.actions.actions.statusTestAction;
-  //   });
+    afterAll(() => {
+      delete api.actions.versions.statusTestAction;
+      delete api.actions.actions.statusTestAction;
+    });
 
-  //   test("actions that do not exists should return 404", async () => {
-  //     try {
-  //       await request.post(url + "/api/aFakeAction");
-  //       throw new Error("should not get here");
-  //     } catch (error) {
-  //       expect(error.statusCode).toEqual(404);
-  //     }
-  //   });
+    test("actions that do not exists should return 404", async () => {
+      try {
+        await axios.post(url + "/api/aFakeAction");
+        throw new Error("should not get here");
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(404);
+        } else throw error;
+      }
+    });
 
-  //   test("missing params result in a 422", async () => {
-  //     try {
-  //       await request.post(url + "/api/statusTestAction");
-  //       throw new Error("should not get here");
-  //     } catch (error) {
-  //       expect(error.statusCode).toEqual(422);
-  //     }
-  //   });
+    test("missing params result in a 422", async () => {
+      try {
+        await axios.post(url + "/api/statusTestAction");
+        throw new Error("should not get here");
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(422);
+        } else throw error;
+      }
+    });
 
-  //   test("status codes can be set for errors", async () => {
-  //     try {
-  //       await request.post(url + "/api/statusTestAction", {
-  //         form: { key: "bannana" },
-  //       });
-  //       throw new Error("should not get here");
-  //     } catch (error) {
-  //       expect(error.statusCode).toEqual(402);
-  //       const body = await toJson(error.response.body);
-  //       expect(body.error).toEqual("key != value");
-  //     }
-  //   });
+    test("status codes can be set for errors", async () => {
+      try {
+        await axios.post(url + "/api/statusTestAction", { key: "bannana" });
+        throw new Error("should not get here");
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(402);
+          expect(error.response?.data.error).toEqual("key != value");
+        } else throw error;
+      }
+    });
 
-  //   test("status code should still be 200 if everything is OK", async () => {
-  //     const response = await request.post(url + "/api/statusTestAction", {
-  //       form: { key: "value" },
-  //       resolveWithFullResponse: true,
-  //     });
-  //     expect(response.statusCode).toEqual(200);
-  //     const body = await toJson(response.body);
-  //     expect(body.good).toEqual(true);
-  //   });
-  //   describe("setting status code using custom errors", () => {
-  //     test("should work for 404 status code, set using custom error for invalid params", async () => {
-  //       try {
-  //         await request.post(url + "/api/statusTestAction", {
-  //           form: { key: "value", query: "guess" },
-  //         });
-  //         throw new Error("should not get here");
-  //       } catch (error) {
-  //         expect(error.statusCode).toEqual(404);
-  //         const body = await toJson(error.response.body);
-  //         expect(body.error).toEqual("404: Filter 'guess' not found ");
-  //       }
-  //     });
+    test("status code should still be 200 if everything is OK", async () => {
+      const response = await axios.post(url + "/api/statusTestAction", {
+        key: "value",
+      });
+      expect(response.status).toEqual(200);
+      expect(response.data.good).toEqual(true);
+    });
 
-  //     test("should work for 402 status code set using custom error for invalid params", async () => {
-  //       try {
-  //         await request.post(url + "/api/statusTestAction", {
-  //           form: { key: "value", randomKey: "guessKey" },
-  //         });
-  //         throw new Error("should not get here");
-  //       } catch (error) {
-  //         expect(error.statusCode).toEqual(402);
-  //         const body = await toJson(error.response.body);
-  //         expect(body.error).toEqual(
-  //           "402: Suspicious Activity detected with key guessKey"
-  //         );
-  //       }
-  //     });
+    describe("setting status code using custom errors", () => {
+      test("should work for 404 status code, set using custom error for invalid params", async () => {
+        try {
+          await axios.post(url + "/api/statusTestAction", {
+            key: "value",
+            query: "guess",
+          });
+          throw new Error("should not get here");
+        } catch (error) {
+          if (error instanceof AxiosError) {
+            expect(error.response?.status).toEqual(404);
+            expect(error.response?.data.error).toEqual(
+              "404: Filter 'guess' not found "
+            );
+          } else throw error;
+        }
+      });
 
-  //     test("should not throw custom error for valid params", async () => {
-  //       const responseWithQuery = await request.post(
-  //         url + "/api/statusTestAction",
-  //         {
-  //           form: { key: "value", query: "test" },
-  //           resolveWithFullResponse: true,
-  //         }
-  //       );
-  //       expect(responseWithQuery.statusCode).toEqual(200);
-  //       const responseBody = await toJson(responseWithQuery.body);
-  //       expect(responseBody.good).toEqual(true);
+      test("should work for 402 status code set using custom error for invalid params", async () => {
+        try {
+          await axios.post(url + "/api/statusTestAction", {
+            key: "value",
+            randomKey: "guessKey",
+          });
+          throw new Error("should not get here");
+        } catch (error) {
+          if (error instanceof AxiosError) {
+            expect(error.response?.status).toEqual(402);
+            expect(error.response?.data.error).toEqual(
+              "402: Suspicious Activity detected with key guessKey"
+            );
+          } else throw error;
+        }
+      });
 
-  //       const responseWithRandomKey = await request.post(
-  //         url + "/api/statusTestAction",
-  //         {
-  //           form: { key: "value", randomKey: "key1" },
-  //           resolveWithFullResponse: true,
-  //         }
-  //       );
-  //       expect(responseWithRandomKey.statusCode).toEqual(200);
-  //       const body = await toJson(responseWithRandomKey.body);
-  //       expect(body.good).toEqual(true);
+      test("should not throw custom error for valid params", async () => {
+        const responseWithQuery = await axios.post(
+          url + "/api/statusTestAction",
+          { key: "value", query: "test" }
+        );
+        expect(responseWithQuery.status).toEqual(200);
+        expect(responseWithQuery.data.good).toEqual(true);
 
-  //       const responseWithKeyAndQuery = await request.post(
-  //         url + "/api/statusTestAction",
-  //         {
-  //           form: { key: "value", query: "search", randomKey: "key2" },
-  //           resolveWithFullResponse: true,
-  //         }
-  //       );
-  //       expect(responseWithKeyAndQuery.statusCode).toEqual(200);
-  //       const receivedBody = await toJson(responseWithKeyAndQuery.body);
-  //       expect(receivedBody.good).toEqual(true);
-  //     });
+        const responseWithRandomKey = await axios.post(
+          url + "/api/statusTestAction",
+          { key: "value", randomKey: "key1" }
+        );
+        expect(responseWithRandomKey.status).toEqual(200);
+        expect(responseWithRandomKey.data.good).toEqual(true);
 
-  //     test("should not work for 999 status code set using custom error and default error code, 400 is thrown", async () => {
-  //       try {
-  //         await request.post(url + "/api/statusTestAction", {
-  //           form: { key: "value", randomKey: "expired-key" },
-  //         });
-  //         throw new Error("should not get here");
-  //       } catch (error) {
-  //         expect(error.statusCode).not.toEqual(999);
-  //         expect(error.statusCode).toEqual(500);
-  //         const body = await toJson(error.response.body);
-  //         expect(body.error).toEqual("999: Key 'expired-key' is expired");
-  //       }
-  //     });
-  //   });
-  // });
+        const responseWithKeyAndQuery = await axios.post(
+          url + "/api/statusTestAction",
+          {
+            key: "value",
+            query: "search",
+            randomKey: "key2",
+          }
+        );
+        expect(responseWithKeyAndQuery.status).toEqual(200);
+        expect(responseWithKeyAndQuery.data.good).toEqual(true);
+      });
 
-  // describe("documentation", () => {
-  //   test("documentation can be returned via a swagger action", async () => {
-  //     const body = await request.get(url + "/api/swagger").then(toJson);
-  //     expect(body.paths).toBeInstanceOf(Object);
-  //   });
-  // });
+      test("should not work for 999 status code set using custom error and default error code, 400 is thrown", async () => {
+        try {
+          await axios.post(url + "/api/statusTestAction", {
+            key: "value",
+            randomKey: "expired-key",
+          });
+          throw new Error("should not get here");
+        } catch (error) {
+          if (error instanceof AxiosError) {
+            expect(error.response?.status).not.toEqual(999);
+            expect(error.response?.status).toEqual(500);
+            expect(error.response?.data.error).toEqual(
+              "999: Key 'expired-key' is expired"
+            );
+          } else throw error;
+        }
+      });
+    });
+  });
 
-  // describe("files", () => {
-  //   test("an HTML file", async () => {
-  //     const response = await request.get(url + "/public/simple.html", {
-  //       resolveWithFullResponse: true,
-  //     });
-  //     expect(response.statusCode).toEqual(200);
-  //     expect(response.body).toContain("<h1>Actionhero</h1>");
-  //   });
+  describe("documentation", () => {
+    test("documentation can be returned via a swagger action", async () => {
+      const response = await axios.get(url + "/api/swagger");
+      expect(response.data.paths).toBeInstanceOf(Object);
+    });
+  });
 
-  //   test("404 pages", async () => {
-  //     try {
-  //       await request.get(url + "/public/notARealFile");
-  //       throw new Error("should not get here");
-  //     } catch (error) {
-  //       expect(error.statusCode).toEqual(404);
-  //     }
-  //   });
+  describe("files", () => {
+    test("an HTML file", async () => {
+      const response = await axios.get(url + "/public/simple.html");
+      expect(response.status).toEqual(200);
+      expect(response.data).toContain("<h1>Actionhero</h1>");
+    });
 
-  //   test("404 pages from POST with if-modified-since header", async () => {
-  //     const file = Math.random().toString(36);
-  //     const options = {
-  //       url: url + "/" + file,
-  //       headers: {
-  //         "if-modified-since": "Thu, 19 Apr 2012 09:51:20 GMT",
-  //       },
-  //     };
+    test("404 pages", async () => {
+      try {
+        await axios.get(url + "/public/notARealFile");
+        throw new Error("should not get here");
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(404);
+        } else throw error;
+      }
+    });
 
-  //     try {
-  //       await request.get(options);
-  //       throw new Error("should not get here");
-  //     } catch (error) {
-  //       expect(error.statusCode).toEqual(404);
-  //       expect(error.response.body).toEqual("that file is not found");
-  //     }
-  //   });
+    test("404 pages from POST with if-modified-since header", async () => {
+      const file = Math.random().toString(36);
+      try {
+        await axios.get(url + "/" + file, {
+          headers: { "if-modified-since": "Thu, 19 Apr 2012 09:51:20 GMT" },
+        });
+        throw new Error("should not get here");
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(404);
+          expect(error.response?.data).toEqual("that file is not found");
+        } else throw error;
+      }
+    });
 
-  //   test("should not see files outside of the public dir", async () => {
-  //     try {
-  //       await request.get(url + "/public/../config.json");
-  //       throw new Error("should not get here");
-  //     } catch (error) {
-  //       expect(error.statusCode).toEqual(404);
-  //       expect(error.response.body).toEqual("that file is not found");
-  //     }
-  //   });
+    test("should not see files outside of the public dir", async () => {
+      try {
+        await axios.get(url + "/public/../config.json");
+        throw new Error("should not get here");
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(404);
+          expect(error.response?.data).toEqual("that file is not found");
+        } else throw error;
+      }
+    });
 
-  //   test("index page should be served when requesting a path (trailing slash)", async () => {
-  //     const response = await request.get(url + "/public/", {
-  //       resolveWithFullResponse: true,
-  //     });
-  //     expect(response.statusCode).toEqual(200);
-  //     expect(response.body).toMatch(
-  //       /Actionhero is a multi-transport API Server/
-  //     );
-  //   });
+    test("index page should be served when requesting a path (trailing slash)", async () => {
+      const response = await axios.get(url + "/public/");
+      expect(response.status).toEqual(200);
+      expect(response.data).toMatch(
+        /Actionhero is a multi-transport API Server/
+      );
+    });
 
-  //   test("index page should be served when requesting a path (no trailing slash)", async () => {
-  //     const response = await request.get(url + "/public", {
-  //       resolveWithFullResponse: true,
-  //     });
-  //     expect(response.statusCode).toEqual(200);
-  //     expect(response.body).toMatch(
-  //       /Actionhero is a multi-transport API Server/
-  //     );
-  //   });
+    test("index page should be served when requesting a path (no trailing slash)", async () => {
+      const response = await axios.get(url + "/public");
+      expect(response.status).toEqual(200);
+      expect(response.data).toMatch(
+        /Actionhero is a multi-transport API Server/
+      );
+    });
 
-  //   describe("can serve files from a specific mapped route", () => {
-  //     beforeAll(() => {
-  //       const testFolderPublicPath = path.join(
-  //         __dirname,
-  //         "/../../../public/testFolder"
-  //       );
-  //       fs.mkdirSync(testFolderPublicPath);
-  //       fs.writeFileSync(
-  //         testFolderPublicPath + "/testFile.html",
-  //         "Actionhero Route Test File"
-  //       );
+    describe("can serve files from a specific mapped route", () => {
+      beforeAll(() => {
+        const testFolderPublicPath = path.join(
+          __dirname,
+          "/../../../public/testFolder"
+        );
+        fs.mkdirSync(testFolderPublicPath);
+        fs.writeFileSync(
+          testFolderPublicPath + "/testFile.html",
+          "Actionhero Route Test File"
+        );
 
-  //       route.registerRoute(
-  //         "get",
-  //         "/my/public/route",
-  //         // @ts-ignore
-  //         null,
-  //         null,
-  //         true,
-  //         testFolderPublicPath
-  //       );
-  //     });
+        route.registerRoute(
+          "get",
+          "/my/public/route",
+          // @ts-ignore
+          null,
+          null,
+          true,
+          testFolderPublicPath
+        );
+      });
 
-  //     afterAll(() => {
-  //       const testFolderPublicPath = path.join(
-  //         __dirname,
-  //         "/../../../public/testFolder"
-  //       );
-  //       fs.unlinkSync(testFolderPublicPath + path.sep + "testFile.html");
-  //       fs.rmdirSync(testFolderPublicPath);
-  //     });
+      afterAll(() => {
+        const testFolderPublicPath = path.join(
+          __dirname,
+          "/../../../public/testFolder"
+        );
+        fs.unlinkSync(testFolderPublicPath + path.sep + "testFile.html");
+        fs.rmdirSync(testFolderPublicPath);
+      });
 
-  //     test("works for routes mapped paths", async () => {
-  //       const response = await request.get(
-  //         url + "/my/public/route/testFile.html",
-  //         { resolveWithFullResponse: true }
-  //       );
-  //       expect(response.statusCode).toEqual(200);
-  //       expect(response.body).toEqual("Actionhero Route Test File");
-  //     });
+      test("works for routes mapped paths", async () => {
+        const response = await axios.get(
+          url + "/my/public/route/testFile.html"
+        );
+        expect(response.status).toEqual(200);
+        expect(response.data).toEqual("Actionhero Route Test File");
+      });
 
-  //     test("returns 404 for files not available in route mapped paths", async () => {
-  //       try {
-  //         await request.get(url + "/my/public/route/fileNotFound.html");
-  //       } catch (error) {
-  //         expect(error.statusCode).toEqual(404);
-  //         expect(error.response.body).toEqual("that file is not found");
-  //       }
-  //     });
+      test("returns 404 for files not available in route mapped paths", async () => {
+        try {
+          await axios.get(url + "/my/public/route/fileNotFound.html");
+        } catch (error) {
+          if (error instanceof AxiosError) {
+            expect(error.response?.status).toEqual(404);
+            expect(error.response?.data).toEqual("that file is not found");
+          } else throw error;
+        }
+      });
 
-  //     test("should not see files outside of the mapped dir", async () => {
-  //       try {
-  //         await request.get(
-  //           url + "/my/public/route/../../config/servers/web.js"
-  //         );
-  //       } catch (error) {
-  //         expect(error.statusCode).toEqual(404);
-  //         expect(error.response.body).toEqual("that file is not found");
-  //       }
-  //     });
-  //   });
+      test("should not see files outside of the mapped dir", async () => {
+        try {
+          await axios.get(url + "/my/public/route/../../config/servers/web.js");
+        } catch (error) {
+          if (error instanceof AxiosError) {
+            expect(error.response?.status).toEqual(404);
+            expect(error.response?.data).toEqual("that file is not found");
+          } else throw error;
+        }
+      });
+    });
 
-  //   describe("can serve files from more than one directory", () => {
-  //     const source = path.join(__dirname, "/../../../public/simple.html");
+    describe("can serve files from more than one directory", () => {
+      const source = path.join(__dirname, "/../../../public/simple.html");
 
-  //     beforeAll(() => {
-  //       fs.createReadStream(source).pipe(
-  //         fs.createWriteStream(os.tmpdir() + path.sep + "tmpTestFile.html")
-  //       );
-  //       api.staticFile.searchLocations.push(os.tmpdir());
-  //     });
+      beforeAll(() => {
+        fs.createReadStream(source).pipe(
+          fs.createWriteStream(os.tmpdir() + path.sep + "tmpTestFile.html")
+        );
+        api.staticFile.searchLocations.push(os.tmpdir());
+      });
 
-  //     afterAll(() => {
-  //       fs.unlinkSync(os.tmpdir() + path.sep + "tmpTestFile.html");
-  //       api.staticFile.searchLocations.pop();
-  //     });
+      afterAll(() => {
+        fs.unlinkSync(os.tmpdir() + path.sep + "tmpTestFile.html");
+        api.staticFile.searchLocations.pop();
+      });
 
-  //     test("works for secondary paths", async () => {
-  //       const response = await request.get(url + "/public/tmpTestFile.html", {
-  //         resolveWithFullResponse: true,
-  //       });
-  //       expect(response.statusCode).toEqual(200);
-  //       expect(response.body).toContain("<h1>Actionhero</h1>");
-  //     });
-  //   });
-  // });
+      test("works for secondary paths", async () => {
+        const response = await axios.get(url + "/public/tmpTestFile.html");
+        expect(response.status).toEqual(200);
+        expect(response.data).toContain("<h1>Actionhero</h1>");
+      });
+    });
+  });
 
-  // describe("custom methods", () => {
-  //   let originalRoutes: typeof api.routes.routes;
+  describe("custom methods", () => {
+    let originalRoutes: typeof api.routes.routes;
 
-  //   beforeAll(() => {
-  //     originalRoutes = api.routes.routes;
-  //     api.actions.versions.proxyHeaders = [1];
-  //     api.actions.actions.proxyHeaders = {
-  //       // @ts-ignore
-  //       1: {
-  //         name: "proxyHeaders",
-  //         description: "proxy header test",
-  //         inputs: {},
-  //         outputExample: {},
-  //         run: async (data) => {
-  //           data.connection!.setHeader!("X-Foo", "bar");
-  //         },
-  //       },
-  //     };
+    beforeAll(() => {
+      originalRoutes = api.routes.routes;
+      api.actions.versions.proxyHeaders = [1];
+      api.actions.actions.proxyHeaders = {
+        // @ts-ignore
+        1: {
+          name: "proxyHeaders",
+          description: "proxy header test",
+          inputs: {},
+          outputExample: {},
+          run: async (data) => {
+            data.connection!.setHeader!("X-Foo", "bar");
+          },
+        },
+      };
 
-  //     api.actions.versions.proxyStatusCode = [1];
-  //     api.actions.actions.proxyStatusCode = {
-  //       // @ts-ignore
-  //       1: {
-  //         name: "proxyStatusCode",
-  //         description: "proxy status code test",
-  //         inputs: {
-  //           code: {
-  //             required: true,
-  //             default: 200,
-  //             formatter: (p: string) => {
-  //               return parseInt(p);
-  //             },
-  //           },
-  //         },
-  //         outputExample: {},
-  //         run: async (data) => {
-  //           data.connection!.setStatusCode!(data.params!.code);
-  //         },
-  //       },
-  //     };
+      api.actions.versions.proxyStatusCode = [1];
+      api.actions.actions.proxyStatusCode = {
+        // @ts-ignore
+        1: {
+          name: "proxyStatusCode",
+          description: "proxy status code test",
+          inputs: {
+            code: {
+              required: true,
+              default: 200,
+              formatter: (p: string) => {
+                return parseInt(p);
+              },
+            },
+          },
+          outputExample: {},
+          run: async (data) => {
+            data.connection!.setStatusCode!(data.params!.code);
+          },
+        },
+      };
 
-  //     api.actions.versions.pipe = [1];
-  //     api.actions.actions.pipe = {
-  //       // @ts-ignore
-  //       1: {
-  //         name: "pipe",
-  //         description: "pipe response test",
-  //         inputs: {
-  //           mode: { required: true },
-  //         },
-  //         outputExample: {},
-  //         run: async (data) => {
-  //           data.toRender = false;
-  //           if (data.params!.mode === "string") {
-  //             data.connection!.pipe!("a string", { "custom-header": "cool" });
-  //           } else if (data.params!.mode === "buffer") {
-  //             data.connection!.pipe!(Buffer.from("a buffer"), {
-  //               "custom-header": "still-cool",
-  //             });
-  //           } else if (data.params!.mode === "contentType") {
-  //             data.connection!.pipe!("just some good, old-fashioned words", {
-  //               "Content-Type": "text/plain",
-  //               "custom-header": "words",
-  //             });
-  //           } else {
-  //             throw new Error("I Do not know this mode");
-  //           }
-  //         },
-  //       },
-  //     };
+      api.actions.versions.pipe = [1];
+      api.actions.actions.pipe = {
+        // @ts-ignore
+        1: {
+          name: "pipe",
+          description: "pipe response test",
+          inputs: {
+            mode: { required: true },
+          },
+          outputExample: {},
+          run: async (data) => {
+            data.toRender = false;
+            if (data.params!.mode === "string") {
+              data.connection!.pipe!("a string", { "custom-header": "cool" });
+            } else if (data.params!.mode === "buffer") {
+              data.connection!.pipe!(Buffer.from("a buffer"), {
+                "custom-header": "still-cool",
+              });
+            } else if (data.params!.mode === "contentType") {
+              data.connection!.pipe!("just some good, old-fashioned words", {
+                "Content-Type": "text/plain",
+                "custom-header": "words",
+              });
+            } else {
+              throw new Error("I Do not know this mode");
+            }
+          },
+        },
+      };
 
-  //     api.routes.loadRoutes({
-  //       get: [
-  //         { path: "/proxy", action: "proxyHeaders", apiVersion: 1 },
-  //         { path: "/code", action: "proxyStatusCode", apiVersion: 1 },
-  //         { path: "/pipe", action: "pipe", apiVersion: 1 },
-  //       ],
-  //     });
-  //   });
+      api.routes.loadRoutes({
+        get: [
+          { path: "/proxy", action: "proxyHeaders", apiVersion: 1 },
+          { path: "/code", action: "proxyStatusCode", apiVersion: 1 },
+          { path: "/pipe", action: "pipe", apiVersion: 1 },
+        ],
+      });
+    });
 
-  //   afterAll(() => {
-  //     api.routes.routes = originalRoutes;
-  //     delete api.actions.versions.proxyHeaders;
-  //     delete api.actions.versions.proxyStatusCode;
-  //     delete api.actions.versions.pipe;
-  //     delete api.actions.actions.proxyHeaders;
-  //     delete api.actions.actions.proxyStatusCode;
-  //     delete api.actions.actions.pipe;
-  //   });
+    afterAll(() => {
+      api.routes.routes = originalRoutes;
+      delete api.actions.versions.proxyHeaders;
+      delete api.actions.versions.proxyStatusCode;
+      delete api.actions.versions.pipe;
+      delete api.actions.actions.proxyHeaders;
+      delete api.actions.actions.proxyStatusCode;
+      delete api.actions.actions.pipe;
+    });
 
-  //   test("actions handled by the web server support proxy for setHeaders", async () => {
-  //     const response = await request.get(url + "/api/proxy", {
-  //       resolveWithFullResponse: true,
-  //     });
-  //     expect(response.headers["x-foo"]).toEqual("bar");
-  //   });
+    test("actions handled by the web server support proxy for setHeaders", async () => {
+      const response = await axios.get(url + "/api/proxy");
+      expect(response.headers["x-foo"]).toEqual("bar");
+    });
 
-  //   test("actions handled by the web server support proxy for setting status code", async () => {
-  //     const responseDefault = await request.get(url + "/api/proxyStatusCode", {
-  //       resolveWithFullResponse: true,
-  //     });
-  //     expect(responseDefault.statusCode).toEqual(200);
+    test("actions handled by the web server support proxy for setting status code", async () => {
+      const responseDefault = await axios.get(url + "/api/proxyStatusCode", {});
+      expect(responseDefault.status).toEqual(200);
 
-  //     try {
-  //       await request.get(url + "/api/proxyStatusCode?code=404", {
-  //         resolveWithFullResponse: true,
-  //       });
-  //       throw new Error("should not get here");
-  //     } catch (error) {
-  //       expect(error.toString()).toMatch(/StatusCodeError: 404/);
-  //     }
-  //   });
+      try {
+        await axios.get(url + "/api/proxyStatusCode?code=404");
+        throw new Error("should not get here");
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(404);
+        } else throw error;
+      }
+    });
 
-  //   test("can pipe string responses with custom headers to clients", async () => {
-  //     const response = await request.get(url + "/api/pipe?mode=string", {
-  //       resolveWithFullResponse: true,
-  //     });
-  //     expect(response.headers["custom-header"]).toEqual("cool");
-  //     expect(response.headers["content-length"]).toEqual("8");
-  //     expect(response.body).toEqual("a string");
-  //   });
+    test("can pipe string responses with custom headers to clients", async () => {
+      const response = await axios.get(url + "/api/pipe?mode=string");
+      expect(response.headers["custom-header"]).toEqual("cool");
+      expect(response.headers["content-length"]).toEqual("8");
+      expect(response.data).toEqual("a string");
+    });
 
-  //   test("can pipe buffer responses with custom headers to clients", async () => {
-  //     const response = await request.get(url + "/api/pipe?mode=buffer", {
-  //       resolveWithFullResponse: true,
-  //     });
-  //     expect(response.headers["custom-header"]).toEqual("still-cool");
-  //     expect(response.headers["content-length"]).toEqual("8");
-  //     expect(response.body).toEqual("a buffer");
-  //   });
+    test("can pipe buffer responses with custom headers to clients", async () => {
+      const response = await axios.get(url + "/api/pipe?mode=buffer");
+      expect(response.headers["custom-header"]).toEqual("still-cool");
+      expect(response.headers["content-length"]).toEqual("8");
+      expect(response.data).toEqual("a buffer");
+    });
 
-  //   test("can pipe buffer responses with custom content types to clients", async () => {
-  //     const { headers, body } = await request.get(
-  //       url + "/api/pipe?mode=contentType",
-  //       { resolveWithFullResponse: true }
-  //     );
-  //     expect(headers["content-type"]).toEqual("text/plain");
-  //     expect(headers["content-length"]).toEqual("35");
-  //     expect(headers["custom-header"]).toEqual("words");
-  //     expect(body).toEqual("just some good, old-fashioned words");
-  //   });
-  // });
+    test("can pipe buffer responses with custom content types to clients", async () => {
+      const { headers, data } = await axios.get(
+        url + "/api/pipe?mode=contentType"
+      );
+      expect(headers["content-type"]).toEqual("text/plain");
+      expect(headers["content-length"]).toEqual("35");
+      expect(headers["custom-header"]).toEqual("words");
+      expect(data).toEqual("just some good, old-fashioned words");
+    });
+  });
 });
