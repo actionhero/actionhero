@@ -13,7 +13,6 @@ permissions:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    needs: build
     container:
       image: node
     steps:
@@ -27,7 +26,6 @@ jobs:
 
   docs:
     runs-on: ubuntu-latest
-    needs: build
     container:
       image: node
     steps:
@@ -41,7 +39,6 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    needs: build
     container:
       image: node
       options: --network-alias main
