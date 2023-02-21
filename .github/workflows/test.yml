@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
     container:
       image: node
@@ -22,37 +22,10 @@ jobs:
         with:
           node-version: 18.x
       - run: npm ci
-      - name: save cache
-        uses: actions/cache@v3.2.5
-        with:
-          path: |
-            node_modules
-            dist
-          key: ${{ runner.os }}-cache-${{ github.sha }}
-
-  lint:
-    runs-on: ubuntu-latest
-    needs: build
-    container:
-      image: node
-    steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js 18.x
-        uses: actions/setup-node@v3.6.0
-        with:
-          node-version: 18.x
-      - name: download cache
-        uses: actions/cache@v3.2.5
-        with:
-          path: |
-            node_modules
-            dist
-          key: ${{ runner.os }}-cache-${{ github.sha }}
       - run: npm run lint
 
   docs:
     runs-on: ubuntu-latest
-    needs: build
     container:
       image: node
     steps:
@@ -61,18 +34,11 @@ jobs:
         uses: actions/setup-node@v3.6.0
         with:
           node-version: 18.x
-      - name: download cache
-        uses: actions/cache@v3.2.5
-        with:
-          path: |
-            node_modules
-            dist
-          key: ${{ runner.os }}-cache-${{ github.sha }}
+      - run: npm ci
       - run: npm run docs
 
   test:
     runs-on: ubuntu-latest
-    needs: build
     container:
       image: node
       options: --network-alias main
@@ -92,16 +58,9 @@ jobs:
         uses: actions/setup-node@v3.6.0
         with:
           node-version: ${{ matrix.node-version }}
-      - name: download cache
-        uses: actions/cache@v3.2.5
-        with:
-          path: |
-            node_modules
-            dist
-          key: ${{ runner.os }}-cache-${{ github.sha }}
+      - run: npm ci
       - name: install puppeteer dependencies
         run: apt-get update && apt-get install -y libgtk2.0-0 libgtk-3-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb libgbm-dev
-      - run: npm rebuild
       - run: ./node_modules/.bin/jest --ci
         env:
           REDIS_HOST: redis

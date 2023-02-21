@@ -1,4 +1,4 @@
-import * as request from "request-promise-native";
+import axios, { AxiosError } from "axios";
 import { Process, config } from "./../../../src/index";
 
 const actionhero = new Process();
@@ -41,47 +41,48 @@ describe("Server: Web", () => {
   describe("request redirection (allowedRequestHosts)", () => {
     test("will redirect clients if they do not request the proper host", async () => {
       try {
-        await request.get({
-          followRedirect: false,
-          url: url + "/api/randomNumber",
+        await axios.get(url + "/api/randomNumber", {
+          maxRedirects: 0,
           headers: { Host: "lalala.site.com" },
         });
         throw new Error("should not get here");
       } catch (error) {
-        expect(error.statusCode).toEqual(302);
-        expect(error.response.body).toMatch(
-          /You are being redirected to https:\/\/www.site.com\/api\/randomNumber/
-        );
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(302);
+          expect(error.response?.data).toMatch(
+            /You are being redirected to https:\/\/www.site.com\/api\/randomNumber/
+          );
+        } else throw error;
       }
     });
 
     test("will redirect clients if they do not request the proper protocol", async () => {
       try {
-        await request.get({
-          followRedirect: false,
-          url: url + "/api/randomNumber",
+        await axios.get(url + "/api/randomNumber", {
+          maxRedirects: 0,
           headers: { Host: "www.site.com" },
         });
         throw new Error("should not get here");
       } catch (error) {
-        expect(error.statusCode).toEqual(302);
-        expect(error.response.body).toMatch(
-          /You are being redirected to https:\/\/www.site.com\/api\/randomNumber/
-        );
+        if (error instanceof AxiosError) {
+          expect(error.response?.status).toEqual(302);
+          expect(error.response?.data).toMatch(
+            /You are being redirected to https:\/\/www.site.com\/api\/randomNumber/
+          );
+        } else throw error;
       }
     });
 
     test("will allow API access from the proper hosts", async () => {
-      const response = await request.get({
-        followRedirect: false,
-        url: url + "/api/randomNumber",
+      const response = await axios.get(url + "/api/randomNumber", {
+        maxRedirects: 0,
         headers: {
           Host: "www.site.com",
           "x-forwarded-proto": "https",
         },
       });
 
-      expect(response).toMatch(/randomNumber/);
+      expect(response.data["randomNumber"]).not.toBeUndefined();
     });
   });
 });

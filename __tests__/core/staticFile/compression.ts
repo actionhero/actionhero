@@ -1,4 +1,4 @@
-import * as request from "request-promise-native";
+import axios, { AxiosError } from "axios";
 import { Process, config } from "./../../../src/index";
 
 const actionhero = new Process();
@@ -46,51 +46,52 @@ describe("Core", () => {
 
     describe("Compression", () => {
       test("should respect accept-encoding header priority with gzip as first in a list of encodings", async () => {
-        const response = await request.get(url + "/simple.html", {
+        const response = await axios.get(url + "/simple.html", {
           headers: { "Accept-Encoding": "gzip, deflate, sdch, br" },
-          resolveWithFullResponse: true,
+          decompress: false,
         });
 
-        expect(response.statusCode).toEqual(200);
+        expect(response.status).toEqual(200);
         expect(response.headers["content-encoding"]).toEqual("gzip");
       });
 
       test("should respect accept-encoding header priority with deflate as second in a list of encodings", async () => {
-        const response = await request.get(url + "/simple.html", {
+        const response = await axios.get(url + "/simple.html", {
           headers: { "Accept-Encoding": "br, deflate, gzip" },
-          resolveWithFullResponse: true,
+          decompress: false,
         });
 
-        expect(response.statusCode).toEqual(200);
+        expect(response.status).toEqual(200);
         expect(response.headers["content-encoding"]).toEqual("deflate"); // br is not a currently supported encoding
       });
 
       test("should respect accept-encoding header priority with gzip as only option", async () => {
-        const response = await request.get(url + "/simple.html", {
+        const response = await axios.get(url + "/simple.html", {
           headers: { "Accept-Encoding": "gzip" },
-          resolveWithFullResponse: true,
+          decompress: false,
         });
 
-        expect(response.statusCode).toEqual(200);
+        expect(response.status).toEqual(200);
         expect(response.headers["content-encoding"]).toEqual("gzip");
       });
 
       test("should not encode content without a valid a supported value in accept-encoding header", async () => {
-        const response = await request.get(url + "/simple.html", {
+        const response = await axios.get(url + "/simple.html", {
           headers: { "Accept-Encoding": "sdch, br" },
-          resolveWithFullResponse: true,
+          decompress: false,
         });
 
-        expect(response.statusCode).toEqual(200);
+        expect(response.status).toEqual(200);
         expect(response.headers["content-encoding"]).toBeUndefined();
       });
 
       test("should not encode content without accept-encoding header", async () => {
-        const response = await request.get(url + "/simple.html", {
-          resolveWithFullResponse: true,
+        const response = await axios.get(url + "/simple.html", {
+          headers: { "Accept-Encoding": "" },
+          decompress: false,
         });
 
-        expect(response.statusCode).toEqual(200);
+        expect(response.status).toEqual(200);
         expect(response.headers["content-encoding"]).toBeUndefined();
       });
     });

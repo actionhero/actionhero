@@ -1,6 +1,6 @@
 process.env.AUTOMATIC_ROUTES = "get";
 
-import * as request from "request-promise-native";
+import axios from "axios";
 import * as fs from "fs";
 import { Process, config } from "./../../src/index";
 
@@ -17,8 +17,8 @@ describe("Server: sendFile", () => {
 
   test("Server should sendFile", async () => {
     const stats = fs.statSync(__dirname + "/../../public/logo/actionhero.png");
-    const body = await request.get(url + "/api/sendFile");
-    expect(stats.size).toBeGreaterThanOrEqual(body.length);
-    expect(body).toContain("PNG");
+    const response = await axios.get(url + "/api/sendFile");
+    expect(stats.size).toBeGreaterThanOrEqual(response.data.length);
+    expect(response.data).toContain("PNG");
   });
 });

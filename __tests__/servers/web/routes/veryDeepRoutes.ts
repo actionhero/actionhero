@@ -1,4 +1,4 @@
-import * as request from "request-promise-native";
+import axios, { AxiosError } from "axios";
 import { Process, config } from "./../../../../src/index";
 
 const actionhero = new Process();
@@ -43,51 +43,48 @@ describe("Server: Web", () => {
       describe("very deep routes", () => {
         test("old action routes stop working", async () => {
           try {
-            await request.get(url + "/api/randomNumber");
+            await axios.get(url + "/api/randomNumber");
             throw new Error("should not get here");
           } catch (error) {
-            expect(error.statusCode).toEqual(404);
+            if (error instanceof AxiosError) {
+              expect(error.response?.status).toEqual(404);
+            } else throw error;
           }
         });
 
         test("can ask for nested URL actions", async () => {
-          const response = await request.get(
-            url + "/craz/y/action/path/randomNumber",
-            { resolveWithFullResponse: true }
+          const response = await axios.get(
+            url + "/craz/y/action/path/randomNumber"
           );
-          expect(response.statusCode).toEqual(200);
+          expect(response.status).toEqual(200);
         });
 
         test("old file routes stop working", async () => {
           try {
-            await request.get(url + "/public/simple.html");
+            await axios.get(url + "/public/simple.html");
             throw new Error("should not get here");
           } catch (error) {
-            expect(error.statusCode).toEqual(404);
+            if (error instanceof AxiosError) {
+              expect(error.response?.status).toEqual(404);
+            } else throw error;
           }
         });
 
         test("can ask for nested URL files", async () => {
-          const response = await request.get(url + "/a/b/c/simple.html", {
-            resolveWithFullResponse: true,
-          });
-          expect(response.statusCode).toEqual(200);
-          expect(response.body).toContain("<h1>Actionhero</h1>");
+          const response = await axios.get(url + "/a/b/c/simple.html");
+          expect(response.status).toEqual(200);
+          expect(response.data).toContain("<h1>Actionhero</h1>");
         });
 
         test("can ask for nested URL files with depth", async () => {
-          const response = await request.get(url + "/a/b/c/css/cosmo.css", {
-            resolveWithFullResponse: true,
-          });
-          expect(response.statusCode).toEqual(200);
+          const response = await axios.get(url + "/a/b/c/css/cosmo.css");
+          expect(response.status).toEqual(200);
         });
 
         test("root route files still work", async () => {
-          const response = await request.get(url + "/simple.html", {
-            resolveWithFullResponse: true,
-          });
-          expect(response.statusCode).toEqual(200);
-          expect(response.body).toContain("<h1>Actionhero</h1>");
+          const response = await axios.get(url + "/simple.html");
+          expect(response.status).toEqual(200);
+          expect(response.data).toContain("<h1>Actionhero</h1>");
         });
       });
     });

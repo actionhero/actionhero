@@ -4,7 +4,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { spawn } from "child_process";
-import * as request from "request-promise-native";
+import axios, { AxiosError } from "axios";
 import { isRunning } from "../../src/modules/utils/isRunning";
 import { sleep } from "../../src/modules/utils/sleep";
 
@@ -313,10 +313,8 @@ describe("Core: CLI", () => {
       });
 
       test("can boot the server", async () => {
-        const response = await request(`http://${host}:${port}/api/status`, {
-          json: true,
-        });
-        expect(response.serverInformation.serverName).toEqual(
+        const response = await axios(`http://${host}:${port}/api/status`);
+        expect(response.data.serverInformation.serverName).toEqual(
           "my_actionhero_project"
         );
       });
@@ -324,10 +322,8 @@ describe("Core: CLI", () => {
       test("can handle signals to reboot", async () => {
         await doCommand(`kill -s USR2 ${serverPid}`);
         await sleep(3000);
-        const response = await request(`http://${host}:${port}/api/status`, {
-          json: true,
-        });
-        expect(response.serverInformation.serverName).toEqual(
+        const response = await axios(`http://${host}:${port}/api/status`);
+        expect(response.data.serverInformation.serverName).toEqual(
           "my_actionhero_project"
         );
       }, 5000);
@@ -336,12 +332,14 @@ describe("Core: CLI", () => {
         await doCommand(`kill ${serverPid}`);
         await sleep(1000);
         try {
-          await request(`http://${host}:${port}/api/status`);
+          await axios.get(`http://${host}:${port}/api/status`);
           throw new Error("should not get here");
         } catch (error) {
-          expect(error.toString()).toMatch(
-            /ECONNREFUSED|ECONNRESET|RequestError/
-          );
+          if (error instanceof AxiosError) {
+            expect(error.toString()).toMatch(
+              /ECONNREFUSED|ECONNRESET|RequestError/
+            );
+          } else throw error;
         }
       });
 
