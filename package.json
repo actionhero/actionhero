@@ -74,7 +74,7 @@
     "ts-jest": "^29.0.5",
     "ts-node-dev": "^2.0.0",
     "typedoc": "^0.23.25",
-    "typescript": "^4.9.5"
+    "typescript": "^5.0.2"
   },
   "bin": {
     "actionhero": "dist/bin/actionhero.js"
