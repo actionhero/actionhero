@@ -4,8 +4,12 @@ import * as path from "path";
 import * as fs from "fs";
 
 // These values are probably good starting points, but you should expect to tweak them for your application
-const maxMemoryAlloted = process.env.maxMemoryAlloted || 500;
-const maxResqueQueueLength = process.env.maxResqueQueueLength || 1000;
+const maxMemoryAlloted = process.env.maxMemoryAlloted
+  ? parseInt(process.env.maxMemoryAlloted)
+  : 500;
+const maxResqueQueueLength = process.env.maxResqueQueueLength
+  ? parseInt(process.env.maxResqueQueueLength)
+  : 1000;
 
 enum StatusMessages {
   healthy = "Node Healthy",

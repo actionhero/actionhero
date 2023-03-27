@@ -362,9 +362,9 @@ export namespace cache {
       return true;
     } else {
       const delta = new Date().getTime() - startTime;
-      if (!retry || delta > retry) {
-        return false;
-      }
+      if (!retry) return false;
+      else if (typeof retry === "boolean") return retry;
+      else if (delta > retry) return false;
 
       await utils.sleep(lockRetry);
       return cache.checkLock(key, retry, startTime);
