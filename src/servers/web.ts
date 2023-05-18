@@ -695,7 +695,7 @@ export class WebServer extends Server {
       ) {
         connection.rawConnection.form = new formidable.IncomingForm();
         for (i in this.config.formOptions) {
-          connection.rawConnection.form[i] = this.config.formOptions[i];
+          connection.rawConnection.form.options[i] = this.config.formOptions[i];
         }
 
         let rawBody = Promise.resolve(Buffer.alloc(0));
