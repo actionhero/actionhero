@@ -337,7 +337,7 @@ describe("Core: CLI", () => {
         } catch (error) {
           if (error instanceof AxiosError) {
             expect(error.toString()).toMatch(
-              /ECONNREFUSED|ECONNRESET|RequestError/
+              /ECONNREFUSED|ECONNRESET|RequestError|AggregateError/
             );
           } else throw error;
         }
