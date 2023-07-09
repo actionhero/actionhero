@@ -73,7 +73,7 @@ describe("Server: Web", () => {
         requestBody,
         {
           headers: { "Content-type": "application/json" },
-        }
+        },
       );
       expect(response.data.body.key).toEqual("value");
       expect(response.data.rawBody).toEqual('{"key":      "value"}');
@@ -87,7 +87,7 @@ describe("Server: Web", () => {
           requestBody,
           {
             headers: { "Content-type": "text/xml" },
-          }
+          },
         );
         expect(response.data.body).toEqual({});
         expect(response.data.rawBody).toEqual(requestBody);
@@ -101,7 +101,7 @@ describe("Server: Web", () => {
           requestBody,
           {
             headers: { "Content-type": "application/json" },
-          }
+          },
         );
         expect(response.data.body).toEqual({});
         expect(response.data.rawBody).toEqual(requestBody);
@@ -114,7 +114,7 @@ describe("Server: Web", () => {
           requestBody,
           {
             headers: { "Content-type": "text/plain" },
-          }
+          },
         );
         expect(response.data.body).toEqual({});
         expect(response.data.rawBody).toEqual(requestBody);

@@ -8,7 +8,7 @@ import { isPlainObject } from "./isPlainObject";
 export function hashMerge(
   a: Record<string, any>,
   b: Record<string, any>,
-  arg?: Record<string, any>
+  arg?: Record<string, any>,
 ): { [key: string]: any } {
   const c: Record<string, any> = {};
   let i: string;

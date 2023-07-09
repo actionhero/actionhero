@@ -170,7 +170,7 @@ describe("Server: Web", () => {
         if (error instanceof AxiosError) {
           expect(error.response?.status).toEqual(404);
           expect(error.response?.data.error).toEqual(
-            "unknown action or invalid apiVersion"
+            "unknown action or invalid apiVersion",
           );
         } else throw error;
       }
@@ -184,7 +184,7 @@ describe("Server: Web", () => {
         if (error instanceof AxiosError) {
           expect(error.response?.status).toEqual(404);
           expect(
-            error.response?.data.requesterInformation.receivedParams.action
+            error.response?.data.requesterInformation.receivedParams.action,
           ).toEqual("user");
         } else throw error;
       }
@@ -207,7 +207,7 @@ describe("Server: Web", () => {
       const body = await axios.get(url + "/api/old_login?user_id=7");
       expect(body.data.user_id).toEqual("7");
       expect(body.data.requesterInformation.receivedParams.action).toEqual(
-        "login"
+        "login",
       );
     });
 
@@ -219,7 +219,7 @@ describe("Server: Web", () => {
         if (error instanceof AxiosError) {
           expect(error.response?.status).toEqual(404);
           expect(
-            error.response?.data.requesterInformation.receivedParams.action
+            error.response?.data.requesterInformation.receivedParams.action,
           ).toEqual("usersList");
         } else throw error;
       }
@@ -233,10 +233,10 @@ describe("Server: Web", () => {
         if (error instanceof AxiosError) {
           expect(error.response?.status).toEqual(404);
           expect(
-            error.response?.data.requesterInformation.receivedParams.action
+            error.response?.data.requesterInformation.receivedParams.action,
           ).toEqual("user");
           expect(
-            error.response?.data.requesterInformation.receivedParams.userID
+            error.response?.data.requesterInformation.receivedParams.userID,
           ).toEqual("1234");
         } else throw error;
       }
@@ -250,13 +250,13 @@ describe("Server: Web", () => {
         if (error instanceof AxiosError) {
           expect(error.response?.status).toEqual(404);
           expect(
-            error.response?.data.requesterInformation.receivedParams.action
+            error.response?.data.requesterInformation.receivedParams.action,
           ).toEqual("user");
           expect(
-            error.response?.data.requesterInformation.receivedParams.userID
+            error.response?.data.requesterInformation.receivedParams.userID,
           ).toEqual("1234");
           expect(
-            error.response?.data.requesterInformation.receivedParams.key
+            error.response?.data.requesterInformation.receivedParams.key,
           ).toEqual("value");
         } else throw error;
       }
@@ -270,13 +270,13 @@ describe("Server: Web", () => {
         if (error instanceof AxiosError) {
           expect(error.response?.status).toEqual(404);
           expect(
-            error.response?.data.requesterInformation.receivedParams.action
+            error.response?.data.requesterInformation.receivedParams.action,
           ).toEqual("user");
           expect(
-            error.response?.data.requesterInformation.receivedParams.userID
+            error.response?.data.requesterInformation.receivedParams.userID,
           ).toEqual("1234");
           expect(
-            error.response?.data.requesterInformation.receivedParams.key
+            error.response?.data.requesterInformation.receivedParams.key,
           ).toEqual("value");
         } else throw error;
       }
@@ -290,13 +290,13 @@ describe("Server: Web", () => {
         if (error instanceof AxiosError) {
           expect(error.response?.status).toEqual(404);
           expect(
-            error.response?.data.requesterInformation.receivedParams.action
+            error.response?.data.requesterInformation.receivedParams.action,
           ).toEqual("user");
           expect(
-            error.response?.data.requesterInformation.receivedParams.userID
+            error.response?.data.requesterInformation.receivedParams.userID,
           ).toEqual("1234");
           expect(
-            error.response?.data.requesterInformation.receivedParams.key
+            error.response?.data.requesterInformation.receivedParams.key,
           ).toEqual("value");
         } else throw error;
       }
@@ -310,10 +310,10 @@ describe("Server: Web", () => {
         if (error instanceof AxiosError) {
           expect(error.response?.status).toEqual(404);
           expect(
-            error.response?.data.requesterInformation.receivedParams.action
+            error.response?.data.requesterInformation.receivedParams.action,
           ).toEqual("user");
           expect(
-            error.response?.data.requesterInformation.receivedParams.userID
+            error.response?.data.requesterInformation.receivedParams.userID,
           ).toEqual("1");
         } else throw error;
       }
@@ -327,7 +327,7 @@ describe("Server: Web", () => {
         if (error instanceof AxiosError) {
           expect(error.response?.status).toEqual(404);
           expect(
-            error.response?.data.requesterInformation.receivedParams.action
+            error.response?.data.requesterInformation.receivedParams.action,
           ).toEqual("thing");
         } else throw error;
       }
@@ -339,7 +339,7 @@ describe("Server: Web", () => {
         if (error instanceof AxiosError) {
           expect(error.response?.status).toEqual(404);
           expect(
-            error.response?.data.requesterInformation.receivedParams.action
+            error.response?.data.requesterInformation.receivedParams.action,
           ).toEqual("thingStuff");
         } else throw error;
       }
@@ -348,28 +348,28 @@ describe("Server: Web", () => {
     test("regexp matches will provide proper variables", async () => {
       const response = await axios.post(url + "/api/login/123");
       expect(response.data.requesterInformation.receivedParams.action).toEqual(
-        "login"
+        "login",
       );
       expect(response.data.requesterInformation.receivedParams.userID).toEqual(
-        "123"
+        "123",
       );
 
       const responseAgain = await axios.post(url + "/api/login/admin");
       expect(
-        responseAgain.data.requesterInformation.receivedParams.action
+        responseAgain.data.requesterInformation.receivedParams.action,
       ).toEqual("login");
       expect(
-        responseAgain.data.requesterInformation.receivedParams.userID
+        responseAgain.data.requesterInformation.receivedParams.userID,
       ).toEqual("admin");
     });
 
     test("regexp matches will still work with params with periods and other wacky chars", async () => {
       const response = await axios.get(url + "/api/c/key/log_me-in.com$123.");
       expect(response.data.requesterInformation.receivedParams.action).toEqual(
-        "cacheTest"
+        "cacheTest",
       );
       expect(response.data.requesterInformation.receivedParams.value).toEqual(
-        "log_me-in.com$123."
+        "log_me-in.com$123.",
       );
     });
 
@@ -381,7 +381,7 @@ describe("Server: Web", () => {
         if (error instanceof AxiosError) {
           expect(error.response?.status).toEqual(404);
           expect(
-            error.response?.data.requesterInformation.receivedParams.userID
+            error.response?.data.requesterInformation.receivedParams.userID,
           ).toBeUndefined();
         } else throw error;
       }
@@ -401,7 +401,7 @@ describe("Server: Web", () => {
           if (error instanceof AxiosError) {
             expect(error.response?.status).toEqual(500);
             expect(error.response?.headers["content-type"]).toEqual(
-              "application/json; charset=utf-8"
+              "application/json; charset=utf-8",
             );
             expect(error.response?.data.error).toEqual("failed");
           } else throw error;
@@ -410,31 +410,31 @@ describe("Server: Web", () => {
 
       test("works with with matchTrailingPathParts", async () => {
         const response = await axios.get(
-          url + "/api/a/wild/theKey/and/some/more/path"
+          url + "/api/a/wild/theKey/and/some/more/path",
         );
         expect(
-          response.data.requesterInformation.receivedParams.action
+          response.data.requesterInformation.receivedParams.action,
         ).toEqual("mimeTestAction");
         expect(response.data.requesterInformation.receivedParams.path).toEqual(
-          "and/some/more/path"
+          "and/some/more/path",
         );
         expect(response.data.requesterInformation.receivedParams.key).toEqual(
-          "theKey"
+          "theKey",
         );
       });
 
       test("works with with matchTrailingPathParts and ignored variable prefixes", async () => {
         const response = await axios.get(
-          url + "/api/a/complex/theKey/__path-stuff"
+          url + "/api/a/complex/theKey/__path-stuff",
         );
         expect(
-          response.data.requesterInformation.receivedParams.action
+          response.data.requesterInformation.receivedParams.action,
         ).toEqual("mimeTestAction");
         expect(response.data.requesterInformation.receivedParams.path).toEqual(
-          "path-stuff"
+          "path-stuff",
         );
         expect(response.data.requesterInformation.receivedParams.key).toEqual(
-          "theKey"
+          "theKey",
         );
       });
     });
@@ -442,7 +442,7 @@ describe("Server: Web", () => {
     describe("spaces in URL with public files", () => {
       const source = path.join(
         __dirname,
-        "/../../../../public/logo/actionhero.png"
+        "/../../../../public/logo/actionhero.png",
       );
 
       beforeAll(async () => {
@@ -453,8 +453,8 @@ describe("Server: Web", () => {
         await new Promise((resolve) => {
           readStream.pipe(
             fs.createWriteStream(
-              tmpDir + path.sep + "actionhero with space.png"
-            )
+              tmpDir + path.sep + "actionhero with space.png",
+            ),
           );
           readStream.on("close", resolve);
         });
@@ -467,7 +467,7 @@ describe("Server: Web", () => {
 
       test("will decode %20 or plus sign to a space so that file system can read", async () => {
         const response = await axios.get(
-          url + "/actionhero%20with%20space.png"
+          url + "/actionhero%20with%20space.png",
         );
         expect(response.status).toEqual(200);
         expect(response.data).toMatch(/PNG/);
@@ -505,10 +505,10 @@ describe("Server: Web", () => {
         expect(response.data.version).toEqual(1);
         expect(response.data.user_id).toEqual("123");
         expect(
-          response.data.requesterInformation.receivedParams.apiVersion
+          response.data.requesterInformation.receivedParams.apiVersion,
         ).toBe("1");
         expect(response.data.requesterInformation.receivedParams.action).toBe(
-          "login"
+          "login",
         );
       });
 
@@ -539,7 +539,7 @@ describe("Server: Web", () => {
               expect(error.response?.data.error).toMatch(
                 match
                   ? "is a required parameter for this action"
-                  : "unknown action or invalid apiVersion"
+                  : "unknown action or invalid apiVersion",
               );
             } else throw error;
           }

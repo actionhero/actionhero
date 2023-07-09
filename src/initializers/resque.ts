@@ -32,7 +32,7 @@ export class ResqueInitializer extends Initializer {
   startQueue = async () => {
     api.resque.queue = new Queue(
       { connection: api.resque.connectionDetails },
-      api.tasks.jobs
+      api.tasks.jobs,
     );
 
     api.resque.queue.on("error", (error) => {
@@ -82,7 +82,7 @@ export class ResqueInitializer extends Initializer {
             errorPayload,
             delta,
           });
-        }
+        },
       );
 
       api.resque.scheduler.start();
@@ -106,7 +106,7 @@ export class ResqueInitializer extends Initializer {
         maxTaskProcessors: config.tasks.maxTaskProcessors,
         maxEventLoopDelay: config.tasks.maxEventLoopDelay,
       },
-      api.tasks.jobs
+      api.tasks.jobs,
     );
 
     // normal worker emitters
@@ -123,7 +123,7 @@ export class ResqueInitializer extends Initializer {
     api.resque.multiWorker.on("cleaning_worker", (workerId, worker, pid) => {
       log(
         `[ worker ] cleaning old worker ${worker}, (${pid})`,
-        config.tasks.workerLogging.cleaning_worker
+        config.tasks.workerLogging.cleaning_worker,
       );
     });
     api.resque.multiWorker.on("poll", (workerId, queue) => {
@@ -148,7 +148,7 @@ export class ResqueInitializer extends Initializer {
           class: job.class,
           queue: job.queue,
         });
-      }
+      },
     );
     api.resque.multiWorker.on("pause", (workerId) => {
       log("[ worker ] paused", config.tasks.workerLogging.pause, {
@@ -178,16 +178,16 @@ export class ResqueInitializer extends Initializer {
         log(
           "[ worker ] task success",
           config.tasks.workerLogging.success,
-          payload
+          payload,
         );
-      }
+      },
     );
 
     // multiWorker emitters
     api.resque.multiWorker.on("multiWorkerAction", (verb, delay) => {
       log(
         `[ multiworker ] checked for worker status: ${verb} (event loop delay: ${delay}ms)`,
-        config.tasks.workerLogging.multiWorkerAction
+        config.tasks.workerLogging.multiWorkerAction,
       );
     });
 
@@ -216,7 +216,7 @@ export class ResqueInitializer extends Initializer {
             api.redis.clients.tasks?.constructor?.name === "RedisMock"
               ? "ioredis-mock"
               : "ioredis",
-        }
+        },
       ),
       startQueue: this.startQueue,
       stopQueue: this.stopQueue,

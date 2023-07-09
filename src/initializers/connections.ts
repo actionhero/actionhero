@@ -49,20 +49,20 @@ export class ConnectionsInitializer extends Initializer {
   apply = async (
     connectionId: string,
     method?: string,
-    args?: any[] | Record<string, any>
+    args?: any[] | Record<string, any>,
   ) => {
     return redis.doCluster<Connection>(
       "api.connections.applyResponder",
       [connectionId, method, args],
       connectionId,
-      true
+      true,
     );
   };
 
   applyResponder = async (
     connectionId: string,
     method: keyof InstanceType<typeof Connection>,
-    args: any
+    args: any,
   ) => {
     const connection = api.connections.connections[connectionId];
     if (!connection) return;
@@ -92,7 +92,7 @@ export class ConnectionsInitializer extends Initializer {
     api.connections.globalMiddleware.sort(
       (a, b) =>
         api.connections.middleware[a].priority -
-        api.connections.middleware[b].priority
+        api.connections.middleware[b].priority,
     );
   };
 

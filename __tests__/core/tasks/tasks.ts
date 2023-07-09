@@ -179,7 +179,7 @@ describe("Core: Tasks", () => {
 
   test("setup worked", () => {
     expect(
-      Object.keys(api.tasks.tasks).filter((k) => k !== "test-task") // test-task might be in scope from integration test
+      Object.keys(api.tasks.tasks).filter((k) => k !== "test-task"), // test-task might be in scope from integration test
     ).toHaveLength(4 + 1);
   });
 
@@ -256,7 +256,7 @@ describe("Core: Tasks", () => {
   test("no delayed tasks should be scheduled", async () => {
     const timestamps = await api.resque.queue.scheduledAt(
       queue,
-      "periodicTask"
+      "periodicTask",
     );
     expect(timestamps).toHaveLength(0);
   });
@@ -327,7 +327,7 @@ describe("Core: Tasks", () => {
     const timestamps = await api.resque.queue.scheduledAt(
       queue,
       "regularTask",
-      [{ word: "first" }]
+      [{ word: "first" }],
     );
     expect(timestamps).toHaveLength(1);
 
@@ -383,7 +383,7 @@ describe("Core: Tasks", () => {
     const timestamps = await api.resque.queue.scheduledAt(
       queue,
       "regularTask",
-      [{ word: "first" }]
+      [{ word: "first" }],
     );
     expect(timestamps).toHaveLength(1);
 
@@ -412,7 +412,7 @@ describe("Core: Tasks", () => {
   describe("input validation", () => {
     test("tasks which provide input can be enqueued", async () => {
       await expect(task.enqueue("taskWithInputs", {})).rejects.toThrow(
-        /input for task/
+        /input for task/,
       );
 
       await task.enqueue("taskWithInputs", { a: 1, b: 2, c: 3, d: 4 }); // does not throw
@@ -420,7 +420,7 @@ describe("Core: Tasks", () => {
 
     test("tasks which provide input can be enqueuedAt", async () => {
       await expect(task.enqueueIn(1, "taskWithInputs", {})).rejects.toThrow(
-        /input for task/
+        /input for task/,
       );
 
       await task.enqueueIn(1, "taskWithInputs", { a: 1, b: 2, c: 3, d: 4 }); // does not throw
@@ -428,7 +428,7 @@ describe("Core: Tasks", () => {
 
     test("tasks which provide input can be enqueuedIn", async () => {
       await expect(task.enqueueAt(1, "taskWithInputs", {})).rejects.toThrow(
-        /input for task/
+        /input for task/,
       );
 
       await task.enqueueAt(1, "taskWithInputs", { a: 1, b: 2, c: 3, d: 4 }); // does not throw
@@ -448,13 +448,13 @@ describe("Core: Tasks", () => {
 
     test("validation will fail with input that does not match the validation method (via throw)", async () => {
       await expect(
-        task.enqueue("taskWithInputs", { a: 1, b: 2, c: -1, d: 4 })
+        task.enqueue("taskWithInputs", { a: 1, b: 2, c: -1, d: 4 }),
       ).rejects.toThrow(/nope/);
     });
 
     test("validation will fail with input that does not match the validation method (via false)", async () => {
       await expect(
-        task.enqueue("taskWithInputs", { a: 1, b: 2, c: 3, d: -1 })
+        task.enqueue("taskWithInputs", { a: 1, b: 2, c: 3, d: -1 }),
       ).rejects.toThrow(/-1 is not a valid value for d in task taskWithInputs/);
     });
   });

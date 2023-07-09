@@ -4,7 +4,7 @@ import { parseIPv6URI } from "./parseIPv6URI";
  * Return ip and port information if defined in the header
  */
 export function parseHeadersForClientAddress(
-  headers: Record<string, string | string[]>
+  headers: Record<string, string | string[]>,
 ) {
   let ip: string;
   let port: number | string;

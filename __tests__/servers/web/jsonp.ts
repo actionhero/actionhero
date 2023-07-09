@@ -40,7 +40,7 @@ describe("Server: Web", () => {
   describe("JSONp", () => {
     test("can ask for JSONp responses", async () => {
       const response = await axios.get(
-        url + "/api/randomNumber?callback=myCallback"
+        url + "/api/randomNumber?callback=myCallback",
       );
       expect(response.data).toContain("myCallback({");
       expect(response.data).toContain("Your random number is");
@@ -48,7 +48,7 @@ describe("Server: Web", () => {
 
     test("JSONp responses cannot be used for XSS", async () => {
       const response = await axios.get(
-        url + "/api/randomNumber?callback=alert(%27hi%27);foo"
+        url + "/api/randomNumber?callback=alert(%27hi%27);foo",
       );
       expect(response.data).not.toMatch(/alert\(/);
       expect(response.data.indexOf("alert&#39;hi&#39;;foo(")).toEqual(0);

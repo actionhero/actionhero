@@ -54,7 +54,7 @@ describe("Server: Web", () => {
 
         test("can ask for nested URL actions", async () => {
           const response = await axios.get(
-            url + "/craz/y/action/path/randomNumber"
+            url + "/craz/y/action/path/randomNumber",
           );
           expect(response.status).toEqual(200);
         });

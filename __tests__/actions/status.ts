@@ -8,7 +8,7 @@ describe("Action: status", () => {
 
   test("returns node status", async () => {
     const { id, problems, name, error } = await specHelper.runAction<Status>(
-      "status"
+      "status",
     );
     expect(error).toBeUndefined();
     expect(problems).toHaveLength(0);

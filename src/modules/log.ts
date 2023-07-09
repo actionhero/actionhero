@@ -44,7 +44,7 @@ export type ActionheroLogLevel =
 export function log(
   message: string,
   severity: ActionheroLogLevel = "info",
-  data?: any
+  data?: any,
 ) {
   loggers.map((logger) => {
     if (logger.levels[severity] === undefined) {

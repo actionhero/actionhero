@@ -27,7 +27,7 @@ export function filterResponseForLogging(response: Record<string, any>): {
     } else if (typeof response[i] === "string") {
       sanitizedResponse[i] = response[i].substring(
         0,
-        config.logger.maxLogStringLength
+        config.logger.maxLogStringLength,
       );
     } else if (response[i] instanceof Error) {
       sanitizedResponse[i] = response[i].message ?? String(response[i]);

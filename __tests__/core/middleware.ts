@@ -37,7 +37,7 @@ describe("Core: Middleware", () => {
       });
 
       const { _preProcessorNote, error } = await specHelper.runAction<any>(
-        "randomNumber"
+        "randomNumber",
       );
       expect(error).toBeUndefined();
       expect(_preProcessorNote).toEqual("note");
@@ -56,7 +56,7 @@ describe("Core: Middleware", () => {
       });
 
       const { _preProcessorNote, error } = await specHelper.runAction<any>(
-        "randomNumber"
+        "randomNumber",
       );
       expect(error).toBeUndefined();
       expect(_preProcessorNote).toEqual("slept");
@@ -72,7 +72,7 @@ describe("Core: Middleware", () => {
       });
 
       const { _preProcessorNote, error } = await specHelper.runAction<any>(
-        "randomNumber"
+        "randomNumber",
       );
       expect(error).toBeUndefined();
       expect(_preProcessorNote).toBeUndefined();
@@ -315,7 +315,7 @@ describe("Core: Middleware", () => {
       });
 
       const { randomNumber, error } = await specHelper.runAction<any>(
-        "randomNumber"
+        "randomNumber",
       );
       expect(error).toEqual("Error: BLOCKED");
       expect(randomNumber).toBeUndefined();

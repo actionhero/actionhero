@@ -10,7 +10,7 @@ describe("Core: specHelper", () => {
 
   test("can make a request with just params", async () => {
     const { randomNumber } = await specHelper.runAction<RandomNumber>(
-      "randomNumber"
+      "randomNumber",
     );
     expect(randomNumber).toBeGreaterThanOrEqual(0);
     expect(randomNumber).toBeLessThan(1);
@@ -23,10 +23,10 @@ describe("Core: specHelper", () => {
     if (!connection.messages) throw new Error("no connection.messages");
     expect(connection.messages).toHaveLength(2);
     expect(connection.messages[0].welcome).toEqual(
-      "Welcome to the actionhero api"
+      "Welcome to the actionhero api",
     );
     expect(connection.messages[1].error).toEqual(
-      "Error: unknown action or invalid apiVersion"
+      "Error: unknown action or invalid apiVersion",
     );
     expect(error).toEqual("Error: unknown action or invalid apiVersion");
   });
@@ -104,7 +104,7 @@ describe("Core: specHelper", () => {
     describe("happy-path", () => {
       test("if the response payload is an object, it appends metadata", async () => {
         const response = await specHelper.runAction<RandomNumber>(
-          "randomNumber"
+          "randomNumber",
         );
         expect(response.error).toBeUndefined();
         expect(response.randomNumber).toBeTruthy();
@@ -142,7 +142,7 @@ describe("Core: specHelper", () => {
 
       test("if the response payload is an object, it should not append metadata", async () => {
         const response = await specHelper.runAction<RandomNumber>(
-          "randomNumber"
+          "randomNumber",
         );
         expect(response.error).toBeUndefined();
         expect(response.randomNumber).toBeTruthy();
@@ -156,7 +156,7 @@ describe("Core: specHelper", () => {
       test("if the response payload is an object and there is an error, it appends metadata", async () => {
         const response = await specHelper.runAction("x");
         expect(response.error).toEqual(
-          "Error: unknown action or invalid apiVersion"
+          "Error: unknown action or invalid apiVersion",
         );
         expect(response.messageId).toBeTruthy();
         expect(response.serverInformation!.serverName).toEqual("actionhero");

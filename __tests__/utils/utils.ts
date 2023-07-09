@@ -280,7 +280,7 @@ describe("Utils", () => {
         "p3",
         "p4",
         "o1.o3",
-        "o1.o2.p1"
+        "o1.o2.p1",
       );
       const filteredParams2 = utils.filterObjectForLogging(inputs);
       expect(filteredParams2).toEqual(testInput);
@@ -293,7 +293,7 @@ describe("Utils", () => {
       (config.general!.filteredParams as string[]).push(
         "p1",
         "o1.o1p1",
-        "somethingNotExist"
+        "somethingNotExist",
       );
       const filteredParams = utils.filterObjectForLogging(inputs);
       expect(filteredParams.p1).toEqual("[FILTERED]");
@@ -312,7 +312,7 @@ describe("Utils", () => {
       (config.general!.filteredParams as string[]).push(
         "p2",
         "o1.o2.o2p1",
-        "o1.o2.notThere"
+        "o1.o2.notThere",
       );
       const filteredParams = utils.filterObjectForLogging(inputs);
       expect(filteredParams.p2).toEqual("[FILTERED]");
@@ -411,7 +411,7 @@ describe("Utils", () => {
         "p3",
         "p4",
         "o1.o3",
-        "o1.o2.p1"
+        "o1.o2.p1",
       );
       const filteredResponse2 = utils.filterResponseForLogging(inputs);
       expect(filteredResponse2).toEqual(testInput);
@@ -424,7 +424,7 @@ describe("Utils", () => {
       (config.general!.filteredResponse as string[]).push(
         "p1",
         "o1.o1p1",
-        "somethingNotExist"
+        "somethingNotExist",
       );
       const filteredResponse = utils.filterResponseForLogging(inputs);
       expect(filteredResponse.p1).toEqual("[FILTERED]");
@@ -443,7 +443,7 @@ describe("Utils", () => {
       (config.general!.filteredResponse as string[]).push(
         "p2",
         "o1.o2.o2p1",
-        "o1.o2.notThere"
+        "o1.o2.notThere",
       );
       const filteredResponse = utils.filterResponseForLogging(inputs);
       expect(filteredResponse.p2).toEqual("[FILTERED]");

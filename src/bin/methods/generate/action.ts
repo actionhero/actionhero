@@ -23,12 +23,12 @@ export class GenerateActionCLI extends CLI {
 
   async run({ params }: { params: ParamsFrom<GenerateActionCLI> }) {
     let actionTemplateBuffer = fs.readFileSync(
-      path.join(__dirname, "../../../../templates/action.ts.template")
+      path.join(__dirname, "../../../../templates/action.ts.template"),
     );
     let actionTemplate = actionTemplateBuffer.toString();
 
     let testTemplateBuffer = fs.readFileSync(
-      path.join(__dirname, "/../../../../templates/test/action.ts.template")
+      path.join(__dirname, "/../../../../templates/test/action.ts.template"),
     );
     let testTemplate = testTemplateBuffer.toString();
 
@@ -43,13 +43,13 @@ export class GenerateActionCLI extends CLI {
         "/" +
         params.name +
         ".ts",
-      actionTemplate
+      actionTemplate,
     );
     console.info(message);
 
     message = utils.fileUtils.createFileSafely(
       config.general.paths.test[0] + "/actions/" + params.name + ".ts",
-      testTemplate
+      testTemplate,
     );
     console.info(message);
 

@@ -39,7 +39,7 @@ export class TasksInitializer extends Initializer {
       if (api.tasks.tasks[task.name] && !reload) {
         log(
           `an existing task with the same name \`${task.name}\` will be overridden by the file ${fullFilePath}`,
-          "crit"
+          "crit",
         );
       }
 
@@ -47,7 +47,7 @@ export class TasksInitializer extends Initializer {
       api.tasks.jobs[task.name] = api.tasks.jobWrapper(task.name);
       log(
         `task ${reload ? "(re)" : ""} loaded: ${task.name}, ${fullFilePath}`,
-        "debug"
+        "debug",
       );
     }
   };
@@ -139,9 +139,9 @@ export class TasksInitializer extends Initializer {
       await Promise.all(
         utils
           .ensureNoTsHeaderOrSpecFiles(
-            safeGlobSync(path.join(p, "**", "**/*(*.js|*.ts)"))
+            safeGlobSync(path.join(p, "**", "**/*(*.js|*.ts)")),
           )
-          .map((f) => api.tasks.loadFile(f, reload))
+          .map((f) => api.tasks.loadFile(f, reload)),
       );
     }
 
@@ -153,7 +153,7 @@ export class TasksInitializer extends Initializer {
         let files = safeGlobSync(path.join(pluginPath, "tasks", "**", "*.js"));
 
         files = files.concat(
-          safeGlobSync(path.join(pluginPath, "dist", "tasks", "**", "*.js"))
+          safeGlobSync(path.join(pluginPath, "dist", "tasks", "**", "*.js")),
         );
 
         utils.ensureNoTsHeaderOrSpecFiles(files).forEach((f) => {

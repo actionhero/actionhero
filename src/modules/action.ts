@@ -47,7 +47,7 @@ export namespace action {
       api.actions.globalMiddleware.push(data.name);
       utils.sortGlobalMiddleware(
         api.actions.globalMiddleware,
-        api.actions.middleware
+        api.actions.middleware,
       );
     }
   }
@@ -59,7 +59,7 @@ export namespace action {
     actionName: string,
     actionVersion?: string | number,
     params: { [key: string]: any } = {},
-    connectionProperties = {}
+    connectionProperties = {},
   ) {
     const connection = new Connection({
       type: "in-line-action",
@@ -76,7 +76,7 @@ export namespace action {
       const actionProcessor = new ActionProcessor(connection);
       const data = await actionProcessor.processAction(
         actionName,
-        actionVersion
+        actionVersion,
       );
 
       if (data.response.error) throw new Error(data.response.error);

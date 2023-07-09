@@ -66,7 +66,7 @@ export default class MyTask extends Task {
     process.env.DID_TASK_RUN = "yes";
   }
 }
-`
+`,
 );
 
 describe("task integration tests", () => {
@@ -95,7 +95,7 @@ describe("task integration tests", () => {
     test("the periodic task should have started", async () => {
       const getCount = async () => {
         const resp = await api.redis.clients.client.get(
-          "resque:stat:processed"
+          "resque:stat:processed",
         );
         if (!resp) throw new Error("no response from redis");
         return parseInt(resp);

@@ -176,13 +176,13 @@ describe("Core: Tasks", () => {
           queue: string,
           job: any,
           f: Error,
-          duration: number
+          duration: number,
         ) => {
           expect(queue).toEqual(queue);
           expect(job.class).toEqual("someCrazyTask");
           expect(job.queue).toEqual("testQueue");
           expect(String(f)).toEqual(
-            'Error: No job defined for class "someCrazyTask"'
+            'Error: No job defined for class "someCrazyTask"',
           );
           api.resque.multiWorker.removeListener("failure", listener);
           await api.resque.multiWorker.stop();

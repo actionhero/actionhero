@@ -61,7 +61,7 @@ export abstract class Action {
    * @param data The data about this connection, response, and params.
    */
   abstract run(
-    data: Partial<ActionProcessor<Action>>
+    data: Partial<ActionProcessor<Action>>,
   ): Promise<ActionResponse | void>;
 
   validate() {
@@ -70,7 +70,7 @@ export abstract class Action {
     }
     if (!this.description) {
       throw new Error(
-        `description is required for the action \`${this.name}\``
+        `description is required for the action \`${this.name}\``,
       );
     }
     if (!this.run || typeof this.run !== "function") {
@@ -81,14 +81,14 @@ export abstract class Action {
       ([...connectionVerbs] as string[]).includes(this.name)
     ) {
       throw new Error(
-        `action \`${this.name}\` is a reserved verb for connections. choose a new name`
+        `action \`${this.name}\` is a reserved verb for connections. choose a new name`,
       );
     }
 
     Object.keys(this.inputs).forEach((input) => {
       if (api.params.globalSafeParams.includes(input)) {
         throw new Error(
-          `input \`${input}\` in action \`${this.name}\` is a reserved param`
+          `input \`${input}\` in action \`${this.name}\` is a reserved param`,
         );
       }
     });

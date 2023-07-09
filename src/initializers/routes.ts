@@ -42,7 +42,7 @@ export class RoutesInitializer extends Initializer {
         const match = api.routes.matchURL(
           pathParts,
           route.path,
-          route.matchTrailingPathParts
+          route.matchTrailingPathParts,
         );
         if (match.match) {
           if (route.apiVersion) {
@@ -53,7 +53,7 @@ export class RoutesInitializer extends Initializer {
             try {
               const decodedName = decodeURIComponent(param.replace(/\+/g, " "));
               const decodedValue = decodeURIComponent(
-                match.params[param].replace(/\+/g, " ")
+                match.params[param].replace(/\+/g, " "),
               );
               connection.params[decodedName] = decodedValue;
             } catch (e) {
@@ -67,10 +67,10 @@ export class RoutesInitializer extends Initializer {
             const requestedFile =
               connection.rawConnection.parsedURL.pathname.substring(
                 route.path.length,
-                connection.rawConnection.parsedURL.pathname.length
+                connection.rawConnection.parsedURL.pathname.length,
               );
             connection.params.file = path.normalize(
-              route.dir + "/" + requestedFile
+              route.dir + "/" + requestedFile,
             );
           } else {
             connection.params.action = route.action;
@@ -84,7 +84,7 @@ export class RoutesInitializer extends Initializer {
   matchURL = (
     pathParts: string[],
     match: string,
-    matchTrailingPathParts: boolean
+    matchTrailingPathParts: boolean,
   ) => {
     const response: { match: boolean; params: { [key: string]: any } } = {
       match: false,
@@ -130,7 +130,7 @@ export class RoutesInitializer extends Initializer {
           variable = trimmedMatchPart.replace(":", "").split("(")[0];
           regexpMatch = trimmedMatchPart.substring(
             trimmedMatchPart.indexOf("(") + 1,
-            trimmedMatchPart.length - 1
+            trimmedMatchPart.length - 1,
           );
           const matches = pathPart.match(new RegExp(regexpMatch, "g"));
           if (matches) {
@@ -169,7 +169,7 @@ export class RoutesInitializer extends Initializer {
               configRoute.action,
               configRoute.apiVersion,
               configRoute.matchTrailingPathParts,
-              configRoute.dir
+              configRoute.dir,
             );
           }
         } else {
@@ -179,7 +179,7 @@ export class RoutesInitializer extends Initializer {
             configRoute.action,
             configRoute.apiVersion,
             configRoute.matchTrailingPathParts,
-            configRoute.dir
+            configRoute.dir,
           );
         }
         counter++;
@@ -195,7 +195,7 @@ export class RoutesInitializer extends Initializer {
         }
 
         log(
-          `creating routes automatically for all actions responding to ${verb.toUpperCase()} HTTP verb`
+          `creating routes automatically for all actions responding to ${verb.toUpperCase()} HTTP verb`,
         );
 
         for (const action in api.actions.actions) {

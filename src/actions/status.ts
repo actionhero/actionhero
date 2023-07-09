@@ -19,9 +19,9 @@ enum StatusMessages {
 const packageJSON: PackageJson = JSON.parse(
   fs
     .readFileSync(
-      path.normalize(path.join(__dirname, "..", "..", "package.json"))
+      path.normalize(path.join(__dirname, "..", "..", "package.json")),
     )
-    .toString()
+    .toString(),
 );
 
 export class Status extends Action {

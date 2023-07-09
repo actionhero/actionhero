@@ -8,7 +8,7 @@ describe("Action: sleepTest", () => {
 
   test("will return data from an async action", async () => {
     const { sleepDuration } = await specHelper.runAction<SleepTest>(
-      "sleepTest"
+      "sleepTest",
     );
     expect(sleepDuration).toEqual(1000);
   });
@@ -18,7 +18,7 @@ describe("Action: sleepTest", () => {
       "sleepTest",
       {
         sleepDuration: 100,
-      }
+      },
     );
     expect(sleepDuration).toEqual(100);
   });

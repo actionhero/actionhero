@@ -50,7 +50,7 @@ describe("Server: Web", () => {
         if (error instanceof AxiosError) {
           expect(error.response?.status).toEqual(302);
           expect(error.response?.data).toMatch(
-            /You are being redirected to https:\/\/www.site.com\/api\/randomNumber/
+            /You are being redirected to https:\/\/www.site.com\/api\/randomNumber/,
           );
         } else throw error;
       }
@@ -67,7 +67,7 @@ describe("Server: Web", () => {
         if (error instanceof AxiosError) {
           expect(error.response?.status).toEqual(302);
           expect(error.response?.data).toMatch(
-            /You are being redirected to https:\/\/www.site.com\/api\/randomNumber/
+            /You are being redirected to https:\/\/www.site.com\/api\/randomNumber/,
           );
         } else throw error;
       }

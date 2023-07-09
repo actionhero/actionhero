@@ -75,7 +75,7 @@ describe("Server: Web", () => {
         bodyFormData,
         {
           headers: { "Content-type": "multipart/form-data" },
-        }
+        },
       );
       expect(response.data.data.key).toEqual(["value", "value1"]);
     });

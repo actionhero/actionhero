@@ -48,7 +48,7 @@ export function buildConfig() {
 
   function addConfigPath(
     pathToCheck: string | Array<string>,
-    alreadySplit: boolean
+    alreadySplit: boolean,
   ) {
     if (typeof pathToCheck === "string") {
       if (!alreadySplit) {
@@ -71,7 +71,7 @@ export function buildConfig() {
   [utils.argv.config?.toString(), process.env.ACTIONHERO_CONFIG].map(
     (entry) => {
       addConfigPath(entry, false);
-    }
+    },
   );
 
   if (configPaths.length < 1 && typescript) {
@@ -85,7 +85,7 @@ export function buildConfig() {
   if (configPaths.length < 1) {
     throw new Error(
       configPaths +
-        "No config directory found in this project.  Did you compile your typescript project?"
+        "No config directory found in this project.  Did you compile your typescript project?",
     );
   }
 
@@ -133,7 +133,7 @@ export function buildConfig() {
 
   const loadConfigDirectory = (configPath: string, watch: boolean) => {
     const configFiles = ensureNoTsHeaderOrSpecFiles(
-      safeGlobSync(path.join(configPath, "**", "**/*(*.js|*.ts)"))
+      safeGlobSync(path.join(configPath, "**", "**/*(*.js|*.ts)")),
     );
 
     let loadRetries = 0;
@@ -165,7 +165,7 @@ export function buildConfig() {
 
           throw new Error(
             "Unable to load configurations, errors: " +
-              JSON.stringify(loadErrors)
+              JSON.stringify(loadErrors),
           );
         }
         // adjust configuration files list: remove and push
@@ -193,8 +193,8 @@ export function buildConfig() {
                 r.action === route.action &&
                 r.apiVersion === route.apiVersion &&
                 r.matchTrailingPathParts === route.matchTrailingPathParts &&
-                r.dir === route.dir
-            )
+                r.dir === route.dir,
+            ),
         );
       });
     }
@@ -210,7 +210,7 @@ export function buildConfig() {
     try {
       config = utils.hashMerge(
         config,
-        JSON.parse(process.env.ACTIONHERO_CONFIG_OVERRIDES)
+        JSON.parse(process.env.ACTIONHERO_CONFIG_OVERRIDES),
       );
     } catch (error) {
       throw new Error(`could not parse ACTIONHERO_CONFIG_OVERRIDES: ${error}`);
@@ -221,7 +221,7 @@ export function buildConfig() {
     try {
       config = utils.hashMerge(
         config,
-        JSON.parse(utils.argv.ACTIONHERO_CONFIG_OVERRIDES.toString())
+        JSON.parse(utils.argv.ACTIONHERO_CONFIG_OVERRIDES.toString()),
       );
     } catch (error) {
       throw new Error(`could not parse ACTIONHERO_CONFIG_OVERRIDES: ${error}`);

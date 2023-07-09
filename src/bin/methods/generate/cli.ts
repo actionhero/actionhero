@@ -28,7 +28,7 @@ export class GenerateCLICLI extends CLI {
 
   async run({ params }: { params: ParamsFrom<GenerateCLICLI> }) {
     let templateBuffer = fs.readFileSync(
-      path.join(__dirname, "/../../../../templates/cli.ts.template")
+      path.join(__dirname, "/../../../../templates/cli.ts.template"),
     );
 
     let template = templateBuffer.toString();
@@ -40,9 +40,9 @@ export class GenerateCLICLI extends CLI {
 
     const message = utils.fileUtils.createFileSafely(
       utils.replaceDistWithSrc(
-        config.general.paths.cli[0] + "/" + params.name + ".ts"
+        config.general.paths.cli[0] + "/" + params.name + ".ts",
       ),
-      template
+      template,
     );
     console.log(message);
 

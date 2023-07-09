@@ -16,7 +16,7 @@ describe("Action: Cache", () => {
       key: "test key",
     });
     expect(error).toEqual(
-      "Error: value is a required parameter for this action"
+      "Error: value is a required parameter for this action",
     );
   });
 
@@ -48,7 +48,7 @@ describe("Action: Cache", () => {
       {
         key: "testKey",
         value: "abc123",
-      }
+      },
     );
     expect(error).toBeFalsy();
     expect(cacheTestResults.saveResp).toEqual(true);

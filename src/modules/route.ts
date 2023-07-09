@@ -41,7 +41,7 @@ export namespace route {
     action: string,
     apiVersion?: number | string,
     matchTrailingPathParts: boolean = false,
-    dir?: string
+    dir?: string,
   ) {
     const verbs =
       method === "all" ? routerMethods : ([method] as [RouteMethod]);

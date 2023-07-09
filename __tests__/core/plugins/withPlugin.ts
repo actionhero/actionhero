@@ -13,7 +13,7 @@ const actionhero = new Process();
 
 async function exec(
   command: string,
-  args: Record<string, any>
+  args: Record<string, any>,
 ): Promise<{
   error?: NodeJS.ErrnoException;
   stdout?: string;
@@ -70,19 +70,19 @@ describe("Core: Plugins", () => {
 
         const { stdout: helpResponse, stderr: error1 } = await exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts help",
-          { env }
+          { env },
         );
         expect(error1).toEqual("");
         expect(helpResponse).toContain("hello");
 
         const { stdout: helloResponse, stderr: error2 } = await exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts hello",
-          { env }
+          { env },
         );
         expect(error2).toEqual("");
         expect(helloResponse).toContain("Hello, Actionhero");
       },
-      30 * 1000
+      30 * 1000,
     );
   });
 });

@@ -102,7 +102,7 @@ describe("Core", () => {
       test("will default actions to version 1 when no version is provided by the definition", async () => {
         const response = await specHelper.runAction("randomNumber");
         expect(
-          response.requesterInformation!.receivedParams.apiVersion
+          response.requesterInformation!.receivedParams.apiVersion,
         ).toEqual(1);
       });
 
@@ -112,20 +112,20 @@ describe("Core", () => {
           apiVersion: 1,
         });
         expect(response.requesterInformation.receivedParams.apiVersion).toEqual(
-          1
+          1,
         );
         response = await specHelper.runAction("versionedAction", {
           apiVersion: 2,
         });
         expect(response.requesterInformation.receivedParams.apiVersion).toEqual(
-          2
+          2,
         );
       });
 
       test("will default clients to the latest version of the action", async () => {
         const response = await specHelper.runAction("versionedAction");
         expect(
-          response.requesterInformation!.receivedParams.apiVersion
+          response.requesterInformation!.receivedParams.apiVersion,
         ).toEqual(3);
       });
 
@@ -134,7 +134,7 @@ describe("Core", () => {
           apiVersion: 10,
         });
         expect(response.error).toEqual(
-          "Error: unknown action or invalid apiVersion"
+          "Error: unknown action or invalid apiVersion",
         );
       });
 
@@ -201,7 +201,7 @@ describe("Core", () => {
         const badAction = new BadAction();
 
         expect(() => badAction.validate()).toThrow(
-          "input `apiVersion` in action `bad` is a reserved param"
+          "input `apiVersion` in action `bad` is a reserved param",
         );
       });
 
@@ -280,7 +280,7 @@ describe("Core", () => {
         expect(response.error).toContain("required parameter for this action");
         response = await specHelper.runAction("testAction", {});
         expect(response.error).toMatch(
-          /requiredParam is a required parameter for this action/
+          /requiredParam is a required parameter for this action/,
         );
       });
 
@@ -326,7 +326,7 @@ describe("Core", () => {
           fancyParam: 123,
         });
         expect(
-          response.requesterInformation!.receivedParams.fancyParam
+          response.requesterInformation!.receivedParams.fancyParam,
         ).toEqual("123");
       });
 
@@ -344,10 +344,10 @@ describe("Core", () => {
           sleepDuration: true,
         });
         expect(
-          response.requesterInformation!.receivedParams.requiredParam
+          response.requesterInformation!.receivedParams.requiredParam,
         ).toBeTruthy();
         expect(
-          response.requesterInformation!.receivedParams.sleepDuration
+          response.requesterInformation!.receivedParams.sleepDuration,
         ).toBeUndefined();
       });
     });
@@ -418,13 +418,13 @@ describe("Core", () => {
           schemaParam: { requiredParam: "" },
         });
         expect(response.error).toContain(
-          "schemaParam.requiredParam is a required parameter for this action"
+          "schemaParam.requiredParam is a required parameter for this action",
         );
         response = await specHelper.runAction("testAction", {
           schemaParam: {},
         });
         expect(response.error).toContain(
-          "schemaParam.requiredParam is a required parameter for this action"
+          "schemaParam.requiredParam is a required parameter for this action",
         );
       });
 
@@ -467,7 +467,7 @@ describe("Core", () => {
           schemaParam: { requiredParam: true, fancyParam: 123 },
         });
         expect(
-          response.requesterInformation!.receivedParams.schemaParam.fancyParam
+          response.requesterInformation!.receivedParams.schemaParam.fancyParam,
         ).toEqual("123");
       });
 
@@ -477,11 +477,11 @@ describe("Core", () => {
         });
         expect(
           response.requesterInformation!.receivedParams.schemaParam
-            .requiredParam
+            .requiredParam,
         ).toBeTruthy();
         expect(
           response.requesterInformation!.receivedParams.schemaParam
-            .sleepDuration
+            .sleepDuration,
         ).toBeUndefined();
       });
     });
@@ -624,7 +624,7 @@ describe("Core", () => {
         });
         expect(response.a).toBeUndefined();
         expect(response.error).toMatch(
-          /Cannot assign to read only property 'a' of object/
+          /Cannot assign to read only property 'a' of object/,
         );
       });
     });

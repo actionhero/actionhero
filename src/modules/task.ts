@@ -55,7 +55,7 @@ export namespace task {
   export async function enqueue(
     taskName: string,
     inputs?: TaskInputs,
-    queue: string = api.tasks.tasks[taskName].queue
+    queue: string = api.tasks.tasks[taskName].queue,
   ) {
     await validateInput(taskName, inputs);
     return api.resque.queue.enqueue(queue, taskName, [inputs]);
@@ -76,7 +76,7 @@ export namespace task {
     taskName: string,
     inputs?: TaskInputs,
     queue: string = api.tasks.tasks[taskName].queue,
-    suppressDuplicateTaskError = false
+    suppressDuplicateTaskError = false,
   ) {
     await validateInput(taskName, inputs);
     return api.resque.queue.enqueueAt(
@@ -84,7 +84,7 @@ export namespace task {
       queue,
       taskName,
       [inputs],
-      suppressDuplicateTaskError
+      suppressDuplicateTaskError,
     );
   }
 
@@ -104,7 +104,7 @@ export namespace task {
     taskName: string,
     inputs?: TaskInputs,
     queue: string = api.tasks.tasks[taskName].queue,
-    suppressDuplicateTaskError = false
+    suppressDuplicateTaskError = false,
   ) {
     await validateInput(taskName, inputs);
     return api.resque.queue.enqueueIn(
@@ -112,7 +112,7 @@ export namespace task {
       queue,
       taskName,
       [inputs],
-      suppressDuplicateTaskError
+      suppressDuplicateTaskError,
     );
   }
 
@@ -130,7 +130,7 @@ export namespace task {
     q: string,
     taskName: string,
     args?: TaskInputs,
-    count?: number
+    count?: number,
   ) {
     return api.resque.queue.del(q, taskName, [args], count);
   }
@@ -150,7 +150,7 @@ export namespace task {
     q: string,
     taskName: string,
     start?: number,
-    stop?: number
+    stop?: number,
   ) {
     return api.resque.queue.delByFunction(q, taskName, start, stop);
   }
@@ -167,7 +167,7 @@ export namespace task {
   export async function delDelayed(
     q: string,
     taskName: string,
-    inputs?: TaskInputs
+    inputs?: TaskInputs,
   ) {
     return api.resque.queue.delDelayed(q, taskName, [inputs]);
   }
@@ -184,7 +184,7 @@ export namespace task {
   export async function scheduledAt(
     q: string,
     taskName: string,
-    inputs: TaskInputs
+    inputs: TaskInputs,
   ): Promise<Array<number>> {
     return api.resque.queue.scheduledAt(q, taskName, [inputs]);
   }
@@ -209,7 +209,7 @@ export namespace task {
   export async function queued(
     q: string,
     start: number,
-    stop: number
+    stop: number,
   ): Promise<Array<TaskInputs>> {
     return api.resque.queue.queued(q, start, stop);
   }
@@ -279,7 +279,7 @@ export namespace task {
    */
   export async function workingOn(
     workerName: string,
-    queues: string
+    queues: string,
   ): Promise<any> {
     return api.resque.queue.workingOn(workerName, queues);
   }
@@ -349,7 +349,7 @@ export namespace task {
       await task.enqueueIn(thisTask.frequency, taskName, {}, undefined, true);
       log(
         `re-enqueued recurrent job ${taskName}`,
-        config.tasks.schedulerLogging.reEnqueue
+        config.tasks.schedulerLogging.reEnqueue,
       );
     }
   }
@@ -368,7 +368,7 @@ export namespace task {
           if (toRun === true) {
             log(
               `enqueuing periodic task: ${thisTask.name}`,
-              config.tasks.schedulerLogging.enqueue
+              config.tasks.schedulerLogging.enqueue,
             );
             enqueuedTasks.push(thisTask.name);
           }
@@ -395,7 +395,7 @@ export namespace task {
       const timestamps = await task.delDelayed(
         thisTask.queue,
         thisTask.name,
-        null
+        null,
       );
       removedCount = removedCount + timestamps.length;
       return removedCount;
@@ -442,7 +442,7 @@ export namespace task {
       api.tasks.globalMiddleware.push(middleware.name);
       utils.sortGlobalMiddleware(
         api.tasks.globalMiddleware,
-        api.tasks.middleware
+        api.tasks.middleware,
       );
     }
     await api.tasks.loadTasks(true);
@@ -462,7 +462,7 @@ export namespace task {
           inputs[key] = await task.inputs[key].default.call(
             api,
             inputs[key],
-            this
+            this,
           );
         } else {
           inputs[key] = task.inputs[key].default;
@@ -493,7 +493,7 @@ export namespace task {
         else if (validatorResponse !== true) {
           if (validatorResponse === false) {
             throw new Error(
-              `${inputs[key]} is not a valid value for ${key} in task ${taskName}`
+              `${inputs[key]} is not a valid value for ${key} in task ${taskName}`,
             );
           } else {
             throw new Error(validatorResponse);
@@ -512,13 +512,13 @@ export namespace task {
 
   function checkForRepeatRecurringTaskEnqueue(
     taskName: string,
-    error: NodeJS.ErrnoException
+    error: NodeJS.ErrnoException,
   ) {
     if (error.toString().match(/already enqueued at this time/)) {
       // this is OK, the job was enqueued by another process as this method was running
       log(
         `not enqueuing periodic task ${taskName} - error.toString()`,
-        "warning"
+        "warning",
       );
     } else {
       throw error;

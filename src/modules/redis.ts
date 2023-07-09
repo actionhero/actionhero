@@ -40,7 +40,7 @@ export namespace redis {
     method: string,
     args: Array<any> = [],
     connectionId?: string,
-    waitForResponse: boolean = false
+    waitForResponse: boolean = false,
   ): Promise<T extends any ? T : unknown> {
     const messageId = uuid.v4();
     const payload = {
@@ -60,7 +60,7 @@ export namespace redis {
       return new Promise(async (resolve, reject) => {
         const timer = setTimeout(
           () => reject(new Error("RPC Timeout")),
-          config.general.rpcTimeout
+          config.general.rpcTimeout,
         );
         api.redis.rpcCallbacks[messageId] = { timer, resolve, reject };
         try {
@@ -78,7 +78,7 @@ export namespace redis {
 
   export async function respondCluster(
     messageId: string,
-    response: PubSubMessage
+    response: PubSubMessage,
   ) {
     const payload = {
       messageType: "doResponse",

@@ -54,7 +54,7 @@ export namespace cache {
     pattern: string,
     count: number = scanCount,
     keysAry: string[] = [],
-    cursor = 0
+    cursor = 0,
   ): Promise<Array<string>> {
     // return client().keys(redisPrefix + "*");
 
@@ -63,7 +63,7 @@ export namespace cache {
       "MATCH",
       pattern,
       "COUNT",
-      count
+      count,
     );
 
     if (matches && matches.length > 0) keysAry = keysAry.concat(matches);
@@ -83,7 +83,7 @@ export namespace cache {
    * Returns all the locks in redis which are under this Actionhero namespace.  Potentially slow.
    */
   export async function locks(
-    optionalScopePrefix = ""
+    optionalScopePrefix = "",
   ): Promise<Array<string>> {
     // return client().keys(lockPrefix + "*");
     return getKeys(lockPrefix + optionalScopePrefix + "*");
@@ -130,7 +130,7 @@ export namespace cache {
           .get(key)
           .then((content) => {
             data[key] = content;
-          })
+          }),
       );
     });
 
@@ -156,7 +156,7 @@ export namespace cache {
       await client().set(key, content);
       if (parsedContent.expireTimestamp) {
         const expireTimeSeconds = Math.ceil(
-          (parsedContent.expireTimestamp - new Date().getTime()) / 1000
+          (parsedContent.expireTimestamp - new Date().getTime()) / 1000,
         );
         await client().expire(key, expireTimeSeconds);
       }
@@ -177,7 +177,7 @@ export namespace cache {
    */
   export async function load(
     key: string,
-    options: CacheOptions = {}
+    options: CacheOptions = {},
   ): Promise<CacheObject> {
     let cacheObj: CacheObject;
 
@@ -208,7 +208,7 @@ export namespace cache {
         expireTimeSeconds = Math.ceil(options.expireTimeMS / 1000);
       } else {
         expireTimeSeconds = Math.floor(
-          (cacheObj.expireTimestamp - new Date().getTime()) / 1000
+          (cacheObj.expireTimestamp - new Date().getTime()) / 1000,
         );
       }
     }
@@ -260,7 +260,7 @@ export namespace cache {
   export async function save(
     key: string,
     value: any,
-    expireTimeMS?: number
+    expireTimeMS?: number,
   ): Promise<boolean> {
     let expireTimeSeconds = null;
     let expireTimestamp = null;
@@ -321,7 +321,7 @@ export namespace cache {
    */
   export async function lock(
     key: string,
-    expireTimeMS: number = lockDuration
+    expireTimeMS: number = lockDuration,
   ): Promise<boolean> {
     const lockOk = await cache.checkLock(key, null);
     if (!lockOk) {
@@ -355,7 +355,7 @@ export namespace cache {
   export async function checkLock(
     key: string,
     retry: boolean | number = false,
-    startTime: number = new Date().getTime()
+    startTime: number = new Date().getTime(),
   ): Promise<boolean> {
     const lockedBy = await client().get(lockPrefix + key);
     if (lockedBy === lockName() || lockedBy === null) {

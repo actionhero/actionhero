@@ -23,7 +23,7 @@ const connectClient = async (query = ""): Promise<any> => {
           return reject(error);
         }
         resolve(connectResponse);
-      }
+      },
     );
   });
 
@@ -37,7 +37,7 @@ describe("Integration: Web Server + Websocket Socket shared fingerprint", () => 
     url = "http://localhost:" + config.web!.port;
     ActionheroWebsocketClient = eval(
       // @ts-ignore
-      api.servers.servers.websocket.compileActionheroWebsocketClientJS()
+      api.servers.servers.websocket.compileActionheroWebsocketClientJS(),
     ); // eslint-disable-line
   });
 
@@ -63,7 +63,7 @@ describe("Integration: Web Server + Websocket Socket shared fingerprint", () => 
     expect(connectResponse.data.id).toBeTruthy();
     const id = connectResponse.data.id;
     expect(api.connections.connections[id].fingerprint).not.toEqual(
-      fingerprint
+      fingerprint,
     );
     client.disconnect();
   });

@@ -35,7 +35,7 @@ export class WebServer extends Server {
       setHeader: (
         connection: Connection,
         key: string,
-        value: string | number
+        value: string | number,
       ) => {
         connection.rawConnection.res.setHeader(key, value);
       },
@@ -47,7 +47,7 @@ export class WebServer extends Server {
       pipe: (
         connection: Connection,
         buffer: string | Buffer,
-        headers: Record<string, string>
+        headers: Record<string, string>,
       ) => {
         for (const k in headers) {
           connection.setHeader(k, headers[k]);
@@ -70,7 +70,7 @@ export class WebServer extends Server {
       this.config.rootEndpointType === "file"
     ) {
       throw new Error(
-        'rootEndpointType cannot be "file" without a urlPathForFiles'
+        'rootEndpointType cannot be "file" without a urlPathForFiles',
       );
     }
 
@@ -88,7 +88,7 @@ export class WebServer extends Server {
         this.config.serverOptions,
         (req, res) => {
           this.handleRequest(req, res);
-        }
+        },
       );
     }
 
@@ -105,7 +105,7 @@ export class WebServer extends Server {
         }, 1000);
       } else {
         throw new Error(
-          `cannot start web server @ ${this.config.bindIP}:${this.config.port} => ${error}`
+          `cannot start web server @ ${this.config.bindIP}:${this.config.port} => ${error}`,
         );
       }
     });
@@ -161,14 +161,14 @@ export class WebServer extends Server {
     this.cleanHeaders(connection);
     const headers = connection.rawConnection.responseHeaders;
     const responseHttpCode = parseInt(
-      connection.rawConnection.responseHttpCode
+      connection.rawConnection.responseHttpCode,
     );
 
     this.sendWithCompression(
       connection,
       responseHttpCode,
       headers,
-      stringResponse
+      stringResponse,
     );
   }
 
@@ -178,7 +178,7 @@ export class WebServer extends Server {
     fileStream: any,
     mime: string,
     length: number,
-    lastModified: Date
+    lastModified: Date,
   ) {
     let foundCacheControl = false;
     let ifModifiedSince;
@@ -218,14 +218,14 @@ export class WebServer extends Server {
     const sendRequestResult = () => {
       const responseHttpCode = parseInt(
         connection.rawConnection.responseHttpCode,
-        10
+        10,
       );
       if (error) {
         this.sendWithCompression(
           connection,
           responseHttpCode,
           headers,
-          String(error)
+          String(error),
         );
       } else if (responseHttpCode !== 304) {
         this.sendWithCompression(
@@ -234,12 +234,12 @@ export class WebServer extends Server {
           headers,
           null,
           fileStream,
-          length
+          length,
         );
       } else {
         connection.rawConnection.res.writeHead(
           responseHttpCode,
-          this.transformHeaders(headers)
+          this.transformHeaders(headers),
         );
         connection.rawConnection.res.end();
         connection.destroy();
@@ -267,7 +267,7 @@ export class WebServer extends Server {
           if (error || !fileStats) {
             this.log(
               "Error receving file statistics: " + String(error),
-              "error"
+              "error",
             );
           }
           return resolve(fileStats);
@@ -313,7 +313,7 @@ export class WebServer extends Server {
     headers: Array<[string, string | number]>,
     stringResponse: string,
     fileStream?: any,
-    fileLength?: number
+    fileLength?: number,
   ) {
     let acceptEncoding =
       connection.rawConnection.req.headers["accept-encoding"];
@@ -360,7 +360,7 @@ export class WebServer extends Server {
       if (compressor) {
         connection.rawConnection.res.writeHead(
           responseHttpCode,
-          this.transformHeaders(headers)
+          this.transformHeaders(headers),
         );
         fileStream.pipe(compressor).pipe(connection.rawConnection.res);
       } else {
@@ -369,7 +369,7 @@ export class WebServer extends Server {
         }
         connection.rawConnection.res.writeHead(
           responseHttpCode,
-          this.transformHeaders(headers)
+          this.transformHeaders(headers),
         );
         fileStream.pipe(connection.rawConnection.res);
       }
@@ -382,7 +382,7 @@ export class WebServer extends Server {
           headers.push(["Content-Length", zippedString.length]);
           connection.rawConnection.res.writeHead(
             responseHttpCode,
-            this.transformHeaders(headers)
+            this.transformHeaders(headers),
           );
           connection.rawConnection.res.end(zippedString);
         });
@@ -390,7 +390,7 @@ export class WebServer extends Server {
         headers.push(["Content-Length", Buffer.byteLength(stringResponse)]);
         connection.rawConnection.res.writeHead(
           responseHttpCode,
-          this.transformHeaders(headers)
+          this.transformHeaders(headers),
         );
         connection.rawConnection.res.end(stringResponse);
       }
@@ -470,10 +470,10 @@ export class WebServer extends Server {
         data.connection.destroy();
       } else {
         data.connection.rawConnection.res.on("finish", () =>
-          data.connection.destroy()
+          data.connection.destroy(),
         );
         data.connection.rawConnection.res.on("close", () =>
-          data.connection.destroy()
+          data.connection.destroy(),
         );
       }
 
@@ -485,7 +485,7 @@ export class WebServer extends Server {
       typeof data.response !== "string"
     ) {
       data.response.serverInformation = this.buildServerInformation(
-        data.connection.connectedAt
+        data.connection.connectedAt,
       );
     }
 
@@ -494,7 +494,7 @@ export class WebServer extends Server {
       typeof data.response !== "string"
     ) {
       data.response.requesterInformation = this.buildRequesterInformation(
-        data.connection
+        data.connection,
       );
     }
 
@@ -538,7 +538,7 @@ export class WebServer extends Server {
 
     if (data.response.error) {
       data.response.error = await config.errors.serializers.servers.web(
-        data.response.error
+        data.response.error,
       );
     }
 
@@ -683,7 +683,7 @@ export class WebServer extends Server {
 
       this.fillParamsFromWebRequest(
         connection,
-        qs.parse(search, this.config.queryParseOptions)
+        qs.parse(search, this.config.queryParseOptions),
       );
       connection.rawConnection.params.query =
         connection.rawConnection.parsedURL.query;
@@ -718,16 +718,16 @@ export class WebServer extends Server {
             (
               error: NodeJS.ErrnoException,
               fields: string[],
-              files: string[]
+              files: string[],
             ) => {
               if (error) {
                 this.log("error processing form: " + String(error), "error");
                 connection.error = new Error(
-                  "There was an error processing this form."
+                  "There was an error processing this form.",
                 );
               }
               resolve({ fields, files });
-            }
+            },
           );
         })) as { fields: string[]; files: string[] };
 
@@ -770,7 +770,7 @@ export class WebServer extends Server {
 
   fillParamsFromWebRequest(
     connection: Connection,
-    varsHash: Record<string, any>
+    varsHash: Record<string, any>,
   ) {
     // helper for JSON posts
     const collapsedVarsHash = utils.collapseObjectToArray(varsHash);
@@ -800,7 +800,7 @@ export class WebServer extends Server {
 
         return headers;
       },
-      {}
+      {},
     );
   }
 

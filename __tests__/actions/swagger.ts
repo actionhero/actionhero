@@ -54,7 +54,7 @@ describe("Action: swagger", () => {
 
   test("returns the correct parts", async () => {
     const { paths, basePath, host } = await specHelper.runAction<Swagger>(
-      "swagger"
+      "swagger",
     );
 
     expect(basePath).toBe("/api/");
@@ -65,7 +65,7 @@ describe("Action: swagger", () => {
       paths["/one/{one}/two/{two}/three/{three}/four/{four}"];
     expect(multiParamPath).toBeDefined();
     expect(multiParamPath.get.summary).toBe(
-      "I am a multiple param test action"
+      "I am a multiple param test action",
     );
     expect(multiParamPath.get.parameters.map((p) => p.name).sort()).toEqual([
       "four",

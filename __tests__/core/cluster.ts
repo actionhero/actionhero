@@ -107,7 +107,7 @@ describe("Core: Action Cluster", () => {
           "api.rpcTestMethod",
           [],
           "A missing clientId",
-          true
+          true,
         );
         throw new Error("should not get here");
       } catch (error) {

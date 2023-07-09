@@ -32,7 +32,7 @@ export class GenerateInitializerCLI extends CLI {
 
   async run({ params }: { params: ParamsFrom<GenerateInitializerCLI> }) {
     let templateBuffer = fs.readFileSync(
-      path.join(__dirname, "/../../../../templates/initializer.ts.template")
+      path.join(__dirname, "/../../../../templates/initializer.ts.template"),
     );
     let template = String(templateBuffer);
 
@@ -43,9 +43,9 @@ export class GenerateInitializerCLI extends CLI {
 
     const message = utils.fileUtils.createFileSafely(
       utils.replaceDistWithSrc(
-        config.general.paths.initializer[0] + "/" + params.name + ".ts"
+        config.general.paths.initializer[0] + "/" + params.name + ".ts",
       ),
-      template
+      template,
     );
     console.log(message);
 

@@ -63,7 +63,7 @@ function buildConsoleLogger(level = "info") {
           return `${info.timestamp} - ${info.level}: ${
             info.message
           } ${stringifyExtraMessagePropertiesForConsole(info)}`;
-        })
+        }),
       ),
       level,
       levels: winston.config.syslog.levels,
@@ -78,7 +78,7 @@ function buildFileLogger(path: string, level = "info", maxFiles?: number) {
     return winston.createLogger({
       format: winston.format.combine(
         winston.format.timestamp(),
-        winston.format.json()
+        winston.format.json(),
       ),
       level,
       levels: winston.config.syslog.levels,
@@ -93,7 +93,7 @@ function buildFileLogger(path: string, level = "info", maxFiles?: number) {
 }
 
 function stringifyExtraMessagePropertiesForConsole(
-  info: winston.Logform.TransformableInfo
+  info: winston.Logform.TransformableInfo,
 ) {
   const skippedProperties = ["message", "timestamp", "level"];
   let response = "";

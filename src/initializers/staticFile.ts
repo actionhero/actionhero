@@ -34,7 +34,7 @@ export class StaticFileInitializer extends Initializer {
    */
   get = async (
     connection: Connection,
-    counter = 0
+    counter = 0,
   ): Promise<{
     connection: Connection;
     error?: any;
@@ -47,13 +47,13 @@ export class StaticFileInitializer extends Initializer {
     if (!connection.params.file || !api.staticFile.searchPath(counter)) {
       return api.staticFile.sendFileNotFound(
         connection,
-        await config.errors.fileNotProvided(connection)
+        await config.errors.fileNotProvided(connection),
       );
     }
 
     if (!path.isAbsolute(connection.params.file)) {
       file = path.normalize(
-        path.join(api.staticFile.searchPath(counter), connection.params.file)
+        path.join(api.staticFile.searchPath(counter), connection.params.file),
       );
     } else {
       file = connection.params.file;
@@ -107,7 +107,7 @@ export class StaticFileInitializer extends Initializer {
     } catch (error) {
       return api.staticFile.sendFileNotFound(
         connection,
-        await config.errors.fileReadError(connection, error)
+        await config.errors.fileReadError(connection, error),
       );
     }
   };
@@ -117,7 +117,7 @@ export class StaticFileInitializer extends Initializer {
     connection: Connection,
     start: number,
     file: string,
-    length: number | bigint
+    length: number | bigint,
   ) => {
     fileStream.on("end", () => {
       const duration = new Date().getTime() - start;
@@ -142,7 +142,7 @@ export class StaticFileInitializer extends Initializer {
   };
 
   checkExistence = async (
-    file: string
+    file: string,
   ): Promise<{ exists: boolean; truePath: string }> => {
     try {
       const stats = await asyncStats(file);
@@ -173,7 +173,7 @@ export class StaticFileInitializer extends Initializer {
     connection: Connection,
     length: number | bigint,
     duration: number,
-    success: boolean
+    success: boolean,
   ) => {
     log(`[ file @ ${connection.type} ]`, config.general.fileRequestLogLevel, {
       to: connection.remoteIP,
@@ -208,7 +208,7 @@ export class StaticFileInitializer extends Initializer {
     for (const plugin of Object.values(config.plugins as PluginConfig)) {
       if (plugin.public !== false) {
         const pluginPublicPath: string = path.normalize(
-          path.join(plugin.path, "public")
+          path.join(plugin.path, "public"),
         );
 
         if (
@@ -223,13 +223,13 @@ export class StaticFileInitializer extends Initializer {
     log(
       "static files will be served from these directories",
       "debug",
-      api.staticFile.searchLocations
+      api.staticFile.searchLocations,
     );
   }
 }
 
 async function asyncStats(
-  file: string
+  file: string,
 ): Promise<ReturnType<typeof fs.statSync>> {
   return new Promise((resolve, reject) => {
     fs.stat(file, (error, stats) => {

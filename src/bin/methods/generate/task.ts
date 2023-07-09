@@ -34,12 +34,12 @@ export class GenerateTaskCLI extends CLI {
 
   async run({ params }: { params: ParamsFrom<GenerateTaskCLI> }) {
     let taskTemplateBuffer = fs.readFileSync(
-      path.join(__dirname, "/../../../../templates/task.ts.template")
+      path.join(__dirname, "/../../../../templates/task.ts.template"),
     );
     let taskTemplate = String(taskTemplateBuffer);
 
     let testTemplateBuffer = fs.readFileSync(
-      path.join(__dirname, "/../../../../templates/test/task.ts.template")
+      path.join(__dirname, "/../../../../templates/test/task.ts.template"),
     );
     let testTemplate = String(testTemplateBuffer);
 
@@ -51,15 +51,15 @@ export class GenerateTaskCLI extends CLI {
 
     let message = utils.fileUtils.createFileSafely(
       utils.replaceDistWithSrc(
-        config.general.paths.task[0] + "/" + params.name + ".ts"
+        config.general.paths.task[0] + "/" + params.name + ".ts",
       ),
-      taskTemplate
+      taskTemplate,
     );
     console.info(message);
 
     message = utils.fileUtils.createFileSafely(
       config.general.paths.test[0] + "/tasks/" + params.name + ".ts",
-      testTemplate
+      testTemplate,
     );
     console.info(message);
 

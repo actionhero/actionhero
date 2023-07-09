@@ -5,7 +5,7 @@ import { api, Process, config, utils } from "../../src/index";
 import { PackageJson } from "type-fest";
 
 const packageJSON: PackageJson = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "..", "..", "package.json")).toString()
+  fs.readFileSync(path.join(__dirname, "..", "..", "package.json")).toString(),
 );
 
 let browser: Puppeteer.Browser;
@@ -20,7 +20,7 @@ describe("browser integration tests", () => {
     await actionhero.start();
     await api.redis.clients.client.flushdb();
     browser = await Puppeteer.launch({
-      headless: true,
+      headless: "new",
       args: ["--no-sandbox"],
     });
     page = await browser.newPage();
@@ -51,7 +51,7 @@ describe("browser integration tests", () => {
 
       const actionheroVersion = await page.$eval(
         "#actionheroVersion",
-        (e) => e.textContent
+        (e) => e.textContent,
       );
       expect(actionheroVersion).toEqual(packageJSON.version);
     });
@@ -73,7 +73,7 @@ describe("browser integration tests", () => {
       await page.goto(url);
       await page.waitForSelector("h3");
       const actionNames = await page.$$eval("h3", (elements) =>
-        elements.map((e) => e.textContent)
+        elements.map((e) => e.textContent),
       );
       expect(actionNames.sort()).toEqual([
         "createChatRoom",
@@ -88,7 +88,7 @@ describe("browser integration tests", () => {
 
     test("I can be assigned a session on another page", async () => {
       sessionIDCookie = (await page.cookies()).filter(
-        (c) => c.name === "sessionID"
+        (c) => c.name === "sessionID",
       )[0];
       expect(sessionIDCookie.value).toBeTruthy();
     });
@@ -119,12 +119,12 @@ describe("browser integration tests", () => {
 
       test("has the same fingerprint", async () => {
         const thisSessionID = (await page.cookies()).filter(
-          (c) => c.name === "sessionID"
+          (c) => c.name === "sessionID",
         )[0];
         expect(thisSessionID.value).toEqual(sessionIDCookie.value);
         const fingerprintFromWebSocket = await page.$eval(
           "#fingerprint",
-          (e) => e.textContent
+          (e) => e.textContent,
         );
         expect(fingerprintFromWebSocket).toEqual(sessionIDCookie.value);
       });
