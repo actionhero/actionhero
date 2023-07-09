@@ -2,7 +2,7 @@
  * Returns the average delay between a tick of the node.js event loop, as measured for N calls of `process.nextTick`
  */
 export async function eventLoopDelay(
-  iterations: number = 10000
+  iterations: number = 10000,
 ): Promise<number> {
   const jobs: Array<() => Promise<number>> = [];
 

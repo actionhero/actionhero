@@ -68,7 +68,7 @@
     "form-data": "^4.0.0",
     "ioredis-mock": "^8.2.7",
     "jest": "^29.5.0",
-    "prettier": "^2.8.7",
+    "prettier": "^3.0.0",
     "puppeteer": "^20.1.2",
     "tough-cookie": "^4.1.2",
     "ts-jest": "^29.0.5",

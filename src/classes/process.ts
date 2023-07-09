@@ -63,14 +63,14 @@ export class Process {
     // load initializers from core
     initializerFiles = initializerFiles.concat(
       safeGlobSync(
-        path.join(__dirname, "..", "initializers", "**", "**/*(*.js|*.ts)")
-      )
+        path.join(__dirname, "..", "initializers", "**", "**/*(*.js|*.ts)"),
+      ),
     );
 
     // load initializers from project
     config.general.paths.initializer.forEach((startPath: string) => {
       initializerFiles = initializerFiles.concat(
-        safeGlobSync(path.join(startPath, "**", "**/*(*.js|*.ts)"))
+        safeGlobSync(path.join(startPath, "**", "**/*(*.js|*.ts)")),
       );
     });
 
@@ -84,14 +84,14 @@ export class Process {
       if (plugin.initializers !== false) {
         // old style at the root of the project
         initializerFiles = initializerFiles.concat(
-          safeGlobSync(path.join(pluginPath, "initializers", "**", "*.js"))
+          safeGlobSync(path.join(pluginPath, "initializers", "**", "*.js")),
         );
 
         // new TS dist files
         initializerFiles = initializerFiles.concat(
           safeGlobSync(
-            path.join(pluginPath, "dist", "initializers", "**", "*.js")
-          )
+            path.join(pluginPath, "dist", "initializers", "**", "*.js"),
+          ),
         );
       }
     }
@@ -116,7 +116,7 @@ export class Process {
       if (Object.keys(exportedClasses).length === 0) {
         this.fatalError(
           new Error(`no exported initializers found in ${file}`),
-          file
+          file,
         );
       }
 
@@ -140,7 +140,7 @@ export class Process {
 
         function decorateInitError(
           error: NodeJS.ErrnoException & Record<string, any>,
-          type: string
+          type: string,
         ) {
           error["data"] = error["data"] ?? {};
           error["data"].name = initializer.name;
@@ -202,12 +202,12 @@ export class Process {
 
         if (initializer.loadPriority > 0) {
           loadInitializerRankings[initializer.loadPriority].push(
-            initializeFunction
+            initializeFunction,
           );
         }
         if (initializer.startPriority > 0) {
           startInitializerRankings[initializer.startPriority].push(
-            startFunction
+            startFunction,
           );
         }
         if (initializer.stopPriority > 0) {
@@ -218,13 +218,13 @@ export class Process {
 
     // flatten all the ordered initializer methods
     this.loadInitializers = this.flattenOrderedInitializer(
-      loadInitializerRankings
+      loadInitializerRankings,
     );
     this.startInitializers = this.flattenOrderedInitializer(
-      startInitializerRankings
+      startInitializerRankings,
     );
     this.stopInitializers = this.flattenOrderedInitializer(
-      stopInitializerRankings
+      stopInitializerRankings,
     );
 
     try {
@@ -341,7 +341,7 @@ export class Process {
     function awaitHardStop() {
       return setTimeout(() => {
         console.error(
-          `Process did not terminate within ${timeout}ms. Stopping now!`
+          `Process did not terminate within ${timeout}ms. Stopping now!`,
         );
         process.nextTick(process.exit(1));
       }, timeout);
@@ -356,7 +356,7 @@ export class Process {
             "uncaught",
             "Exception",
             {},
-            "emerg"
+            "emerg",
           );
         } else {
           console.error(error);
@@ -381,7 +381,7 @@ export class Process {
               "uncaught",
               "Rejection",
               {},
-              "emerg"
+              "emerg",
             );
           } else {
             console.error(rejection);
@@ -394,7 +394,7 @@ export class Process {
           clearTimeout(timer);
           stopCallback(1);
         }
-      }
+      },
     );
 
     // handle signals
@@ -429,7 +429,7 @@ export class Process {
   // HELPERS
   async fatalError(
     errors: NodeJS.ErrnoException | NodeJS.ErrnoException[] = [],
-    type: string
+    type: string,
   ) {
     if (!(errors instanceof Array)) errors = [errors];
 

@@ -3,7 +3,7 @@
  * also filter out *.test. and *.spec. js|ts files
  */
 export function ensureNoTsHeaderOrSpecFiles(
-  files: Array<string>
+  files: Array<string>,
 ): Array<string> {
   return files.filter((f) => {
     if (f.match(/.*\.d\.ts$/)) {

@@ -122,10 +122,10 @@ export namespace chatRoom {
       await api.chatRoom.broadcast(
         null,
         room,
-        await config.errors.connectionRoomHasBeenDeleted(room)
+        await config.errors.connectionRoomHasBeenDeleted(room),
       );
       const membersHash = await client().hgetall(
-        api.chatRoom.keys.members + room
+        api.chatRoom.keys.members + room,
       );
 
       for (const id in membersHash) {
@@ -217,7 +217,7 @@ export namespace chatRoom {
    */
   export async function addMember(
     connectionId: string,
-    room: string
+    room: string,
   ): Promise<any> {
     const connection = api.connections.connections[connectionId];
     if (!connection) {
@@ -225,13 +225,13 @@ export namespace chatRoom {
         "api.chatRoom.addMember",
         [connectionId, room],
         connectionId,
-        true
+        true,
       );
     }
 
     if (connection.rooms.includes(room)) {
       throw new Error(
-        await config.errors.connectionAlreadyInRoom(connection, room)
+        await config.errors.connectionAlreadyInRoom(connection, room),
       );
     }
 
@@ -251,7 +251,7 @@ export namespace chatRoom {
       await client().hset(
         api.chatRoom.keys.members + room,
         connection.id,
-        JSON.stringify(memberDetails)
+        JSON.stringify(memberDetails),
       );
     }
 
@@ -265,7 +265,7 @@ export namespace chatRoom {
   export async function removeMember(
     connectionId: string,
     room: string,
-    toWaitRemote: boolean = true
+    toWaitRemote: boolean = true,
   ): Promise<any> {
     const connection = api.connections.connections[connectionId];
     if (!connection) {
@@ -273,13 +273,13 @@ export namespace chatRoom {
         "api.chatRoom.removeMember",
         [connectionId, room],
         connectionId,
-        toWaitRemote
+        toWaitRemote,
       );
     }
 
     if (!connection.rooms.includes(room)) {
       throw new Error(
-        await config.errors.connectionNotInRoom(connection, room)
+        await config.errors.connectionNotInRoom(connection, room),
       );
     }
 
@@ -314,7 +314,7 @@ export namespace chatRoom {
   export async function broadcast(
     connection: Partial<Connection>,
     room: string,
-    message: any
+    message: any,
   ) {
     return api.chatRoom.broadcast(connection, room, message);
   }

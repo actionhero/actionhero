@@ -10,7 +10,7 @@ describe("Action: randomNumber", () => {
 
   test("generates random numbers", async () => {
     const { randomNumber } = await specHelper.runAction<RandomNumber>(
-      "randomNumber"
+      "randomNumber",
     );
     expect(randomNumber).toBeGreaterThan(0);
     expect(randomNumber).toBeLessThan(1);
@@ -19,7 +19,7 @@ describe("Action: randomNumber", () => {
 
   test("is unique / random", async () => {
     const { randomNumber } = await specHelper.runAction<RandomNumber>(
-      "randomNumber"
+      "randomNumber",
     );
     expect(randomNumber).toBeGreaterThan(0);
     expect(randomNumber).toBeLessThan(1);

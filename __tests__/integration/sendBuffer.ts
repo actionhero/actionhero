@@ -37,7 +37,7 @@ describe("Server: sendBuffer", () => {
             bufferStream,
             "text/csv",
             buffer.length,
-            new Date()
+            new Date(),
           );
           data.toRender = false;
           bufferStream.end(buffer);
@@ -61,7 +61,7 @@ describe("Server: sendBuffer", () => {
             bufferStream,
             "text/plain",
             null,
-            new Date()
+            new Date(),
           );
           const buffer = "Example of unknown length data buffer";
           data.toRender = false;
@@ -88,7 +88,7 @@ describe("Server: sendBuffer", () => {
 
   test("Server should send a stream with no specified length", async () => {
     const { data, headers } = await axios.get(
-      url + "/api/sendUnknownLengthBufferTest"
+      url + "/api/sendUnknownLengthBufferTest",
     );
 
     expect(headers).not.toHaveProperty("content-length");

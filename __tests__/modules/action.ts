@@ -36,7 +36,7 @@ describe("Modules", () => {
 
     test("in-line actions will fail when required params are missing", async () => {
       await expect(action.run("cacheTest")).rejects.toThrow(
-        /key is a required parameter for this action/
+        /key is a required parameter for this action/,
       );
     });
 
@@ -89,7 +89,7 @@ describe("Modules", () => {
         });
 
         await expect(action.run("randomNumber")).rejects.toThrow(
-          /not logged in/
+          /not logged in/,
         );
 
         // @ts-ignore

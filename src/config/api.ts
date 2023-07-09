@@ -16,7 +16,7 @@ export const DEFAULT = {
     const packageJSON: PackageJson = JSON.parse(
       fs
         .readFileSync(path.join(__dirname, "..", "..", "package.json"))
-        .toString()
+        .toString(),
     );
 
     return {

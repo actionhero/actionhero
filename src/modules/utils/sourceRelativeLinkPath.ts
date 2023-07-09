@@ -3,7 +3,7 @@ import * as path from "path";
 
 export function sourceRelativeLinkPath(
   linkFile: string,
-  pluginPaths: Array<string>
+  pluginPaths: Array<string>,
 ): string | boolean {
   const type = fs.readFileSync(linkFile).toString();
   const pathParts = linkFile.split(path.sep);

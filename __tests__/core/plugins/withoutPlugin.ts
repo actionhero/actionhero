@@ -10,7 +10,7 @@ const actionhero = new Process();
 
 async function exec(
   command: string,
-  args: Record<string, any>
+  args: Record<string, any>,
 ): Promise<{
   error?: NodeJS.ErrnoException;
   stdout?: string;
@@ -61,21 +61,21 @@ describe("Core: Plugins", () => {
       async () => {
         const { stdout: helpResponse, stderr: error1 } = await exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts help",
-          { env: process.env }
+          { env: process.env },
         );
         expect(error1).toEqual("");
         expect(helpResponse).not.toContain("hello");
         try {
           await exec(
             "./node_modules/.bin/ts-node ./src/bin/actionhero.ts hello",
-            { env: process.env }
+            { env: process.env },
           );
           throw new Error("should not get here");
         } catch (error) {
           expect(error.toString()).toMatch(/unknown command 'hello'/);
         }
       },
-      30 * 1000
+      30 * 1000,
     );
   });
 });

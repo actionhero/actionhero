@@ -63,24 +63,24 @@ export class GenerateCLI extends CLI {
     }
 
     const AHversionNumber = JSON.parse(
-      documents.packageJson.toString()
+      documents.packageJson.toString(),
     ).version;
 
     documents.packageJson = String(
       fs.readFileSync(
-        path.join(__dirname, "/../../../templates/package.json.template")
-      )
+        path.join(__dirname, "/../../../templates/package.json.template"),
+      ),
     );
 
     documents.packageJson = documents.packageJson.replace(
       "%%versionNumber%%",
-      AHversionNumber
+      AHversionNumber,
     );
 
     documents.readmeMd = String(
       fs.readFileSync(
-        path.join(__dirname, "/../../../templates/README.md.template")
-      )
+        path.join(__dirname, "/../../../templates/README.md.template"),
+      ),
     );
 
     console.log("Generating a new actionhero project...");
@@ -148,7 +148,7 @@ export class GenerateCLI extends CLI {
 
     console.log("");
     console.log(
-      "Generation Complete.  Your project directory should look like this:"
+      "Generation Complete.  Your project directory should look like this:",
     );
 
     console.log("");
@@ -168,7 +168,7 @@ Then, run 'npm run dev' to start your server
 ❤️  the Actionhero Team
 www.actionherojs.com
 -------------------------------------------------------------------------------------------------------------------
-      `
+      `,
     );
 
     return true;

@@ -86,7 +86,7 @@ describe("with ioredis-mock", () => {
       "message",
       (channel, m) => {
         if (channel === "test-channel") message = m;
-      }
+      },
     );
 
     await api.redis.clients.client.publish("test-channel", "hello");

@@ -13,7 +13,7 @@ export class RunAction extends Task {
       params.action,
       params.version,
       // @ts-ignore
-      params.params
+      params.params,
     );
 
     if (response.error) {

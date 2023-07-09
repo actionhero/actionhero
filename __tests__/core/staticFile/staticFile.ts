@@ -132,7 +132,7 @@ describe("Core", () => {
       const secondResponse = await axios(url + "/simple.html", {
         headers: {
           "If-Modified-Since": new Date(
-            lastModified.getTime() - delay
+            lastModified.getTime() - delay,
           ).toUTCString(),
         },
       });
@@ -143,7 +143,7 @@ describe("Core", () => {
 
     if (process.platform === "win32") {
       console.log(
-        "*** CANNOT RUN FILE DESCRIPTOR TESTS ON WINDOWS.  Sorry. ***"
+        "*** CANNOT RUN FILE DESCRIPTOR TESTS ON WINDOWS.  Sorry. ***",
       );
     } else {
       describe("do not leave open file descriptors ", () => {

@@ -32,7 +32,7 @@ export function fileExists(file: string): boolean {
 export function createDirSafely(dir: string): string {
   if (dirExists(dir)) {
     const error = new Error(
-      `directory '${path.normalize(dir)}' already exists`
+      `directory '${path.normalize(dir)}' already exists`,
     );
     // @ts-ignore
     error.code = "EEXIST";
@@ -50,7 +50,7 @@ export function createDirSafely(dir: string): string {
 export function createFileSafely(
   file: string,
   data: string | NodeJS.ArrayBufferView,
-  overwrite: boolean = false
+  overwrite: boolean = false,
 ): string {
   if (fileExists(file) && !overwrite) {
     const error = new Error(`file '${path.normalize(file)}' already exists`);
@@ -105,7 +105,7 @@ export function removeLinkfileSafely(filePath: string): string {
  */
 export function createSymlinkSafely(
   destination: string,
-  source: string
+  source: string,
 ): string {
   if (dirExists(destination)) {
     const error = new Error(`symbolic link '${destination}' already exists`);

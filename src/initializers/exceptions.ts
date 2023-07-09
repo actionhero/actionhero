@@ -26,7 +26,7 @@ export class ExceptionsInitializer extends Initializer {
     type: string,
     name: string,
     objects?: any,
-    severity?: ActionheroLogLevel
+    severity?: ActionheroLogLevel,
   ) => {
     if (!severity) severity = "error";
 
@@ -42,7 +42,7 @@ export class ExceptionsInitializer extends Initializer {
       "initializer",
       name,
       { fullFilePath: fullFilePath },
-      "alert"
+      "alert",
     );
   };
 
@@ -60,14 +60,14 @@ export class ExceptionsInitializer extends Initializer {
       params: string;
       duration: number;
       response: string;
-    }
+    },
   ) => {
     api.exceptionHandlers.report(
       error,
       "action",
       `action: ${action}`,
       { to, action, params, duration, error, response },
-      "alert"
+      "alert",
     );
   };
 
@@ -75,7 +75,7 @@ export class ExceptionsInitializer extends Initializer {
     error: NodeJS.ErrnoException,
     queue: string,
     task: ParsedJob,
-    workerId: string | number
+    workerId: string | number,
   ) => {
     let simpleName;
     try {
@@ -89,7 +89,7 @@ export class ExceptionsInitializer extends Initializer {
       "task",
       name,
       { task: task, queue: queue, workerId: workerId },
-      config.tasks.workerLogging.failure
+      config.tasks.workerLogging.failure,
     );
   };
 
@@ -111,7 +111,7 @@ const consoleReporter: ExceptionReporter = (
   type,
   name,
   objects,
-  severity
+  severity,
 ) => {
   let message = "";
   const data = error["data"] ?? {};

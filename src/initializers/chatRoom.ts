@@ -40,13 +40,13 @@ export class ChatRoomInitializer extends Initializer {
   broadcast = async (
     connection: Partial<Connection>,
     room: string,
-    message: object | Array<any> | string
+    message: object | Array<any> | string,
   ) => {
     if (!connection) connection = {};
 
     if (!room || !message) {
       throw new Error(
-        config.errors.connectionRoomAndMessage(connection as Connection)
+        config.errors.connectionRoomAndMessage(connection as Connection),
       );
     } else if (
       connection.rooms === undefined ||
@@ -69,7 +69,7 @@ export class ChatRoomInitializer extends Initializer {
         connection,
         messagePayload.room,
         "onSayReceive",
-        messagePayload
+        messagePayload,
       );
 
       if (newPayload !== null && newPayload !== undefined) {
@@ -89,7 +89,7 @@ export class ChatRoomInitializer extends Initializer {
       }
     } else {
       throw new Error(
-        config.errors.connectionNotInRoom(connection as Connection, room)
+        config.errors.connectionNotInRoom(connection as Connection, room),
       );
     }
   };
@@ -115,7 +115,7 @@ export class ChatRoomInitializer extends Initializer {
 
   incomingMessagePerConnection = async (
     connection: Connection,
-    messagePayload: MessagePayloadType
+    messagePayload: MessagePayloadType,
   ) => {
     if (
       connection.canChat === true &&
@@ -126,7 +126,7 @@ export class ChatRoomInitializer extends Initializer {
           connection,
           messagePayload.room,
           "say",
-          messagePayload
+          messagePayload,
         );
         if (newMessagePayload !== null) {
           connection.sendMessage(newMessagePayload, "say");
@@ -141,7 +141,7 @@ export class ChatRoomInitializer extends Initializer {
     connection: Partial<Connection>,
     room: string,
     direction: ChatMiddlewareDirections,
-    messagePayload?: MessagePayloadType
+    messagePayload?: MessagePayloadType,
   ) => {
     let newMessagePayload: MessagePayloadType;
     if (messagePayload) newMessagePayload = Object.assign({}, messagePayload);
@@ -179,7 +179,7 @@ export class ChatRoomInitializer extends Initializer {
 
   async start() {
     api.redis.subscriptionHandlers.chat = (
-      message: ChatModule.chatRoom.ChatPubSubMessage
+      message: ChatModule.chatRoom.ChatPubSubMessage,
     ) => {
       if (api.chatRoom) {
         api.chatRoom.incomingMessage(message);
@@ -187,7 +187,7 @@ export class ChatRoomInitializer extends Initializer {
     };
 
     for (const [room, options] of Object.entries(
-      config.general.startingChatRooms
+      config.general.startingChatRooms,
     )) {
       log(`ensuring the existence of the chatRoom: ${room}`, "debug");
       try {

@@ -20,7 +20,7 @@ const routeFilesContent = [
 
 const createRouteFile = async (
   newConfigFolderPath: string,
-  routeFileContent: string
+  routeFileContent: string,
 ) => {
   try {
     await promisify(fs.mkdir)(newConfigFolderPath);

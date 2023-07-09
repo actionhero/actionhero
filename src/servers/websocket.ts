@@ -54,7 +54,7 @@ export class WebSocketServer extends Server {
 
     this.log(
       `webSockets bound to ${webserver.config.bindIP}:${webserver.config.port}`,
-      "debug"
+      "debug",
     );
 
     this.on("connection", (connection: Connection) => {
@@ -87,11 +87,11 @@ export class WebSocketServer extends Server {
   async sendMessage(
     connection: Connection,
     message: Record<string, any>,
-    messageId: string
+    messageId: string,
   ) {
     if (message.error) {
       message.error = config.errors.serializers.servers.websocket(
-        message.error
+        message.error,
       );
     }
 
@@ -114,7 +114,7 @@ export class WebSocketServer extends Server {
     fileStream: any,
     mime: string,
     length: number,
-    lastModified: Date
+    lastModified: Date,
   ) {
     const messageId = connection.messageId;
     let content = "";
@@ -152,7 +152,7 @@ export class WebSocketServer extends Server {
   compileActionheroWebsocketClientJS() {
     let ahClientSource = fs
       .readFileSync(
-        path.join(__dirname, "/../../client/ActionheroWebsocketClient.js")
+        path.join(__dirname, "/../../client/ActionheroWebsocketClient.js"),
       )
       .toString();
     const url = this.config.clientUrl;
@@ -169,11 +169,11 @@ export class WebSocketServer extends Server {
     let defaultsString = util.inspect(defaults);
     defaultsString = defaultsString.replace(
       "'window.location.origin'",
-      "window.location.origin"
+      "window.location.origin",
     );
     ahClientSource = ahClientSource.replace(
       "%%DEFAULTS%%",
-      "return " + defaultsString
+      "return " + defaultsString,
     );
 
     return ahClientSource;
@@ -207,7 +207,7 @@ export class WebSocketServer extends Server {
         config.general.paths.public[0] +
           path.sep +
           this.config.clientJsPath +
-          path.sep
+          path.sep,
       );
       const clientJSName = this.config.clientJsName;
       const clientJSFullPath = clientJSPath + clientJSName;
@@ -228,7 +228,7 @@ export class WebSocketServer extends Server {
     const fingerprint =
       rawConnection.query[config.web.fingerprintOptions.cookieKey];
     const { ip, port } = utils.parseHeadersForClientAddress(
-      rawConnection.headers
+      rawConnection.headers,
     );
 
     this.buildConnection({

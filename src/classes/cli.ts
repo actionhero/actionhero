@@ -57,7 +57,7 @@ export abstract class CLI {
     }
     if (!this.description) {
       throw new Error(
-        `description is required for the cli commend \`${this.name}\``
+        `description is required for the cli commend \`${this.name}\``,
       );
     }
     if (!this.run || typeof this.run !== "function") {

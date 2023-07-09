@@ -121,11 +121,11 @@ export class Connection {
     if (config.general.enforceConnectionProperties) {
       if (!data.remotePort && data.remotePort?.toString() !== "0")
         throw new Error(
-          "remotePort is required to create a new connection object"
+          "remotePort is required to create a new connection object",
         );
       if (!data.remoteIP && data.remoteIP?.toString() !== "0")
         throw new Error(
-          "remoteIP is required to create a new connection object"
+          "remoteIP is required to create a new connection object",
         );
 
       this.type = data.type;

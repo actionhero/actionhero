@@ -6,7 +6,7 @@ import { PackageJson } from "type-fest";
 const SWAGGER_VERSION = "2.0";
 const API_VERSION = ""; // if you need a prefix to your API routes, like `v1`
 const parentPackageJSON: PackageJson = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "..", "..", "package.json")).toString()
+  fs.readFileSync(path.join(__dirname, "..", "..", "package.json")).toString(),
 );
 
 const responses = {

@@ -9,10 +9,10 @@ describe("Action: validationTest", () => {
   test("fails with no params", async () => {
     const { error } = await specHelper.runAction<ValidationTest>(
       "validationTest",
-      {}
+      {},
     );
     expect(error).toEqual(
-      "Error: string is a required parameter for this action"
+      "Error: string is a required parameter for this action",
     );
   });
 
@@ -21,10 +21,10 @@ describe("Action: validationTest", () => {
       "validationTest",
       {
         string: 87,
-      }
+      },
     );
     expect(error).toEqual(
-      'Error: Input for parameter "string" failed validation!'
+      'Error: Input for parameter "string" failed validation!',
     );
   });
 
@@ -34,7 +34,7 @@ describe("Action: validationTest", () => {
       {
         string: "hello",
         ValidationTest,
-      }
+      },
     );
     expect(string).toEqual("hello");
   });

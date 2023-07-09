@@ -67,7 +67,7 @@ describe("Core", () => {
       test("all connections can join the default room and client #1 can see them", async () => {
         const { room, membersCount } = await client1.verbs(
           "roomView",
-          "defaultRoom"
+          "defaultRoom",
         );
         expect(room).toEqual("defaultRoom");
         expect(membersCount).toEqual(3);
@@ -76,7 +76,7 @@ describe("Core", () => {
       test("all connections can join the default room and client #2 can see them", async () => {
         const { room, membersCount } = await client2.verbs(
           "roomView",
-          "defaultRoom"
+          "defaultRoom",
         );
         expect(room).toEqual("defaultRoom");
         expect(membersCount).toEqual(3);
@@ -85,7 +85,7 @@ describe("Core", () => {
       test("all connections can join the default room and client #3 can see them", async () => {
         const { room, membersCount } = await client3.verbs(
           "roomView",
-          "defaultRoom"
+          "defaultRoom",
         );
         expect(room).toEqual("defaultRoom");
         expect(membersCount).toEqual(3);
@@ -177,7 +177,7 @@ describe("Core", () => {
           throw new Error("should not get here");
         } catch (error) {
           expect(error.toString()).toEqual(
-            "Error: connection already in this room (defaultRoom)"
+            "Error: connection already in this room (defaultRoom)",
           );
           client.destroy();
         }
@@ -202,7 +202,7 @@ describe("Core", () => {
           throw new Error("should not get here");
         } catch (error) {
           expect(error.toString()).toEqual(
-            "Error: connection not in this room (defaultRoom)"
+            "Error: connection not in this room (defaultRoom)",
           );
           client.destroy();
         }
@@ -269,7 +269,7 @@ describe("Core", () => {
           },
         });
         expect(members[otherClient.id].joinedAt).toBeGreaterThan(
-          members[client.id].joinedAt
+          members[client.id].joinedAt,
         );
 
         client.destroy();
@@ -323,7 +323,7 @@ describe("Core", () => {
               await chatRoom.broadcast(
                 {},
                 room,
-                `I have entered the room: ${connection.id}`
+                `I have entered the room: ${connection.id}`,
               );
             },
           });
@@ -334,7 +334,7 @@ describe("Core", () => {
               await chatRoom.broadcast(
                 {},
                 room,
-                `I have left the room: ${connection.id}`
+                `I have left the room: ${connection.id}`,
               );
             },
           });
@@ -345,10 +345,10 @@ describe("Core", () => {
           await utils.sleep(100);
 
           expect(clientA.messages.pop().message).toEqual(
-            "I have left the room: " + clientB.id
+            "I have left the room: " + clientB.id,
           );
           expect(clientA.messages.pop().message).toEqual(
-            "I have entered the room: " + clientB.id
+            "I have entered the room: " + clientB.id,
           );
         });
 
@@ -358,7 +358,7 @@ describe("Core", () => {
             say: (
               connection: Connection,
               room: string,
-              messagePayload: { from: number; message: string }
+              messagePayload: { from: number; message: string },
             ) => {
               if (messagePayload.from !== 0) {
                 messagePayload.message = "something else";
@@ -383,7 +383,7 @@ describe("Core", () => {
             say: (
               connection: Connection,
               room: string,
-              messagePayload: { from: number; message: string }
+              messagePayload: { from: number; message: string },
             ) => {
               messagePayload.message = "MIDDLEWARE 1";
               return messagePayload;
@@ -396,7 +396,7 @@ describe("Core", () => {
             say: (
               connection: Connection,
               room: string,
-              messagePayload: { from: number; message: string }
+              messagePayload: { from: number; message: string },
             ) => {
               messagePayload.message = messagePayload.message + " MIDDLEWARE 2";
               return messagePayload;
@@ -475,7 +475,7 @@ describe("Core", () => {
             say: async (
               connection: Connection,
               room: string,
-              messagePayload: any
+              messagePayload: any,
             ) => {
               if (messagePayload.from !== 0) {
                 messagePayload.message = "something else";
@@ -498,7 +498,7 @@ describe("Core", () => {
             say: async (
               connection: Connection,
               room: string,
-              messagePayload: any
+              messagePayload: any,
             ) => {
               messagePayload.message = "MIDDLEWARE 1";
               return messagePayload;
@@ -511,7 +511,7 @@ describe("Core", () => {
             say: async (
               connection: Connection,
               room: string,
-              messagePayload: any
+              messagePayload: any,
             ) => {
               messagePayload.message = messagePayload.message + " MIDDLEWARE 2";
               return messagePayload;

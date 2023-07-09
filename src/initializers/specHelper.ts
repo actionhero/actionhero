@@ -69,7 +69,7 @@ export class SpecHelper extends Initializer {
       async sendMessage(
         connection: SpecHelperConnection,
         message: any,
-        messageId: string | number
+        messageId: string | number,
       ) {
         process.nextTick(() => {
           connection.messages.push(message);
@@ -85,7 +85,7 @@ export class SpecHelper extends Initializer {
         error: NodeJS.ErrnoException,
         fileStream: EventEmitter,
         mime: string,
-        length: number
+        length: number,
       ) {
         let content = "";
         const messageId = connection.messageId;
@@ -129,7 +129,7 @@ export class SpecHelper extends Initializer {
           if (data.response.error) {
             data.response.error =
               await config.errors.serializers.servers.specHelper(
-                data.response.error
+                data.response.error,
               );
           }
 

@@ -89,7 +89,7 @@ export abstract class Server extends EventEmitter {
   abstract sendMessage(
     connection: Connection,
     message: string | object | Array<any>,
-    messageId?: string
+    messageId?: string,
   ): Promise<void>;
 
   /**
@@ -101,7 +101,7 @@ export abstract class Server extends EventEmitter {
     fileStream: any,
     mime: string,
     length: number,
-    lastModified: Date
+    lastModified: Date,
   ): Promise<void>;
 
   /**An optional message to send to clients when they disconnect */
@@ -123,7 +123,7 @@ export abstract class Server extends EventEmitter {
     ).forEach((method) => {
       if (!this[method] || typeof this[method] !== "function") {
         throw new Error(
-          `${method} is a required method for the server \`${this.type}\``
+          `${method} is a required method for the server \`${this.type}\``,
         );
       }
     });
@@ -222,7 +222,7 @@ export abstract class Server extends EventEmitter {
       results.fileStream,
       results.mime,
       results.length,
-      results.lastModified
+      results.lastModified,
     );
   }
 

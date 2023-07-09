@@ -21,7 +21,7 @@ describe("Test: RunAction", () => {
       {
         action: "cacheTest",
         params: { key: "testKey", value: "testValue" },
-      }
+      },
     );
     expect(cacheTestResults.saveResp).toBe(true);
     expect(cacheTestResults.deleteResp).toBe(true);
@@ -31,7 +31,7 @@ describe("Test: RunAction", () => {
     await expect(
       specHelper.runTask<RunAction>("runAction", {
         action: "cacheTest",
-      })
+      }),
     ).rejects.toThrow(/key is a required parameter for this action/);
   });
 });

@@ -28,7 +28,7 @@ class ErrorWithStd extends Error {
 const doCommand = async (
   command: string,
   useCwd = true,
-  extraEnv = {}
+  extraEnv = {},
 ): Promise<{
   stderr: string;
   stdout: string;
@@ -87,7 +87,7 @@ describe("Core: CLI", () => {
       }
 
       const sourcePackage = path.normalize(
-        path.join(__dirname, "/../../templates/package.json.template")
+        path.join(__dirname, "/../../templates/package.json.template"),
       );
       AHPath = path.normalize(path.join(__dirname, "/../.."));
 
@@ -208,26 +208,26 @@ describe("Core: CLI", () => {
 
       test("can generate an action", async () => {
         await doCommand(
-          `${binary} generate-action --name=myAction --description=my_description`
+          `${binary} generate-action --name=myAction --description=my_description`,
         );
         const actionData = String(
-          fs.readFileSync(`${testDir}/src/actions/myAction.ts`)
+          fs.readFileSync(`${testDir}/src/actions/myAction.ts`),
         );
         expect(actionData).toMatch(/export class MyAction extends Action/);
         expect(actionData).toMatch(/this.name = "myAction"/);
 
         const testData = String(
-          fs.readFileSync(`${testDir}/__tests__/actions/myAction.ts`)
+          fs.readFileSync(`${testDir}/__tests__/actions/myAction.ts`),
         );
         expect(testData).toMatch('describe("Action: myAction"');
       }, 20000);
 
       test("can generate a task", async () => {
         await doCommand(
-          `${binary} generate-task --name=myTask --description=my_description --queue=my_queue --frequency=12345`
+          `${binary} generate-task --name=myTask --description=my_description --queue=my_queue --frequency=12345`,
         );
         const taskData = String(
-          fs.readFileSync(`${testDir}/src/tasks/myTask.ts`)
+          fs.readFileSync(`${testDir}/src/tasks/myTask.ts`),
         );
         expect(taskData).toMatch(/export class MyTask extends Task/);
         expect(taskData).toMatch(/this.name = "myTask"/);
@@ -235,14 +235,14 @@ describe("Core: CLI", () => {
         expect(taskData).toMatch(/this.frequency = 12345/);
 
         const testData = String(
-          fs.readFileSync(`${testDir}/__tests__/tasks/myTask.ts`)
+          fs.readFileSync(`${testDir}/__tests__/tasks/myTask.ts`),
         );
         expect(testData).toMatch('describe("Task: myTask"');
       }, 20000);
 
       test("can generate a CLI command", async () => {
         await doCommand(
-          `${binary} generate-cli --name=myCommand --description=my_description --example=my_example`
+          `${binary} generate-cli --name=myCommand --description=my_description --example=my_example`,
         );
         const data = String(fs.readFileSync(`${testDir}/src/bin/myCommand.ts`));
         expect(data).toMatch(/this.name = "myCommand"/);
@@ -252,7 +252,7 @@ describe("Core: CLI", () => {
       test("can generate a server", async () => {
         await doCommand(`${binary} generate-server --name=myServer`);
         const data = String(
-          fs.readFileSync(`${testDir}/src/servers/myServer.ts`)
+          fs.readFileSync(`${testDir}/src/servers/myServer.ts`),
         );
         expect(data).toMatch(/this.type = "myServer"/);
         expect(data).toMatch(/canChat: false/);
@@ -263,10 +263,10 @@ describe("Core: CLI", () => {
 
       test("can generate an initializer", async () => {
         await doCommand(
-          `${binary} generate-initializer --name=myInitializer --stopPriority=123`
+          `${binary} generate-initializer --name=myInitializer --stopPriority=123`,
         );
         const data = String(
-          fs.readFileSync(`${testDir}/src/initializers/myInitializer.ts`)
+          fs.readFileSync(`${testDir}/src/initializers/myInitializer.ts`),
         );
         expect(data).toMatch(/this.loadPriority = 1000/);
         expect(data).toMatch(/this.startPriority = 1000/);
@@ -282,7 +282,7 @@ describe("Core: CLI", () => {
       const nodeVersion = Number(process.version.match(/^v(\d+\.\d+)/)![1]);
       if (nodeVersion < 10) {
         console.log(
-          `skipping 'npm test' because this node version ${nodeVersion} < 10.0.0`
+          `skipping 'npm test' because this node version ${nodeVersion} < 10.0.0`,
         );
         return;
       }
@@ -315,7 +315,7 @@ describe("Core: CLI", () => {
       test("can boot the server", async () => {
         const response = await axios(`http://${host}:${port}/api/status`);
         expect(response.data.serverInformation.serverName).toEqual(
-          "my_actionhero_project"
+          "my_actionhero_project",
         );
       });
 
@@ -324,7 +324,7 @@ describe("Core: CLI", () => {
         await sleep(3000);
         const response = await axios(`http://${host}:${port}/api/status`);
         expect(response.data.serverInformation.serverName).toEqual(
-          "my_actionhero_project"
+          "my_actionhero_project",
         );
       }, 5000);
 
@@ -337,7 +337,7 @@ describe("Core: CLI", () => {
         } catch (error) {
           if (error instanceof AxiosError) {
             expect(error.toString()).toMatch(
-              /ECONNREFUSED|ECONNRESET|RequestError|AggregateError/
+              /ECONNREFUSED|ECONNRESET|RequestError|AggregateError/,
             );
           } else throw error;
         }

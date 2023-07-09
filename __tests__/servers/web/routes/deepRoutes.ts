@@ -54,7 +54,7 @@ describe("Server: Web", () => {
 
         test("can ask for nested URL actions", async () => {
           const response = await axios.get(
-            url + "/namespace/actions/randomNumber"
+            url + "/namespace/actions/randomNumber",
           );
           expect(response.status).toEqual(200);
         });
@@ -72,7 +72,7 @@ describe("Server: Web", () => {
 
         test("can ask for nested URL files", async () => {
           const response = await axios.get(
-            url + "/namespace/files/simple.html"
+            url + "/namespace/files/simple.html",
           );
           expect(response.status).toEqual(200);
           expect(response.data).toContain("<h1>Actionhero</h1>");
@@ -80,7 +80,7 @@ describe("Server: Web", () => {
 
         test("can ask for nested URL files with depth", async () => {
           const response = await axios.get(
-            url + "/namespace/files/css/cosmo.css"
+            url + "/namespace/files/css/cosmo.css",
           );
           expect(response.status).toEqual(200);
         });

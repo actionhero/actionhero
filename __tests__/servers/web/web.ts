@@ -39,7 +39,7 @@ describe("Server: Web", () => {
       if (error instanceof AxiosError) {
         expect(error.response?.status).toEqual(404);
         expect(error.response?.data.requesterInformation).toBeInstanceOf(
-          Object
+          Object,
         );
       } else throw error;
     }
@@ -53,7 +53,7 @@ describe("Server: Web", () => {
       if (error instanceof AxiosError) {
         expect(error.response?.status).toEqual(404);
         expect(
-          error.response?.data.requesterInformation.receivedParams.key
+          error.response?.data.requesterInformation.receivedParams.key,
         ).toEqual("value");
       } else throw error;
     }
@@ -67,7 +67,8 @@ describe("Server: Web", () => {
       if (error instanceof AxiosError) {
         expect(error.response?.status).toEqual(404);
         expect(
-          error.response?.data.requesterInformation.receivedParams.crazyParam123
+          error.response?.data.requesterInformation.receivedParams
+            .crazyParam123,
         ).toBeUndefined();
       } else throw error;
     }
@@ -242,7 +243,7 @@ describe("Server: Web", () => {
           expect(error.response?.status).toEqual(404);
           expect(
             error.response?.data.requesterInformation.receivedParams
-              .crazyParam123
+              .crazyParam123,
           ).toEqual("something");
         } else throw error;
       }
@@ -257,7 +258,7 @@ describe("Server: Web", () => {
       if (error instanceof AxiosError) {
         expect(error.response?.status).toEqual(404);
         expect(error.response?.data.error).toEqual(
-          "unknown action or invalid apiVersion"
+          "unknown action or invalid apiVersion",
         );
       } else throw error;
     }
@@ -302,7 +303,7 @@ describe("Server: Web", () => {
       if (error instanceof AxiosError) {
         expect(error.response?.status).toEqual(422);
         expect(error.response?.data.error).toEqual(
-          "value is a required parameter for this action"
+          "value is a required parameter for this action",
         );
       } else throw error;
     }
@@ -323,7 +324,7 @@ describe("Server: Web", () => {
       if (error instanceof AxiosError) {
         expect(error.response?.status).toEqual(422);
         expect(error.response?.data.error).toEqual(
-          "value is a required parameter for this action"
+          "value is a required parameter for this action",
         );
       } else throw error;
     }
@@ -341,7 +342,7 @@ describe("Server: Web", () => {
       const responseA = await axios.get(url + "/api/randomNumber");
       const responseB = await axios.get(url + "/api/randomNumber");
       expect(responseA.data.requesterInformation.messageId).not.toEqual(
-        responseB.data.requesterInformation.messageId
+        responseB.data.requesterInformation.messageId,
       );
     });
 
@@ -353,7 +354,7 @@ describe("Server: Web", () => {
     test("a connection id should be a combination of fingerprint and message id", async () => {
       const response = await axios.get(url + "/api/randomNumber");
       expect(response.data.requesterInformation.id).toEqual(
-        `${response.data.requesterInformation.fingerprint}-${response.data.requesterInformation.messageId}`
+        `${response.data.requesterInformation.fingerprint}-${response.data.requesterInformation.messageId}`,
       );
     });
   });
@@ -387,7 +388,7 @@ describe("Server: Web", () => {
 
     test(".query should contain unfiltered query params", async () => {
       const response = await axios.get(
-        url + "/api/paramTestAction/?crazyParam123=something"
+        url + "/api/paramTestAction/?crazyParam123=something",
       );
       expect(response.data.query.crazyParam123).toEqual("something");
     });
@@ -406,7 +407,7 @@ describe("Server: Web", () => {
       const response = await axios.post(
         url + "/api/paramTestAction",
         requestBody,
-        { headers: { "Content-type": "application/json" } }
+        { headers: { "Content-type": "application/json" } },
       );
       expect(response.data.body.key).toEqual("value");
       expect(response.data.rawBody).toEqual("");
@@ -477,7 +478,7 @@ describe("Server: Web", () => {
       const response = await axios.options(url + "/api/cacheTest");
       expect(response.status).toEqual(200);
       expect(response.headers["access-control-allow-methods"]).toEqual(
-        "HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE"
+        "HEAD, GET, POST, PUT, PATCH, DELETE, OPTIONS, TRACE",
       );
       expect(response.headers["access-control-allow-origin"]).toEqual("*");
       expect(response.headers["content-length"]).toEqual("0");
@@ -529,19 +530,19 @@ describe("Server: Web", () => {
       expect(fingerprint1).not.toEqual(fingerprint5);
 
       expect(fingerprint1).toEqual(
-        response1.data.requesterInformation.fingerprint
+        response1.data.requesterInformation.fingerprint,
       );
       expect(fingerprint2).toEqual(
-        response2.data.requesterInformation.fingerprint
+        response2.data.requesterInformation.fingerprint,
       );
       expect(fingerprint3).toEqual(
-        response3.data.requesterInformation.fingerprint
+        response3.data.requesterInformation.fingerprint,
       );
       expect(fingerprint4).toEqual(
-        response4.data.requesterInformation.fingerprint
+        response4.data.requesterInformation.fingerprint,
       );
       expect(fingerprint5).toEqual(
-        response5.data.requesterInformation.fingerprint
+        response5.data.requesterInformation.fingerprint,
       );
     });
   });
@@ -575,7 +576,7 @@ describe("Server: Web", () => {
                 validQueryFilters.indexOf(data.params!.query) > -1;
               if (!validQueryParam) {
                 const notFoundError = new ErrorWithCode(
-                  `404: Filter '${data.params!.query}' not found `
+                  `404: Filter '${data.params!.query}' not found `,
                 );
                 notFoundError.code = 404;
                 throw notFoundError;
@@ -589,7 +590,7 @@ describe("Server: Web", () => {
               if (!validRandomKey) {
                 if (data.params!.randomKey === "expired-key") {
                   const expiredError = new ErrorWithCode(
-                    `999: Key '${data.params!.randomKey}' is expired`
+                    `999: Key '${data.params!.randomKey}' is expired`,
                   );
                   expiredError.code = 999;
                   throw expiredError;
@@ -597,7 +598,7 @@ describe("Server: Web", () => {
                 const suspiciousError = new ErrorWithCode(
                   `402: Suspicious Activity detected with key ${
                     data.params!.randomKey
-                  }`
+                  }`,
                 );
                 suspiciousError.code = 402;
                 throw suspiciousError;
@@ -670,7 +671,7 @@ describe("Server: Web", () => {
           if (error instanceof AxiosError) {
             expect(error.response?.status).toEqual(404);
             expect(error.response?.data.error).toEqual(
-              "404: Filter 'guess' not found "
+              "404: Filter 'guess' not found ",
             );
           } else throw error;
         }
@@ -687,7 +688,7 @@ describe("Server: Web", () => {
           if (error instanceof AxiosError) {
             expect(error.response?.status).toEqual(402);
             expect(error.response?.data.error).toEqual(
-              "402: Suspicious Activity detected with key guessKey"
+              "402: Suspicious Activity detected with key guessKey",
             );
           } else throw error;
         }
@@ -696,14 +697,14 @@ describe("Server: Web", () => {
       test("should not throw custom error for valid params", async () => {
         const responseWithQuery = await axios.post(
           url + "/api/statusTestAction",
-          { key: "value", query: "test" }
+          { key: "value", query: "test" },
         );
         expect(responseWithQuery.status).toEqual(200);
         expect(responseWithQuery.data.good).toEqual(true);
 
         const responseWithRandomKey = await axios.post(
           url + "/api/statusTestAction",
-          { key: "value", randomKey: "key1" }
+          { key: "value", randomKey: "key1" },
         );
         expect(responseWithRandomKey.status).toEqual(200);
         expect(responseWithRandomKey.data.good).toEqual(true);
@@ -714,7 +715,7 @@ describe("Server: Web", () => {
             key: "value",
             query: "search",
             randomKey: "key2",
-          }
+          },
         );
         expect(responseWithKeyAndQuery.status).toEqual(200);
         expect(responseWithKeyAndQuery.data.good).toEqual(true);
@@ -732,7 +733,7 @@ describe("Server: Web", () => {
             expect(error.response?.status).not.toEqual(999);
             expect(error.response?.status).toEqual(500);
             expect(error.response?.data.error).toEqual(
-              "999: Key 'expired-key' is expired"
+              "999: Key 'expired-key' is expired",
             );
           } else throw error;
         }
@@ -796,7 +797,7 @@ describe("Server: Web", () => {
       const response = await axios.get(url + "/public/");
       expect(response.status).toEqual(200);
       expect(response.data).toMatch(
-        /Actionhero is a multi-transport API Server/
+        /Actionhero is a multi-transport API Server/,
       );
     });
 
@@ -804,7 +805,7 @@ describe("Server: Web", () => {
       const response = await axios.get(url + "/public");
       expect(response.status).toEqual(200);
       expect(response.data).toMatch(
-        /Actionhero is a multi-transport API Server/
+        /Actionhero is a multi-transport API Server/,
       );
     });
 
@@ -812,12 +813,12 @@ describe("Server: Web", () => {
       beforeAll(() => {
         const testFolderPublicPath = path.join(
           __dirname,
-          "/../../../public/testFolder"
+          "/../../../public/testFolder",
         );
         fs.mkdirSync(testFolderPublicPath);
         fs.writeFileSync(
           testFolderPublicPath + "/testFile.html",
-          "Actionhero Route Test File"
+          "Actionhero Route Test File",
         );
 
         route.registerRoute(
@@ -827,14 +828,14 @@ describe("Server: Web", () => {
           null,
           null,
           true,
-          testFolderPublicPath
+          testFolderPublicPath,
         );
       });
 
       afterAll(() => {
         const testFolderPublicPath = path.join(
           __dirname,
-          "/../../../public/testFolder"
+          "/../../../public/testFolder",
         );
         fs.unlinkSync(testFolderPublicPath + path.sep + "testFile.html");
         fs.rmdirSync(testFolderPublicPath);
@@ -842,7 +843,7 @@ describe("Server: Web", () => {
 
       test("works for routes mapped paths", async () => {
         const response = await axios.get(
-          url + "/my/public/route/testFile.html"
+          url + "/my/public/route/testFile.html",
         );
         expect(response.status).toEqual(200);
         expect(response.data).toEqual("Actionhero Route Test File");
@@ -876,7 +877,7 @@ describe("Server: Web", () => {
 
       beforeAll(() => {
         fs.createReadStream(source).pipe(
-          fs.createWriteStream(os.tmpdir() + path.sep + "tmpTestFile.html")
+          fs.createWriteStream(os.tmpdir() + path.sep + "tmpTestFile.html"),
         );
         api.staticFile.searchLocations.push(os.tmpdir());
       });
@@ -1019,7 +1020,7 @@ describe("Server: Web", () => {
 
     test("can pipe buffer responses with custom content types to clients", async () => {
       const { headers, data } = await axios.get(
-        url + "/api/pipe?mode=contentType"
+        url + "/api/pipe?mode=contentType",
       );
       expect(headers["content-type"]).toEqual("text/plain");
       expect(headers["content-length"]).toEqual("35");

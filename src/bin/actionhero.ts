@@ -38,7 +38,7 @@ export namespace ActionheroCLIRunner {
           // new plugins
           await loadDirectory(
             path.join(plugin.path, "dist", "bin"),
-            pathsLoaded
+            pathsLoaded,
           );
         }
       }
@@ -60,7 +60,7 @@ export namespace ActionheroCLIRunner {
   export async function loadDirectory(
     dir: string,
     pathsLoaded: string[],
-    match = "*"
+    match = "*",
   ) {
     if (!fs.existsSync(dir)) return;
     const realpath = fs.realpathSync(dir);
@@ -81,7 +81,7 @@ export namespace ActionheroCLIRunner {
   }
 
   export async function convertCLIToCommanderAction(
-    cliConstructor: new () => CLI
+    cliConstructor: new () => CLI,
   ) {
     if (
       Object.getPrototypeOf(cliConstructor?.prototype?.constructor || {})
@@ -110,7 +110,7 @@ export namespace ActionheroCLIRunner {
 
       if (input.flag && !input.letter) {
         throw new Error(
-          `flag inputs require a short letter (${JSON.stringify(input)})`
+          `flag inputs require a short letter (${JSON.stringify(input)})`,
         );
       }
 
@@ -127,7 +127,7 @@ export namespace ActionheroCLIRunner {
 
       const argProcessor = (
         value: string,
-        accumulator?: unknown[]
+        accumulator?: unknown[],
       ): unknown => {
         try {
           if (typeof input.formatter === "function") {
@@ -154,7 +154,7 @@ export namespace ActionheroCLIRunner {
         argString,
         input.description,
         argProcessor,
-        input.default
+        input.default,
       );
     }
   }
@@ -165,7 +165,7 @@ export namespace ActionheroCLIRunner {
     _arg2: any,
     _arg3: any,
     _arg4: any,
-    _arg5: any
+    _arg5: any,
   ) {
     let toStop = false;
 
@@ -215,7 +215,7 @@ export namespace ActionheroCLIRunner {
       return pkg.version;
     } else {
       const pkg: PackageJson = readPackageJSON(
-        path.join(__dirname, "..", "..", "package.json")
+        path.join(__dirname, "..", "..", "package.json"),
       );
       return pkg.version;
     }

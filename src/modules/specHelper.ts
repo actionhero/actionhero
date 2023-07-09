@@ -22,7 +22,7 @@ export namespace specHelper {
    */
   export async function runAction<A extends Action | void = void>(
     actionName: string,
-    input: Partial<SpecHelperConnection> | Record<string, any> = {}
+    input: Partial<SpecHelperConnection> | Record<string, any> = {},
   ) {
     let connection: SpecHelperConnection;
 
@@ -72,7 +72,7 @@ export namespace specHelper {
    */
   export async function runTask<T extends Task | void = void>(
     taskName: string,
-    params: object | Array<any>
+    params: object | Array<any>,
   ) {
     if (!api.tasks.tasks[taskName]) {
       throw new Error(`task ${taskName} not found`);
@@ -92,7 +92,7 @@ export namespace specHelper {
    */
   export async function runFullTask<T extends Task | void = void>(
     taskName: string,
-    params: object | Array<any>
+    params: object | Array<any>,
   ) {
     const worker = new Worker(
       {
@@ -107,7 +107,7 @@ export namespace specHelper {
           ? config.tasks.queues
           : await config.tasks.queues()) || ["default"],
       },
-      api.tasks.jobs
+      api.tasks.jobs,
     );
 
     try {
@@ -119,7 +119,7 @@ export namespace specHelper {
         error?: string;
       } = await worker.performInline(
         taskName,
-        Array.isArray(params) ? params : [params]
+        Array.isArray(params) ? params : [params],
       );
       await worker.end();
       return result;

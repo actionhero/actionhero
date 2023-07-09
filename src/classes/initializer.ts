@@ -51,7 +51,7 @@ export abstract class Initializer {
         this[priority] < 0
       ) {
         throw new Error(
-          `${priority} is a required property for the initializer \`${this.name}\``
+          `${priority} is a required property for the initializer \`${this.name}\``,
         );
       }
     });

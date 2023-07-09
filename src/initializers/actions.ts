@@ -36,18 +36,18 @@ export class ActionsInitializer extends Initializer {
 
     api.actions.loadFile = async (
       fullFilePath: string,
-      reload: boolean = false
+      reload: boolean = false,
     ) => {
       const loadMessage = (action: Action) => {
         if (reload) {
           log(
             `action reloaded: ${action.name} @ v${action.version}, ${fullFilePath}`,
-            "info"
+            "info",
           );
         } else {
           log(
             `action loaded: ${action.name} @ v${action.version}, ${fullFilePath}`,
-            "debug"
+            "debug",
           );
         }
       };
@@ -73,7 +73,7 @@ export class ActionsInitializer extends Initializer {
           if (api.actions.actions[action.name][action.version] && !reload) {
             log(
               `an existing action with the same name \`${action.name}\` will be overridden by the file ${fullFilePath}`,
-              "warning"
+              "warning",
             );
           }
 
@@ -106,11 +106,11 @@ export class ActionsInitializer extends Initializer {
 
         // old style at the root of the project
         let files = safeGlobSync(
-          path.join(pluginPath, "actions", "**", "*.js")
+          path.join(pluginPath, "actions", "**", "*.js"),
         );
 
         files = files.concat(
-          safeGlobSync(path.join(pluginPath, "dist", "actions", "**", "*.js"))
+          safeGlobSync(path.join(pluginPath, "dist", "actions", "**", "*.js")),
         );
 
         utils

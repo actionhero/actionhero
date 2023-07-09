@@ -56,7 +56,7 @@ export const DEFAULT = {
       // When a params for an action is invalid
       invalidParams: (
         data: ActionProcessor<any>,
-        validationErrors: Array<string | Error>
+        validationErrors: Array<string | Error>,
       ) => {
         if (validationErrors.length >= 0) return validationErrors[0];
         return "validation error";
@@ -93,7 +93,7 @@ export const DEFAULT = {
       //   an error to the client. Response can be edited here, status codes changed, etc.
       async genericError(
         data: ActionProcessor<any>,
-        error: NodeJS.ErrnoException
+        error: NodeJS.ErrnoException,
       ) {
         return error;
       },

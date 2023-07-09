@@ -41,7 +41,7 @@ export class RedisInitializer extends Initializer {
     };
 
     api.redis.subscriptionHandlers.do = async (
-      message: RedisModule.redis.PubSubMessage
+      message: RedisModule.redis.PubSubMessage,
     ) => {
       if (
         !message.connectionId ||
@@ -51,7 +51,7 @@ export class RedisInitializer extends Initializer {
         const cmd = cmdParts.shift();
         if (cmd !== "api") {
           throw new Error(
-            "cannot operate on a method outside of the api object"
+            "cannot operate on a method outside of the api object",
           );
         }
 
@@ -75,7 +75,7 @@ export class RedisInitializer extends Initializer {
     };
 
     api.redis.subscriptionHandlers.doResponse = function (
-      message: RedisModule.redis.PubSubMessage
+      message: RedisModule.redis.PubSubMessage,
     ) {
       if (api.redis.rpcCallbacks[message.messageId]) {
         const { resolve, timer } = api.redis.rpcCallbacks[message.messageId];
@@ -89,7 +89,7 @@ export class RedisInitializer extends Initializer {
     for (const r of connectionNames) {
       if (config.redis[r].buildNew === true) {
         api.redis.clients[r] = new config.redis[r].konstructor(
-          ...(config.redis[r].args ?? [])
+          ...(config.redis[r].args ?? []),
         );
 
         api.redis.clients[r].on("error", (error) => {
@@ -117,7 +117,7 @@ export class RedisInitializer extends Initializer {
         });
       } else {
         api.redis.clients[r] = config.redis[r].konstructor(
-          config.redis[r].args
+          config.redis[r].args,
         );
         api.redis.clients[r].on("error", (error) => {
           log(`Redis connection \`${r}\` error`, "alert", error);
@@ -134,7 +134,7 @@ export class RedisInitializer extends Initializer {
 
       const messageHandler = async (
         messageChannel: string,
-        stringifiedMessage: string
+        stringifiedMessage: string,
       ) => {
         let message: RedisModule.redis.PubSubMessage;
         try {

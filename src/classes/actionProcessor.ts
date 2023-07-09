@@ -52,7 +52,7 @@ export class ActionProcessor<ActionClass extends Action> {
     this.messageId = connection.messageId || 0;
     this.params = Object.assign(
       { action: null, apiVersion: null },
-      connection.params
+      connection.params,
     );
     this.missingParams = [];
     this.validatorErrors = [];
@@ -82,7 +82,7 @@ export class ActionProcessor<ActionClass extends Action> {
 
   private async completeAction(
     status: ActionsStatus,
-    _error?: NodeJS.ErrnoException
+    _error?: NodeJS.ErrnoException,
   ) {
     let error: NodeJS.ErrnoException | string = null;
     this.actionStatus = status;
@@ -129,7 +129,7 @@ export class ActionProcessor<ActionClass extends Action> {
 
   private logAndReportAction(
     status: ActionsStatus,
-    error: NodeJS.ErrnoException
+    error: NodeJS.ErrnoException,
   ) {
     const { type, rawConnection } = this.connection;
 
@@ -152,7 +152,7 @@ export class ActionProcessor<ActionClass extends Action> {
 
     if (config.general.enableResponseLogging) {
       logLine.response = JSON.stringify(
-        utils.filterResponseForLogging(this.response)
+        utils.filterResponseForLogging(this.response),
       );
     }
 
@@ -266,7 +266,7 @@ export class ActionProcessor<ActionClass extends Action> {
     props: Input,
     params: ActionProcessor<any>["params"],
     key: string,
-    schemaKey: string
+    schemaKey: string,
   ) {
     // default
     if (params[key] === undefined && props.default !== undefined) {
@@ -320,7 +320,7 @@ export class ActionProcessor<ActionClass extends Action> {
           if (validatorResponse !== true) {
             if (validatorResponse === false) {
               this.validatorErrors.push(
-                new Error(`Input for parameter "${key}" failed validation!`)
+                new Error(`Input for parameter "${key}" failed validation!`),
               );
             } else {
               this.validatorErrors.push(validatorResponse);
@@ -371,7 +371,7 @@ export class ActionProcessor<ActionClass extends Action> {
 
   async processAction(
     actionName?: string,
-    apiVersion = this.params.apiVersion
+    apiVersion = this.params.apiVersion,
   ) {
     this.actionStartTime = new Date().getTime();
     this.working = true;
@@ -409,7 +409,7 @@ export class ActionProcessor<ActionClass extends Action> {
     if (
       this.actionTemplate.blockedConnectionTypes &&
       this.actionTemplate.blockedConnectionTypes.indexOf(
-        this.connection.type
+        this.connection.type,
       ) >= 0
     ) {
       return this.completeAction(ActionsStatus.UnsupportedServerType);

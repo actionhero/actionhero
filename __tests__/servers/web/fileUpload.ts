@@ -61,9 +61,9 @@ describe("Server: Web", () => {
           "..",
           "public",
           "logo",
-          "actionhero.png"
-        )
-      )
+          "actionhero.png",
+        ),
+      ),
     );
 
     const response = await axios.post(`${url}/api/uploadAction`, form);
@@ -73,7 +73,7 @@ describe("Server: Web", () => {
         originalFilename: "actionhero.png",
         mimetype: "image/png",
         size: 59273,
-      })
+      }),
     );
   });
 });

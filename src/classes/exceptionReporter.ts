@@ -5,5 +5,5 @@ export type ExceptionReporter = (
   type: string,
   name: string,
   objects?: any,
-  severity?: ActionheroLogLevel
+  severity?: ActionheroLogLevel,
 ) => void;

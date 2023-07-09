@@ -3,7 +3,7 @@ import * as path from "path";
 
 async function exec(
   command: string,
-  args: Record<string, any>
+  args: Record<string, any>,
 ): Promise<{
   error?: NodeJS.ErrnoException;
   stdout?: string;
@@ -34,11 +34,11 @@ describe("cli commands", () => {
     async () => {
       const { stdout } = await exec(
         "./node_modules/.bin/ts-node ./src/bin/actionhero.ts help",
-        { env }
+        { env },
       );
       expect(stdout).toContain("hello");
     },
-    30 * 1000
+    30 * 1000,
   );
 
   test(
@@ -46,11 +46,11 @@ describe("cli commands", () => {
     async () => {
       const { stdout } = await exec(
         "./node_modules/.bin/ts-node ./src/bin/actionhero.ts hello",
-        { env }
+        { env },
       );
       expect(stdout).toContain("Hello, Dr. World");
     },
-    30 * 1000
+    30 * 1000,
   );
 
   test(
@@ -58,11 +58,11 @@ describe("cli commands", () => {
     async () => {
       const { stdout } = await exec(
         "./node_modules/.bin/ts-node ./src/bin/actionhero.ts hello -t Mr --name Worldwide ",
-        { env }
+        { env },
       );
       expect(stdout).toContain("Hello, Mr. Worldwide");
     },
-    30 * 1000
+    30 * 1000,
   );
 
   test(
@@ -73,11 +73,11 @@ describe("cli commands", () => {
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts hello --name",
           {
             env,
-          }
-        )
+          },
+        ),
       ).rejects.toThrow(/error: option '--name <name>' argument missing/);
     },
-    30 * 1000
+    30 * 1000,
   );
 
   test(
@@ -86,13 +86,13 @@ describe("cli commands", () => {
       await expect(
         exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts hello -t Esq. --name Worldwide ",
-          { env }
-        )
+          { env },
+        ),
       ).rejects.toThrow(
-        /error: option '-t, --title <title>' argument 'Esq.' is invalid. too many periods/
+        /error: option '-t, --title <title>' argument 'Esq.' is invalid. too many periods/,
       );
     },
-    30 * 1000
+    30 * 1000,
   );
 
   test(
@@ -100,13 +100,13 @@ describe("cli commands", () => {
     async () => {
       const { stdout } = await exec(
         "./node_modules/.bin/ts-node ./src/bin/actionhero.ts hello --title Mr --name Worldwide --countries France Italy Germany USA",
-        { env }
+        { env },
       );
       expect(stdout).toContain(
-        "Hello, Mr. Worldwide (France! Italy! Germany! USA!)"
+        "Hello, Mr. Worldwide (France! Italy! Germany! USA!)",
       );
     },
-    30 * 1000
+    30 * 1000,
   );
 
   test(
@@ -115,12 +115,12 @@ describe("cli commands", () => {
       await expect(
         exec(
           "./node_modules/.bin/ts-node ./src/bin/actionhero.ts hello --title Mr --name Worldwide --countries France italy",
-          { env }
-        )
+          { env },
+        ),
       ).rejects.toThrow(
-        /error: option '--countries \[countries...\]' argument 'italy' is invalid. country not capitalized/
+        /error: option '--countries \[countries...\]' argument 'italy' is invalid. country not capitalized/,
       );
     },
-    30 * 1000
+    30 * 1000,
   );
 });

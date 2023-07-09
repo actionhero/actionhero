@@ -34,7 +34,9 @@ export class HelloCliTest extends CLI {
   async run({ params }: { params: Partial<ParamsFrom<HelloCliTest>> }) {
     const sayHello = (title: string, name: string, countries: string[]) =>
       console.log(
-        `Hello, ${title} ${name} ${countries ? `(${countries.join(" ")})` : ""}`
+        `Hello, ${title} ${name} ${
+          countries ? `(${countries.join(" ")})` : ""
+        }`,
       );
     sayHello(params.title!, params.name!, params.countries!);
     return true;

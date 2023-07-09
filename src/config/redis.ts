@@ -43,7 +43,7 @@ export const DEFAULT = {
       retryStrategy: (times: number) => {
         if (times === 1) {
           console.error(
-            "Unable to connect to Redis - please check your Redis config!"
+            "Unable to connect to Redis - please check your Redis config!",
           );
           return 5000;
         }

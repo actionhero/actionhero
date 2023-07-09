@@ -19,7 +19,7 @@ export class ActionsListCLI extends CLI {
         console.info("    inputs:");
         for (const input in action.inputs) {
           console.info(
-            `      ${input}: ${JSON.stringify(action.inputs[input])}`
+            `      ${input}: ${JSON.stringify(action.inputs[input])}`,
           );
         }
       }

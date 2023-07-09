@@ -5,7 +5,7 @@ export function sortGlobalMiddleware(
   globalMiddlewareList: Array<any>,
   middleware: {
     [key: string]: any;
-  }
+  },
 ) {
   globalMiddlewareList.sort((a, b) => {
     if (middleware[a].priority > middleware[b].priority) {

@@ -48,11 +48,11 @@ export class Servers extends Initializer {
 
         // old style at the root of the project
         files = files.concat(
-          safeGlobSync(path.join(pluginPath, "servers", "**", "*.js"))
+          safeGlobSync(path.join(pluginPath, "servers", "**", "*.js")),
         );
 
         files = files.concat(
-          safeGlobSync(path.join(pluginPath, "dist", "servers", "**", "*.js"))
+          safeGlobSync(path.join(pluginPath, "dist", "servers", "**", "*.js")),
         );
       }
     }
@@ -70,7 +70,7 @@ export class Servers extends Initializer {
       if (exportLen) {
         if (exportLen > 1) {
           throw new Error(
-            `server file ${filename} exports more than one server`
+            `server file ${filename} exports more than one server`,
           );
         }
 
@@ -87,7 +87,7 @@ export class Servers extends Initializer {
         if (api.servers.servers[server.type]) {
           log(
             `an existing server with the same type \`${server.type}\` will be overridden by the file ${filename}`,
-            "crit"
+            "crit",
           );
         }
 
