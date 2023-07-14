@@ -95,7 +95,7 @@ describe("Core", () => {
         await cache.load("testKey_slow");
         throw new Error("should not get here");
       } catch (error) {
-        expect(String(error)).toEqual("Error: Object expired");
+        expect(String(error)).toEqual("Error: Object not found");
       }
     });
 
@@ -127,8 +127,7 @@ describe("Core", () => {
         await cache.load(key);
         throw new Error("should not get here");
       } catch (error) {
-        // expect(String(error)).toMatch(/Error: Object expired/)
-        expect(error).toBeTruthy();
+        expect(String(error)).toMatch(/Error: Object not found/);
       }
     });
 
@@ -161,7 +160,7 @@ describe("Core", () => {
         loadResp = await cache.load("testKey_slow");
         throw new Error("should not get here");
       } catch (error) {
-        expect(String(error)).toEqual("Error: Object expired");
+        expect(String(error)).toEqual("Error: Object not found");
       }
     });
 

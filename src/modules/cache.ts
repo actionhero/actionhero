@@ -5,16 +5,12 @@ export namespace cache {
   export enum CacheErrorMessages {
     locked = "Object locked",
     notFound = "Object not found",
-    expired = "Object expired",
   }
 
   export interface CacheObject {
     key: string;
     value: any;
-    expireTimestamp: number;
     createdAt: number;
-    lastReadAt: number;
-    readAt?: number;
   }
 
   export interface CacheOptions {
@@ -152,14 +148,7 @@ export namespace cache {
     const count = Object.keys(data).length;
 
     const saveDumpedElement = async (key: string, content: any) => {
-      const parsedContent = JSON.parse(content);
-      await client().set(key, content);
-      if (parsedContent.expireTimestamp) {
-        const expireTimeSeconds = Math.ceil(
-          (parsedContent.expireTimestamp - new Date().getTime()) / 1000,
-        );
-        await client().expire(key, expireTimeSeconds);
-      }
+      await client().set(key, content, "KEEPTTL");
     };
 
     Object.keys(data).forEach((key) => {
@@ -191,48 +180,21 @@ export namespace cache {
 
     if (!cacheObj) throw new Error(CacheErrorMessages.notFound);
 
-    if (
-      cacheObj.expireTimestamp &&
-      cacheObj.expireTimestamp < new Date().getTime()
-    ) {
-      throw new Error(CacheErrorMessages.expired);
-    }
-
-    const lastReadAt = cacheObj.readAt;
-    let expireTimeSeconds: number;
-    cacheObj.readAt = new Date().getTime();
-
-    if (cacheObj.expireTimestamp) {
-      if (options.expireTimeMS) {
-        cacheObj.expireTimestamp = new Date().getTime() + options.expireTimeMS;
-        expireTimeSeconds = Math.ceil(options.expireTimeMS / 1000);
-      } else {
-        expireTimeSeconds = Math.floor(
-          (cacheObj.expireTimestamp - new Date().getTime()) / 1000,
-        );
-      }
-    }
-
     lockOk = await cache.checkLock(key, options.retry);
     if (lockOk !== true) throw new Error(CacheErrorMessages.locked);
 
-    await client().set(redisPrefix + key, JSON.stringify(cacheObj));
-    if (expireTimeSeconds) {
-      await client().expire(redisPrefix + key, expireTimeSeconds);
+    if (options.expireTimeMS) {
+      await client().pexpire(redisPrefix + key, options.expireTimeMS);
       return {
         key,
         value: cacheObj.value,
-        expireTimestamp: cacheObj.expireTimestamp,
         createdAt: cacheObj.createdAt,
-        lastReadAt,
       };
     } else {
       return {
         key,
         value: cacheObj.value,
-        expireTimestamp: cacheObj.expireTimestamp,
         createdAt: cacheObj.createdAt,
-        lastReadAt,
       };
     }
   }
@@ -262,26 +224,17 @@ export namespace cache {
     value: any,
     expireTimeMS?: number,
   ): Promise<boolean> {
-    let expireTimeSeconds = null;
-    let expireTimestamp = null;
-    if (expireTimeMS !== null) {
-      expireTimeSeconds = Math.ceil(expireTimeMS / 1000);
-      expireTimestamp = new Date().getTime() + expireTimeMS;
-    }
-
     const cacheObj = {
       value: value,
-      expireTimestamp: expireTimestamp,
       createdAt: new Date().getTime(),
-      readAt: null as number,
     };
 
     const lockOk = await cache.checkLock(key, null);
     if (!lockOk) throw new Error(CacheErrorMessages.locked);
 
     await client().set(redisPrefix + key, JSON.stringify(cacheObj));
-    if (expireTimeSeconds) {
-      await client().expire(redisPrefix + key, expireTimeSeconds);
+    if (expireTimeMS) {
+      await client().pexpire(redisPrefix + key, expireTimeMS);
     }
     return true;
   }
