@@ -37,7 +37,7 @@
     "@types/ioredis": "^5.0.0",
     "browser_fingerprint": "^2.0.4",
     "commander": "^11.0.0",
-    "dot-prop": "^6.0.1",
+    "dot-prop": "^8.0.2",
     "etag": "^1.8.1",
     "formidable": "^2.1.1",
     "glob": "^8.1.0",
