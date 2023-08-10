@@ -212,10 +212,11 @@ export class ResqueInitializer extends Initializer {
         config.tasks.connectionOptions.tasks,
         {
           redis: api.redis.clients.tasks,
-          pkg:
-            api.redis.clients.tasks?.constructor?.name === "RedisMock"
-              ? "ioredis-mock"
-              : "ioredis",
+          pkg: ["RedisMock", "_RedisMock"].includes(
+            api.redis.clients.tasks?.constructor?.name,
+          )
+            ? "ioredis-mock"
+            : "ioredis",
         },
       ),
       startQueue: this.startQueue,
