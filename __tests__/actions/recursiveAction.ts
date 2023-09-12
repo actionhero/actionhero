@@ -7,9 +7,8 @@ describe("Action: recursiveAction", () => {
   afterAll(async () => await actionhero.stop());
 
   test("merges its own response with the randomNumber response", async () => {
-    const response = await specHelper.runAction<RecursiveAction>(
-      "recursiveAction",
-    );
+    const response =
+      await specHelper.runAction<RecursiveAction>("recursiveAction");
     expect(response.local).toEqual(true);
     expect(response.randomNumber).toBeGreaterThanOrEqual(0);
     expect(response.stringRandomNumber).toMatch(/Your random number is/);

@@ -7,9 +7,8 @@ describe("Action: status", () => {
   afterAll(async () => await actionhero.stop());
 
   test("returns node status", async () => {
-    const { id, problems, name, error } = await specHelper.runAction<Status>(
-      "status",
-    );
+    const { id, problems, name, error } =
+      await specHelper.runAction<Status>("status");
     expect(error).toBeUndefined();
     expect(problems).toHaveLength(0);
     expect(id).toEqual(`test-server-${process.env.JEST_WORKER_ID || 0}`);

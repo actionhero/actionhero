@@ -53,9 +53,8 @@ describe("Action: swagger", () => {
   });
 
   test("returns the correct parts", async () => {
-    const { paths, basePath, host } = await specHelper.runAction<Swagger>(
-      "swagger",
-    );
+    const { paths, basePath, host } =
+      await specHelper.runAction<Swagger>("swagger");
 
     expect(basePath).toBe("/api/");
     expect(host).toMatch(/localhost/);

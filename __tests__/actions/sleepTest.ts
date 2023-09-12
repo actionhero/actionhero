@@ -7,9 +7,8 @@ describe("Action: sleepTest", () => {
   afterAll(async () => await actionhero.stop());
 
   test("will return data from an async action", async () => {
-    const { sleepDuration } = await specHelper.runAction<SleepTest>(
-      "sleepTest",
-    );
+    const { sleepDuration } =
+      await specHelper.runAction<SleepTest>("sleepTest");
     expect(sleepDuration).toEqual(1000);
   });
 

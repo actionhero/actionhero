@@ -9,9 +9,8 @@ describe("Core: specHelper", () => {
   afterAll(async () => await actionhero.stop());
 
   test("can make a request with just params", async () => {
-    const { randomNumber } = await specHelper.runAction<RandomNumber>(
-      "randomNumber",
-    );
+    const { randomNumber } =
+      await specHelper.runAction<RandomNumber>("randomNumber");
     expect(randomNumber).toBeGreaterThanOrEqual(0);
     expect(randomNumber).toBeLessThan(1);
   });
@@ -103,9 +102,8 @@ describe("Core: specHelper", () => {
 
     describe("happy-path", () => {
       test("if the response payload is an object, it appends metadata", async () => {
-        const response = await specHelper.runAction<RandomNumber>(
-          "randomNumber",
-        );
+        const response =
+          await specHelper.runAction<RandomNumber>("randomNumber");
         expect(response.error).toBeUndefined();
         expect(response.randomNumber).toBeTruthy();
         expect(response.messageId).toBeTruthy();
@@ -141,9 +139,8 @@ describe("Core: specHelper", () => {
       });
 
       test("if the response payload is an object, it should not append metadata", async () => {
-        const response = await specHelper.runAction<RandomNumber>(
-          "randomNumber",
-        );
+        const response =
+          await specHelper.runAction<RandomNumber>("randomNumber");
         expect(response.error).toBeUndefined();
         expect(response.randomNumber).toBeTruthy();
         expect(response.messageId).toBeUndefined();
