@@ -14,6 +14,7 @@ export interface ChatRoomApi {
   incomingMessage: ChatRoomInitializer["incomingMessage"];
   incomingMessagePerConnection?: ChatRoomInitializer["incomingMessagePerConnection"];
   runMiddleware: ChatRoomInitializer["runMiddleware"];
+  removeMember: ChatRoomInitializer["removeMember"];
 }
 
 export type ChatMiddlewareDirections =
@@ -160,6 +161,12 @@ export class ChatRoomInitializer extends Initializer {
     return newMessagePayload;
   };
 
+  removeMember = (
+    connectionId: string,
+    room: string,
+    toWaitRemote: boolean = true,
+  ) => chatRoom.removeMember(connectionId, room, toWaitRemote);
+
   async initialize() {
     api.chatRoom = {
       middleware: {},
@@ -174,6 +181,7 @@ export class ChatRoomInitializer extends Initializer {
       incomingMessage: this.incomingMessage,
       incomingMessagePerConnection: this.incomingMessagePerConnection,
       runMiddleware: this.runMiddleware,
+      removeMember: this.removeMember,
     };
   }
 
