@@ -101,6 +101,20 @@ describe("Core: Action Cluster", () => {
       expect(message.message).toEqual("hi");
     });
 
+    test("can call api.chatRoom.removeMember on other servers", async () => {
+      const client = await specHelper.buildConnection();
+      const spy = jest
+        .spyOn(api.chatRoom, "removeMember")
+        .mockImplementationOnce(jest.fn());
+      await redis.doCluster("api.chatRoom.removeMember", [
+        client.id,
+        "defaultRoom",
+      ]);
+      await utils.sleep(100);
+
+      expect(spy).toHaveBeenCalledWith(client.id, "defaultRoom");
+    });
+
     test("failing RPC calls with a callback will have a failure callback", async () => {
       try {
         await redis.doCluster(
