@@ -181,15 +181,23 @@ export class WebServer extends Server {
     lastModified: Date,
   ) {
     let foundCacheControl = false;
+    let foundContentType = false;
     let ifModifiedSince;
 
     connection.rawConnection.responseHeaders.forEach((pair: string[]) => {
-      if (pair[0].toLowerCase() === "cache-control") {
+      const headerName = pair[0].toLowerCase();
+      if (headerName === "cache-control") {
         foundCacheControl = true;
+      }
+      if (headerName === "content-type") {
+        foundContentType = true;
       }
     });
 
-    connection.rawConnection.responseHeaders.push(["Content-Type", mime]);
+    const hasDefaultJSONHeader = this.extractHeader(connection, 'Content-Type') === "application/json; charset=utf-8"
+    if (!foundContentType || hasDefaultJSONHeader) {
+      connection.rawConnection.responseHeaders.push(["Content-Type", mime]);
+    }
 
     if (fileStream) {
       if (!foundCacheControl) {

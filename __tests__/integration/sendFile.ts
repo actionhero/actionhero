@@ -21,4 +21,9 @@ describe("Server: sendFile", () => {
     expect(stats.size).toBeGreaterThanOrEqual(response.data.length);
     expect(response.data).toContain("PNG");
   });
+
+  test("Server should sendFile with custom content-type header", async () => {
+    const response = await axios.get(url + "/api/sendFile", { params: { contentType: "application/octet-stream" } });
+    expect(response.headers['content-type']).toBe("application/octet-stream");
+  });
 });
