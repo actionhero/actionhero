@@ -103,8 +103,8 @@ export class Swagger extends Action {
                     ? typeof action.inputs[inputName].default === "object"
                       ? JSON.stringify(action.inputs[inputName].default)
                       : typeof action.inputs[inputName].default === "function"
-                      ? action.inputs[inputName].default()
-                      : `${action.inputs[inputName].default}`
+                        ? action.inputs[inputName].default()
+                        : `${action.inputs[inputName].default}`
                     : undefined,
               };
             }),
