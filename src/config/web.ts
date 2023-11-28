@@ -1,6 +1,8 @@
 import * as os from "os";
 import { ActionheroConfigInterface } from "..";
 
+import type { Options as FormParserOptions } from "formidable";
+
 const namespace = "web";
 
 declare module ".." {
@@ -83,7 +85,7 @@ export const DEFAULT = {
         keepExtensions: false,
         maxFieldsSize: 1024 * 1024 * 20,
         maxFileSize: 1024 * 1024 * 200,
-      },
+      } as FormParserOptions,
       // Should we pad JSON responses with whitespace to make them more human-readable?
       // set to null to disable
       padding: 2,

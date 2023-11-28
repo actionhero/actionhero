@@ -693,7 +693,13 @@ export class WebServer extends Server {
         (connection.rawConnection.req.headers["content-type"] ||
           connection.rawConnection.req.headers["Content-Type"])
       ) {
-        connection.rawConnection.form = new formidable.IncomingForm(this.config.formOptions);
+        connection.rawConnection.form = new formidable.IncomingForm();
+        if (this.config?.formOptions) {
+          for (i in this.config.formOptions) {
+            connection.rawConnection.form.options[i] =
+              this.config.formOptions[i];
+          }
+        }
 
         let rawBody = Promise.resolve(Buffer.alloc(0));
         if (this.config.saveRawBody) {
