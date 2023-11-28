@@ -181,7 +181,6 @@ export class WebServer extends Server {
     lastModified: Date,
   ) {
     let foundCacheControl = false;
-    let foundContentType = false;
     let ifModifiedSince;
 
     connection.rawConnection.responseHeaders.forEach((pair: string[]) => {
@@ -189,15 +188,9 @@ export class WebServer extends Server {
       if (headerName === "cache-control") {
         foundCacheControl = true;
       }
-      if (headerName === "content-type") {
-        foundContentType = true;
-      }
     });
 
-    const hasDefaultJSONHeader = this.extractHeader(connection, 'Content-Type') === "application/json; charset=utf-8"
-    if (!foundContentType || hasDefaultJSONHeader) {
-      connection.rawConnection.responseHeaders.push(["Content-Type", mime]);
-    }
+    connection.rawConnection.responseHeaders.push(["Content-Type", mime]);
 
     if (fileStream) {
       if (!foundCacheControl) {
