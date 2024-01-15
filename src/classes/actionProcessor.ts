@@ -305,10 +305,10 @@ export class ActionProcessor<ActionClass extends Action> {
         let validatorResponse;
         try {
           if (typeof validator === "function") {
-            validatorResponse = await validator.call(this, params[key]);
+            validatorResponse = await validator.call(this, params[key], key);
           } else {
             const method = this.prepareStringMethod(validator);
-            validatorResponse = await method.call(this, params[key]);
+            validatorResponse = await method.call(this, params[key], key);
           }
 
           // validator function returned nothing; assume param is OK
