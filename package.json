@@ -64,7 +64,7 @@
     "@types/tough-cookie": "^4.0.5",
     "@types/uuid": "^9.0.7",
     "axios": "^1.6.1",
-    "axios-cookiejar-support": "^4.0.7",
+    "axios-cookiejar-support": "^5.0.0",
     "form-data": "^4.0.0",
     "ioredis-mock": "8.7.x",
     "jest": "^29.7.0",
