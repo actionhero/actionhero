@@ -28,6 +28,28 @@ describe("Action: validationTest", () => {
     );
   });
 
+  test("fails with generalized validation error message", async () => {
+    const { error } = await specHelper.runAction<ValidationTest>(
+      "validationTest",
+      {
+        string: "hello",
+        number: "invalid number",
+      },
+    );
+    expect(error).toEqual("Error: Param number is not a valid number!");
+  });
+
+  test("fails with generalized formatter error message", async () => {
+    const { error } = await specHelper.runAction<ValidationTest>(
+      "validationTest",
+      {
+        string: "hello",
+        number: 123,
+      },
+    );
+    expect(error).toEqual("Error: Failed formatting number correctly!");
+  });
+
   test("works with a string", async () => {
     const { string } = await specHelper.runAction<ValidationTest>(
       "validationTest",
