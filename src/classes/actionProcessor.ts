@@ -286,10 +286,10 @@ export class ActionProcessor<ActionClass extends Action> {
       for (const i in props.formatter) {
         const formatter = props.formatter[i];
         if (typeof formatter === "function") {
-          params[key] = await formatter.call(this, params[key]);
+          params[key] = await formatter.call(this, params[key], key);
         } else {
           const method = this.prepareStringMethod(formatter);
-          params[key] = await method.call(this, params[key]);
+          params[key] = await method.call(this, params[key], key);
         }
       }
     }
