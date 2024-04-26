@@ -729,9 +729,34 @@ export class WebServer extends Server {
                   "There was an error processing this form.",
                 );
               }
-              resolve({ fields, files });
+
+              // this is for backward compatibility formidable v3 and v2,
+              // because in v3 was deleted `multiples` option and mechanism
+              const isMultiples = Boolean(this.config?.formOptions?.multiples);
+              if (isMultiples) {
+                resolve({ fields, files });
+              } else {
+                // reimplementing firstValues values helper
+                // @see https://github.com/node-formidable/formidable/blob/master/src/helpers/firstValues.js
+                // but instead of first we are taking last values, mimicking v2 behavior
+                const lastValues = (val: Record<string, any>) => {
+                  return Object.fromEntries(
+                    Object.entries(val).map(([key, value]) => {
+                      return [key, Array.isArray(value) ? value.at(-1) : value];
+                    }),
+                  );
+                };
+
+                resolve({
+                  // @ts-expect-error wrong result type
+                  fields: lastValues(fields),
+                  // @ts-expect-error wrong result type
+                  files: lastValues(files),
+                });
+              }
             },
           );
+          // looks like wrong types here
         })) as { fields: string[]; files: string[] };
 
         connection.rawConnection.params.body = fields;
