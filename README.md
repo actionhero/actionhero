@@ -126,6 +126,10 @@ Or deploy a free API server now:
 - Many folks [have helped](https://github.com/actionhero/actionhero/graphs/contributors) to make Actionhero a reality.
 - If you want to contribute to actionhero, contribute to the conversation on [github](https://github.com/actionhero/actionhero) and join us on [slack](https://slack.actionherojs.com)
 
+Thank you to all of Actionhero's contributors!
+
+![image of contributors](https://contrib.rocks/image?repo=actionhero/actionhero)
+
 ## Contributing
 
 - Contributing to Actionhero is easy! [You can learn more about contributing to Actionhero here](https://github.com/actionhero/actionhero/blob/master/.github/CONTRIBUTING.md)
