@@ -30,6 +30,10 @@ export const connectionVerbs = [
 ] as const;
 export type ConnectionVerb = (typeof connectionVerbs)[number];
 
+export type SendFileOptions = {
+  mimeType?: string;
+};
+
 /**
  * The generic representation of a connection for all server types is an Actionhero.Connection.  You will never be creating these yourself via an action or task, but you will find them in your Actions and Action Middleware.
  */
@@ -163,7 +167,7 @@ export class Connection {
    * Send a file to a connection (usually in the context of an Action).  Be sure to set `data.toRender = false` in the action!
    * Uses Server#processFile and will set `connection.params.file = path`
    */
-  async sendFile(path: string) {
+  async sendFile(path: string, options?: SendFileOptions) {
     throw new Error("not implemented");
   }
 
