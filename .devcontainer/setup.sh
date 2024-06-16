@@ -3,7 +3,7 @@
 echo "--- CONFIURING CODESPACE ---"
 
 # configure node
-nvm install v16
+nvm install v20
 npm install
 
 # configure redis
