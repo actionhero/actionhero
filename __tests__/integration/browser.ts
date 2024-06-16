@@ -20,7 +20,7 @@ describe("browser integration tests", () => {
     await actionhero.start();
     await api.redis.clients.client.flushdb();
     browser = await Puppeteer.launch({
-      headless: "new",
+      headless: true,
       args: ["--no-sandbox"],
     });
     page = await browser.newPage();
@@ -84,7 +84,7 @@ describe("browser integration tests", () => {
   });
 
   describe("chat test page", () => {
-    let sessionIDCookie: Puppeteer.Protocol.Network.Cookie;
+    let sessionIDCookie: Puppeteer.Cookie;
 
     test("I can be assigned a session on another page", async () => {
       sessionIDCookie = (await page.cookies()).filter(
