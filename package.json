@@ -72,7 +72,7 @@
     "tough-cookie": "^4.1.4",
     "ts-jest": "^29.1.5",
     "ts-node-dev": "^2.0.0",
-    "typedoc": "^0.25.13",
+    "typedoc": "^0.26.2",
     "typescript": "^5.4.5"
   },
   "bin": {
