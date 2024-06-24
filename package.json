@@ -61,7 +61,7 @@
     "@types/primus": "^7.3.9",
     "@types/qs": "^6.9.15",
     "@types/tough-cookie": "^4.0.5",
-    "@types/uuid": "^9.0.8",
+    "@types/uuid": "^10.0.0",
     "axios": "^1.7.2",
     "axios-cookiejar-support": "^5.0.2",
     "form-data": "^4.0.0",
