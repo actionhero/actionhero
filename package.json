@@ -65,7 +65,7 @@
     "axios": "^1.7.2",
     "axios-cookiejar-support": "^5.0.2",
     "form-data": "^4.0.0",
-    "ioredis-mock": "8.7.x",
+    "ioredis-mock": "8.9.x",
     "jest": "^29.7.0",
     "prettier": "^3.3.2",
     "puppeteer": "^22.11.0",
