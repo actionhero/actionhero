@@ -81,7 +81,7 @@ export const DEFAULT = {
       // Options to be applied to incoming file uploads.
       //  More options and details at https://github.com/felixge/node-formidable
       formOptions: {
-        multiples: true,
+        multiples: false, // enabling will allow for multiple values to be sent for a single key, e.g. array values, but will transform most POST/PUT payloads to arrays
         uploadDir: os.tmpdir(),
         keepExtensions: false,
         maxFieldsSize: 1024 * 1024 * 20,
