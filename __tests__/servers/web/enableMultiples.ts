@@ -1,5 +1,4 @@
-import { PassThrough } from "stream";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { api, Process, config } from "./../../../src/index";
 import * as FormData from "form-data";
 
