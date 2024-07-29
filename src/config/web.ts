@@ -81,6 +81,7 @@ export const DEFAULT = {
       // Options to be applied to incoming file uploads.
       //  More options and details at https://github.com/felixge/node-formidable
       formOptions: {
+        multiples: true,
         uploadDir: os.tmpdir(),
         keepExtensions: false,
         maxFieldsSize: 1024 * 1024 * 20,
