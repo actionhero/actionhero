@@ -1,12 +1,12 @@
 import * as fs from "fs";
 import * as path from "path";
-import * as Mime from "mime";
-import { api, config, log, Initializer } from "../index";
+import Mime from "mime";
+import { api, config, log, Initializer, Api } from "../index";
 import { Connection } from "./../classes/connection";
 import { PluginConfig } from "../classes/config";
 
 export interface StaticFileApi {
-  searchLocations: Array<string>;
+  searchLocations: string[];
   get?: StaticFileInitializer["get"];
   sendFile?: StaticFileInitializer["sendFile"];
   searchPath?: StaticFileInitializer["searchPath"];

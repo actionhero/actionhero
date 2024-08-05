@@ -6,7 +6,7 @@ import * as fs from "fs";
 import * as zlib from "zlib";
 import * as path from "path";
 import * as formidable from "formidable";
-import * as Mime from "mime";
+import Mime from "mime";
 import * as uuid from "uuid";
 import * as etag from "etag";
 import { BrowserFingerprint } from "browser_fingerprint";
