@@ -57,7 +57,7 @@
     "@types/glob": "^8.1.0",
     "@types/jest": "^29.5.12",
     "@types/mime": "^3.0.4",
-    "@types/node": "^20.14.2",
+    "@types/node": "^22.4.1",
     "@types/primus": "^7.3.9",
     "@types/qs": "^6.9.15",
     "@types/tough-cookie": "^4.0.5",
