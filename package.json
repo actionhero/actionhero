@@ -68,7 +68,7 @@
     "ioredis-mock": "8.7.x",
     "jest": "^29.7.0",
     "prettier": "^3.3.2",
-    "puppeteer": "^22.11.0",
+    "puppeteer": "^23.3.0",
     "tough-cookie": "^4.1.4",
     "ts-jest": "^29.1.5",
     "ts-node-dev": "^2.0.0",
