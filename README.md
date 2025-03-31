@@ -28,9 +28,7 @@ _The reusable, scalable, and quick node.js API server for stateless and stateful
 [![NPM Version](https://img.shields.io/npm/v/actionhero.svg?style=flat-square)](https://www.npmjs.com/package/actionhero)
 [![Node Version](https://img.shields.io/node/v/actionhero.svg?style=flat-square)](https://npmjs.org/package/actionhero)
 [![NPM](https://img.shields.io/npm/dm/actionhero.svg?style=flat-square)](https://npmjs.org/package/actionhero)
-[![Dependency Status](https://david-dm.org/actionhero/actionhero.svg?style=flat-square)](https://david-dm.org/actionhero/actionhero)
-![Test](https://github.com/actionhero/actionhero/workflows/Test/badge.svg)
-[![Chat](https://slack.actionherojs.com/badge.svg)](http://slack.actionherojs.com)
+[![Test](https://github.com/actionhero/actionhero/actions/workflows/test.yml/badge.svg)](https://github.com/actionhero/actionhero/actions/workflows/test.yml)
 
 </div>
 
