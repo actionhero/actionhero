@@ -456,7 +456,7 @@ describe("Server: Web", () => {
               tmpDir + path.sep + "actionhero with space.png",
             ),
           );
-          readStream.on("close", resolve);
+          readStream.on("close", () => resolve(undefined));
         });
       });
 
