@@ -10,10 +10,10 @@ jobs:
       image: node
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js 20.x
+      - name: Use Node.js 22.x
         uses: actions/setup-node@v4.0.2
         with:
-          node-version: 20.x
+          node-version: 22.x
       - run: npm ci
       - run: ./bin/deploy-docs
       - name: Push changes

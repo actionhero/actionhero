@@ -20,10 +20,10 @@ jobs:
       image: node
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js 20.x
+      - name: Use Node.js 22.x
         uses: actions/setup-node@v4.0.2
         with:
-          node-version: 20.x
+          node-version: 22.x
       - run: npm ci
       - run: npm run lint
 
@@ -33,10 +33,10 @@ jobs:
       image: node
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js 20.x
+      - name: Use Node.js 22.x
         uses: actions/setup-node@v4.0.2
         with:
-          node-version: 20.x
+          node-version: 22.x
       - run: npm ci
       - run: npm run docs
 
@@ -53,7 +53,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [16.x, 18.x, 20.x]
+        node-version: [16.x, 18.x, 20.x, 22.x]
 
     steps:
       - uses: actions/checkout@v4
