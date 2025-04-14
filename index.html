@@ -1,0 +1,100 @@
+<!DOCTYPE html><html class="default" lang="en" data-base="./"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>actionhero</title><meta name="description" content="Documentation for actionhero"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script defer src="assets/main.js"></script><script async src="assets/icons.js" id="tsd-icons-script"></script><script async src="assets/search.js" id="tsd-search-script"></script><script async src="assets/navigation.js" id="tsd-nav-script"></script><script async src="assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><a href="index.html" class="title">actionhero</a><div id="tsd-toolbar-links"></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/><ul role="listbox" id="tsd-search-results"></ul><div id="tsd-search-status" aria-live="polite" aria-atomic="true"><div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-menu"></use></svg></a></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><h1>actionhero</h1></div><div class="tsd-panel tsd-typography"><h1 id="actionhero" class="tsd-anchor-link">Actionhero<a href="#actionhero" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h1><p><em>The reusable, scalable, and quick node.js API server for stateless and stateful applications</em></p>
+<hr>
+<div align="center">
+  <img src="https://raw.github.com/actionhero/actionhero/master/public/logo/actionhero-small.png" alt="Actionhero Logo" />
+</div>
+<br />
+<div align="center" class="topLinks">
+<p><strong><a href="https://npmjs.org/package/actionhero">NPM</a> |
+<a href="https://www.actionherojs.com">Web Site</a> |
+<a href="https://docs.actionherojs.com">Latest Docs</a> |
+<a href="https://github.com/actionhero/actionhero">GitHub</a> |
+<a href="https://slack.actionherojs.com">Slack</a> |
+<a href="https://twitter.com/actionherojs">Twitter</a></strong></p>
+</div>
+<br />
+<div align="center" class="topBadges">
+<p><a href="https://www.npmjs.com/package/actionhero"><img src="https://img.shields.io/npm/v/actionhero.svg?style=flat-square" alt="NPM Version"></a>
+<a href="https://npmjs.org/package/actionhero"><img src="https://img.shields.io/node/v/actionhero.svg?style=flat-square" alt="Node Version"></a>
+<a href="https://npmjs.org/package/actionhero"><img src="https://img.shields.io/npm/dm/actionhero.svg?style=flat-square" alt="NPM"></a>
+<a href="https://github.com/actionhero/actionhero/actions/workflows/test.yml"><img src="https://github.com/actionhero/actionhero/actions/workflows/test.yml/badge.svg" alt="Test"></a></p>
+</div>
+<h2 id="who-is-the-actionhero" class="tsd-anchor-link">Who is the Actionhero?<a href="#who-is-the-actionhero" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p>Actionhero is a multi-transport API Server with integrated cluster capabilities and delayed tasks. The goal of actionhero is to create an easy-to-use toolkit for making <strong>reusable</strong> &amp; <strong>scalable</strong> APIs for HTTP, WebSockets, and more. Clients connected to an actionhero server can <a href="https://www.actionherojs.com/tutorials/actions"><strong>consume the api</strong></a>, <a href="https://www.actionherojs.com/tutorials/file-server"><strong>consume static content</strong></a>, and <a href="https://www.actionherojs.com/tutorials/chat"><strong>communicate with each other</strong></a>. Actionhero is cluster-ready, with built in support for background tasks, 0-downtime deploys, and more. Actionhero provides a simple Async/Await API for managing every type of connection and background task.</p>
+<p>Currently actionhero supports the following out of the box...</p>
+<ul>
+<li><a href="https://www.actionherojs.com/tutorials/web-server">Web Clients</a>: HTTP, HTTPS</li>
+<li><a href="https://www.actionherojs.com/tutorials/websocket-server">Web Socket Clients</a>: HTTP, HTTPS</li>
+</ul>
+<p><a href="https://www.actionherojs.com/tutorials/servers">... and you can also make your own servers and transports.</a></p>
+<h2 id="quick-start" class="tsd-anchor-link">Quick Start<a href="#quick-start" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><pre><code class="bash"><span class="hl-0"># Generate a new Project</span><br/><span class="hl-1">npx</span><span class="hl-2"> </span><span class="hl-3">actionhero</span><span class="hl-2"> </span><span class="hl-3">generate</span><br/><span class="hl-1">npm</span><span class="hl-2"> </span><span class="hl-3">install</span><br/><span class="hl-1">npm</span><span class="hl-2"> </span><span class="hl-3">run</span><span class="hl-2"> </span><span class="hl-3">build</span><br/><span class="hl-1">npm</span><span class="hl-2"> </span><span class="hl-3">run</span><span class="hl-2"> </span><span class="hl-3">dev</span><span class="hl-2"> </span><span class="hl-0"># &lt;-- I automatically notice changes and restart, as well as compiling .ts files</span><br/><br/><span class="hl-0"># Use the actionhero CLI</span><br/><span class="hl-2">(</span><span class="hl-1">npx</span><span class="hl-2">) </span><span class="hl-1">actionhero</span><span class="hl-2"> </span><span class="hl-3">generate</span><span class="hl-2"> </span><span class="hl-3">action</span><span class="hl-2"> </span><span class="hl-4">--name</span><span class="hl-2"> </span><span class="hl-3">my_action</span><br/><span class="hl-2">(</span><span class="hl-1">npx</span><span class="hl-2">) </span><span class="hl-1">actionhero</span><span class="hl-2"> </span><span class="hl-3">generate</span><span class="hl-2"> </span><span class="hl-3">task</span><span class="hl-2"> </span><span class="hl-4">--name</span><span class="hl-2"> </span><span class="hl-3">my_task</span><span class="hl-2"> </span><span class="hl-4">--queue</span><span class="hl-2"> </span><span class="hl-3">default</span><span class="hl-2"> </span><span class="hl-4">--frequency</span><span class="hl-2"> </span><span class="hl-5">0</span><br/><br/><span class="hl-0"># Test</span><br/><span class="hl-1">npm</span><span class="hl-2"> </span><span class="hl-3">test</span><br/><br/><span class="hl-0"># To deploy your app</span><br/><span class="hl-1">npm</span><span class="hl-2"> </span><span class="hl-3">run</span><span class="hl-2"> </span><span class="hl-3">build</span><br/><span class="hl-1">npm</span><span class="hl-2"> </span><span class="hl-3">run</span><span class="hl-2"> </span><span class="hl-3">start</span>
+</code><button type="button">Copy</button></pre>
+
+<p>Your new project will come with example actions, tests, and more.</p>
+<p>Or deploy a free API server now:</p>
+<p><a href="https://heroku.com/deploy?template=https://github.com/actionhero/actionhero"><img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy to Heroku"></a></p>
+<h2 id="learn-more-📚" class="tsd-anchor-link">Learn More 📚<a href="#learn-more-📚" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><ul>
+<li><a href="https://www.actionherojs.com/get-started">Getting Started @ www.actionherojs.com</a>
+<ul>
+<li>Actionhero's website can be found @ <a href="https://github.com/actionhero/www.actionherojs.com/">https://github.com/actionhero/www.actionherojs.com/</a>. If you want to contribute to this site, visit the <a href="https://github.com/actionhero/www.actionherojs.com">related project</a></li>
+<li>---&gt; Start with the <a href="https://www.actionherojs.com/tutorials">Tutorials</a> &lt;---</li>
+</ul>
+</li>
+<li><a href="http://docs.actionherojs.com/">Read the typedoc documentation @ docs.actionherojs.com</a>
+<ul>
+<li>Starting with Actionhero version 18, the documentation for each version is included in this repository (and the NPM package) in the <code>/docs</code> folder. The current version of this documentation is also automatically deployed to <a href="https://docs.actionherojs.com">https://docs.actionherojs.com</a>.</li>
+</ul>
+</li>
+<li><a href="https://github.com/l0oky/awesome-actionhero">Find community-based resources</a></li>
+<li><a href="https://www.actionherojs.com/community">Interact with the Community &amp; View the Release History</a></li>
+<li><a href="https://github.com/actionhero/actionhero-client">Server Client</a></li>
+</ul>
+<h2 id="in-depth-tutorials-🎓" class="tsd-anchor-link">In-depth Tutorials 🎓<a href="#in-depth-tutorials-🎓" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><h3 id="core-components" class="tsd-anchor-link">Core Components<a href="#core-components" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ul>
+<li><a href="https://www.actionherojs.com/tutorials/actions">Actions</a></li>
+<li><a href="https://www.actionherojs.com/tutorials/tasks">Tasks</a></li>
+<li><a href="https://www.actionherojs.com/tutorials/middleware">Middleware</a></li>
+<li><a href="https://www.actionherojs.com/tutorials/initializers">Initializers</a></li>
+<li><a href="https://www.actionherojs.com/tutorials/cli">CLI Commands</a></li>
+<li><a href="https://www.actionherojs.com/tutorials/config">Configuration</a></li>
+<li><a href="https://www.actionherojs.com/tutorials/cluster">Cluster</a></li>
+<li><a href="https://www.actionherojs.com/tutorials/chat">Chat &amp; Realtime Communication</a></li>
+<li><a href="https://www.actionherojs.com/tutorials/file-server">File Server</a></li>
+<li><a href="https://www.actionherojs.com/tutorials/logging">Logging</a></li>
+<li><a href="https://www.actionherojs.com/tutorials/plugins">Plugins</a></li>
+<li><a href="https://www.actionherojs.com/tutorials/servers">Servers</a></li>
+<li><a href="https://www.actionherojs.com/tutorials/localization">Localization &amp; Translation</a></li>
+</ul>
+<h3 id="server-types" class="tsd-anchor-link">Server Types<a href="#server-types" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ul>
+<li><a href="https://www.actionherojs.com/tutorials/web-server">Web Server &amp; Routes</a></li>
+<li><a href="https://www.actionherojs.com/tutorials/websocket-server">WebSocket Server</a></li>
+</ul>
+<h3 id="testing-deployment-and-operations" class="tsd-anchor-link">Testing, Deployment, and Operations<a href="#testing-deployment-and-operations" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h3><ul>
+<li><a href="https://www.actionherojs.com/tutorials/running-actionhero">Running Actionhero</a></li>
+<li><a href="https://www.actionherojs.com/tutorials#configuration">Development Mode &amp; REPL</a></li>
+<li><a href="https://www.actionherojs.com/tutorials/testing">Testing &amp; SpecHelper</a></li>
+<li><a href="https://www.actionherojs.com/tutorials/production-notes">Production Notes</a></li>
+<li><a href="https://www.actionherojs.com/tutorials/upgrade-path">Upgrade Path</a></li>
+</ul>
+<h2 id="sample-projects" class="tsd-anchor-link">Sample Projects<a href="#sample-projects" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><ul>
+<li><a href="https://github.com/actionhero/actionhero-tutorial">Simple</a></li>
+<li><a href="https://github.com/actionhero/actionhero-chat">Elaborate (React, Next.JS, Bootstrap, Sequelize)</a></li>
+<li><a href="https://github.com/actionhero/actionhero-react-next-chat">Client Use: React</a></li>
+<li><a href="https://github.com/actionhero/actionhero-react-native">Client Use: React Native</a></li>
+</ul>
+<h2 id="who" class="tsd-anchor-link">Who?<a href="#who" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><ul>
+<li>Many folks <a href="https://github.com/actionhero/actionhero/graphs/contributors">have helped</a> to make Actionhero a reality.</li>
+<li>If you want to contribute to actionhero, contribute to the conversation on <a href="https://github.com/actionhero/actionhero">github</a> and join us on <a href="https://slack.actionherojs.com">slack</a></li>
+</ul>
+<p>Thank you to all of Actionhero's contributors!</p>
+<p><img src="https://contrib.rocks/image?repo=actionhero/actionhero" alt="image of contributors"></p>
+<h2 id="contributing" class="tsd-anchor-link">Contributing<a href="#contributing" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><ul>
+<li>Contributing to Actionhero is easy! <a href="https://github.com/actionhero/actionhero/blob/master/.github/CONTRIBUTING.md">You can learn more about contributing to Actionhero here</a></li>
+<li>By engaging the with Actionhero community or contributing to this or related projects, you agree to our <a href="https://github.com/actionhero/actionhero/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
+</ul>
+<h2 id="license" class="tsd-anchor-link">License<a href="#license" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><p><a href="https://github.com/actionhero/actionhero/blob/master/LICENSE.txt">Apache 2.0</a></p>
+<h2 id="dedication" class="tsd-anchor-link">Dedication<a href="#dedication" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="assets/icons.svg#icon-anchor"></use></svg></a></h2><blockquote>
+<p>Technology is a powerful force in our society. Data, software, and communication can be used for bad: to entrench unfair power structures, to undermine human rights, and to protect vested interests. But they can also be used for good: to make underrepresented people’s voices heard, to create opportunities for everyone, and to avert disasters. This project is dedicated to everyone working toward the good.</p>
+<blockquote>
+<p>Inspired by Martin Kleppmann</p>
+</blockquote>
+</blockquote>
+</div></div><div class="col-sidebar"><div class="page-menu"><div class="tsd-navigation settings"><details class="tsd-accordion"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>Settings</h3></summary><div class="tsd-accordion-details"><div class="tsd-filter-visibility"><span class="settings-label">Member Visibility</span><ul id="tsd-filter-options"><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-protected" name="protected"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Protected</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-inherited" name="inherited" checked/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>Inherited</span></label></li><li class="tsd-filter-item"><label class="tsd-filter-input"><input type="checkbox" id="tsd-filter-external" name="external"/><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect class="tsd-checkbox-background" width="30" height="30" x="1" y="1" rx="6" fill="none"></rect><path class="tsd-checkbox-checkmark" d="M8.35422 16.8214L13.2143 21.75L24.6458 10.25" stroke="none" stroke-width="3.5" stroke-linejoin="round" fill="none"></path></svg><span>External</span></label></li></ul></div><div class="tsd-theme-toggle"><label class="settings-label" for="tsd-theme">Theme</label><select id="tsd-theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div><details open class="tsd-accordion tsd-page-navigation"><summary class="tsd-accordion-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="assets/icons.svg#icon-chevronDown"></use></svg><h3>On This Page</h3></summary><div class="tsd-accordion-details"><a href="#actionhero"><span>Actionhero</span></a><ul><li><a href="#who-is-the-actionhero"><span>Who is the <wbr/>Actionhero?</span></a></li><li><a href="#quick-start"><span>Quick <wbr/>Start</span></a></li><li><a href="#learn-more-📚"><span>Learn <wbr/>More 📚</span></a></li><li><a href="#in-depth-tutorials-🎓"><span>In-<wbr/>depth <wbr/>Tutorials 🎓</span></a></li><li><ul><li><a href="#core-components"><span>Core <wbr/>Components</span></a></li><li><a href="#server-types"><span>Server <wbr/>Types</span></a></li><li><a href="#testing-deployment-and-operations"><span>Testing, <wbr/>Deployment, and <wbr/>Operations</span></a></li></ul></li><li><a href="#sample-projects"><span>Sample <wbr/>Projects</span></a></li><li><a href="#who"><span>Who?</span></a></li><li><a href="#contributing"><span>Contributing</span></a></li><li><a href="#license"><span>License</span></a></li><li><a href="#dedication"><span>Dedication</span></a></li></ul></div></details></div><div class="site-menu"><nav class="tsd-navigation"><a href="modules.html">actionhero</a><ul class="tsd-small-nested-navigation" id="tsd-nav-container"><li>Loading...</li></ul></nav></div></div></div><footer><p class="tsd-generator">Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></footer><div class="overlay"></div></body></html>
