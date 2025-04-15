@@ -9,6 +9,7 @@ import * as formidable from "formidable";
 import * as Mime from "mime";
 import * as uuid from "uuid";
 import * as etag from "etag";
+import * as net from "net";
 import { BrowserFingerprint } from "browser_fingerprint";
 import { api, config, utils, Server, Connection } from "../index";
 import { ActionsStatus, ActionProcessor } from "../classes/actionProcessor";
@@ -78,7 +79,20 @@ export class WebServer extends Server {
   }
 
   async start() {
+    const port = parseInt(this.config.port);
     let bootAttempts = 0;
+
+    // Check ports availability in order, as IPv6 socket (::) can handle both v6 and v4 traffic
+    const isIPV6PortAvailable = await this.checkPortBeingUsed(port, "::");
+    if (!isIPV6PortAvailable) {
+      throw new Error(`IPv6 port ${port} is already in use`);
+    }
+
+    const isIPV4PortAvailable = await this.checkPortBeingUsed(port, "0.0.0.0");
+    if (!isIPV4PortAvailable) {
+      throw new Error(`IPv4 port ${port} is already in use`);
+    }
+
     if (this.config.secure === false) {
       this.server = http.createServer((req, res) => {
         this.handleRequest(req, res);
@@ -915,5 +929,24 @@ export class WebServer extends Server {
       .replace(/>/g, "&gt;")
       .replace(/\)/g, "")
       .replace(/\(/g, "");
+  }
+
+  private async checkPortBeingUsed(
+    port: number,
+    host: string,
+  ): Promise<boolean> {
+    if (isNaN(port)) {
+      throw new Error(`Invalid port number: ${port}`);
+    }
+
+    return new Promise((resolve) => {
+      const tester = net
+        .createServer()
+        .once("error", () => resolve(false))
+        .once("listening", () => {
+          tester.once("close", () => resolve(true)).close();
+        })
+        .listen(port, host);
+    });
   }
 }
