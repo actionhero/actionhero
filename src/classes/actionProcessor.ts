@@ -1,8 +1,8 @@
-import * as dotProp from "dot-prop";
 import { api } from "../index";
 import { log, ActionheroLogLevel } from "../modules/log";
 import { utils } from "../modules/utils";
 import { config } from "./../modules/config";
+import { getProperty } from "../modules/utils/objectPaths";
 import { Action } from "./action";
 import { Connection } from "./connection";
 import { Input } from "./input";
@@ -259,7 +259,7 @@ export class ActionProcessor<ActionClass extends Action> {
     if (cmd !== "api") {
       throw new Error("cannot operate on a method outside of the api object");
     }
-    return dotProp.getProperty(api, cmdParts.join("."));
+    return getProperty(api, cmdParts.join("."));
   }
 
   private async validateParam(
