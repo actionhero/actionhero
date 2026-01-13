@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import * as Mime from "mime";
+import Mime from "mime";
 import { api, config, log, Initializer } from "../index";
 import { Connection } from "./../classes/connection";
 import { PluginConfig } from "../classes/config";

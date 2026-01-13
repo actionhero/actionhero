@@ -6,7 +6,7 @@ import * as fs from "fs";
 import * as zlib from "zlib";
 import * as path from "path";
 import * as formidable from "formidable";
-import * as Mime from "mime";
+import Mime from "mime";
 import * as uuid from "uuid";
 import * as etag from "etag";
 import { BrowserFingerprint } from "browser_fingerprint";
@@ -196,8 +196,8 @@ export class WebServer extends Server {
         connection.rawConnection.responseHeaders.push([
           "Cache-Control",
           "max-age=" +
-            this.config.flatFileCacheDuration +
-            ", must-revalidate, public",
+          this.config.flatFileCacheDuration +
+          ", must-revalidate, public",
         ]);
       }
     }
@@ -742,7 +742,7 @@ export class WebServer extends Server {
                 const lastValues = (val: Record<string, any>) => {
                   return Object.fromEntries(
                     Object.entries(val).map(([key, value]) => {
-                      return [key, Array.isArray(value) ? value.at(-1) : value];
+                      return [key, Array.isArray(value) ? value[value.length - 1] : value];
                     }),
                   );
                 };

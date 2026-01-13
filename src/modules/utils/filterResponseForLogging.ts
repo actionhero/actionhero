@@ -44,8 +44,8 @@ export function filterResponseForLogging(response: Record<string, any>): {
   }
 
   filteredResponse.forEach((configParam) => {
-    if (dotProp.get(response, configParam) !== undefined) {
-      dotProp.set(sanitizedResponse, configParam, "[FILTERED]");
+    if (dotProp.getProperty(response, configParam) !== undefined) {
+      dotProp.setProperty(sanitizedResponse, configParam, "[FILTERED]");
     }
   });
 

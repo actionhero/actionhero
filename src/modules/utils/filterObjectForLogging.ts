@@ -42,8 +42,8 @@ export function filterObjectForLogging(
   }
 
   filteredParams.forEach((configParam) => {
-    if (dotProp.get(params, configParam) !== undefined) {
-      dotProp.set(sanitizedParams, configParam, "[FILTERED]");
+    if (dotProp.getProperty(params, configParam) !== undefined) {
+      dotProp.setProperty(sanitizedParams, configParam, "[FILTERED]");
     }
   });
 

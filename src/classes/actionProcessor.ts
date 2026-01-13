@@ -259,7 +259,7 @@ export class ActionProcessor<ActionClass extends Action> {
     if (cmd !== "api") {
       throw new Error("cannot operate on a method outside of the api object");
     }
-    return dotProp.get(api, cmdParts.join("."));
+    return dotProp.getProperty(api, cmdParts.join("."));
   }
 
   private async validateParam(

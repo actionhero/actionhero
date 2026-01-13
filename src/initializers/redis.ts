@@ -57,7 +57,7 @@ export class RedisInitializer extends Initializer {
 
         const callableApi = Object.assign(api, { log });
 
-        const method: Function = dotProp.get(callableApi, cmdParts.join("."));
+        const method = dotProp.getProperty(callableApi, cmdParts.join(".")) as unknown as Function;
         let args = message.args;
         if (args === null) {
           args = [];
