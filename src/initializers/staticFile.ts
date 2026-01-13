@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import * as Mime from "mime";
+import * as mime from "mime";
 import { api, config, log, Initializer } from "../index";
 import { Connection } from "./../classes/connection";
 import { PluginConfig } from "../classes/config";
@@ -89,7 +89,7 @@ export class StaticFileInitializer extends Initializer {
 
     try {
       const stats = await asyncStats(file);
-      const mime = Mime.getType(file);
+      const mimeType = mime.getType(file);
       const length = stats.size;
       const start = new Date().getTime();
       lastModified = stats.mtime;
@@ -103,7 +103,7 @@ export class StaticFileInitializer extends Initializer {
         });
       });
 
-      return { connection, fileStream, mime, length, lastModified };
+      return { connection, fileStream, mime: mimeType, length, lastModified };
     } catch (error) {
       return api.staticFile.sendFileNotFound(
         connection,

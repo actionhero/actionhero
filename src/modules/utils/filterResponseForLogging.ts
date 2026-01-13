@@ -1,7 +1,7 @@
 import { isPlainObject } from "./isPlainObject";
 import { deepCopy } from "./deepCopy";
 import { config } from "../config";
-import * as dotProp from "dot-prop";
+import { getProperty, setProperty } from "./objectPaths";
 
 /**
  * Prepares acton response for logging.
@@ -44,8 +44,8 @@ export function filterResponseForLogging(response: Record<string, any>): {
   }
 
   filteredResponse.forEach((configParam) => {
-    if (dotProp.get(response, configParam) !== undefined) {
-      dotProp.set(sanitizedResponse, configParam, "[FILTERED]");
+    if (getProperty(response, configParam) !== undefined) {
+      setProperty(sanitizedResponse, configParam, "[FILTERED]");
     }
   });
 

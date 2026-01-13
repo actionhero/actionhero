@@ -98,19 +98,18 @@ export class Servers extends Initializer {
   }
 
   async start() {
-    for (const serverName of Object.keys(api.servers.servers)) {
+    const serverNames = Object.keys(api.servers.servers);
+    for (const serverName of serverNames) {
       const bindIp = config[serverName]?.bindIP?.toString();
       const port = config[serverName]?.port?.toString();
 
       const server = api.servers.servers[serverName];
       if (server && server.config.enabled === true) {
-        const message = `Starting server: \`${serverName}\` ${
-          bindIp
-            ? `@ ${serverName === "web" ? "http://" : ""}${bindIp}${
-                port ? `:${port}` : ""
-              }`
-            : ""
-        }`;
+        const message = `Starting server: \`${serverName}\` ${bindIp
+          ? `@ ${serverName === "web" ? "http://" : ""}${bindIp}${port ? `:${port}` : ""
+          }`
+          : ""
+          }`;
         log(message, "notice");
         await server.start();
         log(`Server started: ${serverName}`, "debug");

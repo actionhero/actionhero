@@ -1,3 +1,6 @@
-const yargs = require("yargs/yargs"); // cannot be partially imported
-const { hideBin } = require("yargs/helpers");
-export const argv: { [key: string]: string } = yargs(hideBin(process.argv));
+const minimist = require("minimist");
+
+// Minimal replacement for yargs' hideBin helper.
+const hideBin = (argv: string[]) => argv.slice(2);
+
+export const argv: Record<string, unknown> = minimist(hideBin(process.argv));

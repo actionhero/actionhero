@@ -1,6 +1,6 @@
 import * as IORedis from "ioredis";
-import * as dotProp from "dot-prop";
 import { api, config, id, log, Initializer, redis, utils } from "../index";
+import { getProperty } from "../modules/utils/objectPaths";
 import * as RedisModule from "./../modules/redis";
 
 export interface RedisApi {
@@ -57,7 +57,10 @@ export class RedisInitializer extends Initializer {
 
         const callableApi = Object.assign(api, { log });
 
-        const method: Function = dotProp.get(callableApi, cmdParts.join("."));
+        const method = getProperty(
+          callableApi,
+          cmdParts.join("."),
+        ) as unknown as Function;
         let args = message.args;
         if (args === null) {
           args = [];

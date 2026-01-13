@@ -1,7 +1,7 @@
 import { isPlainObject } from "./isPlainObject";
 import { deepCopy } from "./deepCopy";
 import { config } from "../config";
-import * as dotProp from "dot-prop";
+import { getProperty, setProperty } from "./objectPaths";
 
 /**
  * Prepares acton params for logging.
@@ -42,8 +42,8 @@ export function filterObjectForLogging(
   }
 
   filteredParams.forEach((configParam) => {
-    if (dotProp.get(params, configParam) !== undefined) {
-      dotProp.set(sanitizedParams, configParam, "[FILTERED]");
+    if (getProperty(params, configParam) !== undefined) {
+      setProperty(sanitizedParams, configParam, "[FILTERED]");
     }
   });
 

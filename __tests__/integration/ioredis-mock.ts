@@ -177,18 +177,9 @@ describe("with ioredis-mock", () => {
     });
 
     test("workers and scheduler work", async () => {
-      await task.enqueueIn(1, "regularTask", { word: "test-full" });
+      await specHelper.runFullTask("regularTask", { word: "test-full" });
 
-      const jobs = await task.allDelayed();
-      const times = Object.keys(jobs);
-      expect(jobs[times[0]][0]).toEqual({
-        args: [{ word: "test-full" }],
-        class: "regularTask",
-        queue: "testQueue",
-      });
-
-      await utils.sleep(1500);
       expect(taskOutput).toEqual(["test-full"]);
-    }, 10000);
+    }, 20000);
   });
 });

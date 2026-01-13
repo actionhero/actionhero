@@ -6,7 +6,7 @@ import * as fs from "fs";
 import * as zlib from "zlib";
 import * as path from "path";
 import * as formidable from "formidable";
-import * as Mime from "mime";
+import * as mime from "mime";
 import * as uuid from "uuid";
 import * as etag from "etag";
 import { BrowserFingerprint } from "browser_fingerprint";
@@ -527,11 +527,11 @@ export class WebServer extends Server {
         .matchExtensionMimeType === true &&
       data.connection.extension
     ) {
-      const mime = Mime.getType(data.connection.extension);
-      if (mime) {
+      const mimeType = mime.getType(data.connection.extension);
+      if (mimeType) {
         data.connection.rawConnection.responseHeaders.push([
           "Content-Type",
-          mime,
+          mimeType,
         ]);
       }
     }
@@ -742,7 +742,10 @@ export class WebServer extends Server {
                 const lastValues = (val: Record<string, any>) => {
                   return Object.fromEntries(
                     Object.entries(val).map(([key, value]) => {
-                      return [key, Array.isArray(value) ? value.at(-1) : value];
+                      return [
+                        key,
+                        Array.isArray(value) ? value[value.length - 1] : value,
+                      ];
                     }),
                   );
                 };

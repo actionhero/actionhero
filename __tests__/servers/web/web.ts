@@ -2,7 +2,7 @@ process.env.AUTOMATIC_ROUTES = "head,get,post,put,delete";
 
 import axios, { AxiosError } from "axios";
 import * as FormData from "form-data";
-import { wrapper } from "axios-cookiejar-support";
+import { wrapper } from "./../../../src/modules/utils/axiosCookieJarSupport";
 import { CookieJar } from "tough-cookie";
 import * as fs from "fs";
 import * as os from "os";
@@ -504,7 +504,7 @@ describe("Server: Web", () => {
 
     test("keeps sessions with browser_fingerprint", async () => {
       const jar = new CookieJar();
-      const client = wrapper(axios.create({ jar }));
+      const client = wrapper(axios.create({ jar } as any));
 
       const response1 = await client.post(url + "/api/randomNumber");
       const response2 = await client.get(url + "/api/randomNumber");
@@ -874,16 +874,20 @@ describe("Server: Web", () => {
 
     describe("can serve files from more than one directory", () => {
       const source = path.join(__dirname, "/../../../public/simple.html");
+      const target = os.tmpdir() + path.sep + "tmpTestFile.html";
 
-      beforeAll(() => {
-        fs.createReadStream(source).pipe(
-          fs.createWriteStream(os.tmpdir() + path.sep + "tmpTestFile.html"),
-        );
+      beforeAll(async () => {
+        await new Promise<void>((resolve, reject) => {
+          const writeStream = fs.createWriteStream(target);
+          writeStream.on("finish", () => resolve());
+          writeStream.on("error", reject);
+          fs.createReadStream(source).pipe(writeStream);
+        });
         api.staticFile.searchLocations.push(os.tmpdir());
       });
 
       afterAll(() => {
-        fs.unlinkSync(os.tmpdir() + path.sep + "tmpTestFile.html");
+        fs.unlinkSync(target);
         api.staticFile.searchLocations.pop();
       });
 
