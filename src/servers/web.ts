@@ -196,8 +196,8 @@ export class WebServer extends Server {
         connection.rawConnection.responseHeaders.push([
           "Cache-Control",
           "max-age=" +
-          this.config.flatFileCacheDuration +
-          ", must-revalidate, public",
+            this.config.flatFileCacheDuration +
+            ", must-revalidate, public",
         ]);
       }
     }
@@ -742,7 +742,10 @@ export class WebServer extends Server {
                 const lastValues = (val: Record<string, any>) => {
                   return Object.fromEntries(
                     Object.entries(val).map(([key, value]) => {
-                      return [key, Array.isArray(value) ? value[value.length - 1] : value];
+                      return [
+                        key,
+                        Array.isArray(value) ? value[value.length - 1] : value,
+                      ];
                     }),
                   );
                 };
