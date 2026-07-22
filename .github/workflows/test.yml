@@ -43,7 +43,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-      image: node
+      image: node:trixie
       options: --network-alias main
 
     services:
@@ -53,7 +53,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [16.x, 18.x, 20.x, 22.x]
+        node-version: [18.x, 20.x, 22.x]
 
     steps:
       - uses: actions/checkout@v4
@@ -63,7 +63,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
       - name: install puppeteer dependencies
-        run: apt-get update && apt-get install -y libgtk2.0-0 libgtk-3-0 libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb libgbm-dev
+        run: apt-get update && apt-get install -y libgtk2.0-0t64 libgtk-3-0t64 libnotify-dev libnss3 libxss1 libasound2t64 libxtst6 xauth xvfb libgbm-dev
       - run: ./node_modules/.bin/jest --ci
         env:
           REDIS_HOST: redis
