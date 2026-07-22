@@ -43,7 +43,6 @@ export class StaticFileInitializer extends Initializer {
     fileStream?: fs.ReadStream;
     lastModified?: Date;
   }> => {
-    let file: string;
     if (!connection.params.file || !api.staticFile.searchPath(counter)) {
       return api.staticFile.sendFileNotFound(
         connection,
@@ -51,26 +50,42 @@ export class StaticFileInitializer extends Initializer {
       );
     }
 
-    if (!path.isAbsolute(connection.params.file)) {
-      file = path.normalize(
-        path.join(api.staticFile.searchPath(counter), connection.params.file),
-      );
-    } else {
-      file = connection.params.file;
+    const searchPath = path.resolve(api.staticFile.searchPath(counter));
+    // path.resolve normalizes and absolutizes. If params.file is absolute it is
+    // normalized on its own (collapsing any `..`); if relative it is resolved
+    // against the search path. Either way `..` segments can no longer survive.
+    const file = path.resolve(searchPath, connection.params.file);
+
+    // Boundary-aware containment: the resolved file must be the search dir
+    // itself or live strictly beneath it. Prevents both `..` escape and
+    // sibling-prefix matches (e.g. `/srv/public` vs `/srv/public-secret`).
+    if (file !== searchPath && !file.startsWith(searchPath + path.sep)) {
+      return api.staticFile.get(connection, counter + 1);
     }
 
-    if (
-      file.indexOf(path.normalize(api.staticFile.searchPath(counter))) !== 0
-    ) {
+    const { exists, truePath } = await api.staticFile.checkExistence(file);
+    if (!exists) {
       return api.staticFile.get(connection, counter + 1);
-    } else {
-      const { exists, truePath } = await api.staticFile.checkExistence(file);
-      if (exists) {
-        return api.staticFile.sendFile(truePath, connection);
-      } else {
+    }
+
+    // Re-validate the *real* path. fs.stat transparently follows symlinks, so a
+    // symlink under the search dir could otherwise point at a target outside it.
+    // Resolving both the file and the search path to their canonical real paths
+    // (and comparing with a separator boundary) closes that escape.
+    try {
+      const realFile = await asyncRealPath(truePath);
+      const realSearchPath = await asyncRealPath(searchPath);
+      if (
+        realFile !== realSearchPath &&
+        !realFile.startsWith(realSearchPath + path.sep)
+      ) {
         return api.staticFile.get(connection, counter + 1);
       }
+    } catch (error) {
+      return api.staticFile.get(connection, counter + 1);
     }
+
+    return api.staticFile.sendFile(truePath, connection);
   };
 
   searchPath = (counter = 0) => {
@@ -248,6 +263,17 @@ async function asyncReadLink(file: string): Promise<string> {
         return reject(error);
       }
       return resolve(linkString);
+    });
+  });
+}
+
+async function asyncRealPath(file: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    fs.realpath(file, (error, resolvedPath) => {
+      if (error) {
+        return reject(error);
+      }
+      return resolve(resolvedPath);
     });
   });
 }

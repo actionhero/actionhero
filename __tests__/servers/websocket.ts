@@ -290,6 +290,21 @@ describe("Server: Web Socket", () => {
         expect(data.mime).toEqual("text/html");
         expect(data.content).toBeNull();
       });
+
+      test("cannot request files outside of the public dir", async () => {
+        const data = await awaitFile(clientA, "../../package.json");
+        expect(data.error).toEqual("that file is not found");
+        expect(data.content).toBeNull();
+      });
+
+      test("cannot request files via an absolute path", async () => {
+        const data = await awaitFile(
+          clientA,
+          process.platform === "win32" ? "C:\\Windows\\win.ini" : "/etc/hosts",
+        );
+        expect(data.error).toEqual("that file is not found");
+        expect(data.content).toBeNull();
+      });
     });
 
     describe("chat", () => {
