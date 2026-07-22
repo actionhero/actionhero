@@ -1,5 +1,8 @@
 import axios, { AxiosError } from "axios";
 import * as child_process from "child_process";
+import * as fs from "fs";
+import * as os from "os";
+import * as path from "path";
 import { Process, config, utils, specHelper } from "../../../src/index";
 
 const actionhero = new Process();
@@ -49,6 +52,75 @@ describe("Core", () => {
       const response = await specHelper.getStaticFile("../config/config.json");
       expect(response.error).toEqual("that file is not found");
       expect(response.content).toBeNull();
+    });
+
+    test("I should not see files via an absolute path with traversal", async () => {
+      const publicDir = config.general.paths!.public[0];
+      const escapePath = path.join(publicDir, "..", "..", "package.json");
+      const response = await specHelper.getStaticFile(escapePath);
+      expect(response.error).toEqual("that file is not found");
+      expect(response.content).toBeNull();
+    });
+
+    test("I should not see files via a bare absolute path outside the project", async () => {
+      const response = await specHelper.getStaticFile(
+        process.platform === "win32" ? "C:\\Windows\\win.ini" : "/etc/hosts",
+      );
+      expect(response.error).toEqual("that file is not found");
+      expect(response.content).toBeNull();
+    });
+
+    test("I should not see files in a sibling dir sharing the public prefix", async () => {
+      const publicDir = path.resolve(config.general.paths!.public[0]);
+      // e.g. `<...>/public` must not grant access to `<...>/public-secret`
+      const siblingFile = path.join(
+        path.dirname(publicDir),
+        `${path.basename(publicDir)}-secret`,
+        "creds.txt",
+      );
+      const response = await specHelper.getStaticFile(siblingFile);
+      expect(response.error).toEqual("that file is not found");
+      expect(response.content).toBeNull();
+    });
+
+    describe("symlinks", () => {
+      const secretFile = path.join(
+        os.tmpdir(),
+        "actionhero-symlink-secret.txt",
+      );
+      let linkPath: string;
+      let symlinksSupported = true;
+
+      beforeAll(() => {
+        // resolve paths here (not at collection time) so `config` is populated
+        const publicDir = path.resolve(config.general.paths!.public[0]);
+        linkPath = path.join(publicDir, "escape-link.txt");
+        fs.writeFileSync(secretFile, "TOP SECRET");
+        try {
+          fs.symlinkSync(secretFile, linkPath);
+        } catch (error) {
+          // some platforms (e.g. Windows without privileges) disallow symlinks
+          symlinksSupported = false;
+        }
+      });
+
+      afterAll(() => {
+        try {
+          fs.unlinkSync(linkPath);
+        } catch (error) {}
+        try {
+          fs.unlinkSync(secretFile);
+        } catch (error) {}
+      });
+
+      test("I should not follow a symlink that escapes the public dir", async () => {
+        if (!symlinksSupported) {
+          return;
+        }
+        const response = await specHelper.getStaticFile("escape-link.txt");
+        expect(response.error).toEqual("that file is not found");
+        expect(response.content).toBeNull();
+      });
     });
 
     test("file: sub paths should work", async () => {
