@@ -8,21 +8,21 @@
   },
   "dependencies": {
     "actionhero": "%%versionNumber%%",
-    "ws": "latest",
-    "ioredis": "latest",
-    "ioredis-mock": "latest",
-    "winston": "latest"
+    "ws": "^8.18.1",
+    "ioredis": "^5.6.0",
+    "ioredis-mock": "8.7.x",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
-    "@types/node": "latest",
-    "@types/glob": "latest",
-    "@types/jest": "latest",
-    "jest": "latest",
-    "prettier": "latest",
-    "ts-jest": "latest",
-    "ts-node-dev": "latest",
-    "type-fest": "latest",
-    "typescript": "latest"
+    "@types/node": "^22.13.14",
+    "@types/glob": "^8.1.0",
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "prettier": "^3.5.3",
+    "ts-jest": "^29.3.1",
+    "ts-node-dev": "^2.0.0",
+    "type-fest": "^4.38.0",
+    "typescript": "^5.8.2"
   },
   "scripts": {
     "postinstall": "npm run build",
