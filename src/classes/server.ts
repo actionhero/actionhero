@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import { api, config } from "../index";
 import { log, ActionheroLogLevel } from "../modules/log";
 import { ActionProcessor } from "./actionProcessor";
-import { Connection } from "./connection";
+import { Connection, SendFileOptions } from "./connection";
 
 interface ServerConfig {
   [key: string]: any;
@@ -168,9 +168,9 @@ export abstract class Server extends EventEmitter {
       this.sendMessage(connection, message);
     };
 
-    connection.sendFile = async (path) => {
+    connection.sendFile = async (path, options) => {
       connection.params.file = path;
-      this.processFile(connection);
+      this.processFile(connection, options);
     };
 
     this.emit("connection", connection);
@@ -213,14 +213,14 @@ export abstract class Server extends EventEmitter {
   /**
    * When a connection has called an File command, and all properties are set.  Connection should have `params.file` set at least.  Will eventually call Actionhero.Server#sendFile.
    */
-  async processFile(connection: Connection) {
+  async processFile(connection: Connection, options?: SendFileOptions) {
     const results = await api.staticFile.get(connection);
 
     this.sendFile(
       results.connection,
       results.error,
       results.fileStream,
-      results.mime,
+      options?.mimeType ?? results.mime,
       results.length,
       results.lastModified,
     );

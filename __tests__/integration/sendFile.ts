@@ -21,4 +21,25 @@ describe("Server: sendFile", () => {
     expect(stats.size).toBeGreaterThanOrEqual(response.data.length);
     expect(response.data).toContain("PNG");
   });
+
+  test("Server should sendFile with custom mimetype", async () => {
+    const response = await axios.get(url + "/api/sendFile", {
+      params: { mimeType: "application/octet-stream" },
+    });
+    expect(response.headers["content-type"]).toBe("application/octet-stream");
+  });
+
+  test("Server should throw an error when sending a file with invalid custom mimetype", async () => {
+    expect(async () => {
+      return axios.get(url + "/api/sendFile", {
+        params: { mimeType: "application-foo" },
+      });
+    }).rejects.toMatchObject({
+      response: {
+        data: {
+          error: 'Input for parameter "mimeType" failed validation!',
+        },
+      },
+    });
+  });
 });

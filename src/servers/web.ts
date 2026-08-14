@@ -184,7 +184,8 @@ export class WebServer extends Server {
     let ifModifiedSince;
 
     connection.rawConnection.responseHeaders.forEach((pair: string[]) => {
-      if (pair[0].toLowerCase() === "cache-control") {
+      const headerName = pair[0].toLowerCase();
+      if (headerName === "cache-control") {
         foundCacheControl = true;
       }
     });
